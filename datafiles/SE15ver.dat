@@ -1,0 +1,271 @@
+
+ | comments are indicated by the | character. 
+ | check for warnings at the end of the header section.
+
+Saxena & Eriksson 2015 Fe-S                               |<= data base title
+
+begin_standard_variables |<= name (<9 characters), reference value, tolerance
+P(bar)      1.00   0.1E-3
+T(K)      298.15   0.1E-4
+Y(CO2)      0.00   0.1E-6
+mu(C1)      0.00   0.1E-2
+mu(C2)      0.00   0.1E-2
+end_standard_variables
+
+tolerance  -.1E-2  |<= DTOL for unconstrained minimization, energy units
+
+begin_components |<= name (<5 characters), molar weight (g)
+S       32.065
+Fe      55.8445
+end_components
+
+| TAGS FOR EOS 17 PARAMETERS:
+|
+| coeffts in G below 1st transition:
+| c1	const
+| c2	T
+| c3	T ln(T)
+| c4	T^(-1)
+| c5	T^(-2)
+| c6	T^(-3)
+| c7	T^(-9)
+| c8	T^2
+| c9	T^3
+| c10	T^4
+| c11	T^7
+| G0 	T^(1/2)	unintuitively
+| S0 	ln(T)
+|
+| Parameters for P > 1 bar eos
+| b1	gamma0
+| b2	a.p.f.u.
+| b3	theta0
+| b4	b0
+| b5	delta0
+| b6	b1
+| b7	delta1
+| b8	Bo
+| b9	Bpo
+| V0	reference vol
+|
+| magnetic terms:
+| Tc	Curie temp
+| B	magnetic moment
+| p 	structure factor
+|
+| coeffts in G above 1st transition:
+| t4		const
+| t5		T
+| t6		T ln(T)
+| t7		T^(-1)
+| t8		T^(-2)
+| t9		T^(-3)
+| t10		T^(-9)
+| t11		T^2
+| t12		T^3
+| t13		T^(1/2)
+| t14		ln(T)
+
+the following "end" card marks the end of the header section of the data file        
+
+
+!!! WARNINGS !!!
+Herewith, the "warnings at the end of the header section."
+
+1) This file is intended to contain thermodynamic data for the end-members in 
+   Saxena & Eriksson (2015) "Thermodynamics of Fe-S at ultra-high pressure."
+                            CALPHAD 51, 202-205.
+   The parameters in the supplementary materials of this paper don't appear
+   to correctly calculate the illustrated 21 GPa section.
+   What follows are end-member thermo models taken from a file (green2.dat) 
+   sent by S. Saxena to E.C.R. Green, Apr 2018, apparently containing data 
+   from the FactSage database, with the exception of end-member FeLiq, which 
+   is taken from the Supplementary Table to Saxena & Eriksson (2015). Using
+   the parameters for the liquid mixing model from the Supplementary Table 
+   to Saxena & Eriksson (2015), hard-wired in Perplex, this gives a close 
+   approximation to the figures of S & E (2015).         
+   Where end-member parameters differ between the green2.dat file and the
+   Supplementary Table to Saxena & Eriksson (2015), the S & E (2015)
+   values are also provided below, as comments below the green2.dat values.                                          
+   
+2) The equation of state, "Brosh's EoS (FactSage variant)", is taken from
+   Brosh et al (2007): "Application of CALPHAD to high pressures."
+		       CALPHAD 31, 173-185,
+   but in the quasi-harmonic terms the factor n, the number of atoms, 
+   is omitted, as used in FactSage for the Saxena & Eriksson (2015) paper
+   (personal communication from S. Saxena to E.C.R. Green, confirmed by 
+   E.C.R. Green's comparative calcs).
+
+3) The FeS2 (pyrite) end-member from both the green2.dat and 
+   Supplementary Table sources are much too stable at 21 GPa, and have
+   been commented out below.
+                                                                                                                                         
+end 
+
+FeFCC    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to >6000 K
+Fe(1)
+V0 = 0.6826
+c1 = -236.7 c2 = 132.416 c3 = -24.6643 c4 = 77359. c8 = -0.375752d-2 c9 = -5.8927d-8
+b1 = 2. b2 = 1 b3 = 250. b4 = 1. b5 = 4. b6 = 3. b7 = 10. b8 = 140d4 b9 = 8.
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 1811 t4 = -27097.4 t5 = 300.2526 t6 = -46. t10 = 2.78854d31
+transition = 2 type = 6 t1 = 6000 t4 = -27097.1 t5 = 300.2522 t6 = -45.99996 t10 = 0
+end
+
+FeBCC    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to >6000 K
+Fe(1)
+V0 = 0.705
+c1 = 1225.7 c2 = 124.134 c3 = -23.5143 c4 = 77359. c8 = -0.439752d-2 c9 = -5.8927d-8
+b1 = 1.55 b2 = 1 b3 = 300. b4 = 1. b5 = 6. b6 = 3. b7 = 15. b8 = 170d4 b9 = 6.2
+Tc = 1043. B = 2.22 p = 0.4
+transition = 1 type = 6 t1 = 1811 t4 = -25383.6 t5 = 299.3126 t6 = -46. t10 = 2.29603d31
+transition = 2 type = 6 t1 = 6000 t4 = -25383.4 t5 = 299.3122 t6 = -45.99997 t10 = 0
+end
+
+FeHCP    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to >6000 K
+Fe(1)
+V0 = 0.6677
+c1 = -2480.08 c2 = 136.725 c3 = -24.6643 c4 = 77359. c8 = -0.375752d-2 c9 = -5.8927d-8
+b1 = 2.85 b2 = 1 b3 = 250. b4 = 0.7 b5 = 6. b6 = 2.49614 b7 = 10. b8 = 170d4 b9 = 5.5
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 1811 t4 = -29340.8 t5 = 304.5616 t6 = -46. t10 = 2.78854d31
+transition = 2 type = 6 t1 = 6000 t4 = -29340.5 t5 = 304.5612 t6 = -45.99996 t10 = 0
+end
+
+| FeS2Pyr    EoS = 17 | Brosh's EoS. G(T) valid to 6000 K
+| Fe(1)S(2)
+| V0 = 2.394
+| c1 = -196856.5 c2 = 440.9555 c3 = -72.387 c4 = 571395. c8 = -0.442505d-2 c9 = -0.01216667d-8
+| b1 = 2. b2 = 3 b3 = 250. b4 = 1. b5 = 5. b6 = 3. b7 = 10. b8 = 165d4 b9 = 8.
+| Tc = 0 B = 0 p = 0
+| transition = 1 type = 6 t1 = 1350 t4 = -203229. t5 = 521.6222 t6 = -83.7089 t10 = 0
+| end
+|| SE15 Suppl Mat alternative:
+|| b1 = 1. b2 = 3 b3 = 250. b4 = 1. b5 = 5. b6 = 3.3 b7 = 10. b8 = 146.5d4 b9 = 4.9
+
+FeSIV    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to >1463 K
+Fe(1)S(1)
+V0 = 1.7164
+S0 = 67440.97 c1 = -321352.9 c2 = -3074.963 c3 = 457.8445 c4 = 0 c8 = -47.30249d-2 c9 = 0d-8
+b1 = 1.2469 b2 = 2 b3 = 400. b4 = 1. b5 = 5. b6 = 0.206928 b7 = 9.84537 b8 = 68d4 b9 = 6.
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 411 t4 = -120904. t5 = 421.5758 t6 = -72.358 t10 = 0
+transition = 2 type = 6 t1 = 598 t4 = 2396750. t5 = -12849.53 t6 = 1265.19 t7 = -31830243. t10 = 0 t11 = -11.58786d-2 t13 = 236787.1 t14 = -843219.9
+transition = 3 type = 6 t1 = 1463 t4 = -133225. t5 = 452.3216 t6 = -74.91082 t10 = 0
+end
+| SE15 Suppl Mat alternative:
+| S0 = 67440.97 c1 = -321352.9 c2 = -3072.591 c3 = 457.8445 c4 = 0 c8 = -47.30249d-2 c9 = 0d-8
+| transition = 1 type = 6 t1 = 411 t4 = -120904. t5 = 423.9479 t6 = -72.358 t10 = 0
+| transition = 2 type = 6 t1 = 598 t4 = 2396750. t5 = -12847.16 t6 = 1265.19 t7 = -31830243. t10 = 0 t11 = -11.58786d-2 t13 = 236787.1 t14 = -843219.9
+| transition = 3 type = 6 t1 = 1463 t4 = -133225. t5 = 454.6937 t6 = -74.91082 t10 = 0
+
+FeSIIIs4    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to 3000 K
+Fe(1)S(1)
+V0 = 1.7178
+c1 = -115880. c2 = 42.02258 c3 = 7.9487 c4 = 0 c8 = -21.655d-2 c9 = 0d-8
+b1 = 2.85 b2 = 2 b3 = 400. b4 = 0.7 b5 = 6. b6 = 5.5 b7 = 10. b8 = 120d4 b9 = 4.
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 411 t4 = -111662. t5 = 416.6534 t6 = -70.79 t10 = 0
+transition = 2 type = 6 t1 = 598 t4 = -78086.8 t5 = 93.67378 t6 = -26.28511 t7 = -3498782. t10 = 0 t11 = -1.325791d-2 t12 = 0.108396d-8
+transition = 3 type = 6 t1 = 1463 t4 = -108945. t5 = 364.9689 t6 = -63.5 t10 = 0
+end
+| SE15 Suppl Mat alternative:
+| V0 = 1.751
+
+Fe3S    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to 6000 K
+Fe(3)S(1)
+V0 = 2.837
+c1 = -80848.7 c2 = 524.1852 c3 = -96. c4 = 571395. c8 = -0.442505d-2 c9 = -0.01216667d-8
+b1 = 1.02295 b2 = 4 b3 = 400. b4 = 1. b5 = 6. b6 = 7. b7 = 8. b8 = 150d4 b9 = 4.
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 1350 t4 = -86786.9 t5 = 602.2098 t6 = -107. t10 = 0
+end
+| SE15 Suppl Mat alternative:
+| c1 = -77848.7 c2 = 521.8121 c3 = -96. c4 = 571395. c8 = -0.442505d-2 c9 = -0.01216667d-8
+| b1 = 4.74 b2 = 4 b3 = 400. b4 = 1. b5 = 2.8 b6 = 9.92 b7 = 4.0845 b8 = 150.012d4 b9 = 3.6714
+| transition = 1 type = 6 t1 = 1350 t4 = -83786.9 t5 = 599.8367 t6 = -107. t10 = 0
+
+Fe3S2    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to 6000 K
+Fe(3)S(2)
+V0 = 2.91
+c1 = -62504.3 c2 = 682.7782 c3 = -120. c4 = 571395. c8 = -0.442505d-2 c9 = -0.01216667d-8
+b1 = 2. b2 = 5 b3 = 400. b4 = 1. b5 = 6. b6 = 2. b7 = 8. b8 = 220d4 b9 = 6.
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 1350 t4 = -69792.5 t5 = 769.0107 t6 = -132. t10 = 0
+end
+| SE15 Suppl Mat alternative:
+| V0 = 3.2848
+| c1 = 4995.699 c2 = 652.7782 c3 = -120. c4 = 571395. c8 = -0.442505d-2 c9 = -0.01216667d-8
+| b1 = 1. b2 = 5 b3 = 400. b4 = 1. b5 = 1. b6 = 1. b7 = 2. b8 = 300d4 b9 = 6.
+| transition = 1 type = 6 t1 = 1350 t4 = -2292.54 t5 = 739.0107 t6 = -132. t10 = 0
+
+SOrtho    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to >1300 K
+S(1)
+V0 = 1.176
+c1 = -5228.956 c2 = 55.41776 c3 = -11.007 c4 = 0 c8 = -2.6529d-2 c9 = 775.4333d-8
+b1 = 1.5 b2 = 1 b3 = 300. b4 = 1. b5 = 4. b6 = 2. b7 = 10. b8 = 35.1139d4 b9 = 8.05185
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 368 t4 = -6513.77 t5 = 94.69293 t6 = -17.94184 t7 = 39910. t10 = 0 t11 = -1.089513d-2 t12 = 140.256d-8
+transition = 2 type = 6 t1 = 1300 t4 = -12478.1 t5 = 188.3098 t6 = -32. t10 = 0
+end
+| SE15 Suppl Mat alternative:
+| V0 = 1.1116
+| b1 = 2.59742 b2 = 1 b3 = 349.302 b4 = 1.18152 b5 = 1.6 b6 = 1.843 b7 = 10.4752 b8 = 30.133d4 b9 = 7.84995
+
+SMono    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to >1300 K
+S(1)
+V0 = 1.546
+c1 = -5701.485 c2 = 89.00077 c3 = -17.318 c4 = 0 c8 = -1.01215d-2 c9 = 0d-8
+b1 = 1. b2 = 1 b3 = 400. b4 = 1. b5 = 7. b6 = 6. b7 = 10. b8 = 14.5d4 b9 = 7.
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 388 t4 = -7435.89 t5 = 114.5126 t6 = -21.10944 t7 = 120740. t10 = 0 t11 = -0.8604142d-2 t12 = 111.808d-8
+transition = 2 type = 6 t1 = 1300 t4 = -11779.7 t5 = 186.7162 t6 = -32. t10 = 0
+end
+
+SLiq    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to 6000 K
+S(1)
+V0 = 1.2414
+c1 = -4001.549 c2 = 77.90568 c3 = -15.504 c4 = -113945. c8 = -1.8629d-2 c9 = -24.942d-8
+b1 = 1.8 b2 = 1 b3 = 225. b4 = 1. b5 = 5. b6 = 9.57 b7 = 1. b8 = 51.2961d4 b9 = 4.5
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 388 t4 = -5285183. t5 = 118449.6 t6 = -19762.4 t7 = 264673500. t10 = 0 t11 = 3279.275d-2 t12 = -1022142.d-8
+transition = 2 type = 6 t1 = 428 t4 = -8174995. t5 = 319914.1 t6 = -57607.3 t10 = 0 t11 = 13530.45d-2 t12 = -5299733.d-8
+transition = 3 type = 6 t1 = 432 t4 = -219409. t5 = 7758.856 t6 = -1371.85 t10 = 0 t11 = 284.5035d-2 t12 = -101380.d-8
+transition = 4 type = 6 t1 = 453 t4 = 92539.9 t5 = -1336.35 t6 = 202.958 t7 = -8202200. t10 = 0 t11 = -25.31915d-2 t12 = 5188.35d-8
+transition = 5 type = 6 t1 = 717 t4 = -6889.98 t5 = 176.3708 t6 = -32. t10 = 0
+end
+
+FeLiq    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to 6000 K
+Fe(1)
+V0 = 0.74602
+c1 = 13265.87 c2 = 117.5756 c3 = -23.5143 c4 = 77359. c8 = -0.439752d-2 c9 = -5.8927d-8 c11 = -0.3675155d-20
+b1 = 2. b2 = 1 b3 = 250. b4 = 1. b5 = 6. b6 = 5.10624 b7 = 4. b8 = 165d4 b9 = 4.4729
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 1811 t4 = -10838.8 t5 = 291.302 t6 = -46. t10 = 0
+end
+
+SVa    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to 1400 K
+S(1)
+V0 = 1.8298
+c1 = 134820.4 c2 = 55.41776 c3 = -11.007 c4 = 0 c8 = -2.6529d-2 c9 = 775.4333d-8
+b1 = 1. b2 = 1 b3 = 400. b4 = 1. b5 = 9.8 b6 = 9. b7 = 2.59531 b8 = 102.47d4 b9 = 4.
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 368 t4 = 133536. t5 = 94.69292 t6 = -17.94184 t7 = 39910. t10 = 0 t11 = -1.089513d-2 t12 = 140.256d-8
+transition = 2 type = 6 t1 = 1300 t4 = 127571. t5 = 188.3098 t6 = -32. t10 = 0
+end
+| SE15 Suppl Mat alternative: omit transition 2.
+
+APyrr    EoS = 17 | Brosh's EoS (FactSage variant). G(T) valid to >1400 K
+Fe(1)S(1)
+V0 = 1.9419
+c1 = -622939.2 c2 = 14046.71 c3 = -2437.135 c4 = 20561935. c8 = 495.0964d-2 c9 = -192793.7d-8
+b1 = 1. b2 = 2 b3 = 400. b4 = 1. b5 = 6. b6 = 7. b7 = 8. b8 = 109.707d4 b9 = 6.
+Tc = 0 B = 0 p = 0
+transition = 1 type = 6 t1 = 420 t4 = -123965. t5 = 494.9827 t6 = -83.00001 t10 = 0
+transition = 2 type = 6 t1 = 440 t4 = -162720. t5 = 1961.106 t6 = -344.055 t7 = 6935. t10 = 0 t11 = 56.5371d-2 t12 = -19555.1d-8
+transition = 3 type = 6 t1 = 589 t4 = -297247. t5 = 2653.157 t6 = -375.1709 t10 = 0
+transition = 4 type = 6 t1 = 590 t4 = -94767.6 t5 = 160.6056 t6 = -36.401 t7 = -1870495. t10 = 0 t11 = -1.182085d-2 t12 = 92.2642d-8
+transition = 5 type = 6 t1 = 1200 t4 = -101121. t5 = 234.253 t6 = -47.203 t7 = -1241345. t10 = 0 t11 = -0.414255d-2 t12 = -6.10217d-8
+transition = 6 type = 6 t1 = 1400 t4 = -113457. t5 = 334.9133 t6 = -60.78643 t10 = 0
+end
+| SE15 Suppl Mat alternative: omit transition 6.

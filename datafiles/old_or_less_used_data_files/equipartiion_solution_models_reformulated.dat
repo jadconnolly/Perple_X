@@ -1,0 +1,954 @@
+| This file contains relict equipartion models that have been reformulated as solutions with
+| a simplicial composition space. The reformulation ensures that the models cannot generate
+| illegitimate site populations. The resulting restriction of the composition space reduces 
+| the stability of the corresponding phase, particularly for Fe-rich compositions. This 
+| formulation of the solution models:
+
+| Chl(HP), Chl(LWV), Sapp(HP), Sapp(KWP), T, GlTrTsPg, Amph(DHP), Amph(DPW), Atg(PN), 
+| o-Amph, Ca-Amph(D), Na-Amph(D), and GlTrTsMb
+
+| was used in solution_model.dat between May 17, 2018 and Dec 6, 2018 (versions 6.8.2-6.8.4).
+| With the exception of T and Atg(PN), which are usually stable as Mg-rich phases, the 
+| illegitimate versions of these models, used prior to 6.8.2, were restored to facilitate 
+| the reproduction of phase relations computed with earlier versions of Perple_X. See the 
+| May 17, 2018 and Mar 2, 2018 entries of the update file for additional details.
+
+| The original formulation (prismatic composition space) of the above models is preserved
+| equipartition_solution_models.dat
+
+Na-Amph(D)
+Chl(LWV)
+Chl(HP)
+Sapp(HP)
+Sapp(KWP)
+GlTrTsPg
+Amph(DHP)
+Amph(DPW)
+o-Amph
+Ca-Amph(D)
+GlTrTsMr
+Atg(PN)
+T
+                      --------------------------------------------------------
+begin_model                
+                             Talc, ideal.
+
+                                                      1       2           
+                                                      M1      M2       T2   
+                                                     ______________________
+
+                                      Mutliplicity    2       1         2
+                                                     ______________________
+
+                                      1 en            Mg      Mg       SiSi
+                            Species:  2 fs            Fe      Fe       SiSi
+                                      3 mgts          Mg      Al       AlSi
+                                                      ______________________
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+
+T                          | solution name 
+abbreviation Tlc
+full_name    talc
+
+2                          | model type: simplicial, equipartition relict
+3                          | number of independent endmembers
+ta    fta    tats          | endmember names
+0 0 0                      | endmember flags, indicate if the endmember is part of the solution.
+0.0 1. 0.1  0              | range and resolution for ta, imod = 0 -> cartesian subdivision
+0.0 1. 0.1  0              | range and resolution for fta, imod = 0 -> cartesian subdivision
+
+ideal
+
+3                          | 3 site (M1, M2, T2) conigurational entropy model
+
+2 2.                       | 2 species on M1, 2 sites per formula unit.
+
+z(m1,mg) = 1 ta + 1 tats                 
+                
+2 2.                       | 2 species on T2, 2 sites per formula unit.
+
+z(t2,al) = 1/2 tats 
+
+3 1.                       | 3 species on M2, 1 site per formula unit.
+
+z(m2,mg) = 1 ta 
+z(fe,m2) = 1 fta
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                             Antigorite with Tschermak's substitution (Padrón-Navarta et al., 2013, Lithos)
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+
+                                                      M0      M1       T1  
+                                                     ______________________
+
+                                      Mutliplicity    44       4         8
+                                                     ______________________
+
+                                      1 atg          Mg      Mg       SiSi
+                            Species:  2 fatg         Fe      Fe       SiSi
+                                      3 atgts        Mg      Al       AlSi
+                                                      ______________________
+
+
+                             This model requires the following make definition in the thermodynamic data file:
+
+                                atgts = 4 clin + 9/17 atg - 24/17 br
+                                -2e3. 46.1 0
+
+Atg(PN)                    | solution name
+abbreviation Atg
+full_name    serpentine
+
+2                          | model type: simplicial composition space, equipartition relict
+3                          | number of endmembers
+atg      fatg   atgts      | endmember names, this order implies:
+0 0 0                      | endmember flags, indicate if the endmember is part of the solution.
+
+0. 1. .1  0                | range and resolution for atg, imod = 0 -> cartesian subdivision
+0. 1. .1  0                | range and resolution for ftag, imod = 0 -> cartesian subdivision
+
+ideal
+
+3                          | 3 site (M0, M1, T1) configurational entropy model
+
+2 44.                      | 2 species on M0, 2 sites per formula unit.
+
+z(m1,mg) = 1 atg + 1 atgts
+
+2 8.                       | 2 species on T1, 2 sites per formula unit.
+
+z(t2,al) = 1/2 atgts
+
+3 4.                       | 3 species on M1, 1 site per formula unit.
+
+z(m2,mg) = 1 atg
+z(fe,m2) = 1 fatg
+
+reach_increment 0
+
+end_of_model
+                      --------------------------------------------------------
+begin_model                
+                            Amphibole from Massonne & Willner (EJM, 2008)
+                            See notes for TrTsPg (above). 
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+GlTrTsMr
+abbreviation Amph
+full_name    clinoamphibole
+        
+2                          | model type: simplicial composition space, equipartion relict
+5                          | number of endmembers 
+tr       
+ftr      
+mrie 
+ts
+gl
+
+0 0 0 0 0                  | endmember flags.
+
+0. 1. .1 0                 | range and resolution for tr
+0. 1. .1 0                 | range and resolution for ftr
+0. 1. .1 0                 | range and resolution for mrie
+0. 1. .1 0                 | range and resolution for gl
+
+begin_excess_function 
+W(gl tr)     77d3 0. 0. 
+W(gl ftr)    83d3 0. 0. 
+W(ts tr)     20d3 0. 0. 
+W(ts ftr)   -38d3 0. 0. 
+W(tr ftr)    10d3 0. 0. 
+end_excess_function
+
+4                          | 4 site (M1, M2, M4, T1) entropu model 
+
+2 2.                       | 2 species on T1, fake site multiplicity of 2.
+z(T1,Al) = 0 + 1 ts 
+
+2 3.                       | 2 species on M1, 3 sites per formula unit
+z(m1,mg) = 0 + 1 tr + 1 ts + 1 mrie + 1 gl
+
+3 2.                       | 3 species on M2, 2 sites pfu
+z(m2,mg) = 0 + 1 tr  
+z(m2,fe) = 0 + 1 ftr 
+
+2 2.                       | 2 species on M4, 2 sites pfu
+z(m4,na) = 0 + 1 gl 
+
+begin_dqf_corrections
+dqf(ts) 10000 0 0 
+end_dqf_corrections
+
+end_of_model              
+                      --------------------------------------------------------
+begin_model
+                             Dale et al, CMP 2000 140:353-362 amphibole model
+                             without Na, K, Ti or Mn solution.
+
+                             See Amph(DHP) or bAmph(DHP) for Na-Ca amphibole
+ 
+                                      JADC 5/5/06. 
+                        
+                                             A         M1      M2     M4      T1
+                                            _________________________________________
+
+                             Mutliplicity    1         3       2      2       2
+                                            _________________________________________
+  
+                             1 tr            Vac       Mg      Mg     Ca      Si_Si
+                             2 ftr           Vac       Fe      Fe     Ca      Si_Si
+                             3 ts            Vac       Mg      Al     Ca      Al_Si
+                             5 parg          Na        Mg      Mg_Al  Ca      Al_Si
+                             9 mfets         Vac       Mg      Fe3+   Ca      Al_Si
+
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+
+Ca-Amph(D)                 | solution name 
+abbreviation Amph
+full_name    clinoamphibole
+
+2                          | model type: simplicial composition space, relict equipartiion
+5                          | number of endmembers 
+tr       
+ftr 
+parg
+ts
+mfets
+
+0 0 0 0 0                  | endmember flags.
+
+0. 1. .1 0                 | range and resolution for tr : imod = 0 -> cartesian
+0. 1. .1 0                 | range and resolution for ftr
+0. 1. .1 0                 | range and resolution for parg 
+0. 1. .1 0                 | range and resolution for ts
+
+begin_excess_function
+W(parg tr)  29.3d3 0. 0.
+W(parg ts)  18.2d3 0. 0. 
+W(parg ftr) 11.4d3 0. 0.  
+W(ts tr)    20.8d3 0. 0. 
+W(tr ftr)   11.4d3 0. 0.
+end_excess_function
+
+4                          | 4 site (A, M1, M2, T1) entropy model 
+
+2 1.                       | 2 species on A (V, Na), 1 site per formula unit.
+z(A,Na) = 1 parg  
+              
+2 2.                       | 2 species on T1, fake site multiplicity of 2.
+z(T1,Al) = 1/2 ts + 1/2 parg + 1/2 mfets 
+
+2 3.                       | 2 species on M1, 3 sites per formula unit
+z(m1,mg) = 1 tr + 1 ts + 1 parg + 1 mfets
+
+4 2.                       | 4 species on M2, 2 sites pfu
+z(m2,mg) = 1 tr + 1/2 parg 
+z(m2,fe) = 1 ftr  
+z(m2,fe3+) = 1 mfets 
+
+begin_dqf_corrections
+dqf(ts) 10000 0 0 
+end_dqf_corrections
+
+end_of_model               
+                      --------------------------------------------------------
+begin_model 
+                             Ideal orthoamphibole, this model assumes Al is present
+                             on only two tetrahedral sites and all five M2 sites. 
+                             I have no idea if this is correct! 
+
+                             fgedr endmember stoichiometry corrected, T. Wagner 2/18/06. 
+
+                                                                 
+                                                      M1      M2        T    
+                                                     ______________________
+
+                                      Mutliplicity    2       5         2
+                                                     ______________________
+
+                                      1 anth          Mg      Mg       SiSi
+                            Species:  2 fanth         Fe      Fe       SiSi
+                                      3 ged           Mg      Mg3Al2   AlAl
+                                                      ______________________
+
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+
+
+o-Amph                     | solution name 
+abbreviation oAmph
+full_name    orthoamphibole
+
+2                         | model type: simplex, equipartition relict
+3                         | number of endmembers
+anth     fanth    ged       endmember names, this order implies: 
+
+0 0 0                     | endmember flags, indicate if the endmember is part of the solution.
+0. 1. .1  0               | range and resolution for anth
+0. 1. .1  0               | range and resolution for fanth
+
+ideal
+
+3                          | 3 site (M1, M2, T) conigurational entropy model
+
+2 2.                       | 2 species on M1, 2 sites per formula unit.
+
+z(m1,mg) = 1 anth + 1 ged              
+                
+2 2.                       | 2 species on T, 2 sites per formula unit.
+
+z(t,al) = 1 ged 
+
+3 1.                       | 3 species on M2, 1 site per formula unit.
+
+z(m2,mg) = 1 anth + 3/5 ged
+z(m2,fe) = 1 fanth 
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                                      tr-ts-parg non-ideal model for
+                                      holland and powell. assumes 2 M2 sites are 
+                                      coupled to 4 T1 sites. site multiplicity 
+                                      of the T1 site is reduced to 2, this is 
+                                      suggested by HP98 to account for charge 
+                                      balance constraints. but doesn't make a lot
+                                      of sense for the tr-parg mixing. assume
+                                      Na on the A-site is coupled to Al on M2.
+
+                                      JADC Nov, 98. 
+
+                                      HP Am Min 99, 84:1-14
+                                      Oli Jagoutz revised april 9, 2002
+
+                                      in contrast to the earlier version of TrTsPg
+                                      this version assumes the A site is decoupled from M2
+ 
+                                      JADC 4/03.
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+
+GlTrTsPg                   | solution name 
+abbreviation Amph
+full_name    clinoamphibole
+
+2                          | model type: simplicial composition space, equipartion relict
+5                          | number of endmembers
+tr
+ftr
+parg
+ts
+gl
+
+0 0 0 0 0                 | endmember flags.
+
+0. 1.0 0.1 0              | range and resolution for tr, imod = 0 -> cartesian subdivision
+0. 1.0 0.1 0              | range and resolution for ftr, imod = 0 -> cartesian subdivision
+0. 1.0 0.1 0              | range and resolution for pg, imod = 0 -> cartesian subdivision 
+0. 1.  0.1 0              | range and resolution for ts, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+                            | interaction parameters from
+                            | White, Powell & Phillips (2003, JMG)
+                            | and Wei, Powell, & Zhang (2003, JMG) 
+                            | compiled by D. Tinkham. JADC 11/03 
+W(parg gl)  80d3 0. 0. 
+W(parg tr)  30d3 0. 0. 
+W(parg ftr) 38d3 0. 0.  
+W(gl tr)    77d3 0. 0. 
+W(gl ftr)   83d3 0. 0. 
+W(ts tr)    20d3 0. 0. 
+W(ts ftr)  -38d3 0. 0. 
+W(tr ftr)   10d3 0. 0.
+                            | earlier versions used (provenance unknown)
+
+                            | W(ts parg) -25000. 0. 0. 
+                            | W(tr parg)  20000. 0. 0. 
+                            | W(tr ts)    38000. 0. 0.  
+end_excess_function
+
+5                          | 5 site (A, M1, M2, M4, T1) entropy model 
+
+2 1.                       | 2 species on A (V, Na), 1 site per formula unit.
+z(A,Na) = 1 parg  
+              
+2 2.                       | 2 species on T1, fake site multiplicity of 2.
+z(T1,Al) = 1/2 ts + 1/2 parg 
+
+2 3.                       | 2 species on M1, 3 sites per formula unit
+z(m1,mg) = 1 tr + 1 ts + 1 parg + 1 gl
+
+3 2.                       | 3 species on M2, 2 sites pfu
+z(m2,mg) = 1 tr + 1/2 parg 
+z(m2,fe) = 1 ftr 
+
+2 2.                       | 2 species on M4, 2 sites pfu
+z(m4,na) = 1 gl 
+
+begin_dqf_corrections
+dqf(ts) 10000 0 0 
+end_dqf_corrections
+
+end_of_model             
+                      --------------------------------------------------------
+begin_model               
+                                             A         M1      M2     M4      T1
+                                            _________________________________________
+
+                             Mutliplicity    1         3       2      2       2
+                                            _________________________________________
+  
+                             1 tr            Vac       Mg      Mg     Ca      Si_Si
+                             2 ftr           Vac       Fe      Fe     Ca      Si_Si
+                             3 ts            Vac       Mg      Al     Ca      Al_Si
+                             4 fts           Vac       Fe      Al     Ca      Al_Si
+                             5 parg          Na        Mg      Mg_Al  Ca      Al_Si
+                             6 fparg         Na        Fe      Fe_Al  Ca      Al_Si
+                             7 gl            Vac       Mg      Al     Na      Si_Si
+                             8 fgl           Vac       Fe      Al     Na      Si_Si
+                             9 mfets         Vac       Mg      Fe3+   Ca      Al_Si
+                            10 ffets         Vac       Fe      Fe3+   Ca      Al_Si
+
+                             Dale et al, CMP 2000 140:353-362 amphibole model
+                             without K, Ti or Mn solution.
+ 
+                                      JADC 9/05. 
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+
+Amph(DHP)                  | solution name 
+abbreviation Amph
+full_name    clinoamphibole
+
+2                          | model type: simplex, equipartition relict
+6                          | number of endmembers
+tr       
+ftr      
+parg     
+ts       
+gl       
+mfets    
+
+0 0 0 0 0 0                | endmember flags.
+
+0. 1.  0.1  0              | range and resolution for tr, imod = 0 -> cartesian subdivision
+0. 1.  0.1  0              | range and resolution for ftr, imod = 0 -> cartesian subdivision
+0. 1.  0.1  0              | range and resolution for parg, imod = 0 -> cartesian subdivision 
+0. 1.  0.1  0              | range and resolution for ts, imod = 0 -> cartesian subdivision
+0. 1.  0.1  0              | range and resolution for gl, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+W(parg gl)  84.5d3 0. 0. 
+W(parg tr)  29.3d3 0. 0.
+W(parg ts)  18.2d3 0. 0. 
+W(parg ftr) 11.4d3 0. 0.  
+W(gl tr)    35.3d3 0. 0.  
+W(ts tr)    20.8d3 0. 0. 
+W(tr ftr)   11.4d3 0. 0.
+W(gl ftr)   15d3 0. 0. 
+W(gl ts)    15d3 0. 0.
+end_excess_function
+
+5                          | 5 site (A, M1, M2, M4, T1) entropy model 
+
+2 1.                       | 2 species on A (V, Na), 1 site per formula unit.
+z(A,Na) = 1 parg  
+              
+2 2.                       | 2 species on T1, fake site multiplicity of 2.
+z(T1,Al) = 1/2 ts + 1/2 parg + 1/2 mfets  
+
+2 3.                       | 2 species on M1, 3 sites per formula unit
+z(m1,mg) = 1 tr + 1 ts + 1 parg + 1 gl + 1 mfets
+
+4 2.                       | 4 species on M2, 2 sites pfu
+z(m2,mg)   = 1 tr + 1/2 parg 
+z(m2,fe)   = 1 ftr 
+z(m2,fe3+) = 1 mfets 
+
+2 2.                       | 2 species on M4, 2 sites pfu
+z(m4,na) = 1 gl 
+
+begin_dqf_corrections
+dqf(ts) 10000
+end_dqf_corrections
+
+reach_increment 1
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                             Dale et al, JMG 2005 23:771-791 amphibole model.
+
+                             JADC, 11/05.
+
+                             excess parameters corrected from  
+                                      W(gl ftr)     393d3  0. 0.
+                                      W(gl mfets)   459d3  0. 0.
+                                      W(ftr mfets)  125d3  0. 0.
+                             to current values. 
+
+                             M. Racek, 2/10/06.
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+
+                                             A         M13     M2     M4      T1*
+                                            _________________________________________
+
+                             Mutliplicity    1         3       2      2       4(1)
+                                            _________________________________________
+  
+                             1 tr            Vac       Mg      Mg     Ca      Si_Si
+                             2 ftr           Vac       Fe      Fe     Ca      Si_Si
+                             3 ts            Vac       Mg      Al     Ca      Al_Si
+                             5 parg          Na        Mg      Mg_Al  Ca      Al_Si
+                             7 gl            Vac       Mg      Al     Na      Si_Si
+                             9 mfets         Vac       Mg      Fe3+   Ca      Al_Si
+
+                           *Dale et al compute amphibole T1 site fractions assuming 
+                            a site multiplicity of 4, but compute activities for a
+                            T1 site multiplicity of 1. In previous models H&P computed
+                            activities for a T1 site multiplicity of 2.
+
+Amph(DPW)                  | solution name 
+abbreviation Amph
+full_name    clinoamphibole
+
+2                          | model type: simplicial composition space, equipartition relict
+6                          | number of endmembers
+
+tr       
+ftr      
+parg     
+ts       
+gl        
+mfets    
+
+0 0 0 0 0 0                | endmember flags.
+
+0. 1.  0.1 0               | range and resolution for tr, imod = 0 -> cartesian subdivision
+0. 1.  0.1 0               | range and resolution for ftr, imod = 0 -> cartesian subdivision
+0. 1.  0.1 0               | range and resolution for parg, imod = 0 -> cartesian subdivision 
+0. 1.  0.1 0               | range and resolution for ts, imod = 0 -> cartesian subdivision
+0. 1.  0.1 0               | range and resolution for gl, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+W(tr ts)      20d3   0. 0. 
+W(tr parg)    33d3   0. 0.
+W(tr gl)      65d3   0. 0. 
+W(tr ftr)     10d3   0. 0.  
+W(tr mfets)   20d3   0. 0.  
+W(ts parg)   -385d2  0. 0. 
+W(ts gl)      25d3   0. 0.
+W(ts ftr)     125d2  0. 0. 
+W(parg gl)    50d3   0. 0.
+W(parg ftr)  -19d2   0. 0.
+W(parg mfets) -385d2  0. 0.
+W(gl ftr)     393d2  0. 0.
+W(gl mfets)   459d2  0. 0.
+W(ftr mfets)  125d2  0. 0.
+end_excess_function
+
+5                          | 5 site (A, M13, M2, M4, T1) entropy model 
+
+2 1.                       | 2 species on A (V, Na), 1 site per formula unit.
+z(A,Na) = 1 parg 
+              
+2 1.                       | 2 species on T1, fake site multiplicity of 1.
+z(T1,Al) = 1/2 ts + 1/2 parg + 1/2 mfets 
+
+2 3.                       | 2 species on M1, 3 sites per formula unit
+z(m1,mg) = 1 tr + 1 ts + 1 parg + 1 gl + 1 mfets
+
+4 2.                       | 4 species on M2, 2 sites pfu
+z(m2,mg)   = 1 tr + 1/2 parg 
+z(m2,fe)   = 1 ftr 
+z(m2,fe3+) = 1 mfets 
+
+2 2.                       | 2 species on M4, 2 sites pfu
+z(m4,na) = 1 gl 
+
+
+begin_van_laar_sizes                        
+alpha(tr)     1.0    0.    0.                      
+alpha(ts)     1.5    0.    0.                      
+alpha(parg)   1.7    0.    0.
+alpha(gl)     0.8    0.    0.
+alpha(ftr)    1.0    0.    0.
+alpha(mfets)  1.5    0.    0.
+end_van_laar_sizes
+
+begin_dqf_corrections
+dqf(gl)   5d3 0 0 
+dqf(ts)   1d4 0 0 
+dqf(parg) 15d3 0 0 
+end_dqf_corrections
+
+end_of_model              
+                      --------------------------------------------------------
+begin_model                
+                            Sapphirine, ideal, holland and powell '98 
+
+                            config entropy corrected, P Goncalves/JADC, 10/1/03
+
+                            the corrected model assumes (after the text on TJBH's
+                            saphhirine web page www.esc.cam.ac.uk/astaff/holland/ds5/sapphirines/spr.html)
+                            that:
+
+                                   1) a 14 cation unit formula
+                                   2) Si occupies T2, Al occupies T5, Si and Al mix on
+                                      remaining 4 sites T1 T3 T4 T6 (the T site below)
+                                   3) Al occupies M7; only Fe and Mg may occupy sites
+                                      M4, M5, M6 (Site MB below); Al, Mg, and Fe may occupy 
+                                      sites M1, M2, M3 and M8 (Site MA below)
+                              
+                             N.B. This model seems to differ from the Thermocalc format version on 
+                             TJBH's web page in that it accounts for the configurational entropy
+                             arising from mixing on MB (i.e., the Thermocalc model looks like it
+                             was written for Fe-free sapphirine). Eliminate site MB to reproduce 
+                             the TJBH web page Thermocalc model.
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2). 
+
+                             JADC, 10/5/2018
+
+
+                                                      1      2     3           
+                                                      MA     MB    T     
+                                                     _________________
+
+                                      Mutliplicity    4      3     4
+                                                     _________________
+
+                                      1 spr7          MgAl7  Mg    SiAl7
+                            Species:  2 fspr          FeAl7  Fe    SiAl7
+                                      3 spr4          MgAl3  Mg    SiAl3
+
+
+Sapp(HP)
+abbreviation Sap
+full_name    sapphirine
+
+2                          | model type: simplicial composition space, equipartition relict
+3                          | number of endmembers
+spr7  fspr  spr4
+
+0  0   0                            endmember flags
+
+0. 1. 0.1  0               | range and resolution for spr7, imod = 0 -> cartesian subdivision
+0. 1. 0.1  0               | range and resolution for fspr, imod = 0 -> cartesian subdivision
+
+ideal
+
+3                          | 3 site (MA, MB, T) configurational entropy model
+
+2 3.                       | 2 species on MB, 3 sites per formula unit
+z(mb,mg) = 1 spr4 + 1 spr7
+
+3 4.                       | 3 species on MA, 4 sites per formula unit.
+z(ma,Al) = 3/4 + 1/8 spr7 + 1/8 fspr
+z(ma,fe) = 1/8 fspr
+
+2 4.                       | 2 species on T, 4 sites per formula unit.
+z(T,Al) = 3/4 + 1/8 spr7 + 1/8 fspr
+
+end_of_model               
+                      --------------------------------------------------------
+begin_model                
+                            Sapphirine, non-ideal, Kelsey et al. (J. metamorphic Geol., 2004, 22, 559-578)
+
+                            NOTE: This model should be used in conjunction with a special
+                            high temperature version of the HP data base (kel04ver.dat).
+
+                            Model originally entered by Pulak Sengupta, 7/16/05. 
+
+                            1) Site populations corrected to correspond to those of Kelsey et al
+                               by P Goncalves, 10/12/2010.
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2). 
+
+                             JADC, 10/5/2018
+               
+                                                      1      2     3           
+                                                      M3     M46   T     
+                                                     _________________
+
+                                      Mutliplicity    1      3     1
+                                                     _________________
+
+                                      1 spr4          Mg     Mg    Si
+                            Species:  2 fspr          Fe     Fe    Si
+                                      3 spr5          Al     Mg    Al
+
+
+Sapp(KWP)
+abbreviation Sap
+full_name    sapphirine
+
+2                          | model type: simplicial composition space, equipartion relict
+3                          | number of endmembers
+spr4  fspr  spr5
+
+0  0  0                    | endmember flags
+
+0. 1. .1  0                | range and resolution for spr4, imod = 0 -> cartesian subdivision
+0. 1. .1  0                | range and resolution for fspr, imod = 0 -> cartesian subdivision
+
+begin_excess_function 
+w(spr5 spr4) 10000 0 0
+w(spr5 fspr) 12000 0 0
+w(spr4 fspr)  8000 0 0
+end_excess_function 
+
+3                          | 3 site (M3, M46, T) configurational entropy model
+
+2 3.                       | 2 species on M46, 3 sites per formula unit
+z(m46,mg) = 1 spr5 + 1 spr4
+
+3 1.                       | 3 species on M3, 1 sites per formula unit.
+z(ma,Al) = 1 spr5 
+z(ma,fe) = 1 fspr
+
+2 1.                       | 2 species on T, 1 sites per formula unit.
+z(T,si) = 1 spr4 + 1 fspr        
+
+end_of_model               
+                      --------------------------------------------------------
+begin_model                
+                           | CHLORITE: extended from holland et al. 1998, EJM.
+
+                             NOTES:  
+                                           
+                             * This model was tested with the maple script complete_chl.mws
+
+                             * For normal aluminous chlorites there is little to be gained
+                               by considering the afchl endmember becuase the 
+                               endmember has negligible contribution to the total energy of 
+                               the solution (see fig 4 of holland et al). Exclude this 
+                               endmember to save computational resources. For Al-poor
+                               systems exclude ames and retain afchl.
+
+                             JADC 4/03
+
+                                                      1         2       3      4
+                                                      M1      M2+M3     M4     T2
+                                                     ________________________________
+
+                                      Mutliplicity    1         4       1      2 
+                                                     ________________________________
+
+                                      3 mnchl         Mn        Mn      Al     Al_Si    
+                                      6 daph          Fe        Fe      Al     Al_Si  
+                                      7 ames          Al        Mg      Al     Al_Al
+                                      8 afchl         Mg        Mg      Mg     Si_Si
+                                      9 clin          Mg        Mg      Al     Al_Si     
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+
+Chl(HP)
+abbreviation Chl
+full_name    chlorite
+
+2                               | model type: simplicial (brute force o/d), equipartition relict
+5                               | number of endmembers
+daph  ames  afchl  mnchl  clin  | endmembers
+
+0 0 0 0 0                       |endmember flags
+
+                                | subdivision model 
+0. 1. .1 0                      | range and resolution of daph, imod = 0 -> cartesian subdivision
+0. 1. .1 0                      | range and resolution of ames, imod = 0 -> cartesian subdivision
+0. 1. .1 0                      | range and resolution of afchl, imod = 0 -> cartesian subdivision
+0. .2 .1 0                      | range and resolution of mnchl, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+
+w(clin ames)  18000. 0. 0. 
+w(clin afchl) 18000. 0. 0. 
+w(ames afchl) 20000. 0. 0. 
+w(clin daph)   2500. 0. 0.  
+w(daph ames)  13500. 0. 0. 
+w(daph afchl) 14500. 0. 0. 
+
+end_excess_function
+
+4                               |4 site configurational entropy model:
+
+4 1.                            |4 species on 1 M1 site
+
+z(al,M1) = 1 ames 
+z(mn,M1) = 1 mnchl
+z(fe,M1) = 1 daph 
+
+3 4.                            |3 species on 4 M2+M3 sites
+
+z(mn,m2+m3)= 1 mnchl
+z(fe,m2+m3)= 1 daph 
+
+2 1.                            |3 species on 1 M4 site
+
+z(mg,m4) = 1 afchl
+
+2 2.                            |2 species on 2 T2 sites 
+z(al,T2)= 1 ames + 1/2 clin + 1/2 daph + 1/2 mnchl
+
+end_of_model  
+                              --------------------------------------------------------
+begin_model                
+                           | CHLORITE: extended from Holland et al. (1998) for sud substitution
+                           | Entered by Thomas Wagner, 5/12.
+                              
+                             LWV 7/12
+
+                           | The reference for this model is Lanari, Wagner and Vidal,
+                           | CMP 2014 167:968
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2). this is a brute force o/d model
+                             and is probably incorrectly (but correctably) formulated.
+
+                             JADC, 10/5/2018
+
+                                                      1         2         3        4
+                                                      M1      M2+M3       M4       T2
+                                                     ________________________________
+
+                                      Mutliplicity    1         4         1        2 
+                                                     ________________________________
+
+                                      2 ames          Al        Mg        Al       Al_Al
+                                      3 clin          Mg        Mg        Al       Al_Si
+                                      4 daph          Fe        Fe        Al       Al_Si
+                                      6 sud           Va        Al2_Mg2   Al       Al_Si
+
+Chl(LWV)
+abbreviation Chl
+full_name    chlorite
+
+2                          | model type: simplicial composition space, equipartion relict
+4                          | number of endmembers
+daph       ames
+sud_dqf    clin
+
+0 0 0 0                    |endmember flags
+
+0. 1. .1 0                   | range and resolution of daph, imod = 0 -> cartesian subdivision
+0. 1. .1 0                   | range and resolution of ames, imod = 0 -> cartesian subdivision
+0. 1. .1 0                   | range and resolution of sud_dqf, imod = 0 -> cartesian subdivision 
+
+begin_excess_function
+
+w(clin ames)      18000. 0. 0. 
+w(clin daph)      2500. 0. 0.
+w(clin sud_dqf)   49100. 0. 0.
+w(daph ames)      13500. 0. 0.
+w(daph sud_dqf)   43400. 0. 0.
+w(ames sud_dqf)   43300. 0. 0.
+
+end_excess_function
+
+3                               |3 site configurational entropy model:
+
+4 1.                            |4 species on 1 M1 site
+
+z(al,M1) = 1 ames
+z(mg,M1) = 1 clin
+z(fe,M1) = 1 daph 
+
+3 4.                            |3 species on 4 M2+M3 sites
+
+z(fe,m2+m3) = 1 daph
+z(mg,m2+m3) = 1 clin + 1 ames + 1/2 sud_dqf
+
+2 2.                            |2 species on 2 T2 sites
+
+z(al,T2) = 1 ames + 1/2 clin + 1/2 daph + 1/2 sud_dqf
+
+end_of_model
+                      --------------------------------------------------------
+begin_model 
+                             Dale et al, CMP 2000 140:353-362 amphibole model
+                             without Ca, K, Ti or Mn solution.
+
+                             This model requires a fgl endmember, created as 
+                             decribed by Powell's mdep paper.
+
+                             See Amph(DHP) for Na-Ca amphibole
+ 
+                                      JADC 5/5/06. 
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+
+                                             A         M1      M2     M4      T1
+                                            _________________________________________
+
+                             Mutliplicity    1         3       2      2       2
+                                            _________________________________________
+  
+                             7 gl            Vac       Mg      Al     Na      Si_Si
+                             8 fgl           Vac       Fe      Al     Na      Si_Si
+                            11 rieb          Vac       Fe      Fe3+   Na      Si_Si
+
+
+
+Na-Amph(D)                 | solution name 
+abbreviation Amph
+full_name    clinoamphibole
+
+2                          | model type: simplicial composition space, equipartition relict
+3                          | number of endmembers
+gl  fgl  rieb
+0 0 0                      | endmember flags
+
+0. 1.0 0.1 0               | range and resolution for gl: imod = 0 -> cartesian for site 1
+0. 1.0 0.1 0               | range and resolution for fgl: imod = 0 -> cartesian for site 2
+
+ideal
+
+2                          | 2 site (M1, M2) entropy model 
+
+2 3.                       | 2 species on M1, 3 sites per formula unit
+z(m1,mg) = 1 gl 
+
+2 2.                       | 2 species on M2, 2 sites pfu
+
+z(m2,fe3+) = 1 rieb
+
+end_of_model 
+

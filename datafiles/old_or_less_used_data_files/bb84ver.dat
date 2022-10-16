@@ -1,0 +1,240 @@
+
+ | comments are indicated by the | character.
+ | check for warnings at the end of the header section.
+
+Berman & Brown, G.C.A. 1984                                                      |<= data base title
+
+begin_standard_variables |<= name (<9 characters), reference value, tolerance
+P(bars)     1.00   0.1E-3
+T(K)      298.15   0.1E-6
+XCO2        0.00   0.1E-9
+mu(C1)      0.00   0.1E-9
+mu(C2)      0.00   0.1E-9
+end_standard_variables
+
+tolerance  0.1E-7  |<= DTOL for unconstrained minimization, energy units
+
+begin_components |<= name (<5 characters), molar weight (g)
+NA2O    61.9820
+MGO     40.3200
+AL2O3  101.9400
+SIO2    60.0900
+K2O     94.2000
+CAO     56.0800
+TIO2    79.9000
+MNO     70.9400
+FEO     71.8500
+O2      32.0000
+H2O     18.0160
+CO2     44.0100
+end_components
+
+begin_special_components
+H2O
+CO2
+end_special_components
+
+end                                                                                                                                         
+ 
+LIME     EoS = 1 |  0        LIME                CAO                                              
+CAO(1)
+G0 = .125E-1 S0 = 39.75 V0 = 1.71  
+c1 = 57.076 c3 = -403034 c6 = -3103.66  
+end
+
+ 
+aQ       EoS = 1 |  0    CP HAS BEEN REFIT TO THE EXTENDED MAER-KELLEY JADC.                      
+SIO2(1)
+G0 = -.125E-1 S0 = 41.643 V0 = 2.3464  
+c1 = 79.166 c3 = -229130 c6 = -9587  
+end
+
+ 
+bQ       EoS = 1 |  0                                                                             
+SIO2(1)
+G0 = 274.0875 S0 = 41.713 V0 = 2.3718  
+c1 = 78.19 c3 = -810399 c6 = -7421.32  
+end
+
+ 
+GR       EoS = 1 |  0                                                                             
+AL2O3(1)SIO2(3)CAO(3)
+G0 = -310532.1 S0 = 252.16 V0 = 12.527  
+c1 = 435.212 c2 = .7118319E-1 c3 = -11429980  
+end
+
+ 
+WO       EoS = 1 |  0                                                                             
+SIO2(1)CAO(1)
+G0 = -77017.7 S0 = 83.532 V0 = 4.003  
+c1 = 135.382 c3 = -1038737 c6 = -11457  
+end
+
+ 
+AN       EoS = 1 |  0                                                                             
+AL2O3(1)SIO2(2)CAO(1)
+G0 = -105716.6 S0 = 199.9 V0 = 10.074  
+c1 = 422.521 c3 = -2189052 c5 = -3219.94  
+end
+
+ 
+CO       EoS = 1 |  0                                                                             
+AL2O3(1)
+G0 = .3 S0 = 50.82 V0 = 2.5575  
+c1 = 152.724 c3 = -852486 c5 = -522.58 c6 = -10067.91  
+end
+
+ 
+AND      EoS = 1 |  0                                                                             
+AL2O3(1)SIO2(1)
+G0 = -758.8125 S0 = 93.332 V0 = 5.159  
+c1 = 228.016 c3 = -512804 c5 = -206.8 c6 = -26116.87  
+end
+
+ 
+KY       EoS = 1 |  0                                                                             
+AL2O3(1)SIO2(1)
+G0 = -2534.712 S0 = 83.907 V0 = 4.423  
+c1 = 238.437 c3 = -487461 c5 = -543.84 c6 = -23775.99  
+end
+
+ 
+SIL      EoS = 1 |  0                                                                             
+AL2O3(1)SIO2(1)
+G0 = 1311.587 S0 = 96.95 V0 = 5  
+c1 = 253.038 c3 = -2292825 c5 = -1807.07  
+end
+
+ 
+GE       EoS = 1 |  0                                                                             
+AL2O3(1)SIO2(1)CAO(2)
+G0 = -137125.8 S0 = 206.52 V0 = 9.033  
+c1 = 379.775 c3 = -1405905 c5 = -2415.33 c6 = -5271.99  
+end
+
+ 
+BCR      EoS = 1 |  0          SIO(2)                                                             
+SIO2(1)
+G0 = 1687.087 S0 = 43.625 V0 = 2.7381  
+c1 = 82.196 c6 = -11333.6  
+end
+
+ 
+bTR      EoS = 1 |  0      B-TRIDYMITE         SIO(2)                                             
+SIO2(1)
+G0 = 1218.587 S0 = 42.03 V0 = 2.7414  
+c1 = 86.576 c3 = -1495314 c5 = -434.33  
+end
+
+ 
+CAO      EoS = 1 |  0        CAO(L)              CAO                                              
+CAO(1)
+G0 = 97217.51 S0 = 55.375 V0 = 1.6764  
+c1 = 60.831  
+end
+
+ 
+SIO2     EoS = 1 |  0    SIO2(L)                                                                  
+SIO2(1)
+G0 = 3031.587 S0 = 45.535 V0 = 2.686  
+c1 = 117.432 c3 = -1769104 c5 = -1200.86  
+end
+
+ 
+PWO      EoS = 1 |  0                                                                             
+SIO2(1)CAO(1)
+G0 = -81278.2 S0 = 88.142 V0 = 4.022  
+c1 = 138.583 c6 = -15533.48  
+end
+
+ 
+AL2O3    EoS = 1 |  0                                                                             
+AL2O3(1)
+G0 = 89969.5 S0 = 52 V0 = 2.6575  
+c1 = 143.415  
+end
+
+ 
+H2O      EoS = 1 |  0                                                                             
+H2O(1)
+G0 = -228569 S0 = 188.83  
+c1 = 7.368 c2 = .27468E-1 c4 = -.48117E-5 c5 = 361.74  
+end
+
+ 
+CO2      EoS = 1 |  0                                                                             
+CO2(1)
+G0 = -394375 S0 = 213.79  
+c1 = 87.82001 c2 = -.26442E-2 c3 = 706410 c5 = -998.8601  
+end
+
+ 
+1C6A     EoS = 1 |  0                                                                             
+AL2O3(6)CAO(1)
+G0 = -49317.39 S0 = 368.719 V0 = .1E-1  
+c1 = 973.423 c3 = -5517950 c5 = -3135.46 c6 = -63511.12  
+end
+
+ 
+1C2A     EoS = 1 |  0                                                                             
+AL2O3(2)CAO(1)
+G0 = -32639.09 S0 = 175.06 V0 = .1E-1  
+c1 = 345.537 c3 = -1199855 c5 = -672.4 c6 = -27883.55  
+end
+
+ 
+1C1A     EoS = 1 |  0                                                                             
+AL2O3(1)CAO(1)
+G0 = -27278.19 S0 = 115.348 V0 = .1E-1  
+c1 = 220.693 c3 = -1372400 c5 = -1461.31  
+end
+
+ 
+3C1A     EoS = 1 |  0                                                                             
+AL2O3(1)CAO(3)
+G0 = -35063.46 S0 = 207.95 V0 = .1E-1  
+c1 = 304.519 c6 = -28244.7  
+end
+
+ 
+3C1S     EoS = 1 |  0                                                                             
+SIO2(1)CAO(3)
+G0 = -126140.5 S0 = 166.02 V0 = 7.2742  
+c1 = 322.749 c5 = -2409.16 c6 = -3383.01  
+end
+
+ 
+bLA      EoS = 1 |  0                                                                             
+SIO2(1)CAO(2)
+G0 = -128793.1 S0 = 125.95 V0 = 5.16  
+c1 = 247.882 c5 = -2059.37  
+end
+
+ 
+gLA      EoS = 1 |  0                                                                             
+SIO2(1)CAO(2)
+G0 = -136827.3 S0 = 118.84 V0 = 5.911  
+c1 = 241.921 c5 = -1997.54  
+end
+
+ 
+aLA      EoS = 1 |  0                                                                             
+SIO2(1)CAO(2)
+G0 = -128211.6 S0 = 127.622 V0 = 5.2298  
+c1 = 252.572 c5 = -2182.967  
+end
+
+ 
+LA       EoS = 1 |  0                                                                             
+SIO2(1)CAO(2)
+G0 = -113083.8 S0 = 143.296 V0 = 5.2458  
+c1 = 235.676 c5 = -1891.23  
+end
+
+ 
+RAN      EoS = 1 |  0    RANKINITE                                                                
+SIO2(2)CAO(3)
+G0 = -214101.9 S0 = 213.39 V0 = 9.6506  
+c1 = 339.51 c3 = -3384403 c5 = -772.17 c6 = -12621.25  
+end
+

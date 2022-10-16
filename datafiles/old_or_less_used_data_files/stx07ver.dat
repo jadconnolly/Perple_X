@@ -1,0 +1,366 @@
+
+ | comments are indicated by the | character.
+ | check for warnings at the end of the header section.
+
+Stixrude & Lithgow-B. EPSL '07      |<= data base title
+
+begin_standard_variables |<= name (<9 characters), reference value, tolerance
+P(bar)      1.00    1.   
+T(K)      300.00    1.   
+Y(CO2)      0.00   0.1E-6
+mu(C1)      0.00   0.1E-2
+mu(C2)      0.00   0.1E-2
+end_standard_variables
+
+tolerance  -1.     |<= DTOL for unconstrained minimization, energy units
+
+begin_components |<= name (<5 characters), molar weight (g)
+MGO     40.3200
+AL2O3  101.9400
+SIO2    60.0900
+CAO     56.0800
+FEO     71.8500
+end_components
+      
+     
+Stixrude & Lithgow-Bertelloni '07 EPSL data base is for high pressure phase relations 
+and seismic velocities. The data base is for a specialized EoS, the non-zero parameters                          
+stored here are (in order):     
+     
+ f0  -n -v0  k0 k0' td  gam0  q  etaS0 Sconf g0 g0'        
+     
+data augmented for mg-ppv as follows                       
+     
+bulk elastic properties, volume from oganov                
+F0 and debye and q adjusted to match 80 bar/K clapeyon slope for pv-ppv at 2500 K 130 GPa (and                   
+minimize discrepancy with oganov's gruneisen T).           
+mu0p for perovskite from stixtude epsl 07                  
+etas0, mu0 - to fit values for shear modulus from Wentzcovitch et al PNAS '06, +2% estimated error (table 1)     
+     
+# appv v0, k0, k0' from oganov and ono PNAS 05 (0 K values), F0 used to match         
+appv v0, k0, k0' from ono et al (EPSL 06), f0, theta0 to match enthalpies of oganov and ono, all other           
+props those of ppv.             
+     
+     
+aapv fppv use properties of mg-ppv with reference state energy adjusted to            
+match exchange data of oganov.  
+     
+for fppv K ~ 5.1 at 120 GPa 1700 K                         
+for appv K ~ 0.268 at 120 GPa 2500 K, this is consistent with the oganov              
+al2o3 phase diagram as it places the metastable cor=appv boundary at 105 GPa          
+(with theta0 adjusted to give a clapeyron slope of -93 bar/K).                        
+     
+This data base should be used in conjunction with the solution models:                
+     
+C2/c(stx), Opx(stx), Gt(stx), Cpx(stx7), Aki(stx7), Wus(stx7), Pv(stx7),              
+Sp(stx7), O(stx7), Wad(stx7), Ring(stx7), Ppv(og)          
+     
+in solut_09.dat                 
+             
+end   |<= end of header section                          
+ 
+an       EoS = 6 |  Anorthite      CaAl2Si2O8                          
+AL2O3(1)SIO2(2)CAO(1)
+G0 = -4006000 S0 = -13 V0 = -10.061  
+c1 = 840000 c2 = 4 c3 = 752 c4 = .39 c5 = 1 c6 = 1.6  
+m0 = 400000 m1 = 1.1  
+end
+
+     |  22d3  0 0.1  50d3  10 2 0.05 1 1 30d3  .5           
+ 
+sp       EoS = 6 |  Spinel         (Mg3Al1)(Al7Mg1)O16                 
+MGO(4)AL2O3(4)
+G0 = -8666000 S0 = -28 V0 = -15.905  
+c1 = 1970000 c2 = 5.7 c3 = 878 c4 = 1.02 c5 = 2.8 c6 = 2.7 c7 = 43.76  
+m0 = 1090000 m1 = .4  
+end
+
+     |  28d3  0 0.16 10d3  2 247 .04 .6 .6 100d3  .5        
+ 
+herc     EoS = 6 |  Hercynite      (Fe3Al1)(Al7Fe1)O16                 
+AL2O3(4)FEO(4)
+G0 = -7312000 S0 = -28 V0 = -16.337  
+c1 = 2090000 c2 = 5.7 c3 = 768 c4 = 1.21 c5 = 2.8 c6 = 2.8 c7 = 97.28  
+m0 = 850000 m1 = .4  
+end
+
+     |  35d3  0 0.16  20d3  1 23 0.07 1 1   130d3  .5       
+ 
+fo       EoS = 6 |  Forsterite     Mg2SiO4  
+MGO(2)SIO2(1)
+G0 = -2055000 S0 = -7 V0 = -4.36  
+c1 = 1280000 c2 = 4.2 c3 = 809 c4 = .99 c5 = 2.1 c6 = 2.4  
+m0 = 820000 m1 = 1.4  
+end
+
+     |  2d3  0 0.044 20d3  .2 1 0.03 .2 .1 20d3 .1          
+ 
+fa       EoS = 6 |  Fayalite       Fe2SiO4  
+SIO2(1)FEO(2)
+G0 = -1379000 S0 = -7 V0 = -4.629  
+c1 = 1350000 c2 = 4.2 c3 = 619 c4 = 1.06 c5 = 3.6 c6 = 1.1 c7 = 26.76  
+m0 = 510000 m1 = 1.4  
+end
+
+     |  2d3  0 0.046 20d3  1  2 0.07 1 .6  20d3  .5         
+ 
+wad      EoS = 6 |  Mg-Wadsleyite  Mg2SiO4  
+MGO(2)SIO2(1)
+G0 = -2027000 S0 = -7 V0 = -4.052  
+c1 = 1690000 c2 = 4.3 c3 = 849 c4 = 1.21 c5 = 2 c6 = 2.7  
+m0 = 1120000 m1 = 1.4  
+end
+
+     |  1d3  0 0.041 30d3  .2 4 0.09 1 .4  20d3  .2         
+ 
+fwad     EoS = 6 |  Fe-Wadsleyite  Fe2SiO4  
+SIO2(1)FEO(2)
+G0 = -1370000 S0 = -7 V0 = -4.28  
+c1 = 1690000 c2 = 4.3 c3 = 656 c4 = 1.21 c5 = 2 c6 = 1.1 c7 = 26.76  
+m0 = 720000 m1 = 1.4  
+end
+
+     |  10d3  0 0.043 130d3  1 27 .3  1 1   120d3 .5        
+ 
+ring     EoS = 6 |  Mg-Ringwoodite Mg2SiO4  
+MGO(2)SIO2(1)
+G0 = -2018000 S0 = -7 V0 = -3.949  
+c1 = 1830000 c2 = 4.1 c3 = 889 c4 = 1.09 c5 = 2.8 c6 = 2.7  
+m0 = 1200000 m1 = 1.3  
+end
+
+     |  2d3  0 0.039 20d3  .2 6 .10  .4 .5 20d3  .1         
+ 
+fring    EoS = 6 |  Fe-Ringwoodite Fe2SiO4  
+SIO2(1)FEO(2)
+G0 = -1365000 S0 = -7 V0 = -4.186  
+c1 = 1990000 c2 = 4.1 c3 = 648 c4 = 1.17 c5 = 2.8 c6 = 2.1 c7 = 26.76  
+m0 = 950000 m1 = 1.3  
+end
+
+     |  2d3  0 0.042 70d3   1 8 .22  1 1  100d3  .5         
+ 
+en       EoS = 6 |  Enstatite      Mg4Si4O12                           
+MGO(4)SIO2(4)
+G0 = -5827000 S0 = -20 V0 = -12.535  
+c1 = 1070000 c2 = 7 c3 = 809 c4 = .89 c5 = .3 c6 = 2.1  
+m0 = 770000 m1 = 1.6  
+end
+
+     |  6d3  0 0.125 20d3   .4 8 .04   1.1 .5 10d3  .1      
+ 
+fs       EoS = 6 |  Ferrosilite    Fe4Si4O12                           
+SIO2(4)FEO(4)
+G0 = -4453000 S0 = -20 V0 = -13.188  
+c1 = 1000000 c2 = 7 c3 = 653 c4 = .75 c5 = .3 c6 = 1 c7 = 53.52  
+m0 = 520000 m1 = 1.6  
+end
+
+     |   8d3  0 0.132 40d3   .5 14 .08  1 1 50d3  .5        
+ 
+ts       EoS = 6 |  Mg-Tschermaks (Mg2Al2)Si2Al2O12    4 site config entropy!                     
+MGO(2)AL2O3(2)SIO2(2)
+G0 = -6005000 S0 = -20 V0 = -12.05  
+c1 = 1070000 c2 = 7 c3 = 833 c4 = .89 c5 = .3 c6 = 2.1 c7 = 23.05  
+m0 = 890000 m1 = 1.6  
+end
+
+     |   19d3  0 0.121 100d3  1  27 .3   1 1 100d3  .5      
+ 
+c2/c     EoS = 6 |  Mg-C2/c        Mg4Si4O12                           
+MGO(4)SIO2(4)
+G0 = -5811000 S0 = -20 V0 = -12.152  
+c1 = 1210000 c2 = 5.5 c3 = 824 c4 = 1.16 c5 = .8 c6 = 2.4  
+m0 = 900000 m1 = 1.5  
+end
+
+     |  6d3  0 0.122 10d3   .3 7  .05  .5 .5 10d3  .1       
+ 
+fc2/c    EoS = 6 |  Fe-C2/c        Fe4Si4O12                           
+SIO2(4)FEO(4)
+G0 = -4447000 S0 = -20 V0 = -12.759  
+c1 = 1210000 c2 = 5.5 c3 = 672 c4 = 1.16 c5 = .8 c6 = 1.2 c7 = 53.52  
+m0 = 710000 m1 = 1.5  
+end
+
+     |   8d3  0 0.128 100d3  1 11  .30  1 1 100d3  .5       
+ 
+di       EoS = 6 |  Diopside       Ca2Mg2Si4O12                        
+MGO(2)SIO2(4)CAO(2)
+G0 = -6060000 S0 = -20 V0 = -13.208  
+c1 = 1120000 c2 = 5.2 c3 = 782 c4 = .96 c5 = 1.5 c6 = 1.6  
+m0 = 670000 m1 = 1.4  
+end
+
+     |   6d3  0 0.132 50d3   1.8 5 .05  2 1 20d3  .5        
+ 
+hed      EoS = 6 |  Hedenbergite   Ca2Fe2Si4O12                        
+SIO2(4)CAO(2)FEO(2)
+G0 = -5353000 S0 = -20 V0 = -13.573  
+c1 = 1190000 c2 = 5.2 c3 = 702 c4 = .93 c5 = 1.5 c6 = 1.6 c7 = 26.76  
+m0 = 610000 m1 = 1.2  
+end
+
+     |  50d3  0 0.136 40d3   1 4   .06  1 1 10d3  .5        
+ 
+mdi      EoS = 6 |  Mg-Diopside    Mg2Mg2Si4O12                        
+MGO(4)SIO2(4)
+G0 = -5796000 S0 = -20 V0 = -12.6  
+c1 = 1120000 c2 = 5.2 c3 = 782 c4 = .96 c5 = 1.5 c6 = 1.6  
+m0 = 760000 m1 = 1.6  
+end
+
+     |  14d3  0 0.126 100d3  1 14  .30  1 1 100d3  .5       
+ 
+py       EoS = 6 |  Pyrope         Mg3Al1Al1Si3O12                     
+MGO(3)AL2O3(1)SIO2(3)
+G0 = -5928000 S0 = -20 V0 = -11.308  
+c1 = 1700000 c2 = 4.1 c3 = 823 c4 = 1.01 c5 = 1.4 c6 = 1  
+m0 = 940000 m1 = 1.3  
+end
+
+     |     5d3  0 0.113 20d3   .3 4  .06  .5 .3 20d3  .2    
+ 
+alm      EoS = 6 |  Almandine      Fe3Al1Al1Si3O12                     
+AL2O3(1)SIO2(3)FEO(3)
+G0 = -4940000 S0 = -20 V0 = -11.543  
+c1 = 1770000 c2 = 4.1 c3 = 742 c4 = 1.1 c5 = 1.4 c6 = 2.2 c7 = 40.14  
+m0 = 980000 m1 = 1.3  
+end
+
+     |  11d3  0 0.115 30d3   .3 5  .06  1 1 30d3  .5        
+ 
+gr       EoS = 6 |  Grossular      Ca3Al1Al1Si3O12                     
+AL2O3(1)SIO2(3)CAO(3)
+G0 = -6258000 S0 = -20 V0 = -12.512  
+c1 = 1670000 c2 = 5.5 c3 = 826 c4 = 1.08 c5 = .4 c6 = 2.4  
+m0 = 1080000 m1 = 1.1  
+end
+
+     |  56d3  0 0.125 10d3   .4 2  .06 .4 .2 10d3  .2       
+ 
+maj      EoS = 6 |  Majorite       Mg3Mg1Si1Si3O12  No configurational entropy!                   
+MGO(4)SIO2(4)
+G0 = -5691000 S0 = -20 V0 = -11.432  
+c1 = 1650000 c2 = 4.2 c3 = 825 c4 = .97 c5 = 1.5 c6 = .8  
+m0 = 850000 m1 = 1.4  
+end
+
+     |  5d3  0 0.114 30d3   .3 4  .07 .5 .3 20d3  .2        
+ 
+aki      EoS = 6 |  Mg-Akimotoite  MgSiO3      (ilmenite structure)    
+MGO(1)SIO2(1)
+G0 = -1406000 S0 = -5 V0 = -2.635  
+c1 = 2110000 c2 = 4.5 c3 = 912 c4 = 1.21 c5 = 1.3 c6 = 2.7  
+m0 = 1320000 m1 = 1.6  
+end
+
+     |    1d3  0 0.026 40d3   .5 5  .13  1 1 80d3  .5       
+ 
+faki     EoS = 6 |  Fe-Akimotoite  FeSiO3   
+SIO2(1)FEO(1)
+G0 = -1046000 S0 = -5 V0 = -2.685  
+c1 = 2110000 c2 = 4.5 c3 = 725 c4 = 1.21 c5 = 1.3 c6 = 3.5 c7 = 13.38  
+m0 = 1570000 m1 = 1.6  
+end
+
+     |   29d3  0 0.027 100d3  1  118 .30 1 1 100d3  .5      
+ 
+cor      EoS = 6 |  corundum  Al2O3         
+AL2O3(1)
+G0 = -1583000 S0 = -5 V0 = -2.558  
+c1 = 2530000 c2 = 4.3 c3 = 933 c4 = 1.32 c5 = 1.3 c6 = 2.8  
+m0 = 1630000 m1 = 1.6  
+end
+
+     |   4d3  0 0.026 50d3   .2 3  .04  .2 .2 20d3  .1      
+ 
+perov    EoS = 6 |  Mg-Perovskite  MgSiO3   
+MGO(1)SIO2(1)
+G0 = -1362000 S0 = -5 V0 = -2.445  
+c1 = 2510000 c2 = 4.1 c3 = 888 c4 = 1.44 c5 = 1.4 c6 = 2.6  
+m0 = 1750000 m1 = 1.7  
+end
+
+     |  1d3  0 0.024 30d3   .1 4  .05 .5 .6 20d3  .2        
+ 
+aperov   EoS = 6 |  Al-Perovskite  Al2O3    
+AL2O3(1)
+G0 = -1518000 S0 = -5 V0 = -2.549  
+c1 = 2280000 c2 = 4.1 c3 = 903 c4 = 1.44 c5 = 1.4 c6 = 2.9  
+m0 = 1590000 m1 = 1.7  
+end
+
+     |  7d3  0 0.025 100d3  .5 36 .30 1  1 100d3  .5        
+ 
+fperov   EoS = 6 |  Fe-Perovskite  FeSiO3     was 42                   
+SIO2(1)FEO(1)
+G0 = -1009000 S0 = -5 V0 = -2.54  
+c1 = 2810000 c2 = 4.1 c3 = 700 c4 = 1.44 c5 = 1.4 c6 = 2 c7 = 13.38  
+m0 = 1380000 m1 = 1.7  
+end
+
+     |    3d3  0 0.025 400d3  1 10  .30 1 1 400d3  .5       
+ 
+ca-pv    EoS = 6 |  Ca-Perovskite  CaSiO3   
+SIO2(1)CAO(1)
+G0 = -1447000 S0 = -5 V0 = -2.745  
+c1 = 2360000 c2 = 3.9 c3 = 725 c4 = 1.47 c5 = 1.7 c6 = 2.2  
+m0 = 1650000 m1 = 2.5  
+end
+
+     |   5d3  0 0.027 40d3   .2 28 .07  1.6 1 120d3  .5     
+ 
+per      EoS = 6 |  Periclase      MgO      
+MGO(1)
+G0 = -569000 S0 = -2 V0 = -1.124  
+c1 = 1610000 c2 = 3.9 c3 = 773 c4 = 1.5 c5 = 1.5 c6 = 2.3  
+m0 = 1300000 m1 = 2.2  
+end
+
+     |  1d3  0 0.011 30d3   .2 9  .02 .2 .2 30d3  .1        
+ 
+wus      EoS = 6 |  Wuestite      FeO       
+FEO(1)
+G0 = -245000 S0 = -2 V0 = -1.226  
+c1 = 1790000 c2 = 4.9 c3 = 417 c4 = 1.53 c5 = 1.5 c6 = .6 c7 = 13.38  
+m0 = 470000 m1 = .7  
+end
+
+     |  1d3  0 0.012 10d3   .2 7  .13 1 1 10d3  .1          
+ 
+stv      EoS = 6 |  Stishovite     SiO2     
+SIO2(1)
+G0 = -811044 S0 = -3 V0 = -1.402  
+c1 = 3142990 c2 = 4.391 c3 = 1020.88 c4 = 1.334 c5 = 2.401 c6 = 4.957  
+m0 = 2200000 m1 = 1.61  
+end
+
+     |  2d3  0 0.014 80d3   .2 21 .17 2.2 1 120d3  .5       
+ 
+ppv      EoS = 6 |  Mg-Post-Perovskite  MgSiO3                         
+MGO(1)SIO2(1)
+G0 = -1323252 S0 = -5 V0 = -2.403  
+c1 = 2500850 c2 = 4.04 c3 = 908.6 c4 = 1.56 c5 = 1.68 c6 = 1.9  
+m0 = 1890000 m1 = 1.7  
+end
+
+     |  1d3  0 0.024 30d3   .1 4  .05 .5 .6 20d3  .2        
+ 
+appv     EoS = 6  
+AL2O3(1)
+G0 = -1383508 S0 = -5 V0 = -2.385  
+c1 = 2490000 c2 = 4 c3 = 776 c4 = 1.56 c5 = 1.68 c6 = 1.9  
+m0 = 1890000 m1 = 1.7  
+end
+
+     |  1d3  0 0.024 30d3   .1 4  .05 .5 .6 20d3  .2        
+ 
+fppv     EoS = 6 |  Fe-Post-Perovskite  FeSiO3                         
+SIO2(1)FEO(1)
+G0 = -881000 S0 = -5 V0 = -2.403  
+c1 = 2500850 c2 = 4.04 c3 = 908.6 c4 = 1.56 c5 = 1.68 c6 = 1.9  
+m0 = 1890000 m1 = 1.7  
+end
+
+     |  1d3  0 0.024 30d3   .1 4  .05 .5 .6 20d3  .2        

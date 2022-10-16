@@ -1,0 +1,297 @@
+685 DO NOT DELETE THIS LINE
+                            ---------------------------------------------------------------------------
+
+                             DO NOT USE TABS IN PERPLE_X DATA FILES, TAB CHARACTERS ARE NOT INTERPRETED AS 
+                             BLANK SPACES AND CAUSE FORMATTING ERRORS.
+
+                            ---------------------------------------------------------------------------
+
+                             SUBDIVISION SCHEMES define the discreitization and range of compositions for a solution 
+                             during a calculation. he discreitization and range of compositions for a solution 
+                             during a calculation. In many cases, particularly for chemically complex solutions, 
+                             this range is restricted to reduce the time and memory required for calculations. 
+                             If such a restriction is encountered (**warning ver993**) during the exploratory 
+                             stage of a calculation the restriction may have consequences for the final
+                             auto-refine stage result. For this reason it is important for users to correct
+                             the scheme (unless the restriction is intentional). A resume of warnings written
+                             at the end of the exploratory stage is written to the *_auto_refine.txt file. 
+                             This file should be examined before any results are accepted as final.
+
+                             A brief description of how subdivision schemes follows (it reads worse than it is):
+
+                             If the solution model has a simplicial composition space, then each scheme is
+                             directly associated with an endmember (as identified in *_auto_refine.txt). For
+                             a solution with N endmembers, there are thus N-1 subdivision schemes. In general
+                             it is best to order the solution model endmembers so that the most important end-
+                             member is listed last and therefore determined by difference. 
+
+                             If the solution model has a prismatic composition space, then a scheme is
+                             associated with the S-1 independent compositions of the T simplexes that comprise
+                             the prism (as identified in *_auto_refine.txt). Thus for prismatic composition spaces
+                             there are T*(S-1) subdivision schemes for the compositional variables X(1..T,1..S-1). 
+                             X(1..T,S) is determined by difference and therefore then endmembers should be ordered 
+                             so that X(1..T,S) corresponds to the most important compositional variable.
+
+                             The subdivision scheme for each independent compositional variable is specified by 
+                             four parameters, in order, XMIN, XMAX, XINC, IMOD:
+
+                            IMOD - may be either 0 or 1:
+
+                                IMOD = 0 - is the cartesian scheme, in which compositions are discretized with a
+                                           regular spacing.
+                                IMOD = 1 - is a non-linear scheme, in which compositions become more closely spaced 
+                                           toward zero.
+
+                            XINC - in most cases the value of XINC is equated to the first (exploratory stage) or
+                                   second value of the initial_resolution keyword, which defaults to [1/16 1/48],
+                                   i.e., the value of XINC specified within the solution model text here is irrelevant.
+                                   The exceptions are if initial_resolution = [0 0] or if the solution model type = 20 
+                                   (electrolytic_fluid). For these exceptions, the value of XINC is read from the model
+                                   text here. XINC controls the resolution of the compositional discretization, i.e., 
+                                   the number of compositions generated over the interval of interest is 1/XINC + 1 if 
+                                   XINC < 0 and is XINC+1 if XINC > 0.
+
+                            XMAX - is the maximum value of the compositional variable permitted by the scheme. This 
+                                   value may be relaxed if the hard_limits option is TRUE (default).
+
+                            XMIN - If IMOD = 0, XMIN is the minumum value of the compositional variable permitted by 
+                                   the scheme. This value may be relaxed if the hard_limits option is TRUE (default).
+                                   If IMOD = 1 and XMIN > 0, then XMIN is the smallest non-zero value of the compositon
+                                   for statically generated compositions. Thus, the value of XMIN dictates the asymmetry
+                                   of the discretization. XMIN is not relaxed if this composition becomes limiting.
+                                   If IMOD = 1 and XMIN = 0, then XMIN has no significance and the asymmetry of the 
+                                   discretization is specified by the stretch_factor option.
+
+                             For convexhull minimization calculations (CONVEX) the resolution of a composition is dictated
+                             entirely by the subdivision scheme and the initial_resolution option. For adaptive minimization
+                             calculations (VERTEX) the resolution of statically generated compositions is controlled as in
+                             convexhull calculations, but the compositional resolution for dynamically generated compositions
+                             is limited by the final_resolution keyword. In particular for non-linear subdivision, this has
+                             the consequence that the value of XMIN or stretch_factor should be viewed as the order of 
+                             magnitude the poorest acceptable resolution. 
+
+                            --------------------------------------------------------------------------- 
+                           
+                             Solution model types are:
+
+                             2  - simplicial composition space
+                             6  - order-disorder, simplicial composition space
+                             7  - prismatic composition space (reciprocal when correct)
+                             8  - order-disorder, prismatic composition space
+                             9  - order-disorder, simplicial composition space with a prismatic vertex
+                             10 - simplicial composition space with a prismatic vertex
+
+                             Special model types:
+
+                             0     - internal (fluid) EoS
+                             20    - Electrolyte (charge balance) model
+                             26    - Haefner H2O-CO2-NaCl
+                             29    - BCC Fe-Si alloy, Lacaze & Sundman 1990.
+                             30-33 - FeSiC alloys (BCC/FCC/CBCC/HCP), Lacaze & Sundman 1990.
+                             39    - generic hybrid fluid EoS
+                             40    - Silicate fluid (MRK)
+                             41    - COH fluid (hybrid MRK)
+                             42    - FeS liquid, Saxena & Eriksson 2015 with ECRG corrections
+                            ---------------------------------------------------------------------------
+
+                             Character data is format free.
+
+                            ---------------------------------------------------------------------------
+
+                             comments can be placed between models provided, nothing is written in the first 
+                             10 columns. Comments may be placed after data if it is separated from the data 
+                             by a '|' marker. Comments may be placed within the data in some cases without the 
+                             '|' marker, but it is always safe to add a comment with the marker.
+
+                            ---------------------------------------------------------------------------
+
+begin_model                 | solution models begin/end with the begin_model/end_model tags
+
+model_name                  | the name (<11 chars) used to identify the solution model 
+abbreviation abb            | an abbreviation used optionally for output (solution_names abb)
+full_name type_2_model      | a long name used to classify the model (e.g., liquid) and optionally for 
+                            | output (solution_names ful)
+
+2                           | model type: simplicial composition space (see list above)
+
+N                           | number of endmembers
+name_1    name_2    
+...       name_N            | endmember names, these must match the endmember names in thermodynamic data file
+
+0 0 ... 0                   | N endmember flags, if 0 the pure endmember is treated as part of the solution.
+
+                            | subdivision schemes (see above) for the first N-1 endmembers
+0 1 0.1 0                   | scheme for endmember name_1
+...
+0 1 0.1 0                   | scheme for endmember name_N-1
+
+                            | if the solution model does not have an excess function, or the excess function 
+                            | is specified internally the excess function section may be replaced by the 
+                            | left-justified 'ideal' tag.
+
+begin_excess_function       | excess function data begin/end with the begin_excess_function/end_excess_function tags
+
+                            | the terms of the excess function (J/mol, P and T in bar and K) are expressed
+W(name_1 name_2 name_2)   c_0 + c_1 * P + c_2     
+                            | where the order of the term with respect to the endmember fractions is indicated by 
+                            | the number of times the endmember name occurs within the (). e.g., the foregoing
+                            | represents the term (c_0 + c_1 * P + c_2) * y_name1 * y_name2 * y_name2
+                            | where, except in the case of van Laar models (see van_Laar_sizes below), y is the 
+                            | mole fraction of the endmember.
+                            | The format used for the p-t dependence of the coefficient is flexible and described
+                            | at www.perplex.ethz.ch/perplex/faq/Linear_P_T_function_input_format.txt
+
+                            | for the Redlich-Kistler formulation a more compact format is allowed, and will be
+                            | documented upon request. This formulation is indicated by a leading tag of the 
+                            | form:
+Wk(name_1 name_2)
+
+end_excess_function
+
+                            | the number of identisites, site multiplicities, site fraction expressions needed to 
+                            | compute the configurational entropy of the solution follow the excess function
+
+M                           | the number of sites (specify 0 for no model or a molecular entropy model)
+
+                            | then for each of the M sites:
+
+N q                         | N - number of species on site 1, q - multiplicity of site 1. if q = 0, then 
+                            | the site is a Temkin site
+
+                            | if q > 0, then the N q line must be followed by N-1 linear expressions for 
+                            | the site fraction of a species in terms of the mole fractions of the endmembers
+                            | (denoted by the endmember name), the stoichiometric coefficients c_i may be 
+                            | written as integers or real numbers or integer fractions (e.g., 11/31). An initial
+                            | constant is optional.
+                            | The tag to left-hand-side (e.g., z(1,1)) of the equals sign has no significance, 
+                            | it may be chosen for convenience or transparency. E.g.:
+
+z(1)      =   [c0 +] c_1 name_1 + c_2 name_2 + ...
+...
+z(N-1)    =   [c0 +] c_1 name_2 + c_2 name_4 + ...
+
+                            | if q = 0, then the N q line must be followed by N linear expressions for 
+                            | the molar amount of the N species in terms of the mole fractions of the endmembers
+                            | (denoted by the endmember name), the stoichiometric coefficients c_i may be 
+                            | written as integers or real numbers or integer fractions (e.g., 11/31)
+                            | it may be chosen for convenience or transparency. E.g.:
+
+n(1,1)     =   [c0 +] c_1 name_1 + c_2 name_2 + ...
+...
+n(1,N)     =   [c0 +] c_1 name_2 + c_2 name_4 + ...
+
+                            | the above sequence is repeated for each of the M sites.
+
+                            | the configurational entropy data may be followed by several optional tags and/or sections:
+
+reach_increment 0           | see www.perplex.ethz.ch/perplex_options_body.html#reach_increment
+
+refine_endmembers           | see www.perplex.ethz.ch/perplex_options_body.html#refine_endmembers_solution_model_file
+
+                            | if the excess function is the van Laar formulation, then the following section specifies
+                            | the size parameter (c_i) for each endmember:
+begin_van_laar_sizes
+
+alpha(name_1)     c_1
+...
+alpha(name_N)     c_N
+
+end_van_laar_sizes
+                            | if the model makes dqf corrections to an endmember specified in the thermodynamic data file,
+                            | then the following section can be used to specify these corrections (it may be preferable to
+                            | specify positive corrections as a make_definition in the header of the thermodynamic data file):
+
+begin_dqf_corrections
+                            | where c_0, c_1, c_2 specify the p-t dependence of the correction as described at
+                            | at www.perplex.ethz.ch/perplex/faq/Linear_P_T_function_input_format.txt
+dqf(name_2)   =  c_0 + c_1 * P + c_2 * T
+
+end_dqf_corrections
+
+end_of_model
+                      --------------------------------------------------------
+begin_model                 | solution models begin/end with the begin_model/end_model tags
+
+model_name                  | the name (<11 chars) used to identify the solution model 
+abbreviation F              | an abbreviation used optionally for output (solution_names abb)
+full_name  fluid            | a long name used to classify the model (e.g., liquid) and optionally for 
+                            | output (solution_names ful)
+
+39                          | model type: model_type_39, see perplex.ethz.ch/Perple_X_generic_hyrbid_fluid_EoS.html
+
+N                           | number of species
+name_1    name_2    
+...       name_N            | species names, these must match the species names in thermodynamic data file
+
+0 0 ... 0                   | N species flags, if 0 the pure species is treated as part of the solution.
+
+                            | subdivision schemes (see above) for the first N-1 species
+0 1 0.1 0                   | scheme for species name_1
+...
+0 1 0.1 0                   | scheme for species name_N-1
+
+                            | type 39 solution models use an internal EoS to compute excess properties, this is 
+                            | indicated by the ideal tag
+ideal
+                            | type 39 solution models use a molecular configurational entropy model, this is 
+                            | indicated by setting the the number of identisites to zero.
+0                           | the number of identisites (specify 0 for no model or a molecular entropy model)
+
+                            | the configurational entropy data may be followed by several optional tags and/or sections:
+
+reach_increment 0           | see www.perplex.ethz.ch/perplex_options_body.html#reach_increment
+
+refine_endmembers           | see www.perplex.ethz.ch/perplex_options_body.html#refine_endmembers_solution_model_file
+
+                            | currently no provision is made for DQF corrections or van Laar excess funcitons in GFSM
+
+end_of_model
+                             --------------------------------------------------------
+begin_model                
+                             Talc, ideal.
+                                                      M1      M2       T2   
+                                                     ______________________
+
+                                      Mutliplicity    2       1         2
+                                                     ______________________
+
+                                      1 en            Mg      Mg       SiSi
+                            Species:  2 fs            Fe      Fe       SiSi
+                                      3 mgts          Mg      Al       AlSi
+                                                      ______________________
+
+                             reformulated from relict equipartion (model type 7) to simplicial 
+                             composition space (model type 2).
+
+                             JADC 5/10/2018
+
+T                          | solution name 
+abbreviation Tlc
+full_name    talc
+
+2                          | model type: simplicial
+3                          | number of independent endmembers
+ta    fta    tats          | endmember names
+0 0 0                      | endmember flags, indicate if the endmember is part of the solution.
+0.0 1. 0.1  0              | range and resolution for ta, imod = 0 -> cartesian subdivision
+0.0 1. 0.1  0              | range and resolution for fta, imod = 0 -> cartesian subdivision
+
+ideal
+
+3                          | 3 site (M1, M2, T2) conigurational entropy model
+
+2 2.                       | 2 species on M1, 2 sites per formula unit.
+
+z(m1,mg) = 1 ta + 1 tats                 
+                
+2 2.                       | 2 species on T2, 2 sites per formula unit.
+
+z(t2,al) = 1/2 tats 
+
+3 1.                       | 3 species on M2, 1 site per formula unit.
+
+z(m2,mg) = 1 ta 
+z(fe,m2) = 1 fta
+
+end_of_model
+                      --------------------------------------------------------

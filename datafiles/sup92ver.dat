@@ -1,0 +1,1073 @@
+
+ | comments are indicated by the | character.
+ | check for warnings at the end of the header section.
+
+SUPCRT last revision 10/93. |<= data base title
+
+begin_standard_variables |<= name (<9 characters), reference value, tolerance
+P(bars)     1.00   0.1E-3
+T(K)      298.15   0.1E-3
+YCO2        0.00   0.1E-5
+mu(C1)      0.00   0.1E-5
+mu(C2)      0.00   0.1E-5
+end_standard_variables
+
+tolerance  -.1E-1  |<= DTOL for unconstrained minimization, energy units
+
+begin_components |<= name (<5 characters), molar weight (g)
+NA2O    61.9820
+MGO     40.3200
+AL2O3  101.9400
+SIO2    60.0900
+K2O     94.2000
+CAO     56.0800
+TIO2    79.9000
+MNO     70.9400
+FEO     71.8500
+O2      32.0000
+H2O     18.0160
+CO2     44.0100
+S2      64.1320
+F       19.0000
+CL      35.4570
+CUO     79.5400
+PBO    223.2100
+ZNO     81.3800
+BAO    153.3600
+ZRO2   123.2200
+NIO     74.7100
+SNO    134.7000
+AGO    123.8700
+SRO    103.6300
+HGO    216.5900
+end_components
+
+begin_special_components
+H2O
+CO2
+end_special_components
+
+*********************************************************************  
+Original SUPCRT92 mineral data, checked & corrected by Craig Manning   
+  
+ref:1  Helgeson et al (1978)                    
+ref:6  Wagman et al (1982)                      
+ref:7  Robie et al (1979)                       
+ref:8  Kelley (1960)     
+ref:9  Bowers and Helgeson (1983)               
+ref:13 Helgeson (1985) (Errata)                 
+ref:15 Pankratz (1970)   
+ref:16 Pankratz and King (1970)                 
+ref:18 Retrieved from solubility data in Plummer and Busenberg (1982)  
+ref:19 Updated from 1 to be consistent with new aqueous species data   
+*********************************************************************  
+  
+end                      
+ 
+Ak       EoS = 1 | AKERMANITE      Ca2MgSi2O7                ref:1,19      
+MGO(1)SIO2(2)CAO(2)
+G0 = -3679251 S0 = 209.326 V0 = 9.281  
+c1 = 251.417 c2 = .476976E-1 c3 = -4769760  
+end
+
+ 
+Alb      EoS = 1 | ALABANDITE      MnS                       ref:1         
+MNO(1)O2(-.5)S2(.5)
+G0 = -218313. S0 = 80.3328 V0 = 2.146  
+c1 = 47.6976 c2 = .75312E-2  
+end
+
+ 
+Lo-Ab    EoS = 1 | ALBITE,LOW      Na(AlSi3)O8               ref:1         
+NA2O(.5)AL2O3(.5)SIO2(3)
+G0 = -3708313 S0 = 207.15 V0 = 10.007  
+c1 = 258.153 c2 = .581576E-1 c3 = -6280184  
+end
+
+ 
+Alu      EoS = 1 | ALUNITE         KAl3(OH)6(SO4)2           ref:1         
+AL2O3(1.5)K2O(.5)O2(3)H2O(3)S2(1)
+G0 = -4659302 S0 = 328.026 V0 = 29.36  
+c1 = 642.035 c3 = -22991080  
+end
+
+ 
+Amor-Sl  EoS = 1 | AMORPHOUS SILICA SiO2                     ref:1         
+SIO2(1)
+G0 = -848900. S0 = 59.9986 V0 = 2.9  
+c1 = 24.8111 c2 = .197485 c3 = -9531152  
+end
+
+ 
+Anl      EoS = 1 | ANALCIME        NaAlSi2O6.H2O             ref:1         
+NA2O(.5)AL2O3(.5)SIO2(2)H2O(1)
+G0 = -3088202 S0 = 234.304 V0 = 9.71  
+c1 = 223.802 c2 = .101002 c3 = -3715392  
+end
+
+ 
+Dhyd-Anl EoS = 1 | ANALCIME,DEHYDRATED  NaAlSi2O6           ref:1          
+NA2O(.5)AL2O3(.5)SIO2(2)
+G0 = -2824154 S0 = 175.31 V0 = 8.91  
+c1 = 176.105 c2 = .101002 c3 = -3715392  
+end
+
+ 
+And      EoS = 1 | ANDALUSITE      Al2SiO5                  ref:1          
+AL2O3(1)SIO2(1)
+G0 = -2429176 S0 = 92.8848 V0 = 5.153  
+c1 = 172.845 c2 = .26328E-1 c3 = -5184839  
+end
+
+ 
+Adr      EoS = 1 | ANDRADITE       Ca3Fe2Si3O12              ref:1,19      
+SIO2(3)CAO(3)FEO(2)O2(.5)
+G0 = -5425891 S0 = 293.424 V0 = 13.185  
+c1 = 475.018 c2 = .65421E-1 c3 = -12923960  
+end
+
+ 
+Ang      EoS = 1 | ANGLESITE       PbSO4                     ref:1         
+O2(1.5)S2(.5)PBO(1)
+G0 = -813173 S0 = 148.574 V0 = 4.795  
+c1 = 45.8566 c2 = .129704 c3 = 1757280  
+end
+
+ 
+Anh      EoS = 1 | ANHYDRITE       CaSO4                     ref:1         
+CAO(1)O2(1.5)S2(.5)
+G0 = -1321830 S0 = 106.692 V0 = 4.594  
+c1 = 70.2075 c2 = .987424E-1  
+end
+
+ 
+Ann      EoS = 1 | ANNITE          KFe3(AlSi3)O10(OH)2       ref:1         
+AL2O3(.5)SIO2(3)K2O(.5)FEO(3)H2O(1)
+G0 = -4799701 S0 = 398.317 V0 = 15.432  
+c1 = 445.303 c2 = .124558 c3 = -8079304  
+end
+
+ 
+An       EoS = 1 | ANORTHITE       Ca(Al2Si2)O8              ref:1,19      
+AL2O3(1)SIO2(2)CAO(1)
+G0 = -3991862 S0 = 205.434 V0 = 10.079  
+c1 = 264.893 c2 = .618981E-1 c3 = -6460096  
+end
+
+ 
+Arg      EoS = 1 | ARAGONITE       CaCO3                     ref:1,18      
+CAO(1)CO2(1)
+G0 = -1128354 S0 = 90.207 V0 = 3.415  
+c1 = 84.2239 c2 = .428442E-1 c3 = -1397456  
+end
+
+ 
+Art      EoS = 1 | ARTINITE        Mg2(OH)2(CO3)*3H2O        ref:1         
+MGO(2)H2O(4)CO2(1)
+G0 = -2568620 S0 = 232.923 V0 = 9.69  
+c1 = 296.52 c2 = .115729 c3 = -3108712  
+end
+
+ 
+Azr      EoS = 1 | AZURITE         Cu3(OH)2(CO3)2            ref:1         
+H2O(1)CO2(2)CUO(3)
+G0 = -1399201 S0 = 280.202 V0 = 9.101  
+c1 = 154.306 c2 = .324009 c3 = -384928  
+end
+
+ 
+Brt      EoS = 1 | BARITE          BaSO4                     ref:1         
+O2(1.5)S2(.5)BAO(1)
+G0 = -1362156 S0 = 132.214 V0 = 5.21  
+c1 = 141.419 c3 = -3527112  
+end
+
+ 
+Brn      EoS = 1 | BERNDTITE       SnS2                      ref:12        
+O2(-.5)S2(1)SNO(1)
+G0 = -145394 S0 = 87.4456 V0 = 4.096  
+c1 = 64.8938 c2 = .175728E-1  
+end
+
+ 
+Bhm      EoS = 1 | BOEHMITE         AlO(OH)                  ref:1         
+AL2O3(.5)H2O(.5)
+G0 = -908974 S0 = 48.4507 V0 = 1.9535  
+c1 = 60.396 c2 = .175728E-1  
+end
+
+ 
+Brc      EoS = 1 | BRUCITE         Mg(OH)2                   ref:1         
+MGO(1)H2O(1)
+G0 = -835319. S0 = 63.1366 V0 = 2.463  
+c1 = 101.031 c2 = .167879E-1 c3 = -2556424  
+end
+
+ 
+Ca-Al-Px EoS = 1 | CA-AL-PYROXENE  CaAl(AlSi)O6              ref:1,19      
+AL2O3(1)SIO2(1)CAO(1)
+G0 = -3104808 S0 = 146.44 V0 = 6.35  
+c1 = 226.48 c2 = .268613E-1 c3 = -6234160  
+end
+
+ 
+Cal      EoS = 1 | CALCITE         CaCO3                     ref:1,18      
+CAO(1)CO2(1)
+G0 = -1129178 S0 = 92.6756 V0 = 3.6934  
+c1 = 104.516 c2 = .219242E-1 c3 = -2594080  
+end
+
+ 
+Cst      EoS = 1 | CASSITERITE     SnO2                      ref:12        
+O2(.5)SNO(1)
+G0 = -519904. S0 = 52.3 V0 = 2.155  
+c1 = 72.1573 c2 = .117261E-1 c3 = -2050202  
+end
+
+ 
+Cls      EoS = 1 | CELESTITE       SrSO4                     ref:1         
+O2(1.5)S2(.5)SRO(1)
+G0 = -1340700 S0 = 117.152 V0 = 4.625  
+c1 = 91.2112 c2 = .556472E-1  
+end
+
+ 
+Cer      EoS = 1 | CERUSSITE       PbCO3                     ref:1         
+CO2(1)PBO(1)
+G0 = -629148. S0 = 130.959 V0 = 4.059  
+c1 = 51.8398 c2 = .119662  
+end
+
+ 
+Cha      EoS = 1 | CHALCEDONY      SiO2                      ref:1         
+SIO2(1)
+G0 = -854691. S0 = 41.3379 V0 = 2.2688  
+c1 = 46.9445 c2 = .343088E-1 c3 = -1129680  
+end
+
+ 
+Crg      EoS = 1 | CHLORARGYRITE   AgCl                      ref:7,15      
+O2(-.5)CL(1)AGO(1)
+G0 = -109817. S0 = 96.232 V0 = 2.5727  
+c1 = 59.9567 c2 = .761906E-2 c3 = -1016712  
+end
+
+ 
+Ctl      EoS = 1 | CHRYSOTILE      Mg3Si2O5(OH)4             ref:1         
+MGO(3)SIO2(2)H2O(2)
+G0 = -4037020 S0 = 221.334 V0 = 10.85  
+c1 = 317.231 c2 = .132214 c3 = -7355472  
+end
+
+ 
+Cin      EoS = 1 | CINNABAR        HgS                       ref:1         
+O2(-.5)S2(.5)HGO(1)
+G0 = -45773 S0 = 82.4248 V0 = 2.8416  
+c1 = 43.7646 c2 = .155645E-1  
+end
+
+ 
+14A-Cnc  EoS = 1 | CLINOCHLORE,14A Mg5Al(AlSi3)O10(OH)8      ref:1         
+MGO(5)AL2O3(1)SIO2(3)H2O(4)
+G0 = -8207765 S0 = 465.261 V0 = 20.711  
+c1 = 696.636 c2 = .176146 c3 = -15677450  
+end
+
+ 
+Czo      EoS = 1 | CLINOZOISITE    Ca2Al3Si3O12(OH)          ref:1,19      
+AL2O3(1.5)SIO2(3)CAO(2)H2O(.5)
+G0 = -6482020 S0 = 295.558 V0 = 13.62  
+c1 = 443.998 c2 = .105495 c3 = -11357470  
+end
+
+ 
+Cu       EoS = 1 | COPPER,NATIVE   Cu ref:1         
+O2(-.5)CUO(1)
+S0 = 33.1498 V0 = .7113  
+c1 = 22.6354 c2 = .6276E-2  
+end
+
+ 
+Crd      EoS = 1 | CORDIERITE      Mg2Al3(AlSi5)O18          ref:1         
+MGO(2)AL2O3(2)SIO2(5)
+G0 = -8624391 S0 = 407.229 V0 = 23.322  
+c1 = 601.785 c2 = .107947 c3 = -16150240  
+end
+
+ 
+Hyd-Crd  EoS = 1 | CORDIERITE,HYDR Mg2Al3(AlSi5)O18*H20      ref:1         
+MGO(2)AL2O3(2)SIO2(5)H2O(1)
+G0 = -8875728 S0 = 466.223 V0 = 24.122  
+c1 = 649.482 c2 = .107947 c3 = -16150240  
+end
+
+ 
+Crn      EoS = 1 | CORUNDUM         Al2O3                    ref:1         
+AL2O3(1)
+G0 = -1568264 S0 = 50.9611 V0 = 2.5575  
+c1 = 115.018 c2 = .117989E-1 c3 = -3506192  
+end
+
+ 
+Cv       EoS = 1 | COVELLITE       CuS                       ref:1         
+O2(-.5)S2(.5)CUO(1)
+G0 = -52768.6 S0 = 66.5256 V0 = 2.042  
+c1 = 44.3504 c2 = .110458E-1  
+end
+
+ 
+A-Crs    EoS = 1 | CRISTOBALITE,AL SiO2                      ref:1         
+SIO2(1)
+G0 = -853097. S0 = 43.3965 V0 = 2.574  
+c1 = 58.4923 c2 = .139746E-1 c3 = -1594104  
+end
+
+ 
+B-Crs    EoS = 1 | CRISTOBALITE,BE SiO2                      ref:1         
+SIO2(1)
+G0 = -850565. S0 = 50.0532 V0 = 2.738  
+c1 = 72.7598 c2 = .129704E-2 c3 = -4137976  
+end
+
+ 
+Cpr      EoS = 1 | CUPRITE         Cu2O                      ref:1         
+O2(-.5)CUO(2)
+G0 = -148047. S0 = 92.3827 V0 = 2.3437  
+c1 = 58.9107 c2 = .246019E-1 c3 = -317984  
+end
+
+ 
+Dsp      EoS = 1 | DIASPORE        AlO(OH)                   ref:1         
+AL2O3(.5)H2O(.5)
+G0 = -913794 S0 = 35.2711 V0 = 1.776  
+c1 = 60.396 c2 = .175728E-1  
+end
+
+ 
+Di       EoS = 1 | DIOPSIDE        CaMg(SiO3)2               ref:1,19      
+MGO(1)SIO2(2)CAO(1)
+G0 = -3028296 S0 = 143.093 V0 = 6.609  
+c1 = 221.208 c2 = .328026E-1 c3 = -6585616  
+end
+
+ 
+Dol      EoS = 1 | DOLOMITE        CaMg(CO3)2                ref:1,19      
+MGO(1)CAO(1)CO2(2)
+G0 = -2166308 S0 = 155.185 V0 = 6.4365  
+c1 = 173.875 c2 = .100215 c3 = -4135466  
+end
+
+ 
+Dis-Dol  EoS = 1 | DOLOMITE,DISORD CaMg(CO3)2                ref:1,19      
+MGO(1)CAO(1)CO2(2)
+G0 = -2157492 S0 = 166.691 V0 = 6.439  
+c1 = 187.071 c2 = .743873E-1 c3 = -4580643  
+end
+
+ 
+Ord-Dol  EoS = 1 | DOLOMITE,ORDERE CaMg(CO3)2                ref:1,19      
+MGO(1)CAO(1)CO2(2)
+G0 = -2166308 S0 = 155.185 V0 = 6.434  
+c1 = 187.071 c2 = .743873E-1 c3 = -4580643  
+end
+
+ 
+Ep       EoS = 1 | EPIDOTE         Ca2FeAl2Si3O12(OH)        ref:1,19      
+AL2O3(1)SIO2(3)CAO(2)FEO(1)O2(.25)H2O(.5)
+G0 = -6070591 S0 = 314.971 V0 = 13.92  
+c1 = 492.13 c2 = .536221E-1 c3 = -13331900  
+end
+
+ 
+Ord-Ep   EoS = 1 | EPIDOTE,ORDERED Ca2FeAl2Si3O12(OH)        ref:1,19      
+AL2O3(1)SIO2(3)CAO(2)FEO(1)O2(.25)H2O(.5)
+G0 = -6070591 S0 = 314.637 V0 = 13.92  
+c1 = 476.055 c2 = .61463E-1 c3 = -12100130  
+end
+
+ 
+Fa       EoS = 1 | FAYALITE        Fe2SiO4                   ref:1         
+SIO2(1)FEO(2)
+G0 = -1381695 S0 = 148.323 V0 = 4.639  
+c1 = 152.758 c2 = .391622E-1 c3 = -2803280  
+end
+
+ 
+Frs-Ox   EoS = 1 | FERROUS-OXIDE   FeO                       ref:1         
+FEO(1)
+G0 = -251446. S0 = 60.7517 V0 = 1.2  
+c1 = 50.7184 c2 = .866925E-2 c3 = -313800  
+end
+
+ 
+Fl       EoS = 1 | FLUORITE        CaF2                      ref:1         
+CAO(1)O2(-.5)F(2)
+G0 = -1173583 S0 = 68.5758 V0 = 2.4542  
+c1 = 59.8312 c2 = .304595E-1 c3 = 196648  
+end
+
+ 
+Fo       EoS = 1 | FORSTERITE      Mg2SiO4                   ref:1         
+MGO(2)SIO2(1)
+G0 = -2056704 S0 = 95.186 V0 = 4.379  
+c1 = 149.829 c2 = .273634E-1 c3 = -3564768  
+end
+
+ 
+Gn       EoS = 1 | GALENA          PbS                       ref:1         
+O2(-.5)S2(.5)PBO(1)
+G0 = -96713.2 S0 = 91.2112 V0 = 3.149  
+c1 = 46.7353 c2 = .92048E-2  
+end
+
+ 
+Gh       EoS = 1 | GEHLENITE       Ca2(Al2Si)O7              ref:1,19      
+AL2O3(1)SIO2(1)CAO(2)
+G0 = -3778771 S0 = 201.25 V0 = 9.024  
+c1 = 266.688 c2 = .33472E-1 c3 = -6326208  
+end
+
+ 
+Gbs      EoS = 1 | GIBBSITE        Al(OH)3                   ref:1         
+AL2O3(.5)H2O(1.5)
+G0 = -1155487 S0 = 70.082 V0 = 3.1956  
+c1 = 36.1916 c2 = .19079  
+end
+
+ 
+Gr       EoS = 1 | GRAPHITE        C  ref:1         
+O2(-1)CO2(1)
+S0 = 5.74045 V0 = .5298  
+c1 = 16.8615 c2 = .476976E-2 c3 = -853536  
+end
+
+ 
+Grs      EoS = 1 | GROSSULAR       Ca3Al2Si3O12              ref:1,19      
+AL2O3(1)SIO2(3)CAO(3)
+G0 = -6260548 S0 = 254.68 V0 = 12.53  
+c1 = 435.207 c2 = .711824E-1 c3 = -11429850  
+end
+
+ 
+Hl       EoS = 1 | HALITE          NaCl                      ref:1         
+NA2O(.5)O2(-.25)CL(1)
+G0 = -384120. S0 = 72.1322 V0 = 2.7015  
+c1 = 45.9403 c2 = .163176E-1  
+end
+
+ 
+Hd       EoS = 1 | HEDENBERGITE    CaFe(SiO3)2               ref:1         
+SIO2(2)CAO(1)FEO(1)
+G0 = -2673568 S0 = 170.289 V0 = 6.827  
+c1 = 229.325 c2 = .341833E-1 c3 = -6280184  
+end
+
+ 
+Hun      EoS = 1 | HUNTITE         CaMg3(CO3)4               ref:1         
+MGO(3)CAO(1)CO2(4)
+G0 = -4203707 S0 = 299.533 V0 = 12.29  
+c1 = 352.167 c2 = .179326 c3 = -8552096  
+end
+
+ 
+Hydro-Mg EoS = 1 | HYDROMAGNESITE  Mg5(OH)2(CO3)4*4H20       ref:1         
+MGO(5)H2O(5)CO2(4)
+G0 = -5864658 S0 = 541.326 V0 = 20.88  
+c1 = 591.869 c2 = .273132 c3 = -9066728  
+end
+
+ 
+Jd       EoS = 1 | JADEITE         NaAlSi2O6                 ref:1         
+NA2O(.5)AL2O3(.5)SIO2(2)
+G0 = -2842798 S0 = 133.47 V0 = 6.04  
+c1 = 201.501 c2 = .477813E-1 c3 = -4966408  
+end
+
+ 
+K-Fs     EoS = 1 | K-FELDSPAR      KAlSi3O8                  ref:1         
+AL2O3(.5)SIO2(3)K2O(.5)
+G0 = -3746245 S0 = 213.928 V0 = 10.887  
+c1 = 320.565 c2 = .180372E-1 c3 = -12528990  
+end
+
+ 
+Kln      EoS = 1 | KAOLINITE       Al2Si2O5(OH)4             ref:1         
+AL2O3(1)SIO2(2)H2O(2)
+G0 = -3789089 S0 = 203.049 V0 = 9.952  
+c1 = 304.47 c2 = .122173 c3 = -9003968  
+end
+
+ 
+Ky       EoS = 1 | KYANITE         Al2SiO5                   ref:1         
+AL2O3(1)SIO2(1)
+G0 = -2430720 S0 = 83.68 V0 = 4.409  
+c1 = 173.189 c2 = .285201E-1 c3 = -5389872  
+end
+
+ 
+Lmt      EoS = 1 | LAUMONTITE      Ca(Al2Si4)O12*4H2O        ref:1,19      
+AL2O3(1)SIO2(4)CAO(1)H2O(4)
+G0 = -6681107 S0 = 485.762 V0 = 20.755  
+c1 = 515.469 c2 = .186062 c3 = -6874312  
+end
+
+ 
+Lim      EoS = 1 | LIME            CaO                       ref:1         
+CAO(1)
+G0 = -604027. S0 = 39.748 V0 = 1.6764  
+c1 = 48.8273 c2 = .451872E-2 c3 = -652704  
+end
+
+ 
+Mgs      EoS = 1 | MAGNESITE       MgCO3                     ref:1         
+MGO(1)CO2(1)
+G0 = -1027833 S0 = 65.6888 V0 = 2.8018  
+c1 = 82.5545 c2 = .524632E-1 c3 = -1986563  
+end
+
+ 
+Mal      EoS = 1 | MALACHITE       Cu2(OH)2(CO3)             ref:1         
+H2O(1)CO2(1)CUO(2)
+G0 = -896230. S0 = 186.188 V0 = 5.486  
+c1 = 116.148 c2 = .183175 c3 = -560656  
+end
+
+ 
+Mng      EoS = 1 | MANGANOSITE     MnO                       ref:1,6       
+MNO(1)
+G0 = -362899. S0 = 59.7057 V0 = 1.3221  
+c1 = 46.4842 c2 = .811696E-2 c3 = -368192  
+end
+
+ 
+Mer      EoS = 1 | MERWINITE       Ca3Mg(SiO4)2              ref:1,19      
+MGO(1)SIO2(2)CAO(3)
+G0 = -4336825 S0 = 253.132 V0 = 10.44  
+c1 = 305.307 c2 = .500406E-1 c3 = -6041696  
+end
+
+ 
+Met-Cin  EoS = 1 | METACINNABAR    HgS                       ref:1         
+O2(-.5)S2(.5)HGO(1)
+G0 = -43668.4 S0 = 88.7008 V0 = 3.0169  
+c1 = 44.0157 c2 = .151879E-1  
+end
+
+ 
+Max-Mc   EoS = 1 | MICROCLINE,MAXI K(AlSi3)O8                ref:1         
+AL2O3(.5)SIO2(3)K2O(.5)
+G0 = -3746245 S0 = 213.928 V0 = 10.8741  
+c1 = 267.065 c2 = .539736E-1 c3 = -7133720  
+end
+
+ 
+Mtc      EoS = 1 | MONTICELLITE    CaMgSiO4                  ref:1         
+MGO(1)SIO2(1)CAO(1)
+G0 = -2145677 S0 = 110.458 V0 = 5.147  
+c1 = 154.055 c2 = .223426E-1 c3 = -3347200  
+end
+
+ 
+Ms       EoS = 1 | MUSCOVITE       KAl3Si3O10(OH)2           ref:1         
+AL2O3(1.5)SIO2(3)K2O(.5)H2O(1)
+G0 = -5548034 S0 = 287.859 V0 = 14.071  
+c1 = 408.191 c2 = .110374 c3 = -10644100  
+end
+
+ 
+Ne       EoS = 1 | NEPHELINE       NaAlSiO4                  ref:1         
+NA2O(.5)AL2O3(.5)SIO2(1)
+G0 = -1978496 S0 = 124.349 V0 = 5.416  
+c1 = 150.239 c2 = .270199E-1 c3 = -3066021  
+end
+
+ 
+Pg       EoS = 1 | PARAGONITE      NaAl3Si3O10(OH)2          ref:1         
+NA2O(.5)AL2O3(1.5)SIO2(3)H2O(1)
+G0 = -5548034 S0 = 277.818 V0 = 13.253  
+c1 = 407.647 c2 = .102508 c3 = -11062500  
+end
+
+ 
+Prg      EoS = 1 | PARGASITE       Na(Ca2Mg4Al)(Al2Si6)O22(O ref:1,19      
+NA2O(.5)MGO(4)AL2O3(1.5)SIO2(6)CAO(2)H2O(1)
+G0 = -11910710 S0 = 669.44 V0 = 27.35  
+c1 = 861.067 c2 = .174305 c3 = -21007860  
+end
+
+ 
+Per      EoS = 1 | PERICLASE       MgO                       ref:1         
+MGO(1)
+G0 = -569384. S0 = 26.945 V0 = 1.1248  
+c1 = 42.5931 c2 = .728016E-2 c3 = -619232  
+end
+
+ 
+Phl      EoS = 1 | PHLOGOPITE      KMg3(AlSi3)O10(OH)2       ref:1         
+MGO(3)AL2O3(.5)SIO2(3)K2O(.5)H2O(1)
+G0 = -5841646 S0 = 318.402 V0 = 14.966  
+c1 = 420.952 c2 = .120415 c3 = -8995600  
+end
+
+ 
+K-Ox     EoS = 1 | POTASSIUM-OXIDE K2O                       ref:1         
+K2O(1)
+G0 = -322402. S0 = 94.14 V0 = 4.038  
+c1 = 77.4458 c2 = .361916E-1 c3 = -368192  
+end
+
+ 
+Py       EoS = 1 | PYRITE          FeS2                      ref:1         
+FEO(1)O2(-.5)S2(1)
+G0 = -160218. S0 = 52.9276 V0 = 2.394  
+c1 = 74.8099 c2 = .552288E-2 c3 = -1276120  
+end
+
+ 
+Prl      EoS = 1 | PYROPHYLLITE    Al2Si4O10(OH)2            ref:1         
+AL2O3(1)SIO2(4)H2O(1)
+G0 = -5255091 S0 = 239.325 V0 = 12.66  
+c1 = 332.344 c2 = .164071 c3 = -7230789  
+end
+
+ 
+Rds      EoS = 1 | RHODOCHROSITE   MnCO3                     ref:1         
+MNO(1)CO2(1)
+G0 = -816068. S0 = 99.9976 V0 = 3.1075  
+c1 = 92.0062 c2 = .389112E-1 c3 = -1962296  
+end
+
+ 
+Sn-Ox    EoS = 1 | ROMARCHITE      SnO                       ref:12        
+SNO(1)
+G0 = -257144. S0 = 57.1534 V0 = 2.0895  
+c1 = 39.9572 c2 = .14644E-1  
+end
+
+ 
+Ru       EoS = 1 | RUTILE          TiO2                      ref:7,9       
+TIO2(1)
+G0 = -890702. S0 = 50.2917 V0 = 1.882  
+c1 = 62.8203 c2 = .113826E-1 c3 = -989668.  
+end
+
+ 
+Hi-Sa    EoS = 1 | SANIDINE,HIGH   KAlSi3O8                  ref:1         
+AL2O3(.5)SIO2(3)K2O(.5)
+G0 = -3739400 S0 = 228.154 V0 = 10.9008  
+c1 = 267.065 c2 = .539736E-1 c3 = -7133720  
+end
+
+ 
+Sep      EoS = 1 | SEPIOLITE       Mg4Si6O15(OH)2(H2O)2*4H2O ref:1         
+MGO(4)SIO2(6)H2O(7)
+G0 = -9251627 S0 = 613.374 V0 = 28.56  
+c1 = 660.737 c2 = .436391 c3 = -7815712  
+end
+
+ 
+Sd       EoS = 1 | SIDERITE        FeCO3                     ref:1,13      
+FEO(1)CO2(1)
+G0 = -679540. S0 = 105.018 V0 = 2.9378  
+c1 = 48.6599 c2 = .112131  
+end
+
+ 
+Sil      EoS = 1 | SILLIMANITE     Al2SiO5                   ref:1         
+AL2O3(1)SIO2(1)
+G0 = -2427101 S0 = 96.7759 V0 = 4.99  
+c1 = 167.46 c2 = .309219E-1 c3 = -4884424  
+end
+
+ 
+Ag       EoS = 1 | SILVER,NATIVE   Ag ref:1         
+O2(-.5)AGO(1)
+S0 = 42.5513 V0 = 1.0272  
+c1 = 21.2966 c2 = .853536E-2 c3 = 150624  
+end
+
+ 
+Smt      EoS = 1 | SMITHSONITE     ZnCO3                     ref:1         
+CO2(1)ZNO(1)
+G0 = -731572. S0 = 82.4248 V0 = 2.8275  
+c1 = 38.9112 c2 = .138072  
+end
+
+ 
+Na-Ox    EoS = 1 | SODIUM-OXIDE    Na2O                      ref:1         
+NA2O(1)
+G0 = -376070. S0 = 75.04 V0 = 2.5  
+c1 = 76.358 c2 = .204598E-1 c3 = -1209176  
+end
+
+ 
+Sp       EoS = 1 | SPHALERITE      ZnS                       ref:1         
+O2(-.5)S2(.5)ZNO(1)
+G0 = -200610. S0 = 58.6555 V0 = 2.383  
+c1 = 49.2457 c2 = .527184E-2 c3 = -485344  
+end
+
+ 
+Spn      EoS = 1 | SPINEL          MgAl2O4                   ref:1         
+MGO(1)AL2O3(1)
+G0 = -2163153 S0 = 80.6257 V0 = 3.971  
+c1 = 153.857 c2 = .268423E-1 c3 = -4062159  
+end
+
+ 
+Str      EoS = 1 | STRONTIANITE    SrCO3                     ref:1         
+CO2(1)SRO(1)
+G0 = -1152566 S0 = 97.0688 V0 = 3.901  
+c1 = 98.4077 c2 = .264429E-1 c3 = -2125472  
+end
+
+ 
+Sy       EoS = 1 | SYLVITE         KCl                       ref:1         
+K2O(.5)O2(-.25)CL(1)
+G0 = -408923. S0 = 82.5503 V0 = 3.7524  
+c1 = 41.3798 c2 = .217568E-1 c3 = 322168  
+end
+
+ 
+Tcl      EoS = 1 | TALC            Mg3Si4O10(OH)2            ref:1         
+MGO(3)SIO2(4)H2O(1)
+G0 = -5523667 S0 = 260.831 V0 = 13.625  
+c1 = 345.105 c2 = .174113 c3 = -5582293  
+end
+
+ 
+Tn       EoS = 1 | TENORITE        CuO                       ref:1         
+CUO(1)
+G0 = -127896. S0 = 42.5931 V0 = 1.222  
+c1 = 48.2415 c2 = .786592E-2 c3 = -736384  
+end
+
+ 
+Ti       EoS = 1 | TITANITE        CaTiSiO5                  ref:7,9,19    
+SIO2(1)CAO(1)TIO2(1)
+G0 = -2456548 S0 = 129.202 V0 = 5.565  
+c1 = 176.708 c2 = .238653E-1 c3 = -3985276  
+end
+
+ 
+Tr       EoS = 1 | TREMOLITE       (Ca2Mg5)Si8O22(OH)2       ref:1,19      
+MGO(5)SIO2(8)CAO(2)H2O(1)
+G0 = -11590710 S0 = 548.899 V0 = 27.292  
+c1 = 787.521 c2 = .239718 c3 = -18753520  
+end
+
+ 
+Wai      EoS = 1 | WAIRAKITE       Ca(Al2Si4)O12*2H2O        ref:1,19      
+AL2O3(1)SIO2(4)CAO(1)H2O(2)
+G0 = -6181575 S0 = 439.738 V0 = 18.687  
+c1 = 420.074 c2 = .186062 c3 = -6874312  
+end
+
+ 
+Wth      EoS = 1 | WITHERITE       BaCO3                     ref:1         
+CO2(1)BAO(1)
+G0 = -1164826 S0 = 112.131 V0 = 4.581  
+c1 = 89.956 c2 = .46275E-1 c3 = -1635944  
+end
+
+ 
+Wo       EoS = 1 | WOLLASTONITE    CaSiO3                    ref:1,19      
+SIO2(1)CAO(1)
+G0 = -1544837 S0 = 82.0064 V0 = 3.993  
+c1 = 111.462 c2 = .150624E-1 c3 = -2727968  
+end
+
+ 
+Wur      EoS = 1 | WURTZITE        ZnS                       ref:1         
+O2(-.5)S2(.5)ZNO(1)
+G0 = -187485 S0 = 58.8438 V0 = 2.3846  
+c1 = 49.4549 c2 = .485344E-2 c3 = -435136  
+end
+
+ 
+Zo       EoS = 1 | ZOISITE         Ca2Al3Si3O12(OH)          ref:1,19      
+AL2O3(1.5)SIO2(3)CAO(2)H2O(.5)
+G0 = -6481765 S0 = 295.976 V0 = 13.59  
+c1 = 443.998 c2 = .105495 c3 = -11357470  
+end
+
+ 
+Ab       EoS = 1 | ALBITE          NaAlSi3O8                 ref:1         
+NA2O(.5)AL2O3(.5)SIO2(3)
+G0 = -3708313 S0 = 207.15 V0 = 10.025  
+c1 = 258.153 c2 = .581576E-1 c3 = -6280184  
+transition = 1 type = 2  t1 = 473  t4 = 342.586  t5 = .148699E-1  t6 = -20984430  
+end
+
+ 
+Hi-Ab    EoS = 1 | ALBITE,HIGH     NaAlSi3O8                 ref:1         
+NA2O(.5)AL2O3(.5)SIO2(3)
+G0 = -3700786 S0 = 218.823 V0 = 10.043  
+c1 = 258.153 c2 = .581576E-1 c3 = -6280184  
+transition = 1 type = 2  t1 = 623  t4 = 268.487  t5 = .581576E-1  t6 = -6280184  
+end
+
+ 
+Atg      EoS = 1 | ANTIGORITE      Mg48Si34O85(OH)62         ref:1         
+MGO(48)SIO2(34)H2O(31)
+G0 = -66140760 S0 = 3603.93 V0 = 174.913  
+c1 = 5139.84 c2 = 2.14957 c3 = -119946900  
+transition = 1 type = 2  t1 = 848  t4 = 5166.53  t5 = 2.09719  t6 = -117687600  
+end
+
+ 
+7A-Cnc   EoS = 1 | CLINOCHLORE,7A  Mg5Al(AlSi3)O10(OH)8      ref:1         
+MGO(5)AL2O3(1)SIO2(3)H2O(4)
+G0 = -8188511 S0 = 445.596 V0 = 21.15  
+c1 = 681.239 c2 = .211794 c3 = -17104190  
+transition = 1 type = 2  t1 = 848  t4 = 694.586  t5 = .185602  t6 = -15974510  
+end
+
+ 
+Cos      EoS = 1 | COESITE         SiO2                      ref:1         
+SIO2(1)
+G0 = -851616. S0 = 40.3756 V0 = 2.0641  
+c1 = 46.024 c2 = .343088E-1 c3 = -1129680  
+transition = 1 type = 3  t1 = 848  t4 = 59.371  t5 = .811696E-2  
+end
+
+ 
+Crs      EoS = 1 | CRISTOBALITE    SiO2                      ref:1         
+SIO2(1)
+G0 = -853097. S0 = 43.3965 V0 = 2.574  
+c1 = 58.4923 c2 = .139746E-1 c3 = -1594104  
+transition = 1 type = 2  t1 = 543  t3 = 2.47341  t4 = 72.7598  t5 = .129704E-2  t6 = -4137976  
+end
+
+ 
+Fs       EoS = 1 | FERROSILITE     FeSiO3                    ref:1,13      
+SIO2(1)FEO(1)
+G0 = -1119588 S0 = 90.4999 V0 = 3.2952  
+c1 = 110.834 c2 = .212129E-1 c3 = -2322120  
+transition = 1 type = 2  t1 = 413  t2 = 67  t3 = .374838  t4 = 99.8512  t5 = .367355E-1  t6 = -1966480  
+end
+
+ 
+Hrz      EoS = 1 | HERZENBERGITE   SnS                       ref:12        
+O2(-.5)S2(.5)SNO(1)
+G0 = -104696. S0 = 76.8182 V0 = 2.901  
+c1 = 35.6895 c2 = .312963E-1 c3 = 376560  
+transition = 1 type = 2  t1 = 875  t3 = .765074  t4 = 40.9195  t5 = .156482E-1  
+end
+
+ 
+Kls      EoS = 1 | KALSILITE       KAlSiO4                   ref:1         
+AL2O3(.5)SIO2(1)K2O(.5)
+G0 = -2015642 S0 = 133.26 V0 = 5.989  
+c1 = 123.135 c2 = .726342E-1 c3 = -2225888  
+transition = 1 type = 2  t1 = 810  t4 = 177.82  
+end
+
+ 
+Lws      EoS = 1 | LAWSONITE       CaAl2Si2O7(OH)2*H2O       ref:1,19      
+AL2O3(1)SIO2(2)CAO(1)H2O(2)
+G0 = -4491139 S0 = 233.467 V0 = 10.132  
+c1 = 342.251 c2 = .977382E-1 c3 = -6803184  
+transition = 1 type = 2  t1 = 848  t4 = 355.598  t5 = .715464E-1  t6 = -5673504  
+end
+
+ 
+Mag      EoS = 1 | MAGNETITE       Fe3O4                     ref:1         
+FEO(3)O2(.5)
+G0 = -1014930 S0 = 145.729 V0 = 4.4524  
+c1 = 91.5459 c2 = .201669  
+transition = 1 type = 2  t1 = 900  t4 = 200.832  
+end
+
+ 
+Mrg      EoS = 1 | MARGARITE       CaAl2(Al2Si2)O10(OH)2     ref:1,19      
+AL2O3(2)SIO2(2)CAO(1)H2O(1)
+G0 = -5833124 S0 = 266.939 V0 = 12.94  
+c1 = 428.86 c2 = .684084E-1 c3 = -11736120  
+transition = 1 type = 2  t1 = 848  t4 = 415.513  t5 = .946002E-1  t6 = -12865800  
+end
+
+ 
+Nsh      EoS = 1 | NESQUEHONITE    MgCO3*3H2O                ref:1         
+MGO(1)H2O(3)CO2(1)
+G0 = -1723954 S0 = 195.644 V0 = 7.479  
+c1 = -6588.98 c2 = 16.3141 c3 = -174608800  
+transition = 1 type = 2  t1 = 306.5  t3 = 2.51177  t4 = 105.629  t5 = .381953  t6 = -1766485  
+end
+
+ 
+Ni       EoS = 1 | NICKEL          Ni ref:1         
+O2(-.5)NIO(1)
+S0 = 29.8738 V0 = .6588  
+c1 = 16.987 c2 = .294554E-1  
+transition = 1 type = 2  t1 = 633  t4 = 25.104  t5 = .75312E-2  
+end
+
+ 
+Prh      EoS = 1 | PREHNITE        Ca2Al2Si3O10(OH)2         ref:1,19      
+AL2O3(1)SIO2(3)CAO(2)H2O(1)
+G0 = -5816166 S0 = 271.96 V0 = 14.033  
+c1 = 383.254 c2 = .158239 c3 = -8200640  
+transition = 1 type = 2  t1 = 848  t4 = 423.295  t5 = .796634E-1  t6 = -4811600  
+end
+
+ 
+Qtz      EoS = 1 | QUARTZ          SiO2                      ref:1         
+SIO2(1)
+G0 = -856239. S0 = 41.3379 V0 = 2.2688  
+c1 = 46.9445 c2 = .343088E-1 c3 = -1129680  
+transition = 1 type = 3  t1 = 848  t2 = 38.5  t3 = 1.43085  t4 = 60.2914  t5 = .811696E-2  
+end
+
+ 
+Hg       EoS = 1 | QUICKSILVER     Hg ref:1         
+O2(-.5)HGO(1)
+S0 = 76.0233 V0 = 1.4822  
+c1 = 26.945 c3 = 79496  
+transition = 1 type = 2  t1 = 629  t4 = 20.7945  
+end
+
+ 
+Sn       EoS = 1 | TIN,NATIVE      Sn ref:12        
+O2(-.5)SNO(1)
+S0 = 51.2122 V0 = 1.6289  
+c1 = 18.4933 c2 = .263592E-1  
+transition = 1 type = 2  t1 = 505.06  t3 = 13.9174  t4 = 30.5432  
+end
+
+ 
+Acn      EoS = 1 | ACANTHITE       Ag2S                      ref:1         
+O2(-1)S2(.5)AGO(2)
+G0 = -39522.1 S0 = 143.511 V0 = 3.42  
+c1 = 65.3959 c2 = .359824E-1  
+transition = 1 type = 2  t1 = 450  t3 = 8.83289  t4 = 7.6107  t5 = .221752  
+end
+
+ 
+Ath      EoS = 1 | ANTHOPHYLLITE   Mg7Si8O22(OH)2            ref:1         
+MGO(7)SIO2(8)H2O(1)
+G0 = -11361360 S0 = 538.062 V0 = 26.44  
+c1 = 755.973 c2 = .253442 c3 = -16092500  
+transition = 1 type = 2  t1 = 903  t4 = 826.516  t5 = .174113  t6 = -5582293  
+end
+
+ 
+Bn       EoS = 1 | BORNITE         Cu5FeS4                   ref:1,16      
+FEO(1)O2(-3)S2(2)CUO(5)
+G0 = -362770. S0 = 415.429 V0 = 9.86  
+c1 = 208.196 c2 = .146775 c3 = -564840  
+transition = 1 type = 2  t1 = 485  t3 = 12.3363  t4 = -143.553  t5 = 1.03345  
+end
+
+ 
+Bsn      EoS = 1 | BUNSENITE       NiO                       ref:1         
+NIO(1)
+G0 = -211597. S0 = 37.9907 V0 = 1.097  
+c1 = -20.8782 c2 = .157235 c3 = 1627576  
+transition = 1 type = 2  t1 = 525  t4 = 58.0739  
+end
+
+ 
+Cc       EoS = 1 | CHALCOCITE      Cu2S                      ref:1         
+O2(-1)S2(.5)CUO(2)
+G0 = -86299.2 S0 = 120.918 V0 = 2.748  
+c1 = 52.8439 c2 = .787429E-1  
+transition = 1 type = 2  t1 = 376  t3 = 10.2375  t4 = 112.047  t5 = -.307524E-1  
+end
+
+ 
+Ccp      EoS = 1 | CHALCOPYRITE    CuFeS2                    ref:1,16      
+FEO(1)O2(-1)S2(1)CUO(1)
+G0 = -187862. S0 = 130.332 V0 = 4.283  
+c1 = 86.9854 c2 = .535552E-1 c3 = -560656  
+transition = 1 type = 2  t1 = 830  t3 = 12.1235  t4 = -591.618  t5 = .87864  
+end
+
+ 
+En       EoS = 1 | ENSTATITE       MgSiO3                    ref:1         
+MGO(1)SIO2(1)
+G0 = -1459923 S0 = 67.7808 V0 = 3.1276  
+c1 = 102.717 c2 = .198322E-1 c3 = -2627552  
+transition = 1 type = 2  t1 = 903  t2 = 384.615  t3 = .769152  t4 = 120.353  
+end
+
+ 
+Hem      EoS = 1 | HEMATITE        Fe2O3                     ref:1         
+FEO(2)O2(.5)
+G0 = -745400. S0 = 87.613 V0 = 3.0274  
+c1 = 98.2822 c2 = .778224E-1 c3 = -1485320  
+transition = 1 type = 2  t1 = 950  t3 = .704674  t4 = 150.624  
+end
+
+ 
+Po       EoS = 1 | PYRRHOTITE      FeS                       ref:1         
+FEO(1)O2(-.5)S2(.5)
+G0 = -100768. S0 = 60.2914 V0 = 1.82  
+c1 = 21.715 c2 = .110458  
+transition = 1 type = 2  t1 = 411  t3 = 5.80263  t4 = 72.8016  
+end
+
+ 
+Fe       EoS = 1 | IRON            Fe ref:7,8       
+FEO(1)O2(-.5)
+S0 = 27.2797 V0 = .7092  
+c1 = 12.7194 c2 = .317147E-1 c3 = 251040  
+transition = 1 type = 2  t1 = 1033  t3 = 1.32041  t4 = 46.5679  
+end
+
+ 
+CH4      EoS = 1 | CH4,g           METHANE                   ref:6,8       
+O2(-2)H2O(2)CO2(1)
+G0 = -50720.1 S0 = 186.263  
+c1 = 23.6396 c2 = .47865E-1 c3 = -192464  
+end
+
+ 
+CO2      EoS = 1 | CO2,g           CARBON-DIOXIDE            ref:6,8       
+CO2(1)
+G0 = -394359. S0 = 213.74  
+c1 = 44.2249 c2 = .87864E-2 c3 = -861904  
+end
+
+ 
+H2       EoS = 1 | H2,g            HYDROGEN                  ref:6,8       
+O2(-.5)H2O(1)
+S0 = 130.683  
+c1 = 27.2797 c2 = .326352E-2 c3 = 50208  
+end
+
+ 
+H2O      EoS = 1 | H2O,g           STEAM                     ref:17        
+H2O(1)
+G0 = -228132. S0 = 187.288  
+c1 = 52.9891 c2 = -.435307E-1 c3 = 5471.84  
+end
+
+ 
+H2S      EoS = 1 | H2S,g           HYDROGEN-SULFIDE          ref:6,8       
+O2(-.5)H2O(1)S2(.5)
+G0 = -33559.9 S0 = 205.79  
+c1 = 32.677 c2 = .123846E-1 c3 = -192464  
+end
+
+ 
+O2       EoS = 1 | O2,g            OXYGEN                    ref:6,8       
+O2(1)
+S0 = 205.137  
+c1 = 29.9574 c2 = .4184E-2 c3 = -167360  
+end
+
+ 
+S2       EoS = 1 | S2,g            SULFUR                    ref:6,8       
+S2(1)
+G0 = 79299.4 S0 = 228.195  
+c1 = 36.4845 c2 = .66944E-3 c3 = -376560  
+end
+
+ 
+SO2      EoS = 1 | SO2,g           SULFUR-DIOXIDE            ref:6,8       
+O2(1)S2(.5)
+G0 = -300194. S0 = 248.237  
+c1 = 46.1914 c2 = .786592E-2 c3 = -769856  
+end
+

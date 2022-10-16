@@ -1,0 +1,629 @@
+                      --------------------------------------------------------
+begin_model                | keyword indicating beginning of a solution model
+
+                             Fe-Mg-Mn-Biotite with compound formation, Powell and Holland '99 
+                             Am Min, extended for Mn-solution.
+
+                             NOTES: 
+
+                             * This model will only function for the MnASH and FASH subsystems
+                               if MGO is also used as a component.
+                                           
+                             * This model was tested with the maple script compete_bio.mws
+
+
+                             JADC 4/03
+
+                             * Stoichiometric definition of the mnts_i endmember corrected, 2/04. JADC
+
+
+                                                      1       2      3      
+                                                      M1      M2     T2
+                                                     _________________________
+
+                                      Mutliplicity    1       2      2 
+                                                     _________________________
+
+                                      1 MnBi          Mn      Mn     AlSi   
+                            Species:  2 Ann           Fe      Fe     AlSi
+                                      3 Phl           Mg      Mg     AlSi        
+                          Dependent:  4 MnTs          Al      Mn     AlAl      
+                          Dependent:  5 Sdph          Al      Fe     AlAl
+                                      6 East          Al      Mg     AlAl
+                                                      ________________________
+
+                        Ordered Cpd:  7 Obi           Fe      Mg     AlSi
+
+
+                             | Comments can be placed before character data within a solution 
+                             | model as long as they are preceded by the comment marker "|", 
+                             | in general comments should not be placed before numerica data, 
+                             | but they can be written following numeric data on the same line.
+
+Bio(HP)                      | solution name.
+
+8                            | model type: Margules with dependent endmembers and speciation.
+
+2                            | the number of independent subcompositions, reciprocal solution if > 1.
+
+3  2                         | 3 species on site 1, 2 species on site 2. this line (see also Sect 1.3.1 
+                             | and Sect 4 [READ 3] in vdoc.pdf) defines the geometric
+                             | shape of the composition space, in this case a right triangular prism.
+                             | the following lines list the endmembers that define the 6 vertices of 
+                             | this prism. the geometry can be understood by noting that although 
+                             | biotite as 3 subcompositions (refer to the occupancy table above), the
+                             | site populations on all 3 sites are determined if the population on any
+                             | 2 crystallographic sites. the independent "chemical" subcompositions need
+                             | not correspond to the actual crystallographic sites, but in this case
+                             | M2 and T2 can be identified as sites 1 and 2, respectively. Thus the
+                             | species that mix on site 1 are Mg-Fe-Mn, and the species that mix on 
+                             | site 2 are AlSi and AlAl. If the endmember with species i on site 1 and
+                             | species j on site 2 is written as endmember ij, then the 6 endmembers will
+                             | be read in the order: 11, 21, 31, 12, 22, 32
+                             | if instead the binary site had been specified as site 1 and the ternary
+                             | site as site 2, then the endmembers would be read in the order: 11, 21, 
+                             | 12, 22, 13, 23.
+
+mnbi     ann      phl        | endmember names (refer to the above comment, see also Sect 4 [Read 4] in    
+mnts_i   sdph_i   east       | vdoc.pdf), by specifying mnbi as the endmember 11 (i.e., the first 
+                             | endmember) the model implies that Mn is species 1 on site 1 (M2), and
+                             | AlSi is species 1 on site 2 (T2, and, by default, AlAl must be species 2 
+                             | on site 2). In this model, there is a remaining degree
+                             | of freedom in that the second species on the first site may be chosen as
+                             | either Fe or Mg. This degree of freedom is removed by specifying ann as
+                             | endmember 21, implying Fe is species 2 on site 1 (M2, and, by default, Mg 
+                             | must be species 3 on site 1). [Note that although sdph has Fe on M2 it could
+                             | not be specified as the second endmember because it has species 2 (AlAl) on 
+                             | site 2.] The order in which the 4 remaining species are entered is determined
+                             | by these assignements, thus the third endmember (31) must have Mg on M2 and 
+                             | AlSi on T2 (phl), the fourth endmember (12) must have Mn on M2 and AlAl on 
+                             | T2 (mnts), etc. Users should be careful to order the endmembers so as to be 
+                             | consistent with these considerations, because mistakes may not be detected 
+                             | by vertex and can have dire consequences for computed solution properties. 
+
+1                            | 1 ordered species:
+
+                             | model types 6 and 8 require data defining the
+                             | properties of an ordered "species". this species
+                             | is defined as a stoichiometric combination of
+                             | two independent endmembers and the enthalpy of
+                             | formation of the ordered species from the
+                             | these independent endmbers. the format for this
+                             | data is
+
+                             | name = num_1 * name_1 + num_2 * name_2 text = enthalpy
+
+                             | where name is the arbitrary name of the ordered
+                             | species, num_j is a number or fraction (i.e., two
+                             | numbers separated by a '/') and name_j is the 
+                             | name of a valid endmember. text is arbitrary and
+                             | enthalpy is the enthalpy of formation of the ordered species.
+
+obi = 2/3 phl + 1/3 ann   enthalpy_of_formation = -10.73d3  
+
+2                            | 2 dependent endmembers 
+
+                             | model types 7 and 8 (reciprocal solutions) use
+                             | internal endmembers that are defined as a 
+                             | stoichiometric combination of the other endmembers.
+                             | the names of these endmembers are arbitrary, but 
+                             | here dependent endmembers are highlighted by the 
+                             | suffix "_i", this also serves to distinguish the
+                             | endmembers from real equivalents that may be 
+                             | present in the thermodynamic data file.
+
+                             | the format of this data is
+
+                             | name = num_1 * name_1 + num_2 * name_2
+
+                             | where num_j is a number or fraction (i.e., two
+                             | numbers separated by a '/') and name_j is the 
+                             | name of a valid endmember.
+
+mnts_i = 1 east + 2/3 mnbi - 2/3 phl  
+sdph_i = 1 east + 1 ann - 1 obi 
+
+1 0 0 1 0 0                  | endmember flags: if 0 the endmember is considered to be part of the solution.
+                   
+                             | subdivision model for (ternary) site 1 (M2):
+
+0. .2  .1  1                 | range and resolution of X(Mn), 1 => asymmetric subdivision
+0. 1.  .1  0                 | range and resolution of X(Fe), imod = 0 -> cartesian subdivision
+
+0. 1.  .1  0                 | range and resolution of {1-X(Ts)}, imod = 0 -> cartesian subdivision                            
+                             
+                             | the foregoing lines define the pseudocompound compositions generated
+                             | on each "chemical" mixing site of the solution (Sect 4 [READ 6] vdoc.pdf).
+                             | for each site the compositional "range" of c-1 species (c is the number of 
+                             | species on the site as defined in READ 3) is specified as well as a scheme 
+                             | for interpreting the range. each range is defined by 3 numbers XMIN, XMAX, 
+                             | and XINC, and the scheme is specified by an integer (IMD) written after the 
+                             | c-1 ranges. The simplest scheme is cartesian, in which case IMD = 0 and the
+                             | the XMIN, XMAX, and XINC indicate the range of compositions (from XMIN to XMAX) 
+                             | of the respective c-1 species and the compositional spacing (XINC) of the 
+                             | pseudocompounds. As entered above, the subdivision scheme will generate 
+                             | pseudocompounds with X(Mn) on site 1 from 0 to 0.20 mol at 0.01 mol increments
+                             | for each X(Mn) isopleth, compounds will be generated with X(Fe) from 0 to 1-X(Mn),
+                             | where "0" and "1" correspond to XMIN and XMAX in the range for the second species
+                             | on site 1, and X(Mg) = 1 - X(Fe) - X(Mn).
+
+                             | Alternative subdivision shemes detailed in vdoc.pdf, may be useful for specialized
+                             | applications, e.g., creating models with variable compositional resolution.
+
+                             | By restricting the ranges specified in a model it is possible to focus pseudocompounds
+                             | over a particular portion of a solutions composition space, such focusing can be 
+                             | computationally advantageous when it is known a priori that only a limited range of
+                             | compositions can be stable, but it should be undertaken with caution because the 
+                             | results are not always easy to anticipate. 
+
+                             | The primary difficulty in restricting compositional ranges is that the user 
+                             | can explicitly control the composition of only c-1 compositions since the 
+                             | cth composition is determined by difference. Additionally the subdivision ranges
+                             | are applied sequentially, with compositions that violate mass balance (sum of
+                             | compositions > 1) eliminated as they occur. Thus, in general, users have the greatest
+                             | control on the composition of the first species on a site and no direct control
+                             | on the composition of the last species. Since in most cases it is desired to 
+                             | restrict the composition of dilute species, endmembers should be specified 
+                             | (READ 4) so that the dilute species is not the last species.
+
+begin_excess_function
+                             | format is W(e1 e1 e2 ...) num1 num2 num3
+                             | where the excess parameter = num1 + num2*T + num3*P
+                             | and is multiplied by y(e1)*y(e1)*y(e2)...
+W(phl ann) 9000. 0. 0.  
+W(phl east) 10000. 0. 0.  
+W(phl obi) 3000. 0. 0. 
+W(ann east)  -1000. 0. 0.  
+W(ann obi) 6000. 0. 0. 
+W(obi east)  10000.  0. 0. 
+
+end_excess_function 
+
+3                           | Configurational entropy: 3 sites, M1, M2, T1.
+
+4 1.                        | 4 species on M1, 1 site per formula unit.
+
+                            | If a mixing site involves n species, VERTEX
+                            | expects to find n-1 site fraction definitions 
+                            | in terms of the endmember fractions. These
+                            | definitions have the general format:
+                            | text = num + num1 * name1 + num2 * name2
+                            | where num is a number or fraction (i.e., two
+                            | numbers separated by a '/') and name is the 
+                            | name of a valid endmember.
+                              
+
+                            | WARNING! fractions can only be used in the site
+                            | fraction definitions, do not use fractions to specify
+                            | site multiplicities in the above line.
+z(m1,fe) = 1 ann  + 1 obi   
+z(m1,mg) = 1 phl           
+z(m1,mn) = 1 mnbi
+
+
+3 2.                        | 3 species on M2, 2 sites per formula unit.
+
+z(m2,fe) = 1 ann  
+z(m2,mn) = 1 mnbi       
+
+2 2.                        | 2 species on T1, 2 site per formula unit.
+
+z(t1,si) = 0.5 phl +0.5 ann +0.5 obi +0.5 mnbi  
+
+end_of_model   
+                    --------------------------------------------------------  
+begin_model                         
+
+                                  Ti-Biotite model after White, Powell & Holland (JMG, 2007)
+
+                                  Model entered by Lucie Tajcamanova, May 11, 2007. 
+
+                                  DQF corrections to annite added, Mark Caddick, Nov, 2007.
+
+
+
+
+                                  NOTE: this model requires make defintions for fbi and tbi
+                                  in the thermodynamic data file.
+
+
+                                                      1       2      3      4
+                                                      M1      M2     T1     H
+                                                     ____________________________
+
+                                      Mutliplicity    1       2      2      2 
+                                                     ____________________________
+
+                          Dependent:  1 ffbi          Fe3+    Fe     AlAl   OH  
+                                      2 fbi           Fe3+    Mg     AlAl   OH
+                          
+                          Dependent:  3 ftbi          Ti      Fe     AlSi   O
+                                      4 tbi1          Ti      Mg     AlSi   O
+   
+                          Dependent:  5 Sdph          Al      Fe     AlAl   OH
+                                      6 East          Al      Mg     AlAl   OH
+
+                            Species:  7 Ann           Fe      Fe     AlSi   OH
+                                      8 Phl           Mg      Mg     AlSi   OH
+                                                      __________________________
+
+                            Ordered:  9 Obi           Fe      Mg     AlSi   OH
+
+
+                       
+
+TiBio(WPH)                   | solution name.
+
+8                            | model type: Margules with dependent endmembers and speciation.
+
+2                            | the number of independent subcompositions, reciprocal solution if > 1.
+
+2  4                         | 2 species on site 1, 4 species on site 2. 
+                             | M2 and M1 can be identified as sites 1 and 2, respectively. the
+                             | species that mix on site 1 are Mg-Fe and the species that mix on 
+                             | site 2 are M2+, Al, Ti. Fe3+. The identity of M2+ on site 2 is determined by
+                             | the identity of the M2+ cation on site 1
+
+ffbi_i   fbi
+ftbi_i   tbi1
+sdph_i   east                | endmember names    
+ann      phl                 
+        
+1                            | ordered species:
+
+obi = 2/3 phl + 1/3 ann   enthalpy_of_formation = -10.73d3  
+
+3                            | 3 dependent endmembers 
+
+                              
+sdph_i = 1 east  + 1 ann - 1 obi 
+ffbi_i = 1 fbi   + 1 ann - 1 obi
+ftbi_i = 1 tbi1  + 1 ann - 1 obi
+
+0 0 0 0 0 0 0 0 0            | endmember flags: if 0 the endmember is considered to be part of the solution.
+                   
+                             | subdivision model for (binary) site 1 (M2):
+
+
+0. 1.  .1  0                 | range and resolution of X(Fe)
+
+                             | subdivision model for (quinary) site 2 (M1)
+0. 0.2 .1  1                 | range and resolution of X(Fe3+,M1)
+0. 0.2 .1  1                 | range and resolution of X(Ti,M1)
+0. 1. .1   0                 | range and resolution of X(Al,M1)              
+
+                             
+
+
+begin_excess_function
+                             | current preferred thermocalc values, Caddick, Nov '07
+
+W(phl ann)   9000. 0. 0.     
+W(phl east) 10000. 0. 0.  
+W(phl obi)   3000. 0. 0. 
+W(ann east) -1000. 0. 0.  
+W(ann obi)   6000. 0. 0.
+W(ann fbi)   8000. 0  0 
+W(ann tbi1) 10000. 0  0
+W(obi east) 10000. 0. 0. 
+                             | values from White et al paper and earlier Perple_X verions.
+                             | W(phl ann) 12000. 0. 0.       
+                             | W(phl east) 10000. 0. 0.  
+                             | W(phl obi) 4000. 0. 0. 
+                             | W(phl fbi) 0.  0.  0.
+                             | W(phl tbi1) 0.  0.  0.
+                             | W(ann east)  3000. 0. 0.  
+                             | W(ann obi) 8000. 0. 0.
+                             | W(ann fbi)   8000.  0  0 
+                             | W(ann tbi1)   10000.  0  0
+                             | W(obi east)  7000.  0. 0. 
+
+end_excess_function 
+
+4                           | Configurational entropy: 4 sites, M1, M2, T1 H.
+
+5 1.                        | 5 species on M1, 1 site per formula unit.
+
+
+z(m1,fe) = 1 ann  + 1 obi   
+z(m1,mg) = 1 phl           
+z(m1,Fe3+) = 1 fbi 
+z(m1,Ti) = 1 tbi1  
+
+2 2.                        | 2 species on M2, 2 sites per formula unit.
+
+z(m2,fe) = 1 ann 
+   
+
+2 2.                        | 2 species on T1, 2 site per formula unit.
+
+z(t1,al) = 1/2  + 1/2 east + 1/2 fbi 
+
+2 2.                        | 2 species on H, 2 site per formula unit.
+
+z(h,o) = 1 tbi1 
+
+
+begin_dqf_corrections
+dqf(ann) -3000 0 0
+end_dqf_corrections
+
+end_of_model               
+                    --------------------------------------------------------  
+begin_model                | keyword indicating beginning of a solution model
+
+                             Ti-Fe-Mg-Mn-Biotite with compound formation, Powell and Holland '99 
+                             Am Min, extended for Mn-solution.
+
+                             NOTES: 
+
+                             * This model will only function for the MnASH and FASH subsystems
+                               if MGO is also used as a component.
+
+                             * Stoichiometric definition of the mnts_i endmember corrected, 2/04. JADC
+
+
+                                                      1       2      3      
+                                                      M1      M2     T2
+                                                     _________________________
+
+                                      Mutliplicity    1       2      2 
+                                                     _________________________
+
+                          Dependent:  1 mtbi          Ti      MnV    AlSi
+                          Dependent:  2 ftbi          Ti      FeV    AlSi
+                                      3 tbi           Ti      MgV    AlSi
+
+                                      4 MnTs          Al      Mn     AlAl      
+                          Dependent:  5 Sdph          Al      Fe     AlAl
+                          Dependent:  6 East          Al      Mg     AlAl
+
+                                      7 MnBi          Mn      Mn     AlSi   
+               Species:               8 Ann           Fe      Fe     AlSi
+                                      9 Phl           Mg      Mg     AlSi 
+                                                      ________________________
+
+                        Ordered Cpd: 10 Obi           Fe      Mg     AlSi
+
+
+
+                             | Comments can be placed before character data within a solution 
+                             | model as long as they are preceded by the comment marker "|", 
+                             | in general comments should not be placed before numerica data, 
+                             | but they can be written following numeric data on the same line.
+
+TiBio(HP)                    | solution name.
+
+8                            | model type: Margules with dependent endmembers and speciation.
+
+2                            | the number of independent subcompositions, reciprocal solution if > 1.
+
+3  3                         | 3 species on site 1, 2 species on site 2. this line (see also Sect 1.3.1 
+                             | and Sect 4 [READ 3] in vdoc.pdf) defines the geometric
+                             | shape of the composition space, in this case a 4 dimensional prism.
+                             | the following lines list the endmembers that define the 9 vertices of 
+                             | this prism. the geometry can be understood by noting that although 
+                             | biotite as 3 subcompositions (refer to the occupancy table above), the
+                             | site populations on all 3 sites are determined if the population on any
+                             | 2 crystallographic sites. the independent "chemical" subcompositions need
+                             | not correspond to the actual crystallographic sites, but in this case
+                             | M2 and M1 can be identified as sites 1 and 2, respectively. Thus the
+                             | species that mix on site 1 are Mg-Fe-Mn, and the species that mix on 
+                             | site 2 are M2+, Al, Ti. The identity of M2+ on site 2 is determined by
+                             | the identity of the M2+ cation on site 1, and the vacancy population on
+                             | site 1 is determined by the Ti concentration on site 2. If the endmember 
+                             | with species i on site 1 and species j on site 2 is written as endmember ij,
+                             | then the 9 endmembers will be read in the order: 11, 21, 31, 12, 22, 32,
+                             | 13, 23, 33.
+
+mtbi_i   ftbi_i   tbi
+mnts_i   sdph_i   east       | endmember names (refer to the above comment, see also Sect 4 [Read 4] in    
+mnbi     ann      phl        | vdoc.pdf).
+        
+1                            | ordered species:
+
+                             | model types 6 and 8 require data defining the
+                             | properties of an ordered "species". this species
+                             | is defined as a stoichiometric combination of
+                             | two independent endmembers and the enthalpy of
+                             | formation of the ordered species from the
+                             | these independent endmbers. the format for this
+                             | data is
+
+                             | name = num_1 * name_1 + num_2 * name_2 text = enthalpy
+
+                             | where name is the arbitrary name of the ordered
+                             | species, num_j is a number or fraction (i.e., two
+                             | numbers separated by a '/') and name_j is the 
+                             | name of a valid endmember. text is arbitrary and
+                             | enthalpy is the enthalpy of formation of the ordered species.
+
+obi = 2/3 phl + 1/3 ann   enthalpy_of_formation = -10.73d3  
+
+4                            | 4 dependent endmembers 
+
+                             | model types 7 and 8 (reciprocal solutions) use
+                             | internal endmembers that are defined as a 
+                             | stoichiometric combination of the other endmembers.
+                             | the names of these endmembers are arbitrary, but 
+                             | here dependent endmembers are highlighted by the 
+                             | suffix "_i", this also serves to distinguish the
+                             | endmembers from real equivalents that may be 
+                             | present in the thermodynamic data file.
+
+                             | the format of this data is
+
+                             | name = num_1 * name_1 + num_2 * name_2
+
+                             | where num_j is a number or fraction (i.e., two
+                             | numbers separated by a '/') and name_j is the 
+                             | name of a valid endmember.
+
+                             | for theoretical reasons that are too complicated to
+                             | explain here (see Powell & Holland 2001), if an ordered
+                             | species (e.g., obi) is included in a reciprocal solution
+                             | then any dependent endmembers that can be defined in terms
+                             | of this dependent endmember must be so defined. 
+                             | i.e., here sdph_i must be defined in terms of obi, but
+                             | the mnts_i endmember can only be written in terms of 
+                             | mnbi and phl.
+
+mnts_i = 1 east + 2/3 mnbi - 2/3 phl  
+sdph_i = 1 east + 1 ann - 1 obi 
+mtbi_i = 1 tbi  + 1/3 mnbi - 1/3 phl
+ftbi_i = 1 tbi  + 1/2 ann - 1/2 obi
+
+0 0 0 0 0 0 0 0 0            | endmember flags: if 0 the endmember is considered to be part of the solution.
+                   
+                             | subdivision model for (ternary) site 1 (M2):
+
+0. .2  .1  1                 | range and resolution of X(Mn)
+0. 1.  .1  0                 | range and resolution of X(Fe)
+
+                             | subdivision model for (ternary) site 2 (M1)
+0. 1. .1   1                 | range and resolution of X(Ti,M1)
+0. 1. .1   0                 | range and resolution of X(Al,M1)                        
+
+                             | the foregoing lines define the pseudocompound compositions generated
+                             | on each "chemical" mixing site of the solution (Sect 4 [READ 6] vdoc.pdf).
+                             | for each site the compositional "range" of c-1 species (c is the number of 
+                             | species on the site as defined in READ 3) is specified as well as a scheme 
+                             | for interpreting the range. each range is defined by 3 numbers XMIN, XMAX, 
+                             | and XINC, and the scheme is specified by an integer (IMD) written after the 
+                             | c-1 ranges. The simplest scheme is cartesian, in which case IMD = 0 and the
+                             | the XMIN, XMAX, and XINC indicate the range of compositions (from XMIN to XMAX) 
+                             | of the respective c-1 species and the compositional spacing (XINC) of the 
+                             | pseudocompounds. As entered above, the subdivision scheme will generate 
+                             | pseudocompounds with X(Mn) on site 1 from 0 to 0.20 mol at 0.01 mol increments
+                             | for each X(Mn) isopleth, compounds will be generated with X(Fe) from 0 to 1-X(Mn),
+                             | where "0" and "1" correspond to XMIN and XMAX in the range for the second species
+                             | on site 1, and X(Mg) = 1 - X(Fe) - X(Mn).
+
+                             | Alternative subdivision shemes detailed in vdoc.pdf, may be useful for specialized
+                             | applications, e.g., creating models with variable compositional resolution.
+
+                             | By restricting the ranges specified in a model it is possible to focus pseudocompounds
+                             | over a particular portion of a solutions composition space, such focusing can be 
+                             | computationally advantageous when it is known a priori that only a limited range of
+                             | compositions can be stable, but it should be undertaken with caution because the 
+                             | results are not always easy to anticipate. 
+
+                             | The primary difficulty in restricting compositional ranges is that the user 
+                             | can explicitly control the composition of only c-1 compositions since the 
+                             | cth composition is determined by difference. Additionally the subdivision ranges
+                             | are applied sequentially, with compositions that violate mass balance (sum of
+                             | compositions > 1) eliminated as they occur. Thus, in general, users have the greatest
+                             | control on the composition of the first species on a site and no direct control
+                             | on the composition of the last species. Since in most cases it is desired to 
+                             | restrict the composition of dilute species, endmembers should be specified 
+                             | (READ 4) so that the dilute species is not the last species.
+
+
+begin_excess_function
+
+                             | format is W(e1 e1 e2 ...) num1 num2 num3
+                             | where the excess parameter = num1 + num2*T + num3*P
+                             | and is multiplied by y(e1)*y(e1)*y(e2)...
+
+W(phl ann) 9000. 0. 0.  
+W(phl east) 10000. 0. 0.  
+W(phl obi) 3000. 0. 0. 
+W(phl tbi)  -10000.  0.  0.
+W(ann east)  -1000. 0. 0.  
+W(ann obi) 6000. 0. 0. 
+W(ann tbi)   12000.  0  0
+W(obi east)  10000.  0. 0. 
+
+end_excess_function 
+
+3                           | Configurational entropy: 3 sites, M1, M2, T1.
+
+5 1.                        | 4 species on M1, 1 site per formula unit.
+
+                            | If a mixing site involves n species, VERTEX
+                            | expects to find n-1 site fraction definitions 
+                            | in terms of the endmember fractions. These
+                            | definitions have the general format:
+                            | text = num + num1 * name1 + num2 * name2
+                            | where num is a number or fraction (i.e., two
+                            | numbers separated by a '/') and name is the 
+                            | name of a valid endmember.
+                              
+                            | WARNING! fractions can only be used in the site
+                            | fraction definitions, do not use fractions to specify
+                            | site multiplicities in the above line.
+
+z(m1,fe) = 1 ann  + 1 obi   
+z(m1,mg) = 1 phl           
+z(m1,mn) = 1 mnbi
+z(m1,al) = 1 east 
+
+4 2.                        | 4 species on M2, 2 sites per formula unit.
+
+z(m2,fe) = 1 ann 
+z(m2,mn) = 1 mnbi 
+z(m2,vac) = 1/2 tbi     
+
+2 2.                        | 2 species on T1, 2 site per formula unit.
+z(t1,al) = 1/2  + 1/2 east 
+
+end_of_model               | end of model keyword       
+                              --------------------------------------------------------
+begin_model                   
+
+                                      This is the Sack & Ghiorso (1989 CMP 102:41-68) 
+                                      noncovergent ordering model for Fe-Mg opx. The model
+                                      has been reformulated as a compound formation
+                                      model for Perple_X.
+
+                                      JADC 7/03
+
+
+                                                        Sites
+                
+                                                      M1     M2               
+                                                     ______________           
+
+                                      Mutliplicity     1      1      
+                                                     ______________            
+                                                     
+                                      1 en            Mg     Mg               
+                            Species:  2 fs            Fe     Fe                         
+                                                      ______________           
+
+                        Ordered Cpd:  3 opx           Mg     Fe            
+
+
+
+E(SG)     
+6                                     model type margules with compound formation                                                                         
+
+2                                   | 2 endmembers
+
+en 
+fs
+
+1                                   | ordered species definition
+
+opx = 1/2 en + 1/2 fs enthalpy_of_formation = -16d3 
+
+
+
+0  0                                 endmember flags
+
+0. 1. 0.1  0                   | range and resolution of X(mg), imod = 0 -> cartesian subdivision
+
+begin_excess_function   
+w(en fs)   26000. 0. 0.  
+w(en opx)  16000. 0. 0.  
+w(fs opx)  16000. 0. 0.  
+end_excess_function
+
+2                                     2 site entropy model (m1, m2)
+2 1.                                  2 species on m2, mutiplicity = 1
+z(m1,mg) = 1 en + 1 opx
+2 1.                                  2 species on m1, mult. = 1
+z(m2,mg) = 1 en 
+
+end_of_model         
+                              --------------------------------------------------------

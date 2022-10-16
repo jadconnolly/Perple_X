@@ -1,0 +1,460 @@
+689 DO NOT DELETE THIS LINE
+
+| Solution models consistent with:
+
+| Stixrude, L. and Lithgow-Bertelloni, C. (2011), 
+| Thermodynamics of mantle minerals – II. Phase equilibria. 
+| Geophysical Journal International, 184: 1180–1213. 
+| doi: 10.1111/j.1365-246X.2010.04890.x
+
+| the solution model names are:
+| O
+| Pl
+| Sp
+| Cpx    
+| Wad  
+| Ring 
+| Pv   
+| Wus  
+| C2/c 
+| Opx  
+| Aki  
+| Ppv  
+| CF
+| Gt or Gt_maj for the distinction between these two models refer to 
+| the comments with the Gt_maj model in stx11_solution_model.dat
+     
+                      --------------------------------------------------------
+begin_model                
+                                      C2/c pyroxene solution
+C2/c                                                                               
+2                                     model type: Margules, macroscopic
+2                                     2 endmembers
+c2/c      fc2/c            
+  0  0                     
+0. 1. .1  0               
+ideal
+1                                     1 site entropy model
+2 2.                                  2 species, site multiplicity = 2.
+z(mg) = 1 c2/c
+end_of_model              
+                      --------------------------------------------------------
+begin_model                
+                                      magnesio-wuestite solution
+Wus                                                                               
+2                                     model type: Margules, macroscopic
+2                                     2 endmembers
+per       wus            
+  0  0                           
+0.0 1.0  0.1 0                   
+  
+begin_excess_function
+W(per wus)  13d3 0. 0.            
+end_excess_function 
+
+1                                     1 site entropy model
+
+2 1.                                  2 species, site multiplicity = 1.
+z(mg) = 1 per
+end_of_model                           
+                      --------------------------------------------------------
+begin_model                
+                                  | perovskite solution
+Pv                                                                               
+2                                 | model type: Margules, macroscopic
+3                                 | 3 endmembers
+aperov   perov   fperov            
+  0  0  0                          
+0. 1.  0.1 0              
+0. 1.  0.1 0             
+
+begin_excess_function
+W(perov aperov)   116d3 0. 0.            
+end_excess_function 
+
+2                                     2 site entropy model
+3 1.                                  3 species on M site multiplicity = 1.
+z(mg) = 1 perov
+z(fe) = 1 fperov
+2 1.                                  2 species on T site multiplicity = 1.
+z(al) = 1 aperov
+
+begin_van_laar_sizes                        
+alpha(perov)     1.0    0.0    0.0                      
+alpha(aperov)    0.39   0.0    0.0                      
+alpha(fperov)    1.0    0.0    0.0
+end_van_laar_sizes
+
+end_of_model                                                          
+                      --------------------------------------------------------
+begin_model               
+                                  | Plagioclase
+Pl                     
+2                                 | model type: Margules or Ideal                                     
+2                                 | # of endmembers  
+ab       an      
+  0  0                            | endmember flags
+0. 1. .1  0                       | imod = 0 -> cartesian subdivision
+
+begin_excess_function 
+w(an ab) 26d3 0. 0. 
+end_excess_function 
+1                                 | 1 site molecular model:
+2 1.                       
+z(Na) = 1 ab
+end_of_model               
+                      --------------------------------------------------------
+begin_model                
+                                  | Spinel solution, fixed order! 
+Sp                                                                               
+2                                 | model type: Margules, macroscopic
+2                                 | 2 endmembers
+sp       herc            
+  0  0                            | endmember flags
+0. 1. .1   0                      | subdivision range, imod = 0 -> cartesian subdivision
+begin_excess_function
+W(sp herc) 5d3  0. 0.            
+end_excess_function 
+2                                     2 site entropy model
+3 8.                                  3 species, site multiplicity = 8.
+z(B,mg) = 1/8 sp
+z(B,fe) = 1/8 herc
+3 4.                                  3 species, site multiplicity = 4.
+z(B,mg) = 3/4 sp
+z(B,fe) = 3/4 herc
+end_of_model
+                      --------------------------------------------------------
+begin_model                
+                                  | olivine solution
+O                                                                               
+2                                 | model type: Margules, macroscopic
+2                                 | 2 endmembers
+fo       fa            
+  0  0                            | endmember flags
+0. 1.0  0.1  0                    | subdivision range, imod = 0 -> cartesian subdivision
+begin_excess_function
+W(fo fa) 7.6d3 0 0. 0.   
+end_excess_function 
+1                                 | 1 site entropy model
+2 2.                              | 2 species, site multiplicity = 2.
+z(mg) = 1 fo
+end_of_model               
+                      --------------------------------------------------------
+begin_model               
+                                  | Wadleysite solution
+Wad                                                                               
+2                                 | model type: Margules, macroscopic
+2                                 | 2 endmembers
+wad       fwad            
+  0  0                            | endmember flags
+0. 1. .1    0                     | subdivision range, imod = 0 -> cartesian subdivision
+begin_excess_function
+W(wad fwad) 16.5d3 0. 0.     
+end_excess_function 
+1                                     1 site entropy model
+2 2.                                  2 species, site multiplicity = 2.
+z(mg) = 1 wad
+end_of_model               
+                      --------------------------------------------------------
+begin_model                
+                                  | Ringwoodite solution
+Ring                                                                               
+2                                 | model type: Margules, macroscopic
+2                                 | 2 endmembers
+ring       fring            
+  0  0                            | endmember flags
+0. 1. .1   0                      | subdivision range, imod = 0 -> cartesian subdivision
+begin_excess_function
+W(ring fring) 9.1d3 0. 0.          
+end_excess_function 
+1                                     1 site entropy model
+2 2.                                  2 species, site multiplicity = 2.
+z(mg) = 1 ring
+end_of_model               
+                      --------------------------------------------------------
+begin_model                
+                                  | Orthopyroxene solution
+Opx                                                                               
+2                                 | model type: Margules, macroscopic
+4                                 | 4 endmembers
+odi  en   fs   ts        
+0  0  0  0                        | endmember flags
+0. 1. .1  0                       | range and resolution for X(odi)
+0. 1. .1  0                       | range and resolution for X(en)
+0. 1. .1  0                       | range and resolution for X(fs)
+begin_excess_function
+W(odi ts) 48d3    0. 0.    
+W(odi en) 32.1d3  0. 0.      
+end_excess_function 
+
+2                                 | 2 site entropy model
+3 1.                              | 3 species, M1 site multiplicity = 1.
+z(M1,Ca) = 1 odi
+z(M1,Fe) = 1 fs
+3 1.                              | 3 species, M2 site multiplicity = 1.
+z(M2,Al) = 1 ts
+z(M2,Fe) = 1 fs
+
+end_of_model                        
+                      --------------------------------------------------------
+begin_model                
+                                  | Clinopyroxene
+Cpx          
+2                                 | model type: Margules, macroscopic
+5                                 | 5 endmembers
+jd  di  hed  cen  cts       
+
+0  0  0  0  0                     | endmember flags
+
+0. 1. .1  0                       | range and resolution for X(jd)
+0. 1. .1  0                       | range and resolution for X(di)
+0. 1. .1  0                       | range and resolution for X(hed)
+0. 1. .1  0                       | range and resolution for X(cen)
+
+begin_excess_function
+W(cen di)    24.7d3  0. 0. 
+W(jd  di)    24.3d3  0. 0. 
+W(cts di)    26d3    0. 0.         
+W(cen cts)   60.6d3  0. 0.
+W(cen hed)   24.7d3  0. 0.         
+W(jd  cts)   10d3    0. 0. 
+end_excess_function
+ 
+3                                  | 3 site entropy model
+3 1.                               | 3 species, M1 site multiplicity = 1.
+z(M1,Mg) = 1 cen
+z(M1,Na) = 1 jd
+3 1.                               | 3 species, M2 site multiplicity = 1.
+z(M2,Fe) = 1 hed
+z(M2,Al) = 1 jd + 1 cts
+2 2.                               | 2 species, T site, multiplicity 2
+z(T,AL) = 1/2 cts
+
+begin_van_laar_sizes                        
+alpha(jd)     1.0    0.0    0.0                      
+alpha(di)     1.0    0.0    0.0                      
+alpha(hed)    1.0    0.0    0.0
+alpha(cen)    1.0    0.0    0.0
+alpha(cts)    3.5    0.0    0.0
+end_van_laar_sizes
+
+reach_increment 3
+
+end_of_model                        
+                      --------------------------------------------------------
+begin_model                
+                                  | akimotoite (ilmenite-structure) solution
+Aki                                                                                                 
+2                                 | model type: Margules, macroscopic
+
+3                                 | 3 endmembers
+cor   aki   faki           
+  0  0  0                         | endmember flags
+0.0 1.  0.1  0                    | subdivision range, imod = 0 -> cartesian subdivision
+0.0 1.  0.1  0                    | subdivision range, imod = 0 -> cartesian subdivision
+
+begin_excess_function                                                
+W(aki cor)  66d3  0. 0. 
+end_excess_function 
+
+2                                     2 site entropy model
+
+3 1.                                  3 species on M site multiplicity = 1.
+z(mg) = 1 aki
+z(fe) = 1 faki
+
+2 1.                                  2 species on T site multiplicity = 1.
+z(al) = 1 cor
+
+end_of_model               
+                      --------------------------------------------------------
+begin_model                
+                                      Garnet solution without Fe-majorite (Fe3MgSiSi3O12) and
+                                      Ca-majorite (Ca3MgSiSi3O12). See Gt_maj below for the 
+                                      complete model
+
+                                      reformulated as 688 standard format. JADC, 10/19
+
+Gt
+
+688                                | model type: 688 format standard model
+
+1                                  | number of polytopes
+1                                  | number of simplices
+5                                  | number of vertices on each simplex
+                                   | endmembers on the vertices
+gr   alm  maj  py jmaj
+
+0. 1. .1   0               | range and resolution for X(gr), imod = 0 -> cartesian subdivision
+0. 1. .1   0               | range and resolution for X(alm), imod = 0 -> cartesian subdivision
+0. 1. .1   0               | range and resolution for X(maj), imod = 0 -> cartesian subdivision
+0. 1. .1   0               | range and resolution for X(py), imod = 0 -> cartesian subdivision
+
+begin_excess_function
+W(gr maj)  58d3
+W(gr py)   30d3
+W(py maj)  21.3d3
+end_excess_function 
+
+3                                 | 3 site configurational entropy model
+
+A                                 | site name
+5 3 3                             | number of species, effective multiplicity, true multiplicity
+z(Ca,A) = 1 gr
+z(Fe,A) = 1 alm
+z(Na,A) = 2/3 jmaj
+z(Mg,A) = 1 py + 1 maj
+z(Al,A) = 1/3 jmaj
+
+B1                                | site name
+2 1 1                             | number of species, effective multiplicity, true multiplicity
+z(Mg,B1) = 1 maj 
+z(Al,B1) = 1 gr  + 1 py    + 1 alm + 1 jmaj
+
+B2                                | site name
+2 1 1                             | number of species, effective multiplicity, true multiplicity
+z(Si,B2) = 1 maj + 1 jmaj
+z(Al,B2) = 1 gr  + 1 py    + 1 alm
+
+[Si3O12]                                    | formula suffix, enter "none" for no suffix.
+
+end_of_model       
+                      --------------------------------------------------------
+begin_model                
+                                      Garnet solution with Fe-majorite (Fe3MgSiSi3O12) and
+                                      Ca-majorite (Ca3MgSiSi3O12), the use of these endmembers
+                                      appear to be necessary to reproduce the Stixrude
+                                      & Lithgow-Bertelloni (2011) calculations. 
+
+                                      reformulated as an irregular prismatic model, JADC, 5/18
+
+                                      reformulated as 688 standard format. JADC, 10/19
+
+                                                      A            B1/B2
+                                                     ____________________
+
+                                      Multiplicity    3            2
+                                                     ____________________
+                   prismatic vertex:
+                                        py            Mg           AlAl   independent   
+                                        alm           Fe           AlAl   independent     
+                                        gr            Ca           AlAl   independent
+
+                                        maj           Mg           MgSi   independent   
+                                        fmaj          Fe           MgSi   dependent   
+                                        cmaj          Ca           MgSi   dependent   
+                   orphan vertex:
+                                        jmaj          Na2/3Al1/3   AlSi   independent (orphan)
+
+Gt_maj
+
+688                                | model type: 688 format standard model
+
+2                                  | number of polytopes
+                                   | polytope names and composite composition space subdivision schemes 
+[jmaj]   0    1   .1  0            | subdivision range for X(1) = M-free
+[~jmaj]  by difference             | = [M][Al,MgSi], M = Mg,Fe,Ca
+                                   | ----------------------------
+                                   | Polytope 1 - 1 simplex
+1                                  | number of simplices, [Na2/3Al1/3][AlSi]
+1                                  | number of vertices on each simplex
+jmaj                               | endmembers on the vertices
+                                   | ----------------------------
+                                   | Polytope 2 - 3x2 simplices
+2                                  | number of simplices
+3  2                               | number of vertices on each simplex
+                                   | endmembers on the vertices
+cmaj   fmaj   maj
+gr     alm    py
+                                   | First 3-simplex
+X_Ca,A    0. 1. .1   0             | range and resolution for X(Ca,A), imod = 0 -> cartesian subdivision
+X_Fe,A    0. 1. .1   0             | range and resolution for X(Fe,A), imod = 0 -> cartesian subdivision
+X_Mg,A    by difference 
+                                   | Second 2-simplex
+X_MgSi,B  0. 1. .1   0             | range and resolution for X(1-Ts,B), imod = 0 -> cartesian subdivision
+X_AlAl,B  by difference
+
+begin_dependent_endmembers
+fmaj = 1 maj + 1 alm - 1 py
+cmaj = 1 maj + 1 gr  - 1 py
+end_dependent_endmembers
+
+begin_excess_function
+W(gr maj)  58d3
+W(gr py)   30d3
+W(py maj)  21.3d3
+end_excess_function
+
+3                                 | 3 site configurational entropy model
+
+A                                 | site name
+5 3 3                             | number of species, effective multiplicity, true multiplicity
+z(Ca,A) = 1 gr
+z(Fe,A) = 1 alm
+z(Na,A) = 2/3 jmaj
+z(Mg,A) = 1 py + 1 maj
+z(Al,A) = 1/3 jmaj
+
+B1                                | site name
+2 1 1                             | number of species, effective multiplicity, true multiplicity
+z(Mg,B1) = 1 maj 
+z(Al,B1) = 1 gr  + 1 py    + 1 alm + 1 jmaj
+
+B2                                | site name
+2 1 1                             | number of species, effective multiplicity, true multiplicity
+z(Si,B2) = 1 maj + 1 jmaj
+z(Al,B2) = 1 gr  + 1 py    + 1 alm
+
+[Si3O12]                                    | formula suffix, enter "none" for no suffix.
+
+end_of_model
+                      --------------------------------------------------------     
+begin_model                
+
+Ppv                                                                               
+2                                     model type: Margules, macroscopic
+
+3                                    3 endmembers
+appv  ppv   fppv            
+  0  0  0                           | endmember flags
+
+0. 1.0  0.1  0             | subdivision range, imod = 0 -> cartesian subdivision
+0. 1.0  0.1  0             | subdivision range, imod = 0 -> cartesian subdivision
+
+begin_excess_function                                                
+W(ppv appv)  60d3  0. 0.  
+end_excess_function 
+
+2                                     2 site entropy model
+
+3 1.                                  3 species on M site multiplicity = 1.
+z(mg) = 1 ppv
+z(fe) = 1 fppv
+
+2 1.                                  2 species on T site multiplicity = 1.
+z(al) = 1 appv
+
+end_of_model               
+                      --------------------------------------------------------
+begin_model                
+                                      Ca-Ferrite solution.
+CF                                                                               
+2                                     model type: Margules, macroscopic
+3                                     3 endmembers
+mfer ffer nfer             
+0  0  0                           
+0. 1. .1   0               
+0. 1. .1   0              
+
+ideal
+
+2                                     number of sites for the entropy model
+
+3 1.                                  3 species, A site multiplicity = 1.
+z(A,fe) = 1 ffer
+z(A,mg) = 1 mfer
+                                      
+2 1.                                  al-si mixing on only one "T" site.
+z(M,Si) = 1 nfer
+
+end_of_model

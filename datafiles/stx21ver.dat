@@ -1,0 +1,524 @@
+| data from:
+
+| Lars Stixrude, Carolina Lithgow-Bertelloni, 
+| Thermal Expansivity, Heat Capacity, and Bulk Modulus of the Mantle, 
+| Geophysical Journal International, 2021; ggab394, 
+| https://doi.org/10.1093/gji/ggab394
+
+| convered with STX_2_ver.f, August 26, 2021. JADC
+
+Stixrude & Lithgow-Bertelloni, GJI '21  |<= data base title
+
+begin_standard_variables |<= name (<9 characters), reference value, tolerance
+P(bar)      1    1   
+T(K)      300    1   
+Y(CO2)      0   0.1E-6
+mu(C1)      0   0.1E-2
+mu(C2)      0   0.1E-2
+end_standard_variables
+
+tolerance  -1    |<= DTOL for unconstrained minimization, energy units
+
+begin_components |<= name (<5 characters), molar weight (g)
+NA2O    61.9790
+MGO     40.3040
+AL2O3  101.9610
+SIO2    60.0840
+CAO     56.0770
+FEO     71.8440
+O2      31.9990     
+end_components         
+
+| Stixrude's endmember notation indicates the following endmembers should have configurational
+| entropy according to his notation. However, the phase relations in the 2011 paper are
+| only reproduced if the Opx and Pl solution models neglect tetrahedral disorder. 
+
+| endmember  S_Conf     Solution    S_Conf in solution model
+
+| sp          yes          Sp         yes
+| herc        yes          Sp         yes
+| cts         yes          Cpx        yes   11.52565
+| namj        yes          Gt         yes   3*(2/3*ln(2/3)+1/3*ln(1/3)) = 1.909542505 EU, 15.87593639 J/K
+| ab          yes          Pl         NO    4*(3/4*ln(3/4)+1/4*ln(1/4)) = 2.249340578 EU, 18.70101757 J/K
+| an          yes          Pl         NO    4*(1/2*ln(1/2)+1/2*ln(1/2)) = 2.772588722 EU, 23.05130263 J/K
+| ts          yes          Opx        NO    11.52565
+| mnal        yes          NaAl       yes   2.70337 EU, 22.47579535 J/K
+| fnal        yes          NaAl       yes   2.70337 EU, 22.47579535 J/K
+| nnal        yes          NaAl       yes   4.15888 EU, 34.57695396 J/K
+                                                                                                     
+end                                                                                                                                         
+ 
+
+
+ab       EoS = 6 | Na_1Al_1Si_3O_8        Albite                                  
+NA2O(.5)AL2O3(.5)SIO2(3)
+G0 = -3720147.60 S0 = -13 V0 = -10.0452
+c1 = 597526.8 c2 = 2.77841 c3 = 720.00359 c4 = 0.57885 c5 = 1 c6 = 1.02978
+m0 = 360000 m1 = 1.38571
+end
+
+
+alm      EoS = 6 | Fe_3Al_1Al_1Si_3O_12  aka al Almandine                               
+AL2O3(1)SIO2(3)FEO(3)
+G0 = -4933027.97 S0 = -20 V0 = -11.5430
+c1 = 1738963.7 c2 = 4.91341 c3 = 741.38227 c4 = 1.06493 c5 = 1.42169 c6 = 2.09289
+m0 = 960000 m1 = 1.40927
+transition = 1 type = 7  t1 = 7.5 t2 = 40.14405
+end
+
+
+aperov   EoS = 6 | Al_1Al_1O_3            Al-Perovskite                           
+AL2O3(1)
+G0 = -1517728.63 S0 = -5 V0 = -2.4944
+c1 = 2424000 c2 = 4.1 c3 = 858.26509 c4 = 1.54222 c5 = 0.84088 c6 = 2.27510
+m0 = 1691996.2 m1 = 1.55703
+end
+
+
+an       EoS = 6 | Ca_1Al_2Si_2O_8        Anorthite                               
+AL2O3(1)SIO2(2)CAO(1)
+G0 = -4013369.04 S0 = -13 V0 = -10.0610
+c1 = 840933.1 c2 = 6.73404 c3 = 752.34537 c4 = 0.38497 c5 = 1 c6 = 1.63323
+m0 = 399000 m1 = 1.09129
+end
+
+
+anao     EoS = 6 | Na_2Al_2O_4            alpha-NaO2                              
+NA2O(1)AL2O3(1)
+G0 = -2114835.79 S0 = -8 V0 = -4.5420
+c1 = 1611439.3 c2 = 3.90838 c3 = 753.49641 c4 = 1.45033 c5 = 1.54870 c6 = 0.78047
+m0 = 1084559 m1 = 2.14668
+end
+
+
+seif     EoS = 6 | Si_1O_2                alpha-PbO_2-SiO_2                       
+SIO2(1)
+G0 = -793366.84 S0 = -3 V0 = -1.3670
+c1 = 3271560.1 c2 = 4.01662 c3 = 1128.94590 c4 = 1.55674 c5 = 2.20960 c6 = 4.55828
+m0 = 2274115.9 m1 = 1.77078
+end
+
+
+appv     EoS = 6 | Al_1Al_1O_3            Al-Post-Perovskite                      
+AL2O3(1)
+G0 = -1336464.73 S0 = -5 V0 = -2.3847
+c1 = 2490000 c2 = 4 c3 = 722.93835 c4 = 1.88758 c5 = 2.04631 c6 = 2.52605
+m0 = 919652.6 m1 = 1.81603
+end
+
+
+ca-pv    EoS = 6 | Ca_1Si_1O_3     aka capv       Ca-Perovskite                           
+SIO2(1)CAO(1)
+G0 = -1459910.18 S0 = -5 V0 = -2.7450
+c1 = 2360000 c2 = 3.9 c3 = 798.78581 c4 = 1.88943 c5 = 0.89662 c6 = 1.23493
+m0 = 1552052.4 m1 = 2.22637
+end
+
+
+cts      EoS = 6 | Ca_1Al_1(Si_1Al_1)O_6  Lime                                    
+AL2O3(1)SIO2(1)CAO(1)
+G0 = -3119447.41 S0 = -10 V0 = -6.3574
+c1 = 1137599 c2 = 4.80610 c3 = 804.36068 c4 = 0.82288 c5 = 0.60142 c6 = 1.73383
+c7 = 11.5256  
+m0 = 744249.9 m1 = 1.71384
+end
+
+
+cen      EoS = 6 | Mg_1Mg_1Si_2O_6        Clinoenstatite                          
+MGO(2)SIO2(2)
+G0 = -2906835.53 S0 = -10 V0 = -6.2500
+c1 = 1137599 c2 = 4.80610 c3 = 806.64315 c4 = 1.00921 c5 = 0.60142 c6 = 1.43121
+m0 = 769703.6 m1 = 1.71384
+end
+
+
+cor      EoS = 6 | Al_1Al_1O_3  aka co          Corundum                                
+AL2O3(1)
+G0 = -1582440.32 S0 = -5 V0 = -2.5577
+c1 = 2525857.2 c2 = 3.88671 c3 = 932.21586 c4 = 1.30810 c5 = 1.71245 c6 = 2.63052
+m0 = 1632000 m1 = 1.81492
+end
+
+
+coes     EoS = 6 | Si_1O_2                Coesite                                 
+SIO2(1)
+G0 = -856110.36 S0 = -3 V0 = -2.0657
+c1 = 1035381.5 c2 = 2.90070 c3 = 880.23946 c4 = 0.29064 c5 = 1 c6 = 2.75988
+m0 = 616000 m1 = 0.49686
+end
+
+
+crst     EoS = 6 | Si_1O_2                Cristobalite                            
+SIO2(1)
+G0 = -852539.43 S0 = -3 V0 = -2.7240
+c1 = 115000 c2 = 9 c3 = 794.74452 c4 = 0.01515 c5 = 1 c6 = 1.17003
+m0 = 203275.4 m1 = 4.06551
+end
+
+
+di       EoS = 6 | Ca_1Mg_1Si_2O_6        Diopside                                
+MGO(1)SIO2(2)CAO(1)
+G0 = -3029608.38 S0 = -10 V0 = -6.6039
+c1 = 1137599 c2 = 4.80610 c3 = 782.57306 c4 = 1.00921 c5 = 0.60142 c6 = 1.06175
+m0 = 727000 m1 = 1.71384
+end
+
+
+en       EoS = 6 | Mg_1Mg_1Si_2O_6   aka enm     Enstatite                               
+MGO(2)SIO2(2)
+G0 = -2914163.60 S0 = -10 V0 = -6.2676
+c1 = 1070768.1 c2 = 7.02751 c3 = 812.21227 c4 = 0.78477 c5 = 3.43847 c6 = 2.50450
+m0 = 768000 m1 = 1.54596
+end
+
+
+enL      EoS = 11 | Mg_1Si_1O_3            MgSiO3 Liquid                                 
+MGO(1)SIO2(1)
+G0 = -1735148.59 S0 = -5 V0 = -3.8880
+c1 = 226263.1 c2 = 5.51723 c3 = 305.71098 c4 = 1.70882 c5 = -.14314
+end
+
+
+fa       EoS = 6 | Fe_2Si_1O_4            Fayalite                                
+SIO2(1)FEO(2)
+G0 = -1371695.66 S0 = -7 V0 = -4.6290
+c1 = 1364855.8 c2 = 4.88157 c3 = 618.96116 c4 = 1.08388 c5 = 2.88055 c6 = 1.65937
+m0 = 512200 m1 = 0.85893
+transition = 1 type = 7  t1 = 65 t2 = 26.76270
+end
+
+
+fapv     EoS = 6 | Fe_1Al_1O_3            FeAlO3-Perovskite                       
+AL2O3(1)FEO(1)
+G0 = -848315.02 S0 = -5 V0 = -2.7260
+c1 = 2233255 c2 = 4.1 c3 = 755.38117 c4 = 1.54222 c5 = 0.84088 c6 = 2.55505
+m0 = 1500420.9 m1 = 1.73259
+transition = 1 type = 7  t1 = 10 t2 = 14.89723
+end
+
+
+fc2/c     EoS = 6 | Fe_2Si_2O_6  aka fec2          HP-Clinoferrosilite                     
+SIO2(2)FEO(2)
+G0 = -2224211. S0 = -10 V0 = -6.3854
+c1 = 1160249 c2 = 6.23682 c3 = 698.72086 c4 = 1.12442 c5 = 0.20362 c6 = 0.98031
+m0 = 751472.1 m1 = 1.84120
+transition = 1 type = 7  t1 = 5 t2 = 26.76270
+end
+
+
+ffer     EoS = 6 | Fe_1Al_1Al_1O_4   aka fecf     Fe-Ca-Ferrite                           
+AL2O3(1)FEO(1)
+G0 = -1774197.05 S0 = -7 V0 = -3.7216
+c1 = 2130000 c2 = 4.1 c3 = 734.07527 c4 = 1.56672 c5 = 1 c6 = 2.34163
+m0 = 1597096.5 m1 = 1.93591
+transition = 1 type = 7  t1 = 5 t2 = 13.38135
+end
+
+
+faki     EoS = 6 | Fe_1Si_1O_3    aka feil        Fe-Akimotoite                           
+SIO2(1)FEO(1)
+G0 = -1047531.34 S0 = -5 V0 = -2.6854
+c1 = 2106938.7 c2 = 5.21540 c3 = 781.36175 c4 = 1.19458 c5 = 2.22460 c6 = 3.43813
+m0 = 1608335.7 m1 = 1.81492
+transition = 1 type = 7  t1 = 5 t2 = 13.38135
+end
+
+
+fperov   EoS = 6 | Fe_1Si_1O_3            Fe-Perovskite                           
+SIO2(1)FEO(1)
+G0 = -1002662.53 S0 = -5 V0 = -2.5321
+c1 = 2705825.5 c2 = 4.010 c3 = 746.56455 c4 = 1.54222 c5 = 0.84088 c6 = 2.09410
+m0 = 1300209.8 m1 = 1.37254
+transition = 1 type = 7  t1 = 5 t2 = 13.38135
+end
+
+
+fring    EoS = 6 | Fe_2Si_1O_4            Fe-Ringwoodite                          
+SIO2(1)FEO(2)
+G0 = -1359229.67 S0 = -7 V0 = -4.1860
+c1 = 2134102.8 c2 = 4.22034 c3 = 662.84304 c4 = 1.26584 c5 = 2.39042 c6 = 1.77066
+m0 = 920000 m1 = 1.35412
+transition = 1 type = 7  t1 = 5 t2 = 26.76270
+end
+
+
+fwad     EoS = 6 | Fe_2Si_1O_4            Fe-Wadsleyite                           
+SIO2(1)FEO(2)
+G0 = -1358363.34 S0 = -7 V0 = -4.2800
+c1 = 1685792.1 c2 = 4.12303 c3 = 647.34559 c4 = 1.20388 c5 = 2.21007 c6 = 0.95246
+m0 = 720000 m1 = 1.50973
+transition = 1 type = 7  t1 = 5 t2 = 26.76270
+end
+
+
+lfperov  EoS = 6 | Fe_1Si_1O_3            low spin Fe-Perovskite                           
+SIO2(1)FEO(1)
+G0 = -879526.20 S0 = -5 V0 = -2.4970
+c1 = 2705825.5 c2 = 4.010 c3 = 692.38659 c4 = 1.54222 c5 = 0.84088 c6 = 1.99344
+m0 = 1303370.5 m1 = 1.37411
+end
+
+
+fnal     EoS = 6 | Na_1Fe_2(Al_5Si_1)O_12 Fe-NAL                                  
+NA2O(0.5)FEO(2)SIO2(1)AL2O3(2.5)
+G0 = -5475295.42 S0 = -21 V0 = -11.2045
+c1 = 2039950.1 c2 = 4.31884 c3 = 795.29328 c4 = 1.42971 c5 = 1 c6 = 2.65939
+c7 = 22.47579
+m0 = 1495937.7 m1 = 1.74230
+transition = 1 type = 7  t1 = 5 t2 = 26.76270
+end
+
+
+fo       EoS = 6 | Mg_2Si_1O_4            Forsterite                              
+MGO(2)SIO2(1)
+G0 = -2055371.19 S0 = -7 V0 = -4.3603
+c1 = 1279555 c2 = 4.21796 c3 = 809.19770 c4 = 0.99280 c5 = 2.10671 c6 = 2.29968
+m0 = 816000 m1 = 1.46257
+end
+
+
+fppv     EoS = 6 | Fe_1Si_1O_3            Fe-PostPerovskite                       
+SIO2(1)FEO(1)
+G0 = -982035.50 S0 = -5 V0 = -2.4652
+c1 = 2920000 c2 = 3.740 c3 = 794.15823 c4 = 1.76958 c5 = 2.04631 c6 = 1.72601
+m0 = 1295000 m1 = 1.31526
+transition = 1 type = 7  t1 = 5 t2 = 13.38135
+end
+
+
+fs       EoS = 6 | Fe_1Fe_1Si_2O_6        Ferrosilite                             
+SIO2(2)FEO(2)
+G0 = -2228327.70 S0 = -10 V0 = -6.5941
+c1 = 1005459.1 c2 = 7.87534 c3 = 682.67865 c4 = 0.71519 c5 = 3.43847 c6 = 1.08309
+m0 = 520000 m1 = 1.54596
+transition = 1 type = 7  t1 = 5 t2 = 26.76270
+end
+
+
+gr       EoS = 6 | Ca_3Al_1Al_1Si_3O_12   Grossular                               
+AL2O3(1)SIO2(3)CAO(3)
+G0 = -6275179.81 S0 = -20 V0 = -12.5120
+c1 = 1670622.6 c2 = 3.91544 c3 = 822.77062 c4 = 1.05402 c5 = 1.88886 c6 = 2.38415
+m0 = 1090000 m1 = 1.16274
+end
+
+
+herc     EoS = 6 | (Fe_3Al_1)(Al_7Fe_1)O_16 Hercynite lambda accounts only for magnetic entropy, thus c7 here is atomic conf S                           
+AL2O3(4)FEO(4)
+G0 = -7356185.03 S0 = -28 V0 = -16.3372
+c1 = 2089823.1 c2 = 4.62659 c3 = 794.21184 c4 = 1.19332 c5 = 4.05077 c6 = 2.49369
+c7 = 43.76  
+m0 = 845000 m1 = 0.62792
+transition = 1 type = 7  t1 = 5 t2 = 53.52540
+end
+
+
+hed      EoS = 6 | Ca_1Fe_1Si_2O_6        Hedenbergite                            
+SIO2(2)CAO(1)FEO(1)
+G0 = -2676991.78 S0 = -10 V0 = -6.7867
+c1 = 1192047.2 c2 = 4.81927 c3 = 702.08234 c4 = 0.96665 c5 = 0.60142 c6 = 1.01745
+m0 = 610000 m1 = 1.71384
+transition = 1 type = 7  t1 = 5 t2 = 13.38135
+end
+
+
+jd       EoS = 6 | Na_1Al_1Si_2O_6        Jadeite                                 
+NA2O(.5)AL2O3(.5)SIO2(2)
+G0 = -2855195.56 S0 = -10 V0 = -6.0508
+c1 = 1422922.6 c2 = 4.80610 c3 = 820.78389 c4 = 0.89983 c5 = 0.78628 c6 = 1.88167
+m0 = 850000 m1 = 1.71384
+end
+
+
+ky       EoS = 6 | Al_2Si_1O_5            Kyanite                                 
+AL2O3(1)SIO2(1)
+G0 = -2446081.74 S0 = -8 V0 = -4.4227
+c1 = 1600000 c2 = 4 c3 = 943.19593 c4 = 0.92549 c5 = 1 c6 = 2.90375
+m0 = 1178545.3 m1 = 1.69416
+end
+
+
+c2/c     EoS = 6 | Mg_2Si_2O_6      aka mgc2      HP-Clinoenstatite                       
+MGO(2)SIO2(2)
+G0 = -2905475.75 S0 = -10 V0 = -6.0760
+c1 = 1160249 c2 = 6.23682 c3 = 822.89602 c4 = 1.12442 c5 = 0.20362 c6 = 2.14112
+m0 = 879271.6 m1 = 1.84120
+end
+
+
+mfer     EoS = 6 | Mg_1Al_1Al_1O_4   aka mgcf     Mg-Ca-Ferrite                           
+AL2O3(1)MGO(1)
+G0 = -2122873.69 S0 = -7 V0 = -3.6135
+c1 = 2130000 c2 = 4.1 c3 = 831.14221 c4 = 1.56672 c5 = 1 c6 = 1.30302
+m0 = 1297000 m1 = 1.93591
+end
+
+
+aki      EoS = 6 | Mg_1Si_1O_3            Mg-Akimotoite                           
+MGO(1)SIO2(1)
+G0 = -1409831.95 S0 = -5 V0 = -2.6354
+c1 = 2106938.7 c2 = 5.21540 c3 = 932.602 c4 = 1.19458 c5 = 2.22460 c6 = 3.40174
+m0 = 1320000 m1 = 1.81492
+end
+
+
+maj      EoS = 6 | Mg_3Mg_1Si_1Si_3O_12   Mg-Majorite, no S conf                             
+MGO(4)SIO2(4)
+G0 = -5693291.79 S0 = -20 V0 = -11.4324
+c1 = 1651183.7 c2 = 4.21183 c3 = 822.48562 c4 = 0.97681 c5 = 1.53581 c6 = 1.01779
+m0 = 850000 m1 = 1.42969
+end
+
+
+perov   EoS = 6 | Mg_1Si_1O_3            Mg-Perovskite                           
+MGO(1)SIO2(1)
+G0 = -1362442.75 S0 = -5 V0 = -2.4445
+c1 = 2505469 c2 = 4.13499 c3 = 880.01895 c4 = 1.54222 c5 = 0.84088 c6 = 1.65573
+m0 = 1729000 m1 = 1.73259
+end
+
+
+ring     EoS = 6 | Mg_2Si_1O_4    aka mgri        Mg-Ringwoodite                          
+MGO(2)SIO2(1)
+G0 = -2017223.98 S0 = -7 V0 = -3.9493
+c1 = 1848999.3 c2 = 4.22034 c3 = 875.13511 c4 = 1.10720 c5 = 2.39042 c6 = 2.30288
+m0 = 1230000 m1 = 1.35412
+end
+
+
+ts      EoS = 6 | Mg_1Al_1Si_1O_6Al_1  aka mgts  Mg-Tschermak's                         
+MGO(1)AL2O3(1)SIO2(1)
+G0 = -3002410.17 S0 = -10 V0 = -5.9140
+c1 = 1070768.1 c2 = 7.02751 c3 = 783.94073 c4 = 0.78477 c5 = 3.43847 c6 = 2.39416
+m0 = 934714.6 m1 = 1.54596
+end
+
+
+wad      EoS = 6 | Mg_2Si_1O_4    mgwa        Mg-Wadsleyite                           
+MGO(2)SIO2(1)
+G0 = -2028172.68 S0 = -7 V0 = -4.0515
+c1 = 1687010.6 c2 = 4.12303 c3 = 845.20132 c4 = 1.20388 c5 = 2.21007 c6 = 2.56133
+m0 = 1120000 m1 = 1.50973
+end
+
+
+mnal     EoS = 6 | Na_1Mg_2(Al_5Si_1)O_12     Mg-NAL                                  
+NA2O(.5)MGO(2)AL2O3(2.5)SIO2(1)
+G0 = -6167391.60 S0 = -21 V0 = -10.9883
+c1 = 2039950.1 c2 = 4.31884 c3 = 858.38264 c4 = 1.42971 c5 = 1 c6 = 1.93069
+c7 = 22.47579
+m0 = 1290000 m1 = 1.74230
+end
+
+
+ppv      EoS = 6 | Mg_1Si_1O_3      aka mppv      Mg-PostPerovskite                       
+MGO(1)SIO2(1)
+G0 = -1313625.76 S0 = -5 V0 = -2.3525
+c1 = 2920000 c2 = 3.740 c3 = 941.49795 c4 = 1.76958 c5 = 2.04631 c6 = 1.28810
+m0 = 1711358.7 m1 = 1.85188
+end
+
+
+nfer     EoS = 6 | Na_1Al_1Si_1O_4    aka nacf    Na-Ca-Ferrite                           
+NA2O(.5)AL2O3(.5)SIO2(1)
+G0 = -1835429.51 S0 = -7 V0 = -3.6270
+c1 = 2200000 c2 = 4.1 c3 = 683.31827 c4 = 1.56672 c5 = 1 c6 = 1.36827
+m0 = 1353266.2 m1 = 1.93591
+end
+
+
+namj     EoS = 6 | (Na_2Mg_1)Si_1Si_1Si_3 Na-Majorite                             
+NA2O(1)MGO(1)SIO2(5)
+G0 = -5303066.24 S0 = -20 V0 = -11.0842
+c1 = 1720351.5 c2 = 5.20050 c3 = 844.73722 c4 = 1.25078 c5 = 0.10916 c6 = 2.48490
+c7 = 15.87593
+m0 = 1147000 m1 = 1.35756
+end
+
+
+neph     EoS = 6 | Na_1Al_1Si_1O_4        Nepheline                               
+NA2O(.5)AL2O3(.5)SIO2(1)
+G0 = -1994469.57 S0 = -7 V0 = -5.3868
+c1 = 530555 c2 = 4 c3 = 743.57985 c4 = 0.69690 c5 = 1 c6 = 0.62410
+m0 = 307000 m1 = 1.33087
+transition = 1 type = 7  t1 = 467 t2 = 10 t3 = 0.0800
+end
+
+
+nnal     EoS = 6 | Na_1Na_2(Al_3Si_3)O_12 Na-NAL                                  
+NA2O(1.5)AL2O3(1.5)SIO2(3)
+G0 = -5567127.90 S0 = -21 V0 = -10.9401
+c1 = 2039950.1 c2 = 4.31884 c3 = 850.32833 c4 = 1.42971 c5 = 1 c6 = 2.42502
+c7 = 34.57695
+m0 = 1444510.2 m1 = 1.74230
+end
+
+
+odi      EoS = 6 | Ca_1Mg_1Si_2O_6        Ortho-Diopside                          
+MGO(1)SIO2(2)CAO(1)
+G0 = -3015734.13 S0 = -10 V0 = -6.8054
+c1 = 1070768.1 c2 = 7.02751 c3 = 744.54893 c4 = 0.78477 c5 = 3.43847 c6 = 1.31909
+m0 = 575087.5 m1 = 1.54596
+end
+
+
+per       EoS = 6 | Mg_2Mg_2O_4    aka pe        Periclase                               
+MGO(4)
+G0 = -2278109.88 S0 = -8 V0 = -4.4976
+c1 = 1611439.3 c2 = 3.90838 c3 = 770.90151 c4 = 1.45033 c5 = 1.54870 c6 = 2.56123
+m0 = 1309000 m1 = 2.14668
+end
+
+
+py       EoS = 6 | Mg_3Al_1Al_1Si_3O_12   Pyrope                                  
+MGO(3)AL2O3(1)SIO2(3)
+G0 = -5937137.35 S0 = -20 V0 = -11.3080
+c1 = 1702396.4 c2 = 4.11067 c3 = 823.23783 c4 = 1.01422 c5 = 1.42169 c6 = 0.98186
+m0 = 937000 m1 = 1.35756
+end
+
+
+qtz      EoS = 6 | Si_1O_2                Quartz                                  
+SIO2(1)
+G0 = -860118.03 S0 = -3 V0 = -2.2421
+c1 = 614253.7 c2 = 19.78011 c3 = 884.20481 c4 = -.03958 c5 = 1 c6 = 2.40509
+m0 = 448577.6 m1 = -0.04277
+transition = 1 type = 7  t1 = 847 t2 = 5.760 t3 = 0.1359
+end
+
+
+sp       EoS = 6 | (Mg_3Al_1)(Al_7Mg_1)O_16 Spinel                                  
+MGO(4)AL2O3(4)
+G0 = -8680043.36 S0 = -28 V0 = -15.9048
+c1 = 1951393.3 c2 = 4.62659 c3 = 856.36950 c4 = 0.97518 c5 = 4.05077 c6 = 2.44263
+c7 = 43.76
+m0 = 1090000 m1 = 0.62792
+end
+
+
+st       EoS = 6 | Si_1O_2                Stishovite                              
+SIO2(1)
+G0 = -817491.62 S0 = -3 V0 = -1.4017
+c1 = 3058330.2 c2 = 4.02920 c3 = 1092.17047 c4 = 1.55674 c5 = 2.20960 c6 = 4.40394
+m0 = 2280000 m1 = 1.94045
+transition = 1 type = 7  t1 = -4250 t2 = 0.00004
+end
+
+
+wus      EoS = 6 | Fe_2Fe_2O_4   aka wu         W\"ustite                               
+FEO(4)
+G0 = -974607.49 S0 = -8 V0 = -4.9024
+c1 = 1607000 c2 = 4 c3 = 454.17520 c4 = 1.45033 c5 = 1.54870 c6 = 0.06776
+m0 = 590000 m1 = 1.44764
+transition = 1 type = 7  t1 = 191 t2 = 53.52540
+end
+
+
+wuls     EoS = 6 | Fe_2Fe_2O_4            W\"ustite       low-spin                        
+FEO(4)
+G0 = -621968.16 S0 = -8 V0 = -4.3400
+c1 = 1997000 c2 = 4 c3 = 524.57881 c4 = 1.45033 c5 = 1.54870 c6 = -.13801
+m0 = 590000 m1 = 1.44073
+end
+
+

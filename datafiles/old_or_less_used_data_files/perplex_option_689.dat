@@ -1,0 +1,116 @@
+|----------------------------------------------------------------------
+
+        | Run-time Perple_X 6.8.8 options:
+
+        | Comments must be preceeded by the "|" character.
+
+        | 0) All keywords accept the default value, in which case the keyword is assigned its default attributes.
+        | 1) Keywords and values are case sensitive.
+        | 2) Keywords that take the value T (true) or F (false) are always binary.
+        | 3) Keywords that take the value on, always may take the value off, but may accept other values as indicated below.
+        | 4) Default keyword values are indicated in square brackets in the comment following each keyword.
+        | 5) For keyword documentation refer to: www.perplex.ethz.ch/perplex_options.html
+
+        | To change the value of an option from "default" the word "default" 
+        | must be replaced with the desired value. For example, to change the 
+        | x-grid resolution from its default values [40 and 40] to 20 and 60, the 
+        | keyword must be changed from 
+
+        |  x_nodes default ...
+
+        |   to 
+
+        | x_nodes 20 60 ...
+
+|----------------------------------------------------------------------
+
+1d_path                   default | [40 150] exploratory and autorefine (grid parameters keyword group)
+absolute                  default | [F] WERAMI - output absolute component amounts
+Anderson-Gruneisen        default | [F] Anderson-Gruneisen parameter correction for polythermal Murnaghan and Birch-Murnaghan
+approx_alpha              default | [T] use approximation exp(x) ~ 1+x to evaluate expansivity effect on volume
+aq_bad_results            default | [error]* 101 102 103 or ignore => response to suspect lagged speciation results. *defaults to 101 for fractionation problems
+aq_output                 default | [T] output back-calculated solute chemistry when electrolyte data is available
+aq_oxide_components       default | [F] accomodate oxide components in aqueous speciation calculations
+aq_species                default | [20] maximum number of solute species output (ranked by concentration) for back-calculated results
+aq_lagged_iterations      default | [0] number of internal iterations for lagged speciation.
+aq_lagged_speciation      default | [F] do lagged solute chemistry when electrolyte data is available
+aq_solute_composition     default | [m] y => mole fractions, m => molality
+aq_solvent_composition    default | [y] y => mole fractions, m => molality
+aq_solvent_solvus         default | [T] allow solvent phase separation without aq_bad_results error trigger
+aq_vapor_epsilon          default | [1.] dielectric constant threshold used to identify vapor
+auto_exclude              default | [T] exclude phases or species with no associated P-V EoS
+auto_refine               default | [auto] auto, manual, or off (auto_refine keyword group)
+auto_refine_file          default | [T] echo exploratory stage auto-refine data to my_project_auto_refine.txt
+bad_number                default | [NaN] any number or NaN (not-a-number)
+bounds                    default | [VRH] VRH or HS; Voigt-Reuss-Hill or Hashin-Shtrikman, see vrh/hs_averaging
+closed_c_space            default | [T] T => closed composition space for gridded minimization 
+composition_constant      default | [F] allow constants in composition expressions
+composition_phase         default | [mol] mol or wt (mass) phase compositions in WERAMI output
+composition_system        default | [wt] mol or wt; system composition in WERAMI mode 2-4 output
+console_messages          default | [on] off => suppresses most console messages (warnings, errors, etc)
+cumulative                default | [F] WERAMI, computational mode 3, property choice #36 only!- cumulative component amounts (for fractionation problems)
+dependent_potentials      default | [on] off => compute dependent thermodynamic potentials (usually chemical potentials)
+efficiency                default | [3] 1->5, only relevant for CONVEX
+explicit_bulk_modulus     default | [T] T => use explicit function for bulk modulii if available
+fancy_cumulative_modes    default | [F] T => order cumulative modes to account for univariant reactions (WERAMI, mode 3, property 25)
+fd_expansion_factor       default | [2] nth order finite difference increment is increased by fd_expansion_factor^(n-1)
+final_resolution          default | [1d-2 1d-3] >0, <1, exploratory and auto-refine target resolution
+finite_difference_p       default | [1d4 1d-2] threshold and fraction for 1st order finite difference increment on pressure
+fractionation_hi_limit    default | [0.] 0-1, upper fractionation threshold, mass fraction
+fractionation_lo_limit    default | [0.] 0-1, lower fractionation threshold, mass fraction
+global_reach_increment    default | [0] >= 0, overridden by reach_factor specified in solution model file
+grid_levels               default | [1 4] exploratory and auto-refine (grid parameters keyword group)
+hard_limits               default | [off] on or off; on => strictly impose compositional limits specified in solution model
+hybrid_EoS_H2O            default | [4] 0-2, 4-5 => 0 - MRK, 1 HSMRK, 2 - CORK, 4 - PSEoS, 5 - Haar, 6 - Zhang & Duan 05, 7 - Zhang & Duan 09
+hybrid_EoS_CO2            default | [4] 0-4 => 0 - MRK, 1 HSMRK, 2 - CORK, 3- Bottinga, 4 - PSEoS, 6 - Zhang & Duan 05, 7 - Zhang & Duan 09
+hybrid_EoS_CH4            default | [1] 0-1  => 0 - MRK, 1 HSMRK, 7 - Zhang & Duan 09
+increment                 default | [0.1 0.025] >0, < 1, fractional independent variable increments [exploratory and auto-refine], only relevant for CONVEX
+initial_resolution        default | [1/16 1/48]* >0, <1, resolution for static compositions. *for composition and mixed variable diagrams the default auto-refine value is 1/160.
+interim_results           default | [auto] auto, off or on
+interpolation             default | [on 2] value 1: on or off [on]; value 2, 1->99 [2]; only relevant for WERAMI
+linear_model              default | [on] on or off, relevant for 2d gridded minimization
+logarithmic_p             default | [F] replace pressure variable with log(pressure)
+melt_is_fluid             default | [F] identify melt (liquid) as fluid in WERAMI output
+non_linear_switch         default | VERTEX/MEEMUM [F], CONVEX [T], toggles whether nonlinear subdivision uses initial_resolution
+null_phase                default | [F] include null phases in convexhull optimization with mobile components
+option_list_files         default | [F] T => echo run-time options to my_project_PROGRAM_options.txt
+order_check               default | [on] on => compare order-disorder solutions with fully ordered and disordered states
+output_iteration_details  default | [F] T => output intermediate adaptive optimization information
+output_iteration_G        default | [F] T => print iteration G to monitor convergence during optimization
+pause_on_error            default | [T] T => wait for user response after errors
+pc_perturbation           default | [5d-3] pseudo-compound composition perturbation; only relevant for CONVEX
+poisson_ratio             default | [on 0.35] value 1: on, off or all; value 2: 0->0.5; controls use of poisson ratio estimates for shear moduli
+poisson_test              default | [F] T => use poisson ratio to check for valid results
+proportions               default | [vol] vol, wt, or mol; volume, weight (mass), or molar phase proportions
+pseudocompound_file       default | [F] echo static pseudocompound compositions to my_project_pseudocompound_list.txt
+reach_increment_switch    default | [on] all, on, off; VERTEX => on activates reach_increments only during auto_refine; MEEMUM default is [all]
+reaction_format           default | [minimum] minimum, full, stoich, S+V, or everything
+reaction_list             default | [off] on or off
+refinement_points         default | [auto] or an integer > 0, max number of metastable refinement points retained during adaptive minimization
+refinement_switch         default | [F] allow metastable refinement points for stable solutions
+refine_endmembers         default | [F] accept endmember compositions as refinement points
+reject_negative_sites     default | [T] reject compositions with negative site populations
+resolution_factor         default | [2] >2, controls the change in resolution between iterations during adaptive optimization.
+sample_on_grid            default | [T] F => WERAMI (mode 2) samples on the computational grid used by VERTEX
+seismic_data_file         default | [T] summarize options used for endmembers and solutions
+seismic_output            default | [some] all, some, none
+short_print               default | [on] suppress output of equilibrium coordinates to the print file, only relevant for CONVEX
+solution_names            default | [mod] mod, abb or ful; use the model, abbreviation, or full name for solution models for output
+solvus_tolerance          default | [auto] auto or 0->1, should be > initial_resolution/auto_refine_factor
+solvus_tolerance_II       default | [0.2] 0->1 
+speciation_factor         default | [100] >1, speciation precision = final resolution/speciation factor
+speciation_max_it         default | [100] maximum number of iterations permitted in iterative calculations
+species_output            default | [T] T => output phase speciation in MEEMUM/WERAMI mode 1 output
+species_Gibbs_energies    default | [F] T => output species Gibbs energies in MEEMUM/WERAMI mode 1 output
+spreadsheet               default | [F] T => include independent variable values in WERAMI tab output files 
+stretch_factor            default | [2d-3] >0, <1; controls degree of assymmetry for non-linear subdivision (1 => linear, 0 => logarithmic)
+subdivision_override      default | [off] off, linear, or stretch; overrides subdivision mode specified in solution models
+Tisza_test                default | [T] F => use Tisza's criterion to identify invalid properties
+T_melt                    default | [873.] melt solution model endmember temperature (K) cut off
+T_stop                    default | [0.] equilibration temperature (K) cut off
+variance                  default | [1 99] exploratory and auto-refine; maximum variance of traced equilibria; only relevant for CONVEX
+vrh/hs_weighting          default | [0.5] 0->1, weighting factor for the stiff average in VRH/HS averaging (see bounds)
+warning_ver637            default | [T] F -> warn and cease interpolation in WERAMI when immiscible solutions are present
+x_nodes                   default | [40 40] exploratory and auto-refine (grid parameters keyword group), lowest-level x grid resolution 
+y_nodes                   default | [40 40] exploratory and auto-refine (grid parameters keyword group), lowest-level y grid resolution
+zero_mode                 default | [1e-6] 0->1, threshold below which the molar mode of a phase is set to 0; defaults to zero for fractionation calculations

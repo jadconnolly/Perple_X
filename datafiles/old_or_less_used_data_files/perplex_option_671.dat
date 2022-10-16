@@ -1,0 +1,65 @@
+|----------------------------------------------------------------------
+        | Run-time Perple_X 6.6.8 options:
+        | Comments must be preceeded by the "|" character.
+        | Keywords and values are case sensitive!
+        | For documentation refer to:
+        |         www.perplex.ethz.ch/perplex_options.html
+|----------------------------------------------------------------------
+1d_path                  40 150 | exploratory and autorefine (grid parameters keyword group)
+approx_alpha               T    | use approximation exp(x)~1+x to evaluate expansivity effect on volume
+Anderson-Gruneisen         F    | Anderson-Gruneisen parameter correction for polythermal Murnaghan and Birch-Murnaghan
+auto_refine                aut  | auto, manual, or off (auto_refine keyword group)
+auto_refine_factor_I       2    | refine factor for gridded minimization and phase fractionation (auto_refine keyword group)
+auto_refine_factor_II      6    | refine factor for composition and mixed variable diagrams (auto_refine keyword group)
+auto_refine_factor_III     2    | refine factor for Schreinemakers diagrams (auto_refine keyword group)
+auto_refine_file           F    | echo auto-refine data to my_project_auto_refine.txt
+bad_number                 NaN  | any number or NaN (not-a-number)
+bounds                     VRH  | [VRH] HS; Voigt-Reuss-Hill or Hashin-Shtrikman, see vrh/hs_averaging
+closed_c_space             T    | T[rue] or F[alse], default is T => closed composition space for gridded minimization 
+composition                mol  | mol or wt; phase compositions
+console_messages           on   | on or off
+dependent_potentials       on   | on or off
+efficiency                 3    | 1->5
+explicit_bulk_modulus      T    | T[rue] or F[alse], default is F; T -> use explicit function for K if available
+fd_expansion_factor        2    | [2], nth order finite difference increment is increased by fd_expansion_factor^(n-1)
+final_resolution    1e-2 2.5e-4 | >0, <1, default 1e-3; exploratory and autorefine
+finite_difference_p    1d4 1d-2 | threshold [1d4] and fraction [1d-2] for 1st order finite difference increment on pressure
+global_reach_increment      0   | >= 0; overridden by reach_factor specified in solution model file
+grid_levels                1 4  | exploratory and autorefine (grid parameters keyword group)
+hard_limits                off  | on or off
+increment             0.1 0.025 | 0, <1; exploratory and autorefine
+initial_resolution        0.067 | >0, <1, default 1e-2
+interpolation           on   2  | value 1: on or off [on]; value 2, 1->99 [2]
+iteration                  3  4 | value 1: 2->99 [3]; value 2: 1->7 [4]
+linear_model               on   | on or off
+logarithmic_p              F    | T[rue] or F[alse], default is F
+melt_is_fluid              F    | T[rue] or F[alse], default is F
+option_list_files          F    | echo run-time options to my_project_PROGRAM_options.txt
+order_check                on   | on or off
+pause_on_error              T
+pc_perturbation           5d-3  | perturbation to pseudo-compound compositions, for Schreinemakers and Mixed-variable calculations
+poisson_ratio on          0.35  | value 1: on, off or all; value 2: 0->0.5; poisson ratio estimates for shear moduli
+proportions               vol   | vol or wt; phase proportions
+pseudocompound_file        F    | echo static pseudocompound compositions to my_project_pseudocompound_list.txt
+reach_increment_switch     on   | all, on, off; default is on; all consumes more resources
+reaction_format        minimum  | minimum, full, stoich, S+V, or everything
+reaction_list             off   | on or off
+seismic_output            some  | all, some, none
+short_print                on   | on or off
+site_check                  T   | T[rue] or F[alse], T=> reject solution compositions with negative site fractions
+solution_names            abb   | mod[el], abb[reviation], ful[l] 
+solvus_tolerance          auto  | auto or 0->1 [0.05] should be > initial_resolution/auto_refine_factor
+solvus_tolerance_II        0.25 | 0->1 [0.25]
+speciation_tolerance       1d-3 | tolerance for order-disorder speciation calculations, >0,<1 [1d-3]
+speciation_max_it          100  | max number of iterations permitted in speciation/order-disorder calculations
+spreadsheet                 T   | T[rue] or F[alse], T=> include independent variable values in werami tab output files 
+stretch_factor            0.016 | >0, <1
+subdivision_override       off  | off, linear, or stretch
+T_melt                     873. | melt solution model endmember temperature (K) cut off
+T_stop                       0. | equilibration temperature (K) cut off
+variance                  1 99  | 1->99; exploratory and autorefine
+vrh/hs_weighting           0.5  | 0->1, weighting factor for the stiff average in VRH/HS averaging (see bounds)
+x_nodes                   40 60 | exploratory and autorefine (grid parameters keyword group)
+y_nodes                   40 60 | exploratory and autorefine (grid parameters keyword group)
+zero_mode                 1e-6  | 0->1
+zero_bulk                 1e-6  | 0->1

@@ -1,0 +1,969 @@
+
+ | comments are indicated by the | character.
+ | check for warnings at the end of the header section.
+
+Berman & Aranovich 1996, TWQ data base.                                          |<= data base title
+
+begin_standard_variables |<= name (<9 characters), reference value, tolerance
+P(bars)     1.00   0.1E-3
+T(K)      298.15   0.1E-4
+Y(CO2)      0.00   0.1E-6
+mu(C1)      0.00   0.1E-2
+mu(C2)      0.00   0.1E-2
+end_standard_variables
+
+tolerance  -.1E-2  |<= DTOL for unconstrained minimization, energy units
+
+begin_components |<= name (<5 characters), molar weight (g)
+NA2O    61.9790
+MGO     40.3040
+AL2O3  101.9610
+SIO2    60.0840
+K2O     94.1960
+CAO     56.0770
+TIO2    79.8660
+MNO     70.9370
+FEO     71.8440
+O2      31.9990
+H2O     18.0150
+CO2     44.0100
+end_components
+
+begin_special_components
+H2O
+CO2
+end_special_components
+
+                                                                                                                                            
+WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                                                                                  
+                                                                                                                                            
+This is a copy of the TWQ data base, revision 1/96.                                                                                         
+In general the Gibbs energies of formation given in TWQ                                                                                     
+data bases do not appear to be consistent with the Enthalpies                                                                               
+of formation, since PTAX/TWQ/etc do calculations using                                                                                      
+enthalpies of formation I assumed for purposes of                                                                                           
+conversion that the latter are correct, and Gibbs energies                                                                                  
+of formation were computed accordingly (see ubctover.f for                                                                                  
+details of conversion).                                                                                                                     
+                                                                                                                                            
+The properties of ideal gas water have also been corrected.                                                                                 
+                                                                                                                                            
+I have not checked that the phase abbreviations used in this file                                                                           
+are consistent with earlier perplex data files. This means that                                                                             
+you may have difficulties using the solution models in "solut.dat".                                                                         
+                                                                                                                                            
+It appears that the pyroxene formula unit has been changed from                                                                             
+that used in earlier Berman/UBC data files. This may invalidate                                                                             
+solution models in solut.dat based on the conventions used in                                                                               
+earlier data files.                                                                                                                         
+                                                                                                                                            
+This file includes phases that are not included in the                                                                                      
+the TWQ data base, if you use this data you should be                                                                                       
+aware that the data may not be considered valid by the                                                                                      
+authors of the TWQ data base. The phases added in this                                                                                      
+file are:                                                                                                                                   
+                                                                                                                                            
+da       1 0 0 0 fe_clinochlore                                                                                                             
+czo      1 0 0 0 clinozoisite                                                                                                               
+pwo      1 0 0 0 pseudowollastonite                                                                                                         
+htr      1 0 0 0 high tridymite                                                                                                             
+fparg    1 0 0 0 fepargasite                                                                                                                
+parg     1 0 0 0 pargasite                                                                                                                  
+fts      1 0 0 0 amphibole fetschermakite                                                                                                   
+ts       1 0 0 0 amphibole tschermakite                                                                                                     
+ftr      1 0 0 0 fetremolite                                                                                                                
+tr       1 0 0 0 tremolite                                                                                                                  
+fst      1 0 0 0 staurolite                                                                                                                 
+pmp      1 0 0 0 pumpellyite                                                                                                                
+ne       1 0 2 0 nepheline                                                                                                                  
+m        1 0 0 0 magnesite from trommsdorff & connolly 89                                                                                   
+mw       1 0 0 0 merwinite                                                                                                                  
+min      1 0 0 0 minnesotaite                                                                                                               
+mo       1 0 0 0 monticellite                                                                                                               
+blc      1 0 0 0 bleucite                                                                                                                   
+gru      1 0 0 0 grunerite                                                                                                                  
+gre      1 0 0 0 greenalite                                                                                                                 
+min      1 0 0 0 minnesotaite                                                                                                               
+alc      1 0 1 0 aleucite                                                                                                                   
+glc      1 0 0 0 glaucophane                                                                                                                
+pen      1 0 0 0 protoenstatite                                                                                                             
+cen      1 0 0 0 clinoenstatite                                                                                                             
+ep       1 0 0 0 epidote                                                                                                                    
+do       1 0 0 1 dolomite                                                                                                                   
+chl      1 0 0 0 clinochlore                                                                                                                
+chr      1 0 0 0 chrysotile                                                                                                                 
+ant      1 0 0 0 antigorite                                                                                                                 
+br       1 0 0 0 brucite                                                                                                                    
+andr     1 0 0 0 andradite                                                                                                                  
+ak       1 0 1 0 akermanite                                                                                                                 
+mfer     1 0 1 0 magnesioferite from Ghiorso 93                                                                                             
+sap      1 0 0 0 sapphirine                                                                                                                 
+                                                                                                                                            
+                                     JADC 11/96                                                                                             
+                                                                                                                                            
+end                                                                                                                                         
+ 
+ab       EoS = 1 | albite                                                                         
+NA2O(.5)AL2O3(.5)SIO2(3)
+G0 = -3711715 S0 = 207.443 V0 = 10.043  
+c1 = 393.6357 c3 = -7892826 c5 = -2415.498 c7 = 1070636000  
+b2 = .2642032E-3 b4 = -.1953055E-4 b6 = .4882003E-10 b7 = .3254635E-7  
+end
+
+ 
+hab      EoS = 1 | high albite                                                                    
+NA2O(.5)AL2O3(.5)SIO2(3)
+G0 = -3703293 S0 = 224.412 V0 = 10.083  
+c1 = 393.6357 c3 = -7892826 c5 = -2415.498 c7 = 1070636000  
+b2 = .2652555E-3 b4 = -.1960834E-4 b6 = .4901447E-10 b7 = .3267598E-7  
+end
+
+ 
+lab      EoS = 1 | low albite                                                                     
+NA2O(.5)AL2O3(.5)SIO2(3)
+G0 = -3711715 S0 = 207.443 V0 = 10.043  
+c1 = 393.6357 c3 = -7892826 c5 = -2415.498 c7 = 1070636000  
+b2 = .2642032E-3 b4 = -.1953055E-4 b6 = .4882003E-10 b7 = .3254635E-7  
+end
+
+ 
+alm      EoS = 1 | almandine                                                                      
+AL2O3(1)SIO2(3)FEO(3)
+G0 = -4942037 S0 = 341.5824 V0 = 11.524  
+c1 = 621.4269 c3 = -15081040 c5 = -3287.931 c7 = .2211865E10  
+b2 = .2143338E-3 b4 = -.6572414E-5 b6 = .5006026E-11 b7 = .8609696E-7  
+end
+
+ 
+aop      EoS = 1 | aluminoopx                                                                     
+AL2O3(1)
+G0 = -1533560 S0 = 35.375 V0 = 3.093  
+c1 = 119.38 c3 = -6509130 c5 = 774.808 c7 = 422877600  
+b2 = .7626044E-4 b4 = -.2317727E-5 b6 = .1381643E-11 b7 = .2309543E-7  
+end
+
+ 
+and      EoS = 1 | andalusite                                                                     
+AL2O3(1)SIO2(1)
+G0 = -2441806 S0 = 91.4337 V0 = 5.147  
+c1 = 236.4782 c3 = -7526810 c5 = -1102.941 c7 = 936442400  
+b2 = .1206593E-3 b4 = -.39634E-5 b6 = .9900255E-11 b7 = .3700178E-8  
+end
+
+ 
+ann      EoS = 1 | annite                                                                         
+AL2O3(.5)SIO2(3)K2O(.5)FEO(3)H2O(1)
+G0 = -4801071 S0 = 405.01 V0 = 15.487  
+c1 = 727.208 c3 = -13831900 c5 = -4775.04 c7 = 2119060000  
+b2 = .5334857E-3 b4 = -.262811E-4  
+end
+
+ 
+an       EoS = 1 | anorthite                                                                      
+AL2O3(1)SIO2(2)CAO(1)
+G0 = -4003220 S0 = 200.1861 V0 = 10.075  
+c1 = 439.3694 c5 = -3734.149 c7 = -317023200  
+b2 = .11E-3 b4 = -.128197E-4 b6 = .3200021E-10 b7 = .4229989E-7  
+end
+
+ 
+ap       EoS = 1 | anthophyllite                                                                  
+MGO(7)SIO2(8)H2O(1)
+G0 = -11348660 S0 = 537.4 V0 = 26.33  
+c1 = 1233.792 c3 = -22163800 c5 = -7133.98 c7 = .2333937E10  
+b2 = .74E-3 b4 = -.3E-4 b7 = .1655999E-6  
+end
+
+ 
+cats     EoS = 1 | ca-al pyroxene                                                                 
+AL2O3(1)SIO2(1)CAO(1)
+G0 = -3122310 S0 = 140.7508 V0 = 6.356  
+c1 = 310.6977 c3 = -7455263 c5 = -1671.627 c7 = 948781600  
+b2 = .141424E-3 b4 = -.553E-5 b6 = .1380015E-10 b7 = .3359972E-7  
+end
+
+ 
+cc       EoS = 1 | calcite                                                                        
+CAO(1)CO2(1)
+G0 = -1128295 S0 = 91.7248 V0 = 3.69  
+c1 = 178.1875 c3 = -482722 c5 = -1657.697 c7 = 166604900  
+b2 = .3286615E-4 b4 = -.51667E-5 b7 = .8391134E-7  
+end
+
+ 
+coe      EoS = 1 | coesite                                                                        
+SIO2(1)
+G0 = -852584.8 S0 = 39.4244 V0 = 2.064  
+c1 = 94.90714 c3 = -527867 c5 = -767.338 c7 = 26270730  
+b2 = .15266E-4 b4 = -.214E-5 b6 = .6192E-11 b7 = .9000072E-8  
+end
+
+ 
+cd       EoS = 1 | cordierite                                                                     
+MGO(2)AL2O3(2)SIO2(5)
+G0 = -8653709 S0 = 416.2714 V0 = 23.311  
+c1 = 954.3865 c3 = -2317258 c5 = -7962.274 c7 = -370214100  
+b2 = .7E-4 b4 = -.27E-4 b7 = .4199943E-7  
+end
+
+ 
+fcd      EoS = 1 | fe_cordierite                                                                  
+AL2O3(2)SIO2(5)FEO(2)
+G0 = -7945208 S0 = 482.8282 V0 = 23.706  
+c1 = 983.479 c3 = -1870290 c5 = -8403.659 c7 = -85683500  
+b2 = .1011E-3 b4 = -.40296E-4  
+end
+
+ 
+co       EoS = 1 | corundum                                                                       
+AL2O3(1)
+G0 = -1582199 S0 = 50.82 V0 = 2.558  
+c1 = 155.0189 c3 = -3861363 c5 = -828.387 c7 = 409083600  
+b2 = .5459156E-4 b4 = -.9853902E-6 b6 = .95925E-12 b7 = .1206864E-7  
+end
+
+ 
+acr      EoS = 1 | alpha cristobalite                                                             
+SIO2(1)
+G0 = -853917.7 S0 = 43.3943 V0 = 2.587  
+c1 = 83.5136 c3 = -2455360 c5 = -374.693 c7 = 280072200  
+b2 = .5387185E-4 b4 = -.6505029E-5  
+transition = 1 type = 1 t1  = -.1421619 t2  = .44142E-3 t3  = 535.15 t4  = .48E-1 t7  = 298.15  
+end
+
+ 
+bcr      EoS = 1 | beta cristobalite                                                              
+SIO2(1)
+G0 = -853327 S0 = 46.0288 V0 = 2.73  
+c1 = 83.5136 c3 = -2455360 c5 = -374.693 c7 = 280072200  
+b2 = .8706538E-5 b4 = -.3002254E-5 b6 = .1511137E-10  
+end
+
+ 
+dia      EoS = 1 | diaspore                                                                       
+AL2O3(.5)H2O(.5)
+G0 = -920805.9 S0 = 35.3082 V0 = 1.776  
+c1 = 143.2395 c3 = -323098 c5 = -1540.409 c7 = 64632260  
+b2 = .5277923E-4 b4 = -.1064342E-5  
+end
+
+ 
+di       EoS = 1 | diopside                                                                       
+MGO(1)SIO2(2)CAO(1)
+G0 = -3026201 S0 = 142.5 V0 = 6.607  
+c1 = 305.4133 c3 = -7165973 c5 = -1604.931 c7 = 921837600  
+b2 = .1836429E-3 b4 = -.5764458E-5 b6 = .1127749E-10 b7 = .5489228E-7  
+end
+
+ 
+east     EoS = 1 | eastonite                                                                      
+MGO(2)AL2O3(1.5)SIO2(2)K2O(.5)H2O(1)
+G0 = -5942747 S0 = 312.6221 V0 = 14.732  
+c1 = 619.7933 c3 = -22291180 c5 = -2272.344 c7 = .3004745E10  
+b2 = .507478E-3 b4 = -.2499989E-4  
+end
+
+ 
+fa       EoS = 1 | fayalite                                                                       
+SIO2(1)FEO(2)
+G0 = -1378198 S0 = 151.8706 V0 = 4.639  
+c1 = 251.9962 c5 = -2013.697 c7 = -62189100  
+b2 = .1215869E-3 b4 = -.3812397E-5 b6 = .9017288E-11 b7 = .3907569E-7  
+end
+
+ 
+afe      EoS = 1 | fe-a                                                                           
+FEO(1)O2(-.5)
+G0 = -65.593 S0 = 27.5 V0 = .709  
+c1 = 51.865 c3 = -2543000 c5 = -379.35 c7 = 506800000  
+b2 = .31955E-4 b4 = -.427E-6 b7 = .9999736E-9  
+transition = 1 type = 1 t1  = -.22208 t2  = .34823E-3 t3  = 1042 t4  = -.57E-3 t7  = 298.15 t8  = 1000  
+end
+
+ 
+gfe      EoS = 1 | fe-g                                                                           
+FEO(1)O2(-.5)
+G0 = 5214.148 S0 = 35.6954 V0 = .691  
+c1 = 66.238 c3 = 6373289 c5 = -1237.113 c7 = -1060400000  
+b2 = .3258285E-4 b4 = -.3225332E-6 b6 = -.9985641E-12 b7 = .9985641E-9  
+end
+
+ 
+fs       EoS = 1 | ferrosilite                                                                    
+SIO2(1)FEO(1)
+G0 = -1116159 S0 = 96.5587 V0 = 3.295  
+c1 = 174.2024 c3 = -454390 c5 = -1392.959 c7 = -37711400  
+b2 = .1034841E-3 b4 = -.3002089E-5 b6 = .999703E-12 b7 = .264918E-7  
+end
+
+ 
+fo       EoS = 1 | forsterite                                                                     
+MGO(2)SIO2(1)
+G0 = -2055074 S0 = 94.18 V0 = 4.36  
+c1 = 233.1803 c5 = -1801.58 c7 = -267937600  
+b2 = .1284616E-3 b4 = -.3450214E-5 b6 = .5891668E-11 b7 = .3864399E-7  
+end
+
+ 
+ge       EoS = 1 | gehlenite                                                                      
+AL2O3(1)SIO2(1)CAO(2)
+G0 = -3785954 S0 = 198.6 V0 = 9.033  
+c1 = 373.0874 c3 = -4778466 c5 = -2276.755 c7 = 477911800  
+b2 = .2251574E-3 b4 = -.9001298E-5 b6 = .224723E-10 b7 = .5116291E-8  
+d1 = -221.74 d3 = 17291280 d6 = .3695 d7 = -.15E-3 d8 = 698.15  d9 = 1600
+end
+
+ 
+gk       EoS = 1 | geikelite                                                                      
+MGO(1)TIO2(1)
+G0 = -1482611 S0 = 74.17 V0 = 3.077  
+c1 = 146.2 c3 = -3999800 c5 = -416 c7 = 402330000  
+b2 = .7173584E-4 b4 = -.1628771E-5 b7 = .2717853E-7  
+end
+
+ 
+gr       EoS = 1 | grossular                                                                      
+AL2O3(1)SIO2(3)CAO(3)
+G0 = -6270975 S0 = 255.15 V0 = 12.538  
+c1 = 573.4304 c3 = -18887170 c5 = -2039.405 c7 = .2319312E10  
+b2 = .2381493E-3 b4 = -.8198769E-5 b6 = .2049963E-10 b7 = .9999807E-7  
+end
+
+ 
+hed      EoS = 1 | hedenbergite                                                                   
+SIO2(2)CAO(1)FEO(1)
+G0 = -2675203 S0 = 176.5 V0 = 6.791  
+c1 = 313.3925 c3 = -6171210 c5 = -1762.77 c7 = 809538300  
+b2 = .1821367E-3 b4 = -.6059431E-5 b6 = .1599077E-10 b7 = .1099327E-7  
+end
+
+ 
+hm       EoS = 1 | hematite                                                                       
+FEO(2)O2(.5)
+G0 = -744889.5 S0 = 87.36 V0 = 3.027  
+c1 = 146.8584 c3 = -5576782 c7 = 525627900  
+b2 = .1159629E-3 b4 = -.1449751E-5 b6 = .920208E-12 b7 = .499455E-9  
+transition = 1 type = 1 t1  = -.7403236E-1 t2  = .27921E-3 t3  = 955.65 t7  = 298.15 t8  = 1287.92  
+end
+
+ 
+hc       EoS = 1 | hercynite                                                                      
+AL2O3(1)FEO(1)
+G0 = -1834878 S0 = 122.8623 V0 = 4.07  
+c1 = 251.7674 c3 = -1348330 c5 = -2044.441 c7 = 131500400  
+b2 = .6438277E-4 b4 = -.20757E-5 b7 = .3918433E-7  
+end
+
+ 
+ilm      EoS = 1 | ilmenite                                                                       
+TIO2(1)FEO(1)
+G0 = -1156810 S0 = 108.5 V0 = 3.17  
+c1 = 149.9995 c3 = -3323694 c5 = -441.622 c7 = 348151000  
+b2 = .73904E-4 b4 = -.1678E-5 b7 = .2799998E-7  
+end
+
+ 
+jd       EoS = 1 | jadeite                                                                        
+NA2O(.5)AL2O3(.5)SIO2(2)
+G0 = -2846483 S0 = 133.5739 V0 = 6.034  
+c1 = 311.293 c3 = -5350264 c5 = -2005.101 c7 = 662566900  
+b2 = .1394966E-3 b4 = -.5188043E-5 b6 = .1296586E-10 b7 = .1555867E-7  
+end
+
+ 
+kao      EoS = 1 | kaolinite                                                                      
+AL2O3(1)SIO2(2)H2O(2)
+G0 = -3799770 S0 = 203.7 V0 = 9.952  
+c1 = 523.2329 c3 = -2244259 c5 = -4426.668 c7 = 92308770  
+b2 = .318464E-3 b4 = -.119424E-4  
+end
+
+ 
+ky       EoS = 1 | kyanite                                                                        
+AL2O3(1)SIO2(1)
+G0 = -2443371 S0 = 82.43 V0 = 4.412  
+c1 = 262.6848 c3 = -1999740 c5 = -2001.407 c7 = -63181880  
+b2 = .1057668E-3 b4 = -.285E-5  
+end
+
+ 
+lw       EoS = 1 | lawsonite                                                                      
+AL2O3(1)SIO2(2)CAO(1)H2O(2)
+G0 = -4509709 S0 = 229.1759 V0 = 10.144  
+c1 = 728.6731 c5 = -8248.055 c7 = 850556400  
+b2 = .2666185E-3 b4 = -.77988E-5 b6 = .1949981E-10  
+end
+
+ 
+lm       EoS = 1 | lime                                                                           
+CAO(1)
+G0 = -603350.4 S0 = 37.75 V0 = 1.676  
+c1 = 58.79117 c3 = -1147146 c5 = -133.904 c7 = 102978800  
+b2 = .5800696E-4 b4 = -.1712391E-5 b6 = .429894E-11 b7 = .1129725E-7  
+end
+
+ 
+mt       EoS = 1 | magnetite                                                                      
+FEO(3)O2(.5)
+G0 = -1013773 S0 = 146.25 V0 = 4.452  
+c1 = 207.9308 c3 = -7243337 c7 = 664356400  
+b2 = .1348557E-3 b4 = -.2589742E-5 b6 = .7795452E-11 b7 = .6164684E-7  
+transition = 1 type = 1 t1  = -.1950245 t2  = .61037E-3 t3  = 848.15 t7  = 298.15 t8  = 1565.57  
+end
+
+ 
+ma       EoS = 1 | margarite                                                                      
+AL2O3(2)SIO2(2)CAO(1)H2O(1)
+G0 = -5852244 S0 = 265.0841 V0 = 12.958  
+c1 = 699.7957 c3 = -6807750 c5 = -5587.105 c7 = 734321700  
+b2 = .272358E-3 b4 = -.149652E-4 b6 = .3739938E-10 b7 = .1613997E-6  
+end
+
+ 
+me       EoS = 1 | meionite                                                                       
+AL2O3(3)SIO2(6)CAO(4)CO2(1)
+G0 = -13105910 S0 = 730 V0 = 34.036  
+c1 = 1511.345 c5 = -13243.33 c7 = -751614000  
+b2 = .3178962E-3 b4 = -.377892E-4  
+end
+
+ 
+mu       EoS = 1 | muscovite                                                                      
+AL2O3(1.5)SIO2(3)K2O(.5)H2O(1)
+G0 = -5596723 S0 = 293.157 V0 = 14.087  
+c1 = 651.4893 c3 = -18523200 c5 = -3873.229 c7 = .2742469E10  
+b2 = .4722995E-3 b4 = -.24186E-4 b6 = .6049944E-10  
+end
+
+ 
+en       EoS = 1 | orthoenstatite                                                                 
+MGO(1)SIO2(1)
+G0 = -1458669 S0 = 66.18 V0 = 3.133  
+c1 = 166.5795 c3 = -2270560 c5 = -1200.588 c7 = 279150300  
+b2 = .7724668E-4 b4 = -.23477E-5 b6 = .1399511E-11 b7 = .2339411E-7  
+end
+
+ 
+pa       EoS = 1 | paragonite                                                                     
+NA2O(.5)AL2O3(1.5)SIO2(3)H2O(1)
+G0 = -5563572 S0 = 277.6991 V0 = 13.216  
+c1 = 577.5693 c3 = -32214370 c5 = -1472.801 c7 = .5050077E10  
+b2 = .5210288E-3 b4 = -.2607825E-4 b6 = .6520114E-10 b7 = .7890084E-7  
+end
+
+ 
+per      EoS = 1 | periclase                                                                      
+MGO(1)
+G0 = -569209.3 S0 = 26.9514 V0 = 1.125  
+c1 = 61.10965 c3 = -621154 c5 = -296.199 c7 = 5844612  
+b2 = .421621E-4 b4 = -.7001245E-6 b6 = .1700325E-11 b7 = .40005E-9  
+end
+
+ 
+phl      EoS = 1 | phlogopite                                                                     
+MGO(3)AL2O3(.5)SIO2(3)K2O(.5)H2O(1)
+G0 = -5834104 S0 = 325.9239 V0 = 14.971  
+c1 = 610.3799 c3 = -21533010 c5 = -2083.781 c7 = .2841041E10  
+b2 = .5157109E-3 b4 = -.2540546E-4  
+end
+
+ 
+kf       EoS = 1 | potassium feldspar                                                             
+AL2O3(.5)SIO2(3)K2O(.5)
+G0 = -3745415 S0 = 214.1451 V0 = 10.869  
+c1 = 381.3723 c3 = -12037250 c5 = -1941.045 c7 = 1836425000  
+b2 = .1646118E-3 b4 = -.1961323E-4 b6 = .5556233E-10 b7 = .5961647E-7  
+d1 = 282.9829 d2 = -4831.375 d3 = 3620706 d6 = -.15733 d7 = .3E-4 d8 = 298.15  d9 = 1436.15
+end
+
+ 
+sa       EoS = 1 | sanidine                                                                       
+AL2O3(.5)SIO2(3)K2O(.5)
+G0 = -3738804 S0 = 229.1571 V0 = 10.896  
+c1 = 381.3723 c3 = -12037250 c5 = -1941.045 c7 = 1836425000  
+b2 = .1650207E-3 b4 = -.1966195E-4 b6 = .5570035E-10 b7 = .5976456E-7  
+end
+
+ 
+mcr      EoS = 1 | microcline                                                                     
+AL2O3(.5)SIO2(3)K2O(.5)
+G0 = -3745415 S0 = 214.1451 V0 = 10.869  
+c1 = 381.3723 c3 = -12037250 c5 = -1941.045 c7 = 1836425000  
+b2 = .1646118E-3 b4 = -.1961323E-4 b6 = .5556233E-10 b7 = .5961647E-7  
+end
+
+ 
+pr       EoS = 1 | prehnite                                                                       
+AL2O3(1)SIO2(3)CAO(2)H2O(1)
+G0 = -5820154 S0 = 288.6335 V0 = 14.016  
+c1 = 716.0518 c3 = -2182456 c5 = -6404.609 c7 = 268502800  
+b2 = .205812E-4 b4 = -.2E-4 b7 = .15815E-5  
+end
+
+ 
+py       EoS = 1 | pyrope                                                                         
+MGO(3)AL2O3(1)SIO2(3)
+G0 = -5934923 S0 = 268.8 V0 = 11.311  
+c1 = 590.9042 c3 = -13320810 c5 = -2826.956 c7 = 1260328000  
+b2 = .2547085E-3 b4 = -.65175E-5 b6 = .4999462E-11 b7 = .4190047E-7  
+end
+
+ 
+pyph     EoS = 1 | pyrophyllite                                                                   
+AL2O3(1)SIO2(4)H2O(1)
+G0 = -5266865 S0 = 239.4 V0 = 12.76  
+c1 = 665.9307 c3 = -4979913 c5 = -5897.422 c7 = 661808900  
+b2 = .1612535E-3 b4 = -.172833E-4 b7 = .4869994E-6  
+end
+
+ 
+q        EoS = 1 | a-quartz                                                                       
+SIO2(1)
+G0 = -856287.6 S0 = 41.46 V0 = 2.269  
+c1 = 80.01199 c3 = -3546684 c5 = -240.276 c7 = 491568400  
+b2 = .5421678E-4 b4 = -.5522587E-5 b6 = .2300199E-10  
+transition = 1 type = 1 t1  = -.9186959E-1 t2  = .24607E-3 t3  = 848 t4  = .23743E-1 t7  = 373  
+end
+
+ 
+bq       EoS = 1 | b-quartz                                                                       
+SIO2(1)
+G0 = -855033.4 S0 = 44.2068 V0 = 2.37  
+c1 = 80.01199 c3 = -3546684 c5 = -240.276 c7 = 491568400  
+b4 = -.2934693E-5 b6 = .1679643E-10  
+end
+
+ 
+rt       EoS = 1 | rutile                                                                         
+TIO2(1)
+G0 = -889634 S0 = 50.92 V0 = 1.881  
+c1 = 77.83762 c3 = -3367841 c7 = 402940700  
+b2 = .4837108E-4 b4 = -.8544458E-6 b6 = .1099444E-11 b7 = .2898433E-8  
+end
+
+ 
+sdph     EoS = 1 | siderophyllite                                                                 
+AL2O3(1.5)SIO2(2)K2O(.5)FEO(2)H2O(1)
+G0 = -5251334 S0 = 385 V0 = 15.063  
+c1 = 717.7811 c3 = -15994650 c5 = -4540.026 c7 = .238988E10  
+b2 = .5188801E-3 b4 = -.2556159E-4  
+end
+
+ 
+sil      EoS = 1 | sillimanite                                                                    
+AL2O3(1)SIO2(1)
+G0 = -2439266 S0 = 95.93 V0 = 4.983  
+c1 = 256.7316 c3 = -2977353 c5 = -1887.225 c7 = 250959100  
+b2 = .669252E-4 b4 = -.375E-5  
+end
+
+ 
+sp       EoS = 1 | spinel                                                                         
+MGO(1)AL2O3(1)
+G0 = -2177145 S0 = 80.37 V0 = 3.978  
+c1 = 244.672 c5 = -2003.98  
+b2 = .862883E-4 b4 = -.19469E-5 b7 = .2010004E-7  
+end
+
+ 
+ttn      EoS = 1 | titanite                                                                       
+SIO2(1)CAO(1)TIO2(1)
+G0 = -2455134 S0 = 129.29 V0 = 5.565  
+c1 = 234.6202 c3 = -5118324 c5 = -1040.294 c7 = 591460600  
+b2 = .140238E-3 b4 = -.328335E-5  
+end
+
+ 
+tc       EoS = 1 | talc                                                                           
+MGO(3)SIO2(4)H2O(1)
+G0 = -5519218 S0 = 261.21 V0 = 13.61  
+c1 = 664.1052 c3 = -2147218 c5 = -5187.172 c7 = -327371800  
+b2 = .4007711E-3 b4 = -.23122E-4 b6 = .7710065E-10  
+end
+
+ 
+ltr      EoS = 1 | low tridymite                                                                  
+SIO2(1)
+G0 = -854026 S0 = 43.7702 V0 = 2.675  
+c1 = 75.37267 c3 = -5958095 c7 = 958246100  
+b2 = .5173316E-4 b4 = -.6710034E-5  
+transition = 1 type = 1 t1  = .4267049 t2  = -.144575E-2 t3  = 390.15 t7  = 298.15 t8  = 130.54  
+end
+
+ 
+wo       EoS = 1 | wollastonite                                                                   
+SIO2(1)CAO(1)
+G0 = -1546123 S0 = 81.81 V0 = 3.983  
+c1 = 149.0727 c3 = -3659348 c5 = -690.295 c7 = 484349400  
+b2 = .112241E-3 b4 = -.49585E-5 b6 = .1239988E-10  
+end
+
+ 
+zo       EoS = 1 | zoisite                                                                        
+AL2O3(1.5)SIO2(3)CAO(2)H2O(.5)
+G0 = -6494148 S0 = 297.5759 V0 = 13.588  
+c1 = 749.1704 c3 = -2380525 c5 = -6509.281 c7 = 124858400  
+b2 = .47109E-3 b4 = -.7E-5 b6 = .1749999E-10  
+end
+
+ 
+CO2      EoS = 1 | carbon dioxide                                                                 
+CO2(1)
+G0 = -394341 S0 = 213.677  
+c1 = 81.6197 c2 = -.1761E-2 c3 = 972938 c5 = -710.477 c6 = -4103.83  
+end
+
+ 
+H2O(L)   EoS = 1 | liquid                                                                         
+H2O(1)
+G0 = -237130.3 S0 = 69.915  
+c1 = 135.3693 c2 = -.452E-3 c3 = -4076072 c5 = -4816.884 c6 = 66876.15  
+end
+
+ 
+H2O      EoS = 1 | ideal gas water                                                                
+H2O(1)
+G0 = -228537.9 S0 = 188.72  
+c1 = 115.45 c2 = -.2062E-2 c3 = -2871300 c5 = -3799.9 c6 = 51055.16  
+end
+
+ 
+O2       EoS = 1 | oxygen gas                                                                     
+O2(1)
+S0 = 205.152  
+c1 = 23.10248 c2 = .3E-2 c3 = 1762835 c5 = 804.888 c6 = -18172.92  
+end
+
+ 
+m        EoS = 1 | magnesite from trommsdorff and connolly CMP '89                                
+MGO(1)CO2(1)
+G0 = -1027436 S0 = 65.09 V0 = 2.803  
+c1 = 162.2966 c3 = -4882646 c5 = -1109.267 c7 = 874661900  
+b2 = .5167656E-4 b4 = -.2494911E-5 b6 = .6199675E-11 b7 = .1165958E-6  
+end
+
+ 
+K2O      EoS = 1  
+K2O(2)
+G0 = 100000000  
+end
+
+ 
+SIO2     EoS = 1  
+SIO2(1)
+G0 = 100000000 V0 = .1E-4  
+end
+
+ 
+NA2O     EoS = 1  
+NA2O(2)
+G0 = 100000000  
+end
+
+ 
+Al2O3    EoS = 1  
+AL2O3(1)
+G0 = 100000000  
+end
+
+ 
+MgO      EoS = 1  
+MGO(1)
+G0 = 100000000 V0 = .1E-4  
+end
+
+ 
+FeO      EoS = 1  
+FEO(1)
+G0 = 100000000  
+end
+
+ 
+CaO      EoS = 1  
+CAO(1)
+G0 = 100000000 V0 = .1E-4  
+end
+
+ 
+KALO2    EoS = 1  
+AL2O3(.5)K2O(.5)
+G0 = 100000000  
+end
+
+ 
+da       EoS = 1 | fe_clinochlore                                                                 
+AL2O3(1)SIO2(3)FEO(5)H2O(4)
+G0 = -6567980 S0 = 573.1545 V0 = 21.747  
+c1 = 1229.23 c3 = -12277000 c5 = -10256.5 c7 = 2121510000  
+b2 = .695904E-3 b4 = -.1339587E-3  
+end
+
+ 
+czo      EoS = 1 | clinozoisite                                                                   
+AL2O3(1.5)SIO2(3)CAO(2)H2O(.5)
+G0 = -6496497 S0 = 287.0759 V0 = 13.673  
+c1 = 749.1704 c3 = -2380525 c5 = -6509.283 c7 = 124858400  
+b2 = .4740369E-3 b4 = -.7043788E-5 b6 = .1760946E-10  
+end
+
+ 
+pwo      EoS = 1 | pseudowollastonite                                                             
+SIO2(1)CAO(1)
+G0 = -1543085 S0 = 85.2788 V0 = 4.016  
+c1 = 141.1561 c3 = -5857595 c5 = -417.232 c7 = 940735000  
+b2 = .1131709E-3 b4 = -.4999582E-5 b6 = .1250261E-10  
+end
+
+ 
+htr      EoS = 1 | high tridymite                                                                 
+SIO2(1)
+G0 = -853844.3 S0 = 45.5237 V0 = 2.737  
+c1 = 75.37267 c3 = -5958095 c7 = 958246100  
+b2 = .1321602E-4 b4 = -.2024513E-5 b6 = .1022379E-10  
+end
+
+ 
+fparg    EoS = 1 | fepargasite                                                                    
+NA2O(.5)AL2O3(1.5)SIO2(6)CAO(2)FEO(4)H2O(1)
+G0 = -10587020 S0 = 738 V0 = 27.86  
+c1 = 1351.623 c3 = -29598880 c5 = -8208.323 c7 = .4317209E10  
+b2 = .8600661E-3 b4 = -.3071676E-4  
+end
+
+ 
+parg     EoS = 1 | pargasite                                                                      
+NA2O(.5)MGO(4)AL2O3(1.5)SIO2(6)CAO(2)H2O(1)
+G0 = -11991300 S0 = 589.2005 V0 = 27.09  
+c1 = 1276.262 c3 = -35217190 c5 = -6514.016 c7 = .4745671E10  
+b2 = .8362954E-3 b4 = -.2986781E-4  
+end
+
+ 
+fts      EoS = 1 | amphibole fetschermakite                                                       
+AL2O3(2)SIO2(6)CAO(2)FEO(3)H2O(1)
+G0 = -10790800 S0 = 634.6937 V0 = 27.19  
+c1 = 1304.708 c3 = -29392510 c5 = -8049.757 c7 = .421487E10  
+b2 = .662726E-3 b4 = -.378423E-4 b6 = .9464567E-10 b7 = .267381E-6  
+end
+
+ 
+ts       EoS = 1 | amphibole tschermakite                                                         
+MGO(3)AL2O3(2)SIO2(6)CAO(2)H2O(1)
+G0 = -11834650 S0 = 517.7058 V0 = 26.921  
+c1 = 1248.187 c3 = -33606240 c5 = -6779.026 c7 = .4536217E10  
+b2 = .6561694E-3 b4 = -.3746791E-4 b6 = .9370931E-10 b7 = .2647357E-6  
+end
+
+ 
+ftr      EoS = 1 | fetremolite                                                                    
+SIO2(8)CAO(2)FEO(5)H2O(1)
+G0 = -9817132 S0 = 725 V0 = 28.37  
+c1 = 1323.562 c3 = -25067000 c5 = -8519.785 c7 = .3673229E10  
+b2 = .6914872E-3 b4 = -.3948459E-4 b6 = .9875313E-10 b7 = .2789849E-6  
+end
+
+ 
+tr       EoS = 1 | tremolite                                                                      
+MGO(5)SIO2(8)CAO(2)H2O(1)
+G0 = -11578550 S0 = 551.1499 V0 = 27.268  
+c1 = 1229.36 c3 = -32089890 c5 = -6401.9 c7 = .4208808E10  
+b2 = .6646272E-3 b4 = -.3795086E-4 b6 = .9491718E-10 b7 = .2681481E-6  
+end
+
+ 
+fst      EoS = 1 | staurolite                                                                     
+AL2O3(9)SIO2(7.5)FEO(4)H2O(2)
+G0 = -22292460 S0 = 1005.327 V0 = 44.676  
+c1 = 2577.674 c3 = -61185890 c5 = -16265.36 c7 = .8692048E10  
+b2 = .8013242E-3 b4 = -.357408E-4 b7 = .4038532E-6  
+end
+
+ 
+pmp      EoS = 1 | pumpellyite                                                                    
+MGO(1)AL2O3(2.5)SIO2(6)CAO(4)H2O(3.5)
+G0 = -13448430 S0 = 584 V0 = 29.55  
+c1 = 1576 c3 = -28304200 c5 = -10603.8 c7 = .3838351E10  
+b2 = .1024498E-2 b4 = -.1522298E-4 b6 = .380604E-10  
+end
+
+ 
+ne       EoS = 1 | nepheline                                                                      
+NA2O(.5)AL2O3(.5)SIO2(1)
+G0 = -1973319 S0 = 124.2 V0 = 5.422  
+c1 = 205.2419 c3 = -10838270 c5 = -759.898 c7 = 2081817000  
+b2 = .171076E-3 b4 = -.1203994E-4 b6 = .32532E-10 b7 = .10844E-6  
+transition = 1 type = 1 t1  = -1.027841 t2  = .339448E-2 t3  = 467.15 t7  = 298.15 t8  = 241.84  
+end
+
+ 
+mw       EoS = 1 | merwinite                                                                      
+MGO(1)SIO2(2)CAO(3)
+G0 = -4309707 S0 = 251.7767 V0 = 9.847  
+c1 = 453.6196 c5 = -3250.015 c7 = -344227100  
+b2 = .2892614E-3 b4 = -.54212E-5 b6 = .1359969E-10 b7 = .859003E-7  
+end
+
+ 
+min      EoS = 1 | minnesotaite                                                                   
+SIO2(4)FEO(3)H2O(1.4)
+G0 = -4573294 S0 = 378 V0 = 15.34  
+c1 = 731.094 c3 = -10114240 c5 = -5504.998 c7 = 1598381000  
+b2 = .4517141E-3 b4 = -.2606109E-4 b6 = .869011E-10  
+end
+
+ 
+mo       EoS = 1 | monticellite                                                                   
+MGO(1)SIO2(1)CAO(1)
+G0 = -2132222 S0 = 108.3 V0 = 5.148  
+c1 = 226.3423 c3 = -1179709 c5 = -1542.741 c7 = -23285890  
+b2 = .1434397E-3 b4 = -.4652014E-5 b6 = .10296E-10 b7 = .3929932E-7  
+end
+
+ 
+blc      EoS = 1 | bleucite                                                                       
+AL2O3(.5)SIO2(2)K2O(.5)
+G0 = -2852398 S0 = 210.7042 V0 = 9.263  
+c1 = 271.1397 c3 = -7857238 c5 = -944.133 c7 = 959202600  
+b2 = .115943E-3 b4 = -.1442087E-4 b6 = .1180014E-10  
+end
+
+ 
+gru      EoS = 1 | grunerite                                                                      
+SIO2(8)FEO(7)H2O(1)
+G0 = -8964411 S0 = 725 V0 = 27.8  
+c1 = 1347.83 c3 = -20228480 c5 = -9356.91 c7 = .303919E10  
+b2 = .78952E-3 b4 = -.417E-4  
+end
+
+ 
+gre      EoS = 1 | greenalite                                                                     
+SIO2(2)FEO(3)H2O(2)
+G0 = -3006433 S0 = 312.6589 V0 = 11.52  
+c1 = 619.3301 c2 = -.12107 c3 = -5057120 c5 = -5245.75 c7 = 925344000  
+b2 = .3127826E-3 b4 = -.2085442E-4 b6 = .5211994E-10 b7 = .7758835E-7  
+end
+
+ 
+min      EoS = 1 | minnesotaite                                                                   
+SIO2(4)FEO(3)H2O(1.4)
+G0 = -4573294 S0 = 378 V0 = 15.34  
+c1 = 731.094 c3 = -10114240 c5 = -5504.998 c7 = 1598381000  
+b2 = .4517141E-3 b4 = -.2606109E-4 b6 = .869011E-10  
+end
+
+ 
+alc      EoS = 1 | aleucite                                                                       
+AL2O3(.5)SIO2(2)K2O(.5)
+G0 = -2858083 S0 = 199.2 V0 = 8.839  
+c1 = 271.1397 c3 = -7857238 c5 = -944.133 c7 = 959202600  
+b2 = .166E-3 b4 = -.1591E-4 b6 = .3980025E-10 b7 = .9260002E-6  
+transition = 1 type = 1 t1  = -.9730853E-1 t2  = .3373E-3 t3  = 955.15 t7  = 298.15  
+end
+
+ 
+glc      EoS = 1 | glaucophane                                                                    
+NA2O(1)MGO(3)AL2O3(1)SIO2(8)H2O(1)
+G0 = -11225470 S0 = 535 V0 = 26.05  
+c1 = 1717.5 c2 = -.12107 c3 = 7075000 c5 = -19272  
+b2 = .5731E-3 b4 = -.30218E-4 b6 = .75545E-10 b7 = .22924E-6  
+end
+
+ 
+pen      EoS = 1 | protoenstatite                                                                 
+MGO(1)SIO2(1)
+G0 = -1456965 S0 = 67.4376 V0 = 3.242  
+c1 = 166.5795 c3 = -2270560 c5 = -1200.588 c7 = 279150300  
+b2 = .5456837E-4 b4 = -.2430203E-5 b6 = .1452416E-11 b7 = .3781793E-7  
+end
+
+ 
+cen      EoS = 1 | clinoenstatite                                                                 
+MGO(1)SIO2(1)
+G0 = -1458601 S0 = 66.3251 V0 = 3.131  
+c1 = 139.9582 c3 = -4400237 c5 = -497.034 c7 = 535708900  
+b2 = .6861586E-4 b4 = -.2346998E-5 b6 = .1402688E-11 b7 = .2345745E-7  
+end
+
+ 
+ep       EoS = 1 | epidote                                                                        
+AL2O3(1)SIO2(3)CAO(2)FEO(1)O2(.25)H2O(.5)
+G0 = -6072068 S0 = 314.9715 V0 = 13.92  
+c1 = 701.6863 c3 = 9724417 c5 = -5528.332 c7 = -.3537578E10  
+b2 = .4826003E-3 b4 = -.7171033E-5 b6 = .1792757E-10  
+end
+
+ 
+do       EoS = 1 | dolomite                                                                       
+MGO(1)CAO(1)CO2(2)
+G0 = -2162354 S0 = 154.89 V0 = 6.432  
+c1 = 328.4827 c3 = -4688477 c5 = -2554.425 c7 = 790382300  
+b2 = .9152889E-4 b4 = -.6883465E-5 b7 = .233982E-6  
+d1 = -9.423 d2 = -2.2726 d3 = 385300 d6 = .1732E-1 d7 = .1E-4 d8 = 298.15 d9 = 1423
+end
+
+ 
+chl      EoS = 1 | clinochlore                                                                    
+MGO(5)AL2O3(1)SIO2(3)H2O(4)
+G0 = -8250546 S0 = 435.1545 V0 = 21.147  
+c1 = 1214.284 c5 = -11217.13 c7 = -1256253000  
+b2 = .5593707E-3 b4 = -.3847635E-4  
+end
+
+ 
+chr      EoS = 1 | chrysotile                                                                     
+MGO(3)SIO2(2)H2O(2)
+G0 = -4035373 S0 = 220.1345 V0 = 10.72  
+c1 = 610.022 c3 = -1857300 c5 = -5581.152 c7 = 195472000  
+b2 = .2910616E-3 b4 = -.194062E-4 b6 = .485005E-10 b7 = .7220027E-7  
+end
+
+ 
+ant      EoS = 1 | antigorite                                                                     
+MGO(48)SIO2(34)H2O(31)
+G0 = -66076530 S0 = 3602.996 V0 = 174.246  
+c1 = 7394.512 c3 = -548363000 c7 = .8728412E11  
+b2 = .435E-2 b4 = -.3446195E-3 b6 = .8615071E-9 b7 = .6872959E-6  
+end
+
+ 
+br       EoS = 1 | brucite                                                                        
+MGO(1)H2O(1)
+G0 = -834867.9 S0 = 63.0642 V0 = 2.468  
+c1 = 136.839 c3 = -4361949 c5 = -537.13 c7 = 552694500  
+b2 = .810833E-4 b4 = -.49924E-5 b6 = .1660001E-10 b7 = .2699992E-8  
+end
+
+ 
+andr     EoS = 1 | andradite                                                                      
+SIO2(3)CAO(3)FEO(2)O2(.5)
+G0 = -5414788 S0 = 318.1403 V0 = 13.209  
+c1 = 596.1593 c3 = -13292860 c5 = -2530.37 c7 = 1395897000  
+b2 = .281794E-3 b4 = -.841334E-5 b6 = .290598E-10 b7 = .6210872E-7  
+end
+
+ 
+ak       EoS = 1 | akermanite                                                                     
+MGO(1)SIO2(2)CAO(2)
+G0 = -3663786 S0 = 212 V0 = 9.252  
+c1 = 387.064 c5 = -2938.769 c7 = -40790480  
+b2 = .2314044E-3 b4 = -.7264121E-5 b7 = .6219564E-7  
+transition = 1 type = 1 t3  = 358 t7  = 298.15 t8  = 452  
+end
+
+ 
+mfer     EoS = 1 | magnesioferite from Ghiorso                                                    
+MGO(1)FEO(2)O2(.5)
+G0 = -1294726 S0 = 122.765 V0 = 4.457  
+c1 = 196.66 c3 = -7492200 c7 = 810070000  
+b2 = .1350071E-3 b4 = -.259265E-5 b6 = .7804207E-11 b7 = .6171608E-7  
+transition = 1 type = 1 t1  = .15236 t2  = -.53571E-3 t3  = 665 t7  = 298.15 t8  = 931  
+end
+
+ 
+sap      EoS = 1 | sapphirine                                                                     
+MGO(2)AL2O3(2)SIO2(1)
+G0 = -5213954 S0 = 211.9312 V0 = 9.886  
+c1 = 514.953 c3 = -14720320 c5 = -2529.45 c7 = 1869221000  
+b2 = .214441E-3 b4 = -.4838374E-5 b7 = .4995198E-7  
+end
+

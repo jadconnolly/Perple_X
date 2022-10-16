@@ -1,0 +1,3308 @@
+
+ | comments are indicated by the | character.
+ | check for warnings at the end of the header section.
+
+Holland & Powell, JMG 2011 (TC-DS62, 20:08 Feb 6, 2012)                          |<= data base title
+
+begin_standard_variables |<= name (<9 characters), reference value, tolerance
+P(bar)      1.00   0.1E-3
+T(K)      298.15   0.1E-4
+Y(CO2)      0.00   0.1E-6
+mu(C1)      0.00   0.1E-2
+mu(C2)      0.00   0.1E-2
+end_standard_variables
+
+tolerance  -.1E-2  |<= DTOL for unconstrained minimization, energy units
+
+HSC_conversion |<= tag enabling HSC to SUP apparent energy conversion, requires elemental entropies in the component list below
+
+begin_components | < 6 chars, molar weight (g), elemental entropy (R), reference oxidation state
+Na       22.9898     51.3000     1
+Mg       24.3045     32.6800     2
+Al       26.9812     28.3500     3
+Si       28.0850     18.8100     4
+K        39.0983     64.6800     1
+Ca       40.0775     41.6300     2
+Ti       47.8670     30.7200     4
+Mn       54.9375     32.2200     2
+Fe       55.8445     27.2800     2
+Ni       58.6935     29.8000     2
+Zr       91.2210     39.1800     4
+Cl2      70.9060    223.0800    -2
+O2       31.9990    205.1500    -4
+H2        2.0155    130.6800     2
+C        12.0110      5.7400     4
+Cu       63.5455     33.1500     2
+Cr       51.9958     25.5430     3
+S2       64.1300     64.1       -1 | Corrected 9/21/2018, Jilei Li. These values are twice the properties of monatomic sulfur. Formerly the monatomic molar wt was used with the diatomic formula.
+F2       37.9968    202.7900    -2
+N2       28.0130    191.6100    -1 | HSC entropy
+Zn       65.3795     43.1600     2
+end_components
+
+ 
+ 
+begin_makes
+                                | the make definitions segment of the thermodynamic
+                                | data file is preceded by the "begin_makes" keyword,
+                                | and terminated by the "end_makes" keyword. Within
+                                | this segment comments must be preceded by a "|"
+                                | character.
+ 
+                                | the make definitions define new thermodynamic entities
+                                | (e.g., fO2 buffers, endmembers etc) as a linear combination of
+                                | the "real" entities in the thermodynamic file. the definition
+                                | includes a "DQF" correction that is used to increment the
+                                | G of the linearly combined G's as a function of pressure and
+                                | temperature, i.e., the total G computed for a made entity is
+                                | the G of the right-hand-side of the make reaction + Gdqf.
+ 
+                                | the format assumes data on one line of less than 240 characters,
+                                | the expected format is
+ 
+                                | name = num_1 * name_1 + num_2 * name_2 ....+ num_int * name_int
+                                | dnum_1 dnum_2 dnum_3
+ 
+                                | where i num_j is a number or fraction (i.e., two numbers separated
+                                | by a '/') and name_j are the names of the j existing entities.
+                                | and the dqf correction to the entity 'name' is
+                                | Gdqf(J/mol) = dnum_1 + T[K]*dnum_2 + P[bar]*dnum_3
+ 
+                                | made entities are excluded from calculations in vertex if they
+                                | are included in the excluded phase list in the computational option
+                                | file (e.g., "in"); however, real entities to the right of the equals
+                                | sign in a make definition are not effected by the excluded phase list.
+                                | for example, if qL (liquid silica) is excluded, the make definition
+                                | q8L = 4 qL
+                                | will function, but qL will not be considered as a possible phase in
+                                | the vertex calculation.
+ 
+ |                                kyco silica buffer
+ | kyco = 1 ky - 1 cor
+ | 0 0 0
+ |                                sphene + cc + ru + q CO2 buffer
+ | tcrq = 1 cc + 1 ru + 1 q - 1 sph
+ | 0. 0. 0.
+                                | Ti phengite endmember for Auzanneau et al. (CMP 159:1-24, 2010) mica model
+                                | Gdqf corrected from -482876. to -13469.8 J/mol, D. Dolejs, Mar 6, 2010.
+ | tip = 1 fcel + 1 geik - 1/2 fs
+ | -13469.8  -14.694 .84
+ 
+ | mthm = 6 hem - 4 mt             | mthm O2 buffer
+ | 0 0 0
+ 
+ | qfm = 2 mt + 3 q  -3 fa         | qfm O2 buffer
+ | 0 0 0
+ 
+ |emog = -1 fo - 2 gph + 1 mag + 1/2 en | EMOG O2 buffer
+ |0 0 0
+ 
+ |ffm = -6 fa + 3 fs + 2 mt        | ffm O2 buffer
+ |0 0 0
+ 
+ |fff = 2 fa - 2 iron - 1 fs         | iron fa fs O2 buffer
+ |0 0 0
+ 
+ | tbi = 1 phl - 1 fo + 1 ru + 1 q | Ti-biotite endmember for TiBio(HP) model
+ | 45e3 0 0
+ 
+ | tbi1 = 1 phl - 1 br + 1 ru      | Ti-biotite endmember for TiBio(WPH) model
+ | 78e3 0 0                        | L Tajcamanova, 5/11/2006.
+ 
+ | fbi = 1 east - 1/2 cor + 1/2 hem  | Fe3+-biotite endmember for TiBio(WPH) model, definition corrected for
+ |                                   | presumed typo in the WPH (JMG, 2007) paper by L Tajcamanova, 5/11/2007.
+ | 13.45e3 0 0                       | fbi = 1 east - 1/2 cor + 1 hem, 8/10/2007, L Tajcamanova
+
+
+| odo = 1/2 mag + 1/2 cc 
+| DQF(J/mol) = -1000
+
+| oank = 1/4 sid + 1/2 cc + 1/4 mag 
+| DQF(J/mol) = -750
+ 
+                                | Mg-uelvospinel for Sp(WPC), this model pushed the
+                                | equipartition nonsense beyond the pale.
+musp   = 1 usp + 2 sp - 2 herc
+DQF = 0
+                                | Fe endmembers for ultramafic mineral solution
+                                | models, based on the talc Fe-Mg exchange.
+fbr = 1 br - 1/3 ta + 1/3 fta
+DQF(J/mol) = 0
+ 
+fchum = 1 chum - 3 ta + 3 fta
+DQF(J/mol) = 0
+ 
+fphA = 1 phA - 7/3 ta + 7/3 fta
+DQF(J/mol) = 0
+ 
+fatg = 1 atg - 16 ta + 16 fta
+DQF(J/mol) = 0
+ 
+atgts = 4 clin + 9/17 atg - 24/17 br      | Tshermaks antigorite for Atg(PN) model (Padrón-Navarta et al., 2013, Lithos)
+DQF = -2e3 + 46.1*T_K
+ 
+| ettore's makes:
+| odo = 1/2 mag 1/2 cc
+| -1000. 0 0
+| oank = 1/4 sid 1/2 cc 1/4 mag
+|  -750 0 0
+ 
+| odo = 1/2 mag + 1/2 cc          | ordered dolmite species for H&P dolomite model
+| -13.5d3 0 0
+ 
+                                | Green et al (2007) omphacite model, ds6
+acm_dqf = 1 acm
+       DQF(J/mol) = -7000
+                                | Diener et al. (JMG, 2007) clinoamphibole model
+mrb = 1 gl - 2 jd +2 acm        | magnesio riebekite, ds6, 3/7/18 JADC
+       DQF(J/mol) = 0
+ts_dqf = 1 ts                   | tschermakite
+       DQF(J/mol) = 10000
+parg_dqf = 1 parg               | pargasite, ds6, 3/7/18 JADC
+       DQF(J/mol) = -10000
+gl_dqf = 1 gl                   | glaucophane, ds6, 3/7/18 JADC
+       DQF(J/mol) = -3000
+cumm_dqf = 1 cumm               | ds6, 3/7/18 JADC
+       DQF(J/mol) = 0
+grun_dqf = 1 grun               | ds6, 3/7/18 JADC
+       DQF(J/mol) = -3000
+ 
+                                | revised (Diener et al, JMG 2011 25:631-656) ortho-amphibole model.   Oct 31, 2011.
+ 
+ogl_dqf = 1 gl                  | ortho-glaucophane
+       DQF(J/mol) = 15000.
+fanth_dq = 1 fanth              | ferro-anthophyllite
+       DQF(J/mol) = 7000
+omrb_dqf = 1 gl -2 jd +2 acm    | ortho-magnesio riebekite (mrb dqf + 25000 J/mol), stoichiometry corrected 3/30/08 JADC
+       DQF(J/mol) = 33000
+mpa      = 1 parg - 1 tr +1 anth
+       DQF(J/mol) = 25d3
+ged_dqf   = 1 ged
+       DQF(J/mol) = 20000
+ 
+                                | make definition for coma of the unpublished
+                                | thermocalc scapolite model
+coma = 3 ab + 1 cc
+       DQF(J/mol) = 25000.
+ 
+tbit = 1 phl - 1 br + 1 ru      |Ti-Fe3+ Biotite after Tajcmanova et al. (2009)
+       DQF(J/mol) = 84e3 -11.5 0                    |Model entered by Lucie Tajcmanova, September, 2008.
+ 
+fbit = 1 east - 1/2 cor + 1/2 hem  |Ti-Fe3+ Biotite after Tajcmanova et al. (2009)
+       DQF(J/mol) = 6e3 0 0
+                               | Make definitions for the Smye et al (JMG, 2011, 28:753-768)
+                               | models for Mica, Carpholite and Chloritoid, to use these
+                               | make definitions delete the leading "|" comment characters:
+ocar  = 1 fcar + 1/2 hem - 1/2 cor
+      DQF(J/mol) = 45d3
+mncar = 1 mcar + 1 mang - 1 per | corrected from 1 mcar + 1 mang - 1/2 cor, G Hoschek, 10/24/11.
+      DQF(J/mol) = 30d3
+ma_dqf = 1 ma
+      DQF(J/mol) = 3d3
+                                | Make definition for the White et al (JMG, 2005) garnet, Gt(WPPH), JADC, 10/24/11.
+kho = 1 py - 1 gr + 1 andr
+      DQF(J/mol) = 40d3 0 0
+                                | Make definitions for the White et al (JMG, 2000) ilmenite, Ilm(WHP), JADC, 10/29/11.
+                                | Corrected coeffiecients for TC un-landau, formerly, the TC DQF was used without
+                                | modification. NOTE: the ilm and ilm_nol endmembers must be excluded from calculations
+                                | with the Ilm(WPH) model and the ilm_nol, oilm and dilm must be excluded from calculations
+                                | without the Ilm(WPH) model. JADC, 6/19/11.
+dilm = 1 ilm_nol
+                                | 1993  -2.1 0 => the TC DQF coeffecients, the values below are
+                                | oilm + {DH,R*ln(4),0}, where oilm is
+                                | -13608 9.426 0 => the TC DQF coeffecients added to
+                                | smax*tc0*(q0^2-1/3*q0^6), -smax*q0^2, vmax*q0^2 (unlandauing iml_nol)
+       DQF(J/mol) = 17043.57559 -13.11797099 .1836386612e-1
+dhem = 1 hem_nol
+       DQF(J/mol)   = 9.5228d3   -12.9377 T_K
+ 
+                                | Make definitions for Kelsey & Powell (JMG, 2011) Zr melting relations. JADC, 2/6/12
+ 
+zr8L = 2 zrc                    | Zr-melt endmember
+       DQF(J/mol) = 69e3
+zrg  = 1 gr + 3 zrc - 6 q       | Zr garnet endmember
+       DQF(J/mol) = 96e3 0.165e3 2.7
+zrru = 1 bdy                    | Zr rutile endmember
+       52.84e3 -0.01829e3 -0.074
+mots = 1 mgts - 1/2 cor + 1/2 hem | ferric opx endmember MgFe3+AlSiO6 for Opx(HP)
+       22d3 0 0
+                                 | Make definitions for White et al. (JMG 32:261-286, 2014) models
+f3clin = 1 clin - 1/2 gr + 1/2 andr
+       DQF(J/mol) = 2d3
+kho1 = 1 py - 1 gr + 1 andr
+       DQF(J/mol) = 27d3
+sil8L = 8/5 silL
+       DQF(J/mol) = -23d3
+fo8L = 2 foL
+       DQF(J/mol) = -10d3
+wi8L = 2 wiL
+       DQF(J/mol) = -20
+fa8L = 2 faL
+       DQF(J/mol) = -9d3 0 -1.3
+q8L = 4 qL
+       DQF(J/mol) = -20                           | a small DQF is added to stabilize q8L relative to qL
+fmu = 1 mu + 1/2 andr - 1/2 gr
+       DQF(J/mol) = 25d3
+ma1_dqf = 1 ma
+       DQF(J/mol) = 6.5d3
+ctdo = 1 mctd + 1/4 andr - 1/4 gr
+       DQF(J/mol) = 25d3
+msto   = 1 andr  -1 gr  + 1 mst
+       DQF(J/mol) = 9d3
+mstt   = 1 mst - 1 cor   +3/2   ru
+       DQF(J/mol) = 13d3
+mots1    = 1 mgts + 1/2  andr  - 1/2 gr
+       DQF(J/mol) = 2d3
+ 
+tbi = 1 phl - 1 br + 1 ru         | Ti-biotite endmember for Bi(W) model
+       DQF(J/mol) = 55e3
+ 
+fbi = 1 east - 1/2 gr + 1/2 andr  | Fe3+-biotite endmember for Bi(W) model
+       DQF(J/mol) = -3e3
+ 
+ospr = 1/2 andr - 1/2 gr + 1 spr5
+       DQF(J/mol) = -16d3
+ 
+mnopx = 2 pxmn                    | Mn endmember for Opx(W) model
+       DQF(J/mol) = 6680
+                                  | Make definitions for Jennings and Holland, J Pet, 56:869-892, 2015 Cpx
+cfs = 1 fs
+       DQF(J/mol) = 3.8d3 -3 0.03
+crdi = 1 cats + 1 kos - 1 jd
+       DQF(J/mol) = -3d3
+cess = 1 cats + 1 acm - 1 jd
+       DQF(J/mol) = -6d3
+cenjh = 1 en
+       DQF(J/mol) = 3.5d3 - 2 * T_K  + 0.048 * p_bar
+                                  | Make definitions for Jennings and Holland, J Pet, 56:869-892, 2015 Opx
+cren  = 1 mgts + 1 kos - 1 jd
+       DQF(J/mol) = 3d3
+oen   = 1 mgts + 1 acm - 1 jd
+       DQF(J/mol) = -15d3 + 0.15 * p_bar
+odi   = 1 di
+       DQF(J/mol) = -0.1d3 0.211 0.005 | dqf_T corrected from 2.11, ECRG 9/18
+                                  | Make definitions for Jennings and Holland, J Pet, 56:869-892, 2015 melt
+qjL = 2 qL
+       DQF(J/mol) = 4d3     - 0.43 * p_bar
+dijL = 1 diL
+       DQF(J/mol) = -6.7d3  + 0.17 * p_bar
+jdjL = 1 abL - 1 qL               | corrected 3/18/16, Oliver Shortle
+       DQF(J/mol) = 18.7d3  - 0.16 * p_bar
+ctjL = 1 anL - 1 qL               | corrected 3/18/16, Oliver Shortle
+       DQF(J/mol) = 2.5d3   + 0.29 * p_bar
+fojL = 1 foL
+       DQF(J/mol) = 2d3     - 0.03 * p_bar
+fajL = 1 faL
+       DQF(J/mol) = -2.5d3  + 0.18 * p_bar
+hmjL = 0.5 hemL
+       DQF(J/mol) = 0       +  0.20 * p_bar
+ekjL = 0.5 eskL
+       DQF(J/mol) = 21d3
+                                  | Make definitions for Green et al., JMG, 2016 melt
+foTL = 2 foL
+   dqf = -4d3
+faTL = 2 faL
+   dqf = -8.2d3  - 1.4 * P
+                                  | Make definitions for Green et al., JMG, 2016 clinoamphibole
+mrbG  = 1 gl - 1 gr + 1 andr
+   DQF = 0
+kprg  = 1 mu - 1 pa + 1 parg
+   DQF = -7060 + 20 * T_K
+tts   = -2 dsp + 2 ru + 1 ts
+   DQF =   95000
+                                  | Make definitions for Green et al., JMG, 2016 augite (clinopyroxene)
+cfsg  = 1 fs
+   DQF = 2100 - 2 * T + 0.045 * P
+                                  | Make definitions for Holland et al., 2013; dx.doi.org/10.1093/petrology/egt035
+                                  | mantle mineralogical model.
+nacfb = 1 nacf
+       DQF(J/mol) = -9000
+mfpv = 1 fpv
+       DQF(J/mol) = -9500
+mcpv = 1 cpv
+       DQF(J/mol) = 60000
+mnpv = 1 npv
+       DQF(J/mol) = 16000
+cmpv = 1 mpv
+       DQF(J/mol) = 35000
+cfpv = 1 fpv
+       DQF(J/mol) = 24000
+capv = 1 apv
+       DQF(J/mol) = 45000
+cnpv = 1 npv
+       DQF(J/mol) = 25000
+fcor = 1 mcor + 1 fak - 1 mak   | FeSi corundum
+       DQF(J/mol) = -15d3
+hmgts  = 1 mgts + 1 hen - 1 en
+       DQF(J/mol) = -1d3
+|--------------------------------------------------------------------------------
+                                  | Make definitions for Holland et al 2018
+      |---------------------------  Cpx
+cessh = 1 cats + 1 acm - 1 jd
+       DQF = -3450
+crdih = 1 cats + 1 kos - 1 jd
+       DQF = -4900
+mcbuf = 1 cats + 1/2 per + 1/2 ru -1/2 cor
+       DQF = 1750 - 1.2 * T - 0.005 * P  | corrected from -1750 ... 10/22/2019, Lisa Rummel, Mainz.
+kjdh  = 1 jd + 1 san - 1 abh
+       DQF = -3750 + 1.189 * P
+      |---------------------------  Melt
+foHL = 2 foL
+   dqf = 8.75d3  - 0.133*Pbar
+ 
+faHL = 2 faL
+   dqf = 13.9d3  - 0.056*Pbar
+ 
+qHL = 4 qL
+   dqf =  0.07d3 - 0.062*Pbar
+ 
+jdL = 1 abL - 1 qL
+   dqf = 11.85d3 - 0.096*Pbar
+ 
+hmL = 1/2 hemL
+   dqf =  4.05d3 - 0.077*Pbar
+ 
+ekL = 1/2 eskL
+   dqf = 24.75d3 + 0.245*Pbar
+ 
+tiL = 1 ruL
+   dqf =  5.6d3  - 0.489*Pbar
+ 
+kjL = 1 kspL - 1 qL
+   dqf = 12.35d3 - 0.210*Pbar
+ 
+end_makes
+ 
+Notation (incomplete and NOT alphabetical!)
+ 
+Entity                     Symbol          Formula
+ 
+akermanite                 ak              Ca2MgSi2O7
+almandine                  alm             Fe3Al2Si3O12
+andalusite                 and             Al2SiO5
+andradite                  andr            Ca3Fe2Si3O12
+clinohumite                chum            Mg9Si4O16(OH)2
+clinozoisite               cz              Ca2Al3Si3O12(OH)
+cordierite                 crd             Mg2Al4Si5O18
+epidote(ordered)           ep              Ca2FeAl2Si3O12(OH)
+fayalite                   fa              Fe2SiO4
+Fe-chloritoid              fctd            FeAl2SiO5(OH)2
+Fe-cordierite              fcrd            Fe2Al4Si5O18
+Fe-epidote                 fep             Ca2Fe2AlSi3O12(OH)
+Fe-osumilite               fosm            KFe2Al5Si10O30
+Fe-staurolite              fst             Fe4Al18Si7.5O48H4
+forsterite                 fo              Mg2SiO4
+gehlenite                  geh             Ca2Al2SiO7
+grossular                  gr              Ca3Al2Si3O12
+hydrouscordierite          hcrd            Mg2Al4Si5O18H2O
+hydroxy-topaz              tpz             Al2SiO4(OH)2
+kyanite                    ky              Al2SiO5
+larnite-bredigite          larn            Ca2SiO4
+lawsonite                  law             CaAl2Si2O7(OH)2H2O
+merwinite                  merw            Ca3MgSi2O8
+Mg-chloritoid              mctd            MgAl2SiO5(OH)2
+Mg-staurolite              mst             Mg4Al18Si7.5O48H4
+Mn-chloritoid              mnctd           MnAl2SiO5(OH)2
+Mn-cordierite              mncrd           Mn2Al4Si5O18
+Mn-staurolite              mnst            Mn4Al18Si7:5O48H4
+monticellite               mont            CaMgSiO4
+osumilite(1)               osm1            KMg2Al5Si10O30
+osumilite(2)               osm2            KMg3Al3Si11O30
+phase A                    phA             Mg7Si2O8(OH)6
+pumpellyite                pump            Ca4MgAl5Si6O21(OH)7
+pyrope                     py              Mg3Al2Si3O12
+rankinite                  rnk             Ca3Si2O7
+sillimanite                sill            Al2SiO5
+spessartine                spss            Mn3Al2Si3O12
+sphene                     sph             CaTiSiO5
+spurrite                   spu             Ca5Si2O8(CO3)
+tephroite                  teph            Mn2SiO4
+tilleyite                  ty              Ca5Si2O7(CO3)2
+vesuvianite                vsv             Ca19Mg2Al11Si18O69(OH)9
+zircon                     zrc             ZrSiO4
+zoisite                    zo              Ca2Al3Si3O12(OH)
+acmite                     acm             NaFeSi2O6
+Ca-tschermaks pyroxene     cats            CaAl2SiO6
+Diopside                   di              CaMgSi2O6
+enstatite                  en              Mg2Si2O6
+ferrosilite                fs              Fe2Si2O6
+hedenbergite               hed             CaFeSi2O6
+jadeite                    jd              NaAlSi2O6
+mg-tschermak               mgts            MgAl2SiO6
+pseudowollastonite         pswo            CaSiO3
+pyroxmangite               pxmn            MnSiO3
+rhodonite                  rhod            MnSiO3
+wollastonite               wo              CaSiO3
+anthophyllite              anth            Mg7Si8O22(OH)2
+cummingtonite              cumm            Mg7Si8O22(OH)2
+Fe-anthophyllite           fanth           Fe7Si8O22(OH)2
+Fe-glaucophane             fgl             Na2Fe3Al2Si8O22(OH)2
+ferroactinolite            ftr             Ca2Fe5Si8O22(OH)2
+gedrite(Na-free)           ged             Mg5Al4Si6O22(OH)2
+glaucophane                gl              Na2Mg3Al2Si8O22(OH)2
+grunerite                  grun            Fe7Si8O22(OH)2
+pargasite                  parg            NaCa2Mg4Al3Si6O22(OH)2
+riebeckite                 rieb            Na2Fe5Si8O22(OH)2
+tremolite                  tr              Ca2Mg5Si8O22(OH)2
+tschermakite               ts              Ca2Mg3Al4Si6O22(OH)2
+deerite                    deer            Fe18Si12O40(OH)10
+fe-carpholite              fcar            FeAl2Si2O6(OH)4
+fe-sapphirine(793)         fspr            Fe3.5Al9Si1.5O20
+mg-carpholite              mcar            MgAl2Si2O6(OH)4
+sapphirine(442)            spr4            Mg4Al8Si2O20
+sapphirine(793)            spr7            Mg3.5Al9Si1.5O20
+annite                     ann             KFe3AlSi3O10(OH)2
+celadonite                 cel             KMgAlSi4O10(OH)2
+eastonite                  east            KMg2Al3Si2O10(OH)2
+Fe-celadonite              fcel            KFeAlSi4O10(OH)2
+margarite                  ma              CaAl4Si2O10(OH)2
+Mn-biotite                 mnbi            KMn3AlSi3O10(OH)2
+muscovite                  mu              KAl3Si3O10(OH)2
+Na-phlogopite              naph            NaMg3AlSi3O10(OH)2
+paragonite                 pa              NaAl3Si3O10(OH)2
+phlogopite                 phl             KMg3AlSi3O10(OH)2
+Al-free chlorite           afchl           Mg6Si4O10(OH)8
+amesite(14Ang)             ames            Mg4Al4Si2O10(OH)8
+clinochlore(ordered)       clin            Mg5Al2Si3O10(OH)8
+daphnite                   daph            Fe5Al2Si3O10(OH)8
+Fe-sudoite                 fsud            Fe2Al4Si3O10(OH)8
+Mn-chlorite                mnchl           Mn5Al2Si3O10(OH)8
+Sudoite                    sud             Mg2Al4Si3O10(OH)8
+antigorite                 atg             Mg48Si34O85(OH)62
+chrysotile                 chr             Mg3Si2O5(OH)2
+Fe-talc                    fta             Fe3Si4O10(OH)2
+Kaolinite                  kao             Al2Si2O5(OH)4
+prehnite                   pre             Ca2Al2Si3O10(OH)2
+pyrophyllite               prl             Al2Si4O10(OH)2
+talc                       ta              Mg3Si4O10(OH)2
+tschermak-talc             tats            Mg2Al2Si3O10(OH)2
+albite                     ab              NaAlSi3O8
+analcite                   anl             NaAlSi2O6H2O
+anorthite                  an              CaAl2Si2O8
+coesite                    coe             SiO2
+cristobalite               crst            SiO2
+heulandite                 heu             CaAl2Si7O186H2O
+highalbite                 abh             NaAlSi3O8
+kalsilite                  kals            KAlSiO4
+laumontite                 lmt             CaAl2Si4O124H2O
+leucite                    lc              KAlSi2O6
+meionite                   me              Ca4Al6Si6O24(CO3)
+microcline                 mic             KAlSi3O8
+nepheline                  ne              NaAlSiO4
+quartz                     q               SiO2
+sanidine                   san             KAlSi3O8
+stilbite                   stlb            CaAl2Si7O187H2O
+stishovite                 stv             SiO2
+tridymite                  trd             SiO2
+wairakite                  wrk             CaAl2Si4O12H2O3
+baddeleyite                bdy             ZrO2
+corundum                   cor             Al2O3
+geikielite                 geik            MgTiO3
+hematite                   hem             Fe2O3
+hercynite                  herc            FeAl2O4
+ilmenite                   ilm             FeTiO3
+lime                       lime            CaO
+magnesioferrite            mft             MgFe2O4
+magnetite                  mt              Fe3O4
+manganosite                mang            MnO
+nickel                     oxide           NiO
+periclase                  per             MgO
+pyrophanite                pnt             MnTiO3
+rutile                     ru              TiO2
+spinel                     sp              MgAl2O4
+ulvospinel                 usp             Fe2TiO4
+brucite                    br              Mg(OH)2
+diaspore                   dsp             AlO(OH)
+goethite                   gth             FeO(OH)
+ankerite                   ank             CaFe(CO3)2
+aragonite                  arag            CaCO3
+calcite                    cc              CaCO3
+dolomite                   dol             CaMg(CO3)2
+magnesite                  mag             MgCO3
+rhodochrosite              rhc             MnCO3
+siderite                   sid             FeCO3
+diamond                    diam            C
+graphite                   gph             C
+iron                       iron            Fe
+nickel                     Ni              Ni
+carbon dioxide             CO2
+carbon monoxide            CO
+hydrogen                   H2
+methane                    CH4
+oxygen                     O2
+water fluid                H2O
+albite liquid              abL             NaAlSi3O8
+anorthite liquid           anL             CaAl2Si2O8
+diopside liquid            diL             CaMgSi2O6
+enstatite liquid           enL             Mg2Si2O6
+fayalite liquid            faL             Fe2SiO4
+Fe-liquid (in KFMASH)      fliq            K3Fe0:5Al4Si19:5O47
+Forsterite liquid          foL             Mg2SiO4
+H2O liquid                 h2oL            H2O
+H2O liquid (in KFMASH)     hliq            H2O
+K-feldspar liquid          kspL            KAlSi3O8
+Mg liquid (in KFMASH)      mliq            K3Mg0:5Al4Si19:5O47
+Silica liquid              qL              SiO2
+Sillimanite liquid         silL            Al2SiO5
+H+(aq)                     H+
+Cl(aq)                     Cl-
+OH(aq)                     OH-
+Na+(aq)                    Na+
+K+(aq)                     K+
+Ca2+(aq)                   Ca++
+Mg2+(aq)                   Mg++
+Fe2+(aq)                   Fe++
+Al3+(aq)                   Al+++
+CO3--(aq)                  CO3
+Al(OH)3(aq)                AlOH3
+Al(OH)4----(aq)            AlOH4-
+KOH(aq)                    KOH
+HCl(aq)                    HCL
+KCl(aq)                    KCL
+NaCl(aq)                   NaCl
+CaCl(aq)                   CaCl2
+CaCl+(aq)                  CaCl+
+MgCl2(aq)                  MgCl2
+MgCl+(aq)                  MgCl
+FeCl(aq)                   FeCl2
+Aqueous silica             aqSi            SiO2
+ 
+end
+
+fo        EoS = 8  
+Mg(2)Si(1)O2(2)
+GH = -2200944.  S0 = 95.1  V0 = 4.366  
+c1 = 233.3  c2 = .1494E-2  c3 = -603800  c5 = -1869.7  
+b1 = .285E-4  b5 = 531.1171  b6 = 1285000.  b7 = -.3E-5  b8 = 3.84  
+end
+
+
+fa        EoS = 8  
+Si(1)Fe(2)O2(2)
+GH = -1522741.  S0 = 151  V0 = 4.631  
+c1 = 201.1  c2 = .1733E-1  c3 = -1960600.  c5 = -900.9  
+b1 = .282E-4  b5 = 379.7022  b6 = 1256000.  b7 = -.37E-5  b8 = 4.68  
+end
+
+
+teph      EoS = 8  
+Si(1)Mn(2)O2(2)
+GH = -1780452.  S0 = 155.9  V0 = 4.899  
+c1 = 219.6  c3 = -1292700.  c5 = -1308.3  
+b1 = .286E-4  b5 = 370.4448  b6 = 1256000.  b7 = -.37E-5  b8 = 4.68  
+end
+
+
+lrn       EoS = 8  
+Si(1)Ca(2)O2(2)
+GH = -2344964.  S0 = 127.6  V0 = 5.16  
+c1 = 247.5  c2 = -.3206E-2  c5 = -2051.9  
+b1 = .29E-4  b5 = 431.1559  b6 = 985000  b7 = -.41E-5  b8 = 4.07  
+transition = 1  type = 4  t1 = 1710  t2 = 10.03  t3 = .5E-1  
+end
+
+
+mont      EoS = 8  
+Mg(1)Si(1)Ca(1)O2(2)
+GH = -2283907.  S0 = 109.5  V0 = 5.148  
+c1 = 250.7  c2 = -.10433E-1  c3 = -797200  c5 = -1996.1  
+b1 = .287E-4  b5 = 481.6406  b6 = 1134000.  b7 = -.34E-5  b8 = 3.87  
+end
+
+
+chum      EoS = 8  
+Mg(9)Si(4)O2(9)H2(1)
+GH = -9744875.  S0 = 440.5  V0 = 19.801  
+c1 = 1071  c2 = -.16533E-1  c3 = -7899600.  c5 = -7373.9  
+b1 = .32E-4  b5 = 537.4843  b6 = 1199000.  b7 = -.38E-5  b8 = 4.58  
+end
+
+
+chdr      EoS = 8  
+Mg(5)Si(2)O2(5)H2(1)
+GH = -5332409.  S0 = 260  V0 = 11.084  
+c1 = 625  c2 = -.1088E-2  c3 = -2259900.  c5 = -4910.7  
+b1 = .182E-4  b5 = 528.5176  b6 = 1161000.  b7 = -.41E-5  b8 = 4.8  
+end
+
+
+mwd       EoS = 8  
+Mg(2)Si(1)O2(2)
+GH = -2166516.  S0 = 93.9  V0 = 4.051  
+c1 = 208.7  c2 = .3942E-2  c3 = -1709500.  c5 = -1302.8  
+b1 = .237E-4  b5 = 535.703  b6 = 1726000.  b7 = -.22E-5  b8 = 3.84  
+end
+
+
+fwd       EoS = 8  
+Si(1)Fe(2)O2(2)
+GH = -1511430.  S0 = 146  V0 = 4.321  
+c1 = 201.1  c2 = .1733E-1  c3 = -1960600.  c5 = -900.9  
+b1 = .273E-4  b5 = 389.6378  b6 = 1690000.  b7 = -.26E-5  b8 = 4.35  
+end
+
+
+mrw       EoS = 8  
+Mg(2)Si(1)O2(2)
+GH = -2154513.  S0 = 90  V0 = 3.949  
+c1 = 213.3  c2 = .269E-2  c3 = -1410400.  c5 = -1495.9  
+b1 = .201E-4  b5 = 551.1697  b6 = 1781000.  b7 = -.24E-5  b8 = 4.35  
+end
+
+
+frw       EoS = 8  
+Si(1)Fe(2)O2(2)
+GH = -1513501.  S0 = 140  V0 = 4.203  
+c1 = 166.8  c2 = .4261E-1  c3 = -1705400.  c5 = -541.4  
+b1 = .222E-4  b5 = 402.2693  b6 = 1977000.  b7 = -.25E-5  b8 = 4.92  
+end
+
+
+mpv       EoS = 8  
+Mg(1)Si(1)O2(1.5)
+GH = -1461694.  S0 = 62.6  V0 = 2.445  
+c1 = 149.3  c2 = .2918E-2  c3 = -2983000.  c5 = -799.1  
+b1 = .187E-4  b5 = 560.9705  b6 = 2510000.  b7 = -.16E-5  b8 = 4.14  
+end
+
+
+fpv       EoS = 8  
+Si(1)Fe(1)O2(1.5)
+GH = -1111772.  S0 = 91  V0 = 2.548  
+c1 = 133.2  c2 = .1083E-1  c3 = -3661400.  c5 = -314.7  
+b1 = .187E-4  b5 = 431.6558  b6 = 2810000.  b7 = -.16E-5  b8 = 4.14  
+end
+
+
+apv       EoS = 8  
+Al(2)O2(1.5)
+GH = -1662074.  S0 = 51.8  V0 = 2.54  
+c1 = 139.5  c2 = .589E-2  c3 = -2460600.  c5 = -589.2  
+b1 = .18E-4  b5 = 633.0952  b6 = 2030000.  b7 = -.2E-5  b8 = 4  
+end
+
+
+cpv       EoS = 8  
+Si(1)Ca(1)O2(1.5)
+GH = -1563644.  S0 = 73.5  V0 = 2.745  
+c1 = 159.3  c3 = -967300  c5 = -1075.4  
+b1 = .187E-4  b5 = 503.122  b6 = 2360000.  b7 = -.16E-5  b8 = 3.9  
+end
+
+
+mak       EoS = 8  
+Mg(1)Si(1)O2(1.5)
+GH = -1508550.  S0 = 59.3  V0 = 2.635  
+c1 = 147.8  c2 = .2015E-2  c3 = -2395000.  c5 = -801.8  
+b1 = .212E-4  b5 = 581.2022  b6 = 2110000.  b7 = -.22E-5  b8 = 4.55  
+end
+
+
+fak       EoS = 8  
+Si(1)Fe(1)O2(1.5)
+GH = -1169421.  S0 = 91.5  V0 = 2.76  
+c1 = 100.3  c2 = .13328E-1  c3 = -4364900.  c5 = 419.8  
+b1 = .212E-4  b5 = 429.9111  b6 = 2180000.  b7 = -.22E-5  b8 = 4.55  
+end
+
+
+maj       EoS = 8  
+Mg(4)Si(4)O2(6)
+GH = -6126488.  S0 = 255.2  V0 = 11.457  
+c1 = 713.6  c2 = -.997E-3  c3 = -1158200.  c5 = -6622.3  
+b1 = .183E-4  b5 = 553.9583  b6 = 1600000.  b7 = -.28E-5  b8 = 4.56  
+end
+
+
+py        EoS = 8  
+Mg(3)Al(2)Si(3)O2(6)
+GH = -6362311.  S0 = 269.5  V0 = 11.313  
+c1 = 633.5  c3 = -5196100.  c5 = -4315.2  
+b1 = .237E-4  b5 = 534.0698  b6 = 1743000.  b7 = -.23E-5  b8 = 4.05  
+end
+
+
+alm       EoS = 8  
+Al(2)Si(3)Fe(3)O2(6)
+GH = -5362667.  S0 = 342  V0 = 11.525  
+c1 = 677.3  c3 = -3772700.  c5 = -5044  
+b1 = .212E-4  b5 = 451.8267  b6 = 1900000.  b7 = -.16E-5  b8 = 2.98  
+end
+
+
+spss      EoS = 8  
+Al(2)Si(3)Mn(3)O2(6)
+GH = -5793460.  S0 = 335.3  V0 = 11.792  
+c1 = 646.9  c3 = -4525800.  c5 = -4452.8  
+b1 = .227E-4  b5 = 458.3495  b6 = 1740000.  b7 = -.38E-5  b8 = 6.68  
+end
+
+
+gr        EoS = 8  
+Al(2)Si(3)Ca(3)O2(6)
+GH = -6719038.  S0 = 255  V0 = 12.535  
+c1 = 626  c3 = -5779200.  c5 = -4002.9  
+b1 = .22E-4  b5 = 554.247  b6 = 1720000.  b7 = -.32E-5  b8 = 5.53  
+end
+
+
+andr      EoS = 8  
+Si(3)Ca(3)Fe(2)O2(6)
+GH = -5863435.  S0 = 316.4  V0 = 13.204  
+c1 = 638.6  c3 = -4955100.  c5 = -3989.2  
+b1 = .286E-4  b5 = 477.8077  b6 = 1588000.  b7 = -.36E-5  b8 = 5.68  
+end
+
+
+knor      EoS = 8  
+Mg(3)Si(3)O2(6)Cr(2)
+GH = -5782224.  S0 = 317  V0 = 11.738  
+c1 = 613  c2 = .3606E-2  c3 = -4178000.  c5 = -3729.4  
+b1 = .237E-4  b5 = 477.1646  b6 = 1743000.  b7 = -.23E-5  b8 = 4.05  
+end
+
+
+osma      EoS = 8  
+Mg(2)Al(5)Si(10)K(1)O2(15)
+GH = -.1512141E+08  S0 = 755  V0 = 37.893  
+c1 = 1540.7  c2 = -.11359E-1  c3 = -.1033900E+08  c5 = -11699  
+b1 = .47E-5  b5 = 479.7654  b6 = 1290000.  b7 = -.31E-5  b8 = 4.1  
+end
+
+
+osmm      EoS = 8  
+Mg(3)Al(3)Si(11)K(1)O2(15)
+GH = -.1500737E+08  S0 = 740  V0 = 38.44  
+c1 = 1525.5  c2 = -.10267E-1  c3 = -.1053800E+08  c5 = -11337  
+b1 = .47E-5  b5 = 486.625  b6 = 1290000.  b7 = -.31E-5  b8 = 4.1  
+end
+
+
+osfa      EoS = 8  
+Al(5)Si(10)K(1)Fe(2)O2(15)
+GH = -.1444805E+08  S0 = 780  V0 = 38.45  
+c1 = 1558.6  c2 = -.11359E-1  c3 = -9476500.  c5 = -11845  
+b1 = .49E-5  b5 = 468.7528  b6 = 1290000.  b7 = -.31E-5  b8 = 4.1  
+end
+
+
+vsv       EoS = 8  
+Mg(2)Al(11)Si(18)Ca(19)O2(39)H2(4.5)
+GH = -.4290932E+08  S0 = 1890  V0 = 85.2  
+c1 = 4488  c2 = -.57952E-1  c3 = -.2226930E+08  c5 = -33478  
+b1 = .275E-4  b5 = 525.6078  b6 = 1255000.  b7 = -.38E-5  b8 = 4.8  
+end
+
+
+and       EoS = 8  
+Al(2)Si(1)O2(2.5)
+GH = -2616309.  S0 = 92.7  V0 = 5.153  
+c1 = 277.3  c2 = -.6588E-2  c3 = -1914100.  c5 = -2265.6  
+b1 = .181E-4  b5 = 589.9875  b6 = 1442000.  b7 = -.48E-5  b8 = 6.89  
+end
+
+
+ky        EoS = 8  
+Al(2)Si(1)O2(2.5)
+GH = -2617866.  S0 = 83.5  V0 = 4.414  
+c1 = 279.4  c2 = -.7124E-2  c3 = -2055600.  c5 = -2289.4  
+b1 = .192E-4  b5 = 630.1881  b6 = 1601000.  b7 = -.25E-5  b8 = 4.05  
+end
+
+
+sill      EoS = 8  
+Al(2)Si(1)O2(2.5)
+GH = -2614234.  S0 = 95.4  V0 = 4.986  
+c1 = 280.2  c2 = -.69E-2  c3 = -1375700.  c5 = -2399.4  
+b1 = .112E-4  b5 = 579.1451  b6 = 1640000.  b7 = -.31E-5  b8 = 5.06  
+transition = 1  type = 5  t1 = 4750  t2 = .1E-1  t3 = 4750  t4 = .1E-1  t5 = 1  t6 = .25  
+end
+
+
+smul      EoS = 8  
+Al(2)Si(1)O2(2.5)
+GH = -2599472.  S0 = 101.5  V0 = 4.987  
+c1 = 280.2  c2 = -.69E-2  c3 = -1375700.  c5 = -2399.4  
+b1 = .136E-4  b5 = 556.058  b6 = 1740000.  b7 = -.23E-5  b8 = 4  
+end
+
+
+amul      EoS = 8  
+Al(2.5)Si(.5)O2(2.375)
+GH = -2519221.  S0 = 113  V0 = 5.083  
+c1 = 244.8  c2 = .968E-3  c3 = -2533300.  c5 = -1641.6  
+b1 = .136E-4  b5 = 505.9788  b6 = 1740000.  b7 = -.23E-5  b8 = 4  
+end
+
+
+tpz       EoS = 8  
+Al(2)Si(1)O2(3)H2(1)
+GH = -2930674.  S0 = 100.5  V0 = 5.339  
+c1 = 387.7  c2 = -.712E-2  c3 = -857200  c5 = -3744.2  
+b1 = .157E-4  b5 = 682.8295  b6 = 1315000.  b7 = -.31E-5  b8 = 4.06  
+end
+
+
+mst       EoS = 8  
+Mg(4)Al(18)Si(7.5)O2(24)H2(2)
+GH = -.2539506E+08  S0 = 910  V0 = 44.26  
+c1 = 2820.5  c2 = -.59366E-1  c3 = -.1377400E+08  c5 = -24126  
+b1 = .181E-4  b5 = 604.1244  b6 = 1684000.  b7 = -.24E-5  b8 = 4.05  
+end
+
+
+fst       EoS = 8  
+Al(18)Si(7.5)Fe(4)O2(24)H2(2)
+GH = -.2405576E+08  S0 = 1010  V0 = 44.88  
+c1 = 2880  c2 = -.56595E-1  c3 = -.1064200E+08  c5 = -25373  
+b1 = .183E-4  b5 = 564.7642  b6 = 1800000.  b7 = -.26E-5  b8 = 4.76  
+end
+
+
+mnst      EoS = 8  
+Al(18)Si(7.5)Mn(4)O2(24)H2(2)
+GH = -.2455414E+08  S0 = 1034  V0 = 45.46  
+c1 = 2873.3  c2 = -.89064E-1  c3 = -.1268800E+08  c5 = -24749  
+b1 = .209E-4  b5 = 556.0692  b6 = 1800000.  b7 = -.26E-5  b8 = 4.76  
+end
+
+
+mctd      EoS = 8  
+Mg(1)Al(2)Si(1)O2(3.5)H2(1)
+GH = -3592780.  S0 = 146  V0 = 6.875  
+c1 = 417.4  c2 = -.3771E-2  c3 = -2920600.  c5 = -3417.8  
+b1 = .263E-4  b5 = 601.898  b6 = 1456000.  b7 = -.28E-5  b8 = 4.06  
+end
+
+
+fctd      EoS = 8  
+Al(2)Si(1)Fe(1)O2(3.5)H2(1)
+GH = -3258081.  S0 = 167  V0 = 6.98  
+c1 = 416.1  c2 = -.3477E-2  c3 = -2835900.  c5 = -3360.3  
+b1 = .28E-4  b5 = 551.4837  b6 = 1456000.  b7 = -.28E-5  b8 = 4.06  
+end
+
+
+mnctd     EoS = 8  
+Al(2)Si(1)Mn(1)O2(3.5)H2(1)
+GH = -3385643.  S0 = 166  V0 = 7.175  
+c1 = 464.4  c2 = -.12654E-1  c3 = -1147200.  c5 = -4341  
+b1 = .26E-4  b5 = 553.6921  b6 = 1456000.  b7 = -.28E-5  b8 = 4.06  
+end
+
+
+merw      EoS = 8  
+Mg(1)Si(2)Ca(3)O2(4)
+GH = -4621162.  S0 = 253.1  V0 = 9.847  
+c1 = 417.5  c2 = .8117E-2  c3 = -2923000.  c5 = -2320.3  
+b1 = .319E-4  b5 = 433.7936  b6 = 1200000.  b7 = -.34E-5  b8 = 4.07  
+end
+
+
+spu       EoS = 8  
+Si(2)Ca(5)O2(5.5)C(1)
+GH = -5945706.  S0 = 332  V0 = 14.697  
+c1 = 614.1  c2 = -.3508E-2  c3 = -2493100.  c5 = -4168  
+b1 = .34E-4  b5 = 444.7663  b6 = 950000  b7 = -.43E-5  b8 = 4.09  
+end
+
+
+zo        EoS = 8  
+Al(3)Si(3)Ca(2)O2(6.5)H2(.5)
+GH = -6985139.  S0 = 298  V0 = 13.575  
+c1 = 662  c2 = .10416E-1  c3 = -6006400.  c5 = -4260.7  
+b1 = .312E-4  b5 = 532.187  b6 = 1044000.  b7 = -.38E-5  b8 = 4  
+end
+
+
+cz        EoS = 8  
+Al(3)Si(3)Ca(2)O2(6.5)H2(.5)
+GH = -6985283.  S0 = 301  V0 = 13.63  
+c1 = 630.9  c2 = .13693E-1  c3 = -6645800.  c5 = -3731.1  
+b1 = .233E-4  b5 = 528.5805  b6 = 1197000.  b7 = -.34E-5  b8 = 4.07  
+end
+
+
+ep        EoS = 8  
+Al(2)Si(3)Ca(2)Fe(1)O2(6.5)H2(.5)
+GH = -6567747.  S0 = 315  V0 = 13.92  
+c1 = 613.3  c2 = .2207E-1  c3 = -7160000.  c5 = -2987.7  
+b1 = .234E-4  b5 = 512.3763  b6 = 1340000.  b7 = -.3E-5  b8 = 4  
+end
+
+
+fep       EoS = 8  
+Al(1)Si(3)Ca(2)Fe(2)O2(6.5)H2(.5)
+GH = -6126681.  S0 = 329  V0 = 14.21  
+c1 = 584.7  c2 = .30447E-1  c3 = -7674200.  c5 = -2244.3  
+b1 = .231E-4  b5 = 497.1361  b6 = 1513000.  b7 = -.26E-5  b8 = 4  
+end
+
+
+pmt       EoS = 8  
+Al(2)Si(3)Ca(2)Mn(1)O2(6.5)H2(.5)
+GH = -6644401.  S0 = 340  V0 = 13.82  
+c1 = 569.8  c2 = .2779E-1  c3 = -5442900.  c5 = -2812.6  
+b1 = .238E-4  b5 = 485.7831  b6 = 1197000.  b7 = -.34E-5  b8 = 4.07  
+end
+
+
+law       EoS = 8  
+Al(2)Si(2)Ca(1)O2(5)H2(2)
+GH = -4936906.  S0 = 229  V0 = 10.132  
+c1 = 687.8  c2 = .1566E-2  c3 = 375900  c5 = -7179.2  
+b1 = .265E-4  b5 = 575.148  b6 = 1229000.  b7 = -.44E-5  b8 = 5.45  
+end
+
+
+mpm       EoS = 8  
+Mg(1)Al(5)Si(6)Ca(4)O2(14)H2(3.5)
+GH = -.1457445E+08  S0 = 629  V0 = 29.55  
+c1 = 1720.8  c2 = -.24928E-1  c3 = -5998700.  c5 = -14620.3  
+b1 = .248E-4  b5 = 566.5483  b6 = 1615000.  b7 = -.25E-5  b8 = 4.05  
+end
+
+
+fpm       EoS = 8  
+Al(5)Si(6)Ca(4)Fe(1)O2(14)H2(3.5)
+GH = -.1422992E+08  S0 = 657  V0 = 29.68  
+c1 = 1737.2  c2 = -.24582E-1  c3 = -5161100.  c5 = -14963  
+b1 = .249E-4  b5 = 550.4506  b6 = 1615000.  b7 = -.25E-5  b8 = 4.05  
+end
+
+
+jgd       EoS = 8  
+Si(6)Ca(4)Fe(6)O2(14)H2(3.5)
+GH = -.1205642E+08  S0 = 830  V0 = 31.08  
+c1 = 1795.4  c2 = -.37986E-1  c3 = -4455700.  c5 = -14888  
+b1 = .249E-4  b5 = 468.247  b6 = 1615000.  b7 = -.25E-5  b8 = 4.05  
+end
+
+
+geh       EoS = 8  
+Al(2)Si(1)Ca(2)O2(3.5)
+GH = -4051423.  S0 = 198.5  V0 = 9.024  
+c1 = 405.7  c2 = -.7099E-2  c3 = -1188300.  c5 = -3174.4  
+b1 = .223E-4  b5 = 462.8037  b6 = 1080000.  b7 = -.38E-5  b8 = 4.08  
+transition = 1  type = 5  t1 = 7510  t2 = .9E-1  t3 = 7500  t4 = .9E-1  t5 = 1  t6 = .8  
+end
+
+
+ak        EoS = 8  
+Mg(1)Si(2)Ca(2)O2(3.5)
+GH = -3928977.  S0 = 212.5  V0 = 9.254  
+c1 = 385.4  c2 = .3209E-2  c3 = -247500  c5 = -2889.9  
+b1 = .257E-4  b5 = 440.4445  b6 = 1420000.  b7 = -.29E-5  b8 = 4.06  
+end
+
+
+rnk       EoS = 8  
+Si(2)Ca(3)O2(3.5)
+GH = -4006431.  S0 = 210  V0 = 9.651  
+c1 = 372.3  c2 = -.2893E-2  c3 = -2462400.  c5 = -2181.3  
+b1 = .328E-4  b5 = 444.2774  b6 = 950000  b7 = -.43E-5  b8 = 4.09  
+end
+
+
+ty        EoS = 8  
+Si(2)Ca(5)O2(6.5)C(2)
+GH = -6484318.  S0 = 390  V0 = 17.039  
+c1 = 741.7  c2 = -.5345E-2  c3 = -1434600.  c5 = -5878.5  
+b1 = .342E-4  b5 = 440.0993  b6 = 950000  b7 = -.43E-5  b8 = 4.09  
+end
+
+
+crd       EoS = 8  
+Mg(2)Al(4)Si(5)O2(9)
+GH = -9283912.  S0 = 404.1  V0 = 23.322  
+c1 = 906.1  c3 = -7902000.  c5 = -6293.4  
+b1 = .68E-5  b5 = 522.0255  b6 = 1290000.  b7 = -.31E-5  b8 = 4.1  
+transition = 1  type = 5  t1 = 36710  t2 = .1  t3 = 36700  t4 = .1  t5 = 2  t6 = 1.5  
+end
+
+
+hcrd      EoS = 8  
+Mg(2)Al(4)Si(5)O2(9.5)H2(1)
+GH = -9592526.  S0 = 483  V0 = 23.322  
+c1 = 955.3  c3 = -8352600.  c5 = -6301.2  
+b1 = .67E-5  b5 = 493.9223  b6 = 1290000.  b7 = -.31E-5  b8 = 4.1  
+transition = 1  type = 5  t1 = 36710  t2 = .1  t3 = 36700  t4 = .1  t5 = 2  t6 = 1.5  
+end
+
+
+fcrd      EoS = 8  
+Al(4)Si(5)Fe(2)O2(9)
+GH = -8581517.  S0 = 461  V0 = 23.71  
+c1 = 924  c3 = -7039400.  c5 = -6439.6  
+b1 = .67E-5  b5 = 476.1702  b6 = 1290000.  b7 = -.31E-5  b8 = 4.1  
+transition = 1  type = 5  t1 = 36710  t2 = .1  t3 = 36700  t4 = .1  t5 = 2  t6 = 1.5  
+end
+
+
+mncrd     EoS = 8  
+Al(4)Si(5)Mn(2)O2(9)
+GH = -8834615.  S0 = 473  V0 = 24.027  
+c1 = 886.5  c3 = -8840000.  c5 = -5590.4  
+b1 = .69E-5  b5 = 467.5094  b6 = 1290000.  b7 = -.31E-5  b8 = 4.1  
+transition = 1  type = 5  t1 = 36710  t2 = .1  t3 = 36700  t4 = .1  t5 = 2  t6 = 1.5  
+end
+
+
+phA       EoS = 8  
+Mg(7)Si(2)O2(7)H2(3)
+GH = -7234122.  S0 = 350.5  V0 = 15.422  
+c1 = 962  c2 = -.11521E-1  c3 = -4517800.  c5 = -7724.7  
+b1 = .355E-4  b5 = 574.1056  b6 = 1450000.  b7 = -.28E-5  b8 = 4.06  
+end
+
+
+sph       EoS = 8  
+Si(1)Ca(1)Ti(1)O2(2.5)
+GH = -2638631.  S0 = 124  V0 = 5.565  
+c1 = 227.9  c2 = .2924E-2  c3 = -3539500.  c5 = -894.3  
+b1 = .158E-4  b5 = 484.7767  b6 = 1017000.  b7 = -.97E-5  b8 = 9.85  
+transition = 1  type = 4  t1 = 485  t2 = .4  t3 = .5E-2  
+end
+
+
+cstn      EoS = 8  
+Si(2)Ca(1)O2(2.5)
+GH = -2526016.  S0 = 99.5  V0 = 4.818  
+c1 = 205.6  c2 = .6034E-2  c3 = -5517700.  c5 = -352.6  
+b1 = .158E-4  b5 = 563.4221  b6 = 1782000.  b7 = -.22E-5  b8 = 4  
+end
+
+
+zrc       EoS = 8  
+Si(1)Zr(1)O2(2)
+GH = -2059825.  S0 = 83.03  V0 = 3.926  
+c1 = 232  c2 = -.14405E-1  c5 = -2238.2  
+b1 = .125E-4  b5 = 524.5007  b6 = 2301000.  b7 = -.18E-5  b8 = 4.04  
+end
+
+
+en        EoS = 8  
+Mg(2)Si(2)O2(3)
+GH = -3129725.  S0 = 132.5  V0 = 6.262  
+c1 = 356.2  c2 = -.299E-2  c3 = -596900  c5 = -3185.3  
+b1 = .227E-4  b5 = 540.1727  b6 = 1059000.  b7 = -.82E-5  b8 = 8.65  
+end
+
+
+pren      EoS = 8  
+Mg(2)Si(2)O2(3)
+GH = -3125407.  S0 = 137  V0 = 6.476  
+c1 = 356.2  c2 = -.299E-2  c3 = -596900  c5 = -3185.3  
+b1 = .23E-4  b5 = 528.1033  b6 = 1059000.  b7 = -.82E-5  b8 = 8.65  
+end
+
+
+cen       EoS = 8  
+Mg(2)Si(2)O2(3)
+GH = -3130466.  S0 = 132  V0 = 6.264  
+c1 = 306  c2 = -.3793E-2  c3 = -3041700.  c5 = -1852.1  
+b1 = .211E-4  b5 = 541.5479  b6 = 1059000.  b7 = -.82E-5  b8 = 8.65  
+end
+
+
+hen       EoS = 8  
+Mg(2)Si(2)O2(3)
+GH = -3121996.  S0 = 131.7  V0 = 6.099  
+c1 = 356.2  c2 = -.299E-2  c3 = -596900  c5 = -3185.3  
+b1 = .226E-4  b5 = 542.3763  b6 = 1500000.  b7 = -.36E-5  b8 = 5.5  
+end
+
+
+fs        EoS = 8  
+Si(2)Fe(2)O2(3)
+GH = -2445329.  S0 = 189.9  V0 = 6.592  
+c1 = 398.7  c2 = -.6579E-2  c3 = 1290100.  c5 = -4058  
+b1 = .326E-4  b5 = 418.2462  b6 = 1010000.  b7 = -.4E-5  b8 = 4.08  
+end
+
+
+mgts      EoS = 8  
+Mg(1)Al(2)Si(1)O2(3)
+GH = -3235728.  S0 = 131  V0 = 6.05  
+c1 = 371.4  c2 = -.4082E-2  c3 = -398400  c5 = -3547.1  
+b1 = .217E-4  b5 = 544.3193  b6 = 1028000.  b7 = -.83E-5  b8 = 8.55  
+end
+
+
+di        EoS = 8  
+Mg(1)Si(2)Ca(1)O2(3)
+GH = -3244456.  S0 = 142.9  V0 = 6.619  
+c1 = 314.5  c2 = .41E-4  c3 = -2745900.  c5 = -2020.1  
+b1 = .273E-4  b5 = 513.0728  b6 = 1192000.  b7 = -.44E-5  b8 = 5.19  
+end
+
+
+hed       EoS = 8  
+Si(2)Ca(1)Fe(1)O2(3)
+GH = -2894236.  S0 = 175  V0 = 6.795  
+c1 = 340.2  c2 = .812E-3  c3 = -1047800.  c5 = -2646.7  
+b1 = .238E-4  b5 = 444.2774  b6 = 1192000.  b7 = -.33E-5  b8 = 3.97  
+end
+
+
+jd        EoS = 8  
+Na(1)Al(1)Si(2)O2(3)
+GH = -3065073.  S0 = 133.5  V0 = 6.04  
+c1 = 319.4  c2 = .3616E-2  c3 = -1173900.  c5 = -2469.5  
+b1 = .21E-4  b5 = 537.4432  b6 = 1281000.  b7 = -.3E-5  b8 = 3.81  
+end
+
+
+acm       EoS = 8  
+Na(1)Si(2)Fe(1)O2(3)
+GH = -2634294.  S0 = 170.6  V0 = 6.459  
+c1 = 307.1  c2 = .16758E-1  c3 = -1685500.  c5 = -2125.8  
+b1 = .211E-4  b5 = 452.5957  b6 = 1060000.  b7 = -.38E-5  b8 = 4.08  
+end
+
+
+kos       EoS = 8  
+Na(1)Si(2)O2(3)Cr(1)
+GH = -2791458.  S0 = 149.65  V0 = 6.309  
+c1 = 309.2  c2 = .5419E-2  c3 = -664600  c5 = -2176.6  
+b1 = .194E-4  b5 = 496.8932  b6 = 1308000.  b7 = -.23E-5  b8 = 3  
+end
+
+
+cats      EoS = 8  
+Al(2)Si(1)Ca(1)O2(3)
+GH = -3350360.  S0 = 135  V0 = 6.356  
+c1 = 347.6  c2 = -.6974E-2  c3 = -1781600.  c5 = -2757.5  
+b1 = .208E-4  b5 = 533.4002  b6 = 1192000.  b7 = -.44E-5  b8 = 5.19  
+transition = 1  type = 5  t1 = 3800  t2 = .1E-1  t3 = 3800  t4 = .1E-1  t5 = 1  t6 = .25  
+end
+
+
+caes      EoS = 8  
+Al(1)Si(2)Ca(.5)O2(3)
+GH = -3039885.  S0 = 127  V0 = 6.05  
+c1 = 362  c2 = -.16944E-1  c3 = -175900  c5 = -3565.7  
+b1 = .231E-4  b5 = 536.9434  b6 = 1192000.  b7 = -.44E-5  b8 = 5.19  
+end
+
+
+rhod      EoS = 8  
+Si(1)Mn(1)O2(1.5)
+GH = -1352344.  S0 = 100.5  V0 = 3.494  
+c1 = 138.4  c2 = .4088E-2  c3 = -1936000.  c5 = -538.9  
+b1 = .281E-4  b5 = 400.7536  b6 = 840000  b7 = -.48E-5  b8 = 4  
+end
+
+
+pxmn      EoS = 8  
+Si(1)Mn(1)O2(1.5)
+GH = -1352766.  S0 = 99.3  V0 = 3.472  
+c1 = 138.4  c2 = .4088E-2  c3 = -1936000.  c5 = -538.9  
+b1 = .28E-4  b5 = 404.4106  b6 = 840000  b7 = -.48E-5  b8 = 4  
+end
+
+
+wo        EoS = 8  
+Si(1)Ca(1)O2(1.5)
+GH = -1658367.  S0 = 82.5  V0 = 3.993  
+c1 = 159.3  c3 = -967300  c5 = -1075.4  
+b1 = .254E-4  b5 = 463.6443  b6 = 795000  b7 = -.52E-5  b8 = 4.1  
+end
+
+
+pswo      EoS = 8  
+Si(1)Ca(1)O2(1.5)
+GH = -1654138.  S0 = 87.8  V0 = 4.008  
+c1 = 157.8  c3 = -967300  c5 = -1075.4  
+b1 = .285E-4  b5 = 443.1667  b6 = 1100000.  b7 = -.37E-5  b8 = 4.08  
+end
+
+
+wal       EoS = 8  
+Si(1)Ca(1)O2(1.5)
+GH = -1650796.  S0 = 83.5  V0 = 3.7633  
+c1 = 159.3  c3 = -967300  c5 = -1075.4  
+b1 = .254E-4  b5 = 459.637  b6 = 795000  b7 = -.52E-5  b8 = 4.1  
+end
+
+
+tr        EoS = 8  
+Mg(5)Si(8)Ca(2)O2(12)H2(1)
+GH = -.1246975E+08  S0 = 553  V0 = 27.27  
+c1 = 1260.2  c2 = .383E-2  c3 = -.1145500E+08  c5 = -8237.6  
+b1 = .261E-4  b5 = 533.7266  b6 = 762000  b7 = -.54E-5  b8 = 4.1  
+end
+
+
+ftr       EoS = 8  
+Si(8)Ca(2)Fe(5)O2(12)H2(1)
+GH = -.1071581E+08  S0 = 710  V0 = 28.42  
+c1 = 1290  c2 = .29992E-1  c3 = -8447500.  c5 = -8947  
+b1 = .288E-4  b5 = 447.6982  b6 = 760000  b7 = -.54E-5  b8 = 4.1  
+end
+
+
+ts        EoS = 8  
+Mg(3)Al(4)Si(6)Ca(2)O2(12)H2(1)
+GH = -.1271418E+08  S0 = 533  V0 = 26.8  
+c1 = 1244.8  c2 = .24348E-1  c3 = -.1196500E+08  c5 = -8112.1  
+b1 = .266E-4  b5 = 547.1193  b6 = 760000  b7 = -.54E-5  b8 = 4.1  
+end
+
+
+parg      EoS = 8  
+Na(1)Mg(4)Al(3)Si(6)Ca(2)O2(12)H2(1)
+GH = -.1285406E+08  S0 = 635  V0 = 27.19  
+c1 = 1280.2  c2 = .22997E-1  c3 = -.1235950E+08  c5 = -8065.8  
+b1 = .28E-4  b5 = 493.3428  b6 = 912000  b7 = -.45E-5  b8 = 4.09  
+end
+
+
+gl        EoS = 8  
+Na(2)Mg(3)Al(2)Si(8)O2(12)H2(1)
+GH = -.1211826E+08  S0 = 530  V0 = 25.98  
+c1 = 1717.5  c2 = -.12107  c3 = 7075000.  c5 = -19272  
+b1 = .149E-4  b5 = 549.1864  b6 = 883000  b7 = -.46E-5  b8 = 4.09  
+end
+
+
+fgl       EoS = 8  
+Na(2)Al(2)Si(8)Fe(3)O2(12)H2(1)
+GH = -.1106626E+08  S0 = 624  V0 = 26.59  
+c1 = 1762.9  c2 = -.118992  c3 = 9423700.  c5 = -20207.1  
+b1 = .183E-4  b5 = 491.0545  b6 = 890000  b7 = -.46E-5  b8 = 4.09  
+end
+
+
+rieb      EoS = 8  
+Na(2)Si(8)Fe(5)O2(12)H2(1)
+GH = -.1023199E+08  S0 = 695  V0 = 27.49  
+c1 = 1787.3  c2 = -.124882  c3 = 9627100.  c5 = -20275.5  
+b1 = .181E-4  b5 = 454.7005  b6 = 890000  b7 = -.46E-5  b8 = 4.09  
+end
+
+
+anth      EoS = 8  
+Mg(7)Si(8)O2(12)H2(1)
+GH = -.1222695E+08  S0 = 537  V0 = 26.54  
+c1 = 1277.3  c2 = .25825E-1  c3 = -9704600.  c5 = -9074.7  
+b1 = .252E-4  b5 = 544.3873  b6 = 700000  b7 = -.59E-5  b8 = 4.11  
+end
+
+
+fanth     EoS = 8  
+Si(8)Fe(7)O2(12)H2(1)
+GH = -9840679.  S0 = 725  V0 = 27.87  
+c1 = 1383.1  c2 = .30669E-1  c3 = -4224700.  c5 = -11257.6  
+b1 = .274E-4  b5 = 440.9084  b6 = 700000  b7 = -.59E-5  b8 = 4.11  
+end
+
+
+cumm      EoS = 8  
+Mg(7)Si(8)O2(12)H2(1)
+GH = -.1222509E+08  S0 = 538  V0 = 26.33  
+c1 = 1277.3  c2 = .25825E-1  c3 = -9704600.  c5 = -9074.7  
+b1 = .252E-4  b5 = 543.7085  b6 = 700000  b7 = -.59E-5  b8 = 4.11  
+end
+
+
+grun      EoS = 8  
+Si(8)Fe(7)O2(12)H2(1)
+GH = -9826290.  S0 = 735  V0 = 27.84  
+c1 = 1383.1  c2 = .30669E-1  c3 = -4224700.  c5 = -11257.6  
+b1 = .274E-4  b5 = 436.495  b6 = 648000  b7 = -.64E-5  b8 = 4.12  
+end
+
+
+ged       EoS = 8  
+Mg(5)Al(4)Si(6)O2(12)H2(1)
+GH = -.1248328E+08  S0 = 517  V0 = 25.548  
+c1 = 1307.7  c2 = .23642E-1  c3 = -9307400.  c5 = -9799  
+b1 = .241E-4  b5 = 558.3274  b6 = 770000  b7 = -.53E-5  b8 = 4.1  
+end
+
+
+spr4      EoS = 8  
+Mg(4)Al(8)Si(2)O2(10)
+GH = -.1114888E+08  S0 = 425.5  V0 = 19.9  
+c1 = 1133.1  c2 = -.7596E-2  c3 = -8816600.  c5 = -8180.6  
+b1 = .205E-4  b5 = 561.1271  b6 = 2500000.  b7 = -.16E-5  b8 = 4.04  
+end
+
+
+spr5      EoS = 8  
+Mg(3)Al(10)Si(1)O2(10)
+GH = -.1126064E+08  S0 = 419.5  V0 = 19.75  
+c1 = 1103.4  c2 = .1015E-2  c3 = -.1095700E+08  c5 = -7409.2  
+b1 = .206E-4  b5 = 566.4004  b6 = 2500000.  b7 = -.16E-5  b8 = 4.04  
+end
+
+
+fspr      EoS = 8  
+Al(8)Si(2)Fe(4)O2(10)
+GH = -9804133.  S0 = 485  V0 = 19.923  
+c1 = 1132.9  c2 = -.7348E-2  c3 = -.1042020E+08  c5 = -7036.6  
+b1 = .196E-4  b5 = 513.6996  b6 = 2500000.  b7 = -.17E-5  b8 = 4.04  
+end
+
+
+mcar      EoS = 8  
+Mg(1)Al(2)Si(2)O2(5)H2(2)
+GH = -4837090.  S0 = 221.5  V0 = 10.59  
+c1 = 683  c2 = -.14054E-1  c3 = 291000  c5 = -6976.4  
+b1 = .243E-4  b5 = 587.6927  b6 = 525000  b7 = -.79E-5  b8 = 4.14  
+end
+
+
+fcar      EoS = 8  
+Al(2)Si(2)Fe(1)O2(5)H2(2)
+GH = -4486305.  S0 = 251.1  V0 = 10.695  
+c1 = 686.6  c2 = -.12415E-1  c3 = 186000  c5 = -6884  
+b1 = .221E-4  b5 = 541.1128  b6 = 525000  b7 = -.79E-5  b8 = 4.14  
+end
+
+
+deer      EoS = 8  
+Si(12)Fe(18)O2(25)H2(5)
+GH = -.1883335E+08  S0 = 1650  V0 = 55.74  
+c1 = 3164.4  c2 = -.27883E-1  c3 = -5039100.  c5 = -26721  
+b1 = .275E-4  b5 = 429.3326  b6 = 630000  b7 = -.65E-5  b8 = 4.12  
+end
+
+
+mu        EoS = 8  
+Al(3)Si(3)K(1)O2(6)H2(1)
+GH = -6063570.  S0 = 292  V0 = 14.083  
+c1 = 756.4  c2 = -.1984E-1  c3 = -2170000.  c5 = -6979.2  
+b1 = .307E-4  b5 = 522.7881  b6 = 490000  b7 = -.85E-5  b8 = 4.15  
+end
+
+
+cel       EoS = 8  
+Mg(1)Al(1)Si(4)K(1)O2(6)H2(1)
+GH = -5921303.  S0 = 290  V0 = 13.957  
+c1 = 741.2  c2 = -.18748E-1  c3 = -2368800.  c5 = -6616.9  
+b1 = .307E-4  b5 = 525.2469  b6 = 700000  b7 = -.59E-5  b8 = 4.11  
+end
+
+
+fcel      EoS = 8  
+Al(1)Si(4)K(1)Fe(1)O2(6)H2(1)
+GH = -5566879.  S0 = 330  V0 = 14.07  
+c1 = 756.3  c2 = -.19147E-1  c3 = -1586100.  c5 = -6928.7  
+b1 = .318E-4  b5 = 480.0877  b6 = 700000  b7 = -.59E-5  b8 = 4.11  
+end
+
+
+pa        EoS = 8  
+Na(1)Al(3)Si(3)O2(6)H2(1)
+GH = -6025428.  S0 = 277  V0 = 13.211  
+c1 = 803  c2 = -.3158E-1  c3 = 217000  c5 = -8151  
+b1 = .37E-4  b5 = 541.8106  b6 = 515000  b7 = -.126E-4  b8 = 6.51  
+end
+
+
+ma        EoS = 8  
+Al(4)Si(2)Ca(1)O2(6)H2(1)
+GH = -6321080.  S0 = 265  V0 = 12.964  
+c1 = 744.4  c2 = -.168E-1  c3 = -2074400.  c5 = -6783.2  
+b1 = .233E-4  b5 = 558.0552  b6 = 1000000.  b7 = -.41E-5  b8 = 4.08  
+end
+
+
+phl       EoS = 8  
+Mg(3)Al(1)Si(3)K(1)O2(6)H2(1)
+GH = -6312077.  S0 = 326  V0 = 14.964  
+c1 = 770.3  c2 = -.36939E-1  c3 = -2328900.  c5 = -6531.6  
+b1 = .38E-4  b5 = 500.325  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
+end
+
+
+ann       EoS = 8  
+Al(1)Si(3)K(1)Fe(3)O2(6)H2(1)
+GH = -5268943.  S0 = 420  V0 = 15.432  
+c1 = 815.7  c2 = -.34861E-1  c3 = 19800  c5 = -7466.7  
+b1 = .38E-4  b5 = 416.5931  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
+end
+
+
+mnbi      EoS = 8  
+Al(1)Si(3)K(1)Mn(3)O2(6)H2(1)
+GH = -5606619.  S0 = 433  V0 = 15.264  
+c1 = 809.9  c2 = -.59213E-1  c3 = -1514400.  c5 = -6998.7  
+b1 = .38E-4  b5 = 407.1692  b6 = 530000  b7 = -.143E-4  b8 = 7.33  
+end
+
+
+east      EoS = 8  
+Mg(2)Al(3)Si(2)K(1)O2(6)H2(1)
+GH = -6425192.  S0 = 318  V0 = 14.738  
+c1 = 785.5  c2 = -.38031E-1  c3 = -2130300.  c5 = -6893.7  
+b1 = .38E-4  b5 = 509.0324  b6 = 530000  b7 = -.143E-4  b8 = 7.33  
+end
+
+
+naph      EoS = 8  
+Na(1)Mg(3)Al(1)Si(3)O2(6)H2(1)
+GH = -6266822.  S0 = 318  V0 = 14.45  
+c1 = 773.5  c2 = -.40229E-1  c3 = -2597900.  c5 = -6512.6  
+b1 = .328E-4  b5 = 509.0324  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
+end
+
+
+clin      EoS = 8  
+Mg(5)Al(2)Si(3)O2(9)H2(4)
+GH = -9039452.  S0 = 437  V0 = 21.14  
+c1 = 1170.8  c2 = -.1508E-2  c3 = -3825800.  c5 = -10315  
+b1 = .204E-4  b5 = 572.4777  b6 = 870000  b7 = -.47E-5  b8 = 4.09  
+end
+
+
+ames      EoS = 8  
+Mg(4)Al(4)Si(2)O2(9)H2(4)
+GH = -9163298.  S0 = 412  V0 = 20.71  
+c1 = 1186  c2 = -.2599E-2  c3 = -3627200.  c5 = -10677  
+b1 = .2E-4  b5 = 594.7068  b6 = 870000  b7 = -.47E-5  b8 = 4.09  
+end
+
+
+afchl     EoS = 8  
+Mg(6)Si(4)O2(9)H2(4)
+GH = -8858748.  S0 = 439  V0 = 21.57  
+c1 = 1155  c2 = -.417E-3  c3 = -4024400.  c5 = -9952.9  
+b1 = .204E-4  b5 = 570.771  b6 = 870000  b7 = -.47E-5  b8 = 4.09  
+end
+
+
+daph      EoS = 8  
+Al(2)Si(3)Fe(5)O2(9)H2(4)
+GH = -7291030.  S0 = 584  V0 = 21.62  
+c1 = 1192  c2 = -.594E-2  c3 = -4826400.  c5 = -9768.3  
+b1 = .227E-4  b5 = 469.3273  b6 = 870000  b7 = -.47E-5  b8 = 4.09  
+end
+
+
+mnchl     EoS = 8  
+Al(2)Si(3)Mn(5)O2(9)H2(4)
+GH = -7879719.  S0 = 595  V0 = 22.59  
+c1 = 1136.5  c2 = -.5243E-2  c3 = -5548100.  c5 = -8911.5  
+b1 = .223E-4  b5 = 463.0835  b6 = 870000  b7 = -.47E-5  b8 = 4.09  
+end
+
+
+sud       EoS = 8  
+Mg(2)Al(4)Si(3)O2(9)H2(4)
+GH = -8744309.  S0 = 395  V0 = 20.3  
+c1 = 1436.1  c2 = -.48749E-1  c3 = -2748500.  c5 = -13764  
+b1 = .199E-4  b5 = 600.0322  b6 = 870000  b7 = -.47E-5  b8 = 4.09  
+end
+
+
+fsud      EoS = 8  
+Al(4)Si(3)Fe(2)O2(9)H2(4)
+GH = -8035806.  S0 = 456  V0 = 20.4  
+c1 = 1466.3  c2 = -.47365E-1  c3 = -1182800.  c5 = -14388  
+b1 = .208E-4  b5 = 546.3164  b6 = 870000  b7 = -.47E-5  b8 = 4.09  
+end
+
+
+prl       EoS = 8  
+Al(2)Si(4)O2(6)H2(1)
+GH = -5711868.  S0 = 239  V0 = 12.804  
+c1 = 784.5  c2 = -.42948E-1  c3 = 1251000.  c5 = -8495.9  
+b1 = .45E-4  b5 = 578.3578  b6 = 370000  b7 = -.271E-4  b8 = 10  
+end
+
+
+ta        EoS = 8  
+Mg(3)Si(4)O2(6)H2(1)
+GH = -5974391.  S0 = 259  V0 = 13.665  
+c1 = 622.2  c3 = -6385500.  c5 = -3916.3  
+b1 = .18E-4  b5 = 566.5483  b6 = 430000  b7 = -.144E-4  b8 = 6.17  
+end
+
+
+fta       EoS = 8  
+Si(4)Fe(3)O2(6)H2(1)
+GH = -4903489.  S0 = 352  V0 = 14.225  
+c1 = 579.7  c2 = .39494E-1  c3 = -6459300.  c5 = -3088.1  
+b1 = .18E-4  b5 = 458.4106  b6 = 430000  b7 = -.144E-4  b8 = 6.17  
+end
+
+
+tats      EoS = 8  
+Mg(2)Al(2)Si(3)O2(6)H2(1)
+GH = -6078511.  S0 = 259  V0 = 13.51  
+c1 = 549.5  c2 = .36324E-1  c3 = -8606600.  c5 = -2515.3  
+b1 = .18E-4  b5 = 566.5483  b6 = 430000  b7 = -.144E-4  b8 = 6.17  
+end
+
+
+minn      EoS = 8  
+Si(4)Fe(3)O2(6)H2(1)
+GH = -4925153.  S0 = 355  V0 = 14.851  
+c1 = 579.7  c2 = .39494E-1  c3 = -6459300.  c5 = -3088.1  
+b1 = .18E-4  b5 = 455.6054  b6 = 430000  b7 = -.144E-4  b8 = 6.17  
+end
+
+
+minm      EoS = 8  
+Mg(3)Si(4)O2(6)H2(1)
+GH = -5944682.  S0 = 263.9  V0 = 14.291  
+c1 = 622.2  c3 = -6385500.  c5 = -3916.3  
+b1 = .18E-4  b5 = 559.5931  b6 = 430000  b7 = -.144E-4  b8 = 6.17  
+end
+
+
+kao       EoS = 8  
+Al(2)Si(2)O2(4.5)H2(2)
+GH = -4182733.  S0 = 203.7  V0 = 9.934  
+c1 = 436.7  c2 = -.34295E-1  c3 = -4055900.  c5 = -2699.1  
+b1 = .251E-4  b5 = 577.3421  b6 = 645000  b7 = -.64E-5  b8 = 4.12  
+end
+
+
+pre       EoS = 8  
+Al(2)Si(3)Ca(2)O2(6)H2(1)
+GH = -6289468.  S0 = 292.8  V0 = 14.026  
+c1 = 724.9  c2 = -.13865E-1  c3 = -2059000.  c5 = -6323.9  
+b1 = .158E-4  b5 = 521.811  b6 = 1093000.  b7 = -.37E-5  b8 = 4.01  
+end
+
+
+fpre      EoS = 8  
+Al(1)Si(3)Ca(2)Fe(1)O2(6)H2(1)
+GH = -5862048.  S0 = 320  V0 = 14.8  
+c1 = 737.1  c2 = -.1681E-1  c3 = -1957300.  c5 = -6358.1  
+b1 = .158E-4  b5 = 490.6335  b6 = 1093000.  b7 = -.37E-5  b8 = 4.01  
+end
+
+
+chr       EoS = 8  
+Mg(3)Si(2)O2(4.5)H2(2)
+GH = -4426981.  S0 = 221.3  V0 = 10.746  
+c1 = 624.7  c2 = -.2077E-1  c3 = -1721800.  c5 = -5619.4  
+b1 = .22E-4  b5 = 567.7243  b6 = 628000  b7 = -.64E-5  b8 = 4  
+end
+
+
+liz       EoS = 8  
+Mg(3)Si(2)O2(4.5)H2(2)
+GH = -4432398.  S0 = 212  V0 = 10.645  
+c1 = 614.7  c2 = -.2077E-1  c3 = -1721800.  c5 = -5619.4  
+b1 = .22E-4  b5 = 583.8253  b6 = 710000  b7 = -.45E-5  b8 = 3.2  
+end
+
+
+glt       EoS = 8  
+Si(2)Fe(3)O2(4.5)H2(2)
+GH = -3390046.  S0 = 310  V0 = 11.98  
+c1 = 576.4  c2 = .2984E-2  c3 = -3757000.  c5 = -4166.2  
+b1 = .228E-4  b5 = 449.4929  b6 = 630000  b7 = -.63E-5  b8 = 4  
+end
+
+
+fstp      EoS = 8  
+Al(2)Si(8)K(.5)Fe(5)O2(15.25)H2(6.25)
+GH = -.1282841E+08  S0 = 930.2  V0 = 37.239  
+c1 = 1944.3  c2 = -.12289E-1  c3 = -4840200.  c5 = -16635  
+b1 = .368E-4  b5 = 476.0785  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
+end
+
+
+mstp      EoS = 8  
+Mg(5)Al(2)Si(8)K(.5)O2(15.25)H2(6.25)
+GH = -.1454103E+08  S0 = 847.4  V0 = 36.577  
+c1 = 1862.2  c2 = -.14018E-1  c3 = -8983100.  c5 = -14923  
+b1 = .371E-4  b5 = 508.2801  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
+end
+
+
+atg       EoS = 8  
+Mg(48)Si(34)O2(73.5)H2(31)
+GH = -.7248399E+08  S0 = 3620  V0 = 175.48  
+c1 = 9621  c2 = -.91183E-1  c3 = -.3594160E+08  c5 = -83034.2  
+b1 = .28E-4  b5 = 563.3516  b6 = 631000  b7 = -.94E-5  b8 = 5.92  
+end
+
+
+ab        EoS = 8  
+Na(1)Al(1)Si(3)O2(4)
+GH = -3997316.  S0 = 207.4  V0 = 10.067  
+c1 = 452  c2 = -.13364E-1  c3 = -1275900.  c5 = -3953.6  
+b1 = .236E-4  b5 = 474.9519  b6 = 541000  b7 = -.109E-4  b8 = 5.91  
+transition = 1  type = 5  t1 = 14000  t2 = .42E-1  t3 = 13000  t4 = .42E-1  t5 = 3  t6 = .9  
+end
+
+
+abh       EoS = 8  
+Na(1)Al(1)Si(3)O2(4)
+GH = -3988355.  S0 = 224.3  V0 = 10.105  
+c1 = 452  c2 = -.13364E-1  c3 = -1275900.  c5 = -3953.6  
+b1 = .241E-4  b5 = 448.8929  b6 = 541000  b7 = -.109E-4  b8 = 5.91  
+end
+
+
+san       EoS = 8  
+Al(1)Si(3)K(1)O2(4)
+GH = -4030594.  S0 = 214.3  V0 = 10.871  
+c1 = 448.8  c2 = -.10075E-1  c3 = -1007300.  c5 = -3973.1  
+b1 = .166E-4  b5 = 463.9554  b6 = 583000  b7 = -.69E-5  b8 = 4.02  
+transition = 1  type = 5  t1 = 8650  t2 = .24E-1  t3 = 8500  t4 = .24E-1  t5 = 3  t6 = .8  
+end
+
+
+an        EoS = 8  
+Al(2)Si(2)Ca(1)O2(4)
+GH = -4292469.  S0 = 200.5  V0 = 10.079  
+c1 = 370.5  c2 = .1001E-1  c3 = -4339100.  c5 = -1960.6  
+b1 = .141E-4  b5 = 486.4823  b6 = 860000  b7 = -.48E-5  b8 = 4.09  
+transition = 1  type = 5  t1 = 42010  t2 = .1  t3 = 42000  t4 = .1  t5 = 1  t6 = 2  
+end
+
+
+kcm       EoS = 8  
+Al(1)Si(3)K(1)O2(4.5)H2(1)
+GH = -4316569.  S0 = 281.5  V0 = 11.438  
+c1 = 536.5  c2 = -.1009E-1  c3 = -980400  c5 = -4735  
+b1 = .321E-4  b5 = 442.5443  b6 = 425000  b7 = -.47E-5  b8 = 2  
+end
+
+
+wa        EoS = 8  
+Si(4)K(2)O2(4.5)
+GH = -4347620.  S0 = 254  V0 = 10.844  
+c1 = 499.1  c5 = -4350.1  
+b1 = .266E-4  b5 = 455.0485  b6 = 900000  b7 = -.44E-5  b8 = 4  
+end
+
+
+hol       EoS = 8  
+Al(1)Si(3)K(1)O2(4)
+GH = -3841513.  S0 = 166.2  V0 = 7.128  
+c1 = 417.6  c2 = -.3617E-2  c3 = -4748100.  c5 = -2819.9  
+b1 = .28E-4  b5 = 553.249  b6 = 1800000.  b7 = -.22E-5  b8 = 4  
+end
+
+
+q         EoS = 8  
+Si(1)O2(1)
+GH = -923072.4  S0 = 41.43  V0 = 2.269  
+c1 = 92.9  c2 = -.642E-3  c3 = -714900  c5 = -716.1  
+b5 = 525.2346  b6 = 730000  b7 = -.82E-5  b8 = 6  
+transition = 1  type = 4  t1 = 847  t2 = 4.95  t3 = .1188  
+end
+
+
+trd       EoS = 8  
+Si(1)O2(1)
+GH = -920258.4  S0 = 44.1  V0 = 2.8  
+c1 = 74.9  c2 = .31E-2  c3 = -1174000.  c5 = -236.7  
+b5 = 503.122  b6 = 150000  b7 = -.291E-4  b8 = 4.36  
+end
+
+
+crst      EoS = 8  
+Si(1)O2(1)
+GH = -919433.9  S0 = 50.86  V0 = 2.745  
+c1 = 72.7  c2 = .1304E-2  c3 = -4129000.  
+b5 = 454.6594  b6 = 160000  b7 = -.272E-4  b8 = 4.35  
+end
+
+
+coe       EoS = 8  
+Si(1)O2(1)
+GH = -918806.7  S0 = 39.6  V0 = 2.064  
+c1 = 107.8  c2 = -.3279E-2  c3 = -190300  c5 = -1041.6  
+b1 = .123E-4  b5 = 541.5479  b6 = 979000  b7 = -.43E-5  b8 = 4.19  
+end
+
+
+stv       EoS = 8  
+Si(1)O2(1)
+GH = -883545.6  S0 = 24  V0 = 1.401  
+c1 = 68.1  c2 = .601E-2  c3 = -1978200.  c5 = -82.1  
+b1 = .158E-4  b5 = 736.5651  b6 = 3090000.  b7 = -.15E-5  b8 = 4.6  
+end
+
+
+ne        EoS = 8  
+Na(1)Al(1)Si(1)O2(2)
+GH = -2131650.  S0 = 124.4  V0 = 5.419  
+c1 = 272.7  c2 = -.12398E-1  c5 = -2763.1  
+b1 = .463E-4  b5 = 439.2967  b6 = 465000  b7 = -.89E-5  b8 = 4.16  
+transition = 1  type = 4  t1 = 467  t2 = 10  t3 = .8E-1  
+end
+
+
+cg        EoS = 8  
+Na(1)Al(1)Si(1)O2(2)
+GH = -2127110.  S0 = 118.7  V0 = 5.603  
+c1 = 116.1  c2 = .86021E-1  c3 = -1992700.  
+b1 = .45E-4  b5 = 454.5854  b6 = 465000  b7 = -.89E-5  b8 = 4.16  
+end
+
+
+cgh       EoS = 8  
+Na(1)Al(1)Si(1)O2(2)
+GH = -2118260.  S0 = 135  V0 = 5.67  
+c1 = 229.2  c2 = .11876E-1  c5 = -1970.7  
+b1 = .467E-4  b5 = 413.4385  b6 = 465000  b7 = -.89E-5  b8 = 4.16  
+end
+
+
+sdl       EoS = 8  
+Na(8)Al(6)Si(6)Cl2(1)O2(12)
+GH = -.1367685E+08  S0 = 910  V0 = 42.13  
+c1 = 1532.7  c2 = .47747E-1  c3 = -2972800.  c5 = -12427  
+b1 = .463E-4  b5 = 405.6042  b6 = 465000  b7 = -.89E-5  b8 = 4.16  
+end
+
+
+kls       EoS = 8  
+Al(1)Si(1)K(1)O2(2)
+GH = -2163508.  S0 = 136  V0 = 6.052  
+c1 = 242  c2 = -.4482E-2  c3 = -895800  c5 = -1935.8  
+b1 = .316E-4  b5 = 411.1553  b6 = 514000  b7 = -.39E-5  b8 = 2  
+end
+
+
+lc        EoS = 8  
+Al(1)Si(2)K(1)O2(3)
+GH = -3088453.  S0 = 198.5  V0 = 8.826  
+c1 = 369.8  c2 = -.16332E-1  c3 = 684700  c5 = -3683.1  
+b1 = .185E-4  b5 = 404.5645  b6 = 450000  b7 = -.127E-4  b8 = 5.7  
+transition = 1  type = 5  t1 = 11610  t2 = .4  t3 = 11600  t4 = .4  t5 = 2  t6 = .7  
+end
+
+
+me        EoS = 8  
+Al(6)Si(6)Ca(4)O2(13.5)C(1)
+GH = -.1406603E+08  S0 = 752  V0 = 33.985  
+c1 = 1359  c2 = .36442E-1  c3 = -8594700.  c5 = -9598.2  
+b1 = .181E-4  b5 = 452.0012  b6 = 870000  b7 = -.47E-5  b8 = 4.09  
+end
+
+
+wrk       EoS = 8  
+Al(2)Si(4)Ca(1)O2(7)H2(2)
+GH = -6775747.  S0 = 380  V0 = 19.04  
+c1 = 838.3  c2 = -.2146E-1  c3 = -2272000.  c5 = -7292.3  
+b1 = .149E-4  b5 = 491.4972  b6 = 860000  b7 = -.48E-5  b8 = 4.09  
+end
+
+
+lmt       EoS = 8  
+Al(2)Si(4)Ca(1)O2(8)H2(4)
+GH = -7401340.  S0 = 465  V0 = 20.37  
+c1 = 1013.4  c2 = -.21413E-1  c3 = -2235800.  c5 = -8806.7  
+b1 = .137E-4  b5 = 496.0821  b6 = 860000  b7 = -.48E-5  b8 = 4.09  
+end
+
+
+heu       EoS = 8  
+Al(2)Si(7)Ca(1)O2(12)H2(6)
+GH = -.1077867E+08  S0 = 783  V0 = 31.7  
+c1 = 1504.8  c2 = -.33224E-1  c3 = -2959300.  c5 = -13297.2  
+b1 = .157E-4  b5 = 453.3338  b6 = 274000  b7 = -.146E-4  b8 = 4  
+end
+
+
+stlb      EoS = 8  
+Al(2)Si(7)Ca(1)O2(12.5)H2(7)
+GH = -.1110845E+08  S0 = 710  V0 = 32.87  
+c1 = 1588.4  c2 = -.32043E-1  c3 = -3071600.  c5 = -13966.9  
+b1 = .151E-4  b5 = 508.175  b6 = 860000  b7 = -.48E-5  b8 = 4.09  
+end
+
+
+anl       EoS = 8  
+Na(1)Al(1)Si(2)O2(3.5)H2(1)
+GH = -3376391.  S0 = 232  V0 = 9.74  
+c1 = 643.5  c2 = -.16067E-1  c3 = 9302300.  c5 = -9179.6  
+b1 = .276E-4  b5 = 437.945  b6 = 400000  b7 = -.104E-4  b8 = 4.18  
+end
+
+
+lime      EoS = 8  
+Ca(1)O2(.5)
+GH = -645889.5  S0 = 38.1  V0 = 1.676  
+c1 = 52.4  c2 = .3673E-2  c3 = -750700  c5 = -51  
+b1 = .341E-4  b5 = 417.2617  b6 = 1130000.  b7 = -.34E-5  b8 = 3.87  
+end
+
+
+ru        EoS = 8  
+Ti(1)O2(1)
+GH = -959416.6  S0 = 50.5  V0 = 1.882  
+c1 = 90.4  c2 = .29E-2  c5 = -623.8  
+b1 = .224E-4  b5 = 457.0037  b6 = 2220000.  b7 = -.19E-5  b8 = 4.24  
+end
+
+
+per       EoS = 8  
+Mg(1)O2(.5)
+GH = -609431  S0 = 26.5  V0 = 1.125  
+c1 = 60.5  c2 = .362E-3  c3 = -535800  c5 = -299.2  
+b1 = .311E-4  b5 = 540.1727  b6 = 1616000.  b7 = -.24E-5  b8 = 3.95  
+end
+
+
+fper      EoS = 8  
+Fe(1)O2(.5)
+GH = -277341.6  S0 = 58.6  V0 = 1.206  
+c1 = 44.4  c2 = .828E-2  c3 = -1214200.  c5 = 185.2  
+b1 = .322E-4  b5 = 297.5937  b6 = 1520000.  b7 = -.32E-5  b8 = 4.9  
+end
+
+
+mang      EoS = 8  
+Mn(1)O2(.5)
+GH = -403349.6  S0 = 59.7  V0 = 1.322  
+c1 = 59.8  c2 = .36E-2  c3 = -31400  c5 = -282.6  
+b1 = .369E-4  b5 = 293.0835  b6 = 1645000.  b7 = -.27E-5  b8 = 4.46  
+end
+
+
+cor       EoS = 8  
+Al(2)O2(1.5)
+GH = -1690446.  S0 = 50.9  V0 = 2.558  
+c1 = 139.5  c2 = .589E-2  c3 = -2460600.  c5 = -589.2  
+b1 = .18E-4  b5 = 639.9519  b6 = 2540000.  b7 = -.17E-5  b8 = 4.34  
+end
+
+
+mcor      EoS = 8  
+Mg(1)Si(1)O2(1.5)
+GH = -1492120.  S0 = 59.3  V0 = 2.635  
+c1 = 147.8  c2 = .2015E-2  c3 = -2395000.  c5 = -801.8  
+b1 = .212E-4  b5 = 581.2022  b6 = 2110000.  b7 = -.22E-5  b8 = 4.55  
+end
+
+
+hem       EoS = 8  
+Fe(2)O2(1.5)
+GH = -851668.3  S0 = 87.4  V0 = 3.027  
+c1 = 163.9  c3 = -2257200.  c5 = -657.6  
+b1 = .279E-4  b5 = 444.6488  b6 = 2230000.  b7 = -.18E-5  b8 = 4.04  
+transition = 1  type = 4  t1 = 955  t2 = 15.6  
+end
+
+
+hem_nol   EoS = 8  
+Fe(2)O2(1.5)
+GH = -851668.3  S0 = 87.4  V0 = 3.027  
+c1 = 163.9  c3 = -2257200.  c5 = -657.6  
+b1 = .279E-4  b5 = 444.6488  b6 = 2230000.  b7 = -.18E-5  b8 = 4.04  
+end
+
+
+esk       EoS = 8  
+O2(1.5)Cr(2)
+GH = -1162066.  S0 = 83  V0 = 2.909  
+c1 = 119  c2 = .9496E-2  c3 = -1442000.  c5 = -3.4  
+b1 = .159E-4  b5 = 461.6319  b6 = 2380000.  b7 = -.17E-5  b8 = 4  
+end
+
+
+bix       EoS = 8  
+Mn(2)O2(1.5)
+GH = -992899.7  S0 = 113.7  V0 = 3.137  
+c1 = 145.1  c2 = .23534E-1  c3 = 721600  c5 = -1008.4  
+b1 = .291E-4  b5 = 364.4962  b6 = 2230000.  b7 = -.18E-5  b8 = 4.04  
+end
+
+
+NiO       EoS = 8  
+Ni(1)O2(.5)
+GH = -250799.7  S0 = 38  V0 = 1.097  
+c1 = 47.7  c2 = .7824E-2  c3 = -392500  
+b1 = .33E-4  b5 = 418.0818  b6 = 2000000.  b7 = -.2E-5  b8 = 3.94  
+transition = 1  type = 4  t1 = 520  t2 = 5.7  
+end
+
+
+pnt       EoS = 8  
+Ti(1)Mn(1)O2(1.5)
+GH = -1393405.  S0 = 105.5  V0 = 3.288  
+c1 = 143.5  c2 = .3373E-2  c3 = -1940700.  c5 = -407.6  
+b1 = .24E-4  b5 = 386.2019  b6 = 1700000.  b7 = -.49E-5  b8 = 8.3  
+end
+
+
+geik      EoS = 8  
+Mg(1)Ti(1)O2(1.5)
+GH = -1590904.  S0 = 73.6  V0 = 3.086  
+c1 = 151  c3 = -1890400.  c5 = -652.2  
+b1 = .215E-4  b5 = 502.6465  b6 = 1700000.  b7 = -.49E-5  b8 = 8.3  
+end
+
+
+ilm       EoS = 8  
+Ti(1)Fe(1)O2(1.5)
+GH = -1263097.  S0 = 109.5  V0 = 3.169  
+c1 = 138.9  c2 = .5081E-2  c3 = -1288800.  c5 = -463.7  
+b1 = .24E-4  b5 = 375.2999  b6 = 1700000.  b7 = -.49E-5  b8 = 8.3  
+transition = 1  type = 4  t1 = 1900  t2 = 12  t3 = .2E-1  
+end
+
+
+bdy       EoS = 8  
+Zr(1)O2(1)
+GH = -1115367.  S0 = 50.4  V0 = 2.115  
+c1 = 103.5  c2 = -.4547E-2  c3 = -416200  c5 = -713.6  
+b1 = .2E-4  b5 = 457.6592  b6 = 953000  b7 = -.41E-5  b8 = 3.88  
+end
+
+
+ten       EoS = 8  
+O2(.5)Cu(1)
+GH = -168801.2  S0 = 42.6  V0 = 1.222  
+c1 = 31  c2 = .1374E-1  c3 = -1258000.  c5 = 369.3  
+b1 = .357E-4  b5 = 383.4174  b6 = 2000000.  b7 = -.2E-5  b8 = 3.94  
+end
+
+
+cup       EoS = 8  
+O2(.5)Cu(2)
+GH = -198149.1  S0 = 92.4  V0 = 2.344  
+c1 = 110.3  c5 = -674.8  
+b1 = .333E-4  b5 = 285.6069  b6 = 1310000.  b7 = -.43E-5  b8 = 5.7  
+end
+
+
+sp        EoS = 8  
+Mg(1)Al(2)O2(2)
+GH = -2325638.  S0 = 82  V0 = 3.978  
+c1 = 222.9  c2 = .6127E-2  c3 = -1686000.  c5 = -1551  
+b1 = .193E-4  b5 = 585.8672  b6 = 1922000.  b7 = -.21E-5  b8 = 4.04  
+transition = 1  type = 5  t1 = 8000  t3 = 1200  t5 = 2  t6 = .5  
+end
+
+
+herc      EoS = 8  
+Al(2)Fe(1)O2(2)
+GH = -1986989.  S0 = 113.9  V0 = 4.075  
+c1 = 216.7  c2 = .5868E-2  c3 = -2430200.  c5 = -1178.3  
+b1 = .206E-4  b5 = 468.3105  b6 = 1922000.  b7 = -.21E-5  b8 = 4.04  
+transition = 1  type = 5  t1 = 18300  t3 = 13600  t5 = 2  t6 = 1  
+end
+
+
+mt        EoS = 8  
+Fe(3)O2(2)
+GH = -1158298.  S0 = 146.9  V0 = 4.452  
+c1 = 262.5  c2 = -.7205E-2  c3 = -1926200.  c5 = -1655.7  
+b1 = .371E-4  b5 = 387.8112  b6 = 1857000.  b7 = -.22E-5  b8 = 4.05  
+transition = 1  type = 4  t1 = 848  t2 = 35  
+end
+
+
+mft       EoS = 8  
+Mg(1)Fe(2)O2(2)
+GH = -1478366.  S0 = 121  V0 = 4.457  
+c1 = 270.5  c2 = -.7505E-2  c3 = -999200  c5 = -2022.4  
+b1 = .363E-4  b5 = 448.29  b6 = 1857000.  b7 = -.22E-5  b8 = 4.05  
+transition = 1  type = 4  t1 = 665  t2 = 17  
+end
+
+
+usp       EoS = 8  
+Ti(1)Fe(2)O2(2)
+GH = -1544787.  S0 = 180  V0 = 4.682  
+c1 = -102.6  c2 = .14252  c3 = -9144500.  c5 = 5270.7  
+b1 = .386E-4  b5 = 330.7802  b6 = 1857000.  b7 = -.22E-5  b8 = 4.05  
+end
+
+
+picr      EoS = 8  
+Mg(1)O2(2)Cr(2)
+GH = -1797871.  S0 = 118.3  V0 = 4.356  
+c1 = 196.1  c2 = .5398E-2  c3 = -3126000.  c5 = -616.9  
+b1 = .18E-4  b5 = 455.6984  b6 = 1922000.  b7 = -.21E-5  b8 = 4.04  
+transition = 1  type = 5  t1 = 8000  t3 = 1200  t5 = 2  t6 = .5  
+end
+
+
+br        EoS = 8  
+Mg(1)O2(1)H2(1)
+GH = -944403.1  S0 = 63.2  V0 = 2.463  
+c1 = 158.4  c2 = -.4076E-2  c3 = -1052300.  c5 = -1171.3  
+b1 = .62E-4  b5 = 557.4423  b6 = 415000  b7 = -.155E-4  b8 = 6.45  
+end
+
+
+dsp       EoS = 8  
+Al(1)O2(1)H2(.5)
+GH = -1010126.  S0 = 34.5  V0 = 1.786  
+c1 = 145.1  c2 = .8709E-2  c3 = 584400  c5 = -1741.1  
+b1 = .357E-4  b5 = 706.0073  b6 = 2280000.  b7 = -.18E-5  b8 = 4.04  
+end
+
+
+gth       EoS = 8  
+Fe(1)O2(1)H2(.5)
+GH = -579748.4  S0 = 60.3  V0 = 2.082  
+c1 = 139.3  c2 = .147E-3  c3 = -212700  c5 = -1077.8  
+b1 = .435E-4  b5 = 494.3528  b6 = 2500000.  b7 = -.16E-5  b8 = 4.03  
+end
+
+
+cc        EoS = 8  
+Ca(1)O2(1.5)C(1)
+GH = -1235339.  S0 = 92.5  V0 = 3.689  
+c1 = 140.9  c2 = .5029E-2  c3 = -950700  c5 = -858.4  
+b1 = .252E-4  b5 = 426.4635  b6 = 733000  b7 = -.55E-5  b8 = 4.06  
+transition = 1  type = 4  t1 = 1240  t2 = 10  t3 = .4E-1  
+end
+
+
+arag      EoS = 8  
+Ca(1)O2(1.5)C(1)
+GH = -1234424.  S0 = 89.8  V0 = 3.415  
+c1 = 167.1  c2 = .10695E-1  c3 = 162000  c5 = -1564.9  
+b1 = .614E-4  b5 = 435.9016  b6 = 614000  b7 = -.96E-5  b8 = 5.87  
+end
+
+
+mag       EoS = 8  
+Mg(1)O2(1.5)C(1)
+GH = -1130449.  S0 = 65.5  V0 = 2.803  
+c1 = 186.4  c2 = -.3772E-2  c5 = -1886.2  
+b1 = .338E-4  b5 = 544.3193  b6 = 1028000.  b7 = -.53E-5  b8 = 5.41  
+end
+
+
+sid       EoS = 8  
+Fe(1)O2(1.5)C(1)
+GH = -790037.4  S0 = 93.3  V0 = 2.943  
+c1 = 168.4  c5 = -1483.6  
+b1 = .439E-4  b5 = 423.745  b6 = 1200000.  b7 = -.34E-5  b8 = 4.07  
+end
+
+
+rhc       EoS = 8  
+Mn(1)O2(1.5)C(1)
+GH = -921498.7  S0 = 98  V0 = 3.107  
+c1 = 169.5  c5 = -1534.3  
+b1 = .244E-4  b5 = 408.4485  b6 = 953000  b7 = -.41E-5  b8 = 3.88  
+end
+
+
+dol       EoS = 8  
+Mg(1)Ca(1)O2(3)C(2)
+GH = -2372761.  S0 = 156.1  V0 = 6.429  
+c1 = 358.9  c2 = -.4905E-2  c5 = -3456.2  
+b1 = .328E-4  b5 = 482.3583  b6 = 943000  b7 = -.4E-5  b8 = 3.74  
+transition = 1  type = 5  t1 = 11910  t2 = .16E-1  t3 = 11900  t4 = .16E-1  t5 = 1  t6 = 1  
+end
+
+
+ank       EoS = 8  
+Ca(1)Fe(1)O2(3)C(2)
+GH = -2027599.  S0 = 188.46  V0 = 6.606  
+c1 = 341  c2 = -.1161E-2  c5 = -3054.8  
+b1 = .346E-4  b5 = 420.628  b6 = 914000  b7 = -.43E-5  b8 = 3.88  
+transition = 1  type = 5  t1 = 11910  t2 = .16E-1  t3 = 11900  t4 = .16E-1  t5 = 1  t6 = 1  
+end
+
+
+syv       EoS = 8  
+K(1)Cl2(.5)
+GH = -461127.2  S0 = 82.6  V0 = 3.752  
+c1 = 46.2  c2 = .1797E-1  
+b1 = .1109E-3  b5 = 222.7901  b6 = 170000  b7 = -.294E-4  b8 = 5  
+end
+
+
+hlt       EoS = 8  
+Na(1)Cl2(.5)
+GH = -432796.6  S0 = 72.1  V0 = 2.702  
+c1 = 45.2  c2 = .1797E-1  
+b1 = .1147E-3  b5 = 250.3177  b6 = 238000  b7 = -.21E-4  b8 = 5  
+end
+
+
+pyr       EoS = 8  
+Fe(1)S2(1)
+GH = -187412.1  S0 = 52.9  V0 = 2.394  
+c1 = 37.3  c2 = .26715E-1  c3 = -1817000.  c5 = 649.3  
+b1 = .31E-4  b5 = 441.8167  b6 = 1395000.  b7 = -.29E-5  b8 = 4.09  
+end
+
+
+trot      EoS = 8  
+Fe(1)S2(.5)
+GH = -118558.8  S0 = 65.5  V0 = 1.819  
+c1 = 50.2  c2 = .11052E-1  c3 = -940000  
+b1 = .568E-4  b5 = 271.3958  b6 = 658000  b7 = -.63E-5  b8 = 4.17  
+transition = 1  type = 4  t1 = 598  t2 = 12  t3 = .41E-1  
+end
+
+
+tro       EoS = 8  
+Fe(1)S2(.5)
+GH = -118869  S0 = 70.8  V0 = 1.819  
+c1 = 50.2  c2 = .11052E-1  c3 = -940000  
+b1 = .573E-4  b5 = 254.2065  b6 = 658000  b7 = -.63E-5  b8 = 4.17  
+transition = 1  type = 4  t1 = 598  t2 = 12  t3 = .41E-1  
+end
+
+
+lot       EoS = 8  
+Fe(1)S2(.5)
+GH = -120049  S0 = 60  V0 = 1.818  
+c1 = 50.2  c2 = .11052E-1  c3 = -940000  
+b1 = .493E-4  b5 = 291.8771  b6 = 658000  b7 = -.63E-5  b8 = 4.17  
+transition = 1  type = 4  t1 = 420  t2 = 10  
+end
+
+
+trov      EoS = 8  
+Fe(.88)S2(.5)
+GH = -113163.6  S0 = 57.5  V0 = 1.738  
+c1 = 51.1  c2 = .8307E-2  c3 = -669700  
+b1 = .594E-4  b5 = 286.6331  b6 = 658000  b7 = -.63E-5  b8 = 4.17  
+transition = 1  type = 4  t1 = 595  t2 = 10  t3 = .16E-1  
+end
+
+
+any       EoS = 8  
+Ca(1)O2(2)S2(.5)
+GH = -1466272.  S0 = 106.9  V0 = 4.594  
+c1 = 128.7  c2 = .48545E-1  c3 = -1223000.  c5 = -560.5  
+b1 = .418E-4  b5 = 438.4774  b6 = 543800  b7 = -.77E-5  b8 = 4.19  
+end
+
+
+iron      EoS = 8  
+Fe(1)
+GH = -8076.883  S0 = 27.09  V0 = .709  
+c1 = 46.2  c2 = .5159E-2  c3 = 723100  c5 = -556.2  
+b1 = .356E-4  b5 = 317.2085  b6 = 1640000.  b7 = -.31E-5  b8 = 5.16  
+transition = 1  type = 4  t1 = 1042  t2 = 8.3  
+end
+
+
+Ni        EoS = 8  
+Ni(1)
+GH = -8905.74  S0 = 29.87  V0 = .659  
+c1 = 49.8  c3 = 585900  c5 = -533.9  
+b1 = .428E-4  b5 = 292.9221  b6 = 1905000.  b7 = -.22E-5  b8 = 4.25  
+transition = 1  type = 4  t1 = 631  t2 = 3  
+end
+
+
+Cu        EoS = 8  
+Cu(1)
+GH = -9880.691  S0 = 33.14  V0 = .711  
+c1 = 12.4  c2 = .922E-2  c3 = -379900  c5 = 233.5  
+b1 = .358E-4  b5 = 268.7216  b6 = 1625000.  b7 = -.26E-5  b8 = 4.24  
+end
+
+
+gph       EoS = 8  
+C(1)
+GH = -1717.344  S0 = 5.76  V0 = .53  
+c1 = 34.3  c3 = -240700  c5 = -403.8  
+b1 = .165E-4  b5 = 871.8033  b6 = 312000  b7 = -.125E-4  b8 = 3.9  
+end
+
+
+diam      EoS = 8  
+C(1)
+GH = 1186.366  S0 = 2.36  V0 = .342  
+c1 = 40  c3 = -28500  c5 = -580.5  
+b1 = .4E-5  b5 = 1208.636  b6 = 4465000.  b7 = -.36E-6  b8 = 1.61  
+end
+
+
+S         EoS = 8  
+S2(.5)
+GH = -9555.707  S0 = 32.05  V0 = 1.551  
+c1 = 56.6  c2 = -.4557E-2  c3 = 638000  c5 = -681.8  
+b1 = .64E-4  b5 = 276.3315  b6 = 145000  b7 = -.48E-4  b8 = 7  
+end
+
+
+H2O       EoS = 101  
+O2(.5)H2(1)
+GH = -298100.7  S0 = 188.8  
+c1 = 40.1  c2 = .8656E-2  c3 = 487500  c5 = -251.2  
+end
+
+
+CO2       EoS = 102  
+O2(1)C(1)
+GH = -457224.7  S0 = 213.7  
+c1 = 87.8  c2 = -.2644E-2  c3 = 706400  c5 = -998.9  
+end
+
+
+CO        EoS = 103  
+O2(.5)C(1)
+GH = -169465.3  S0 = 197.67  
+c1 = 45.7  c2 = -.97E-4  c3 = 662700  c5 = -414.7  
+end
+
+
+CH4       EoS = 104  
+H2(2)C(1)
+GH = -130343.4  S0 = 186.26  
+c1 = 150.1  c2 = .2063E-2  c3 = 3427700.  c5 = -2650.4  
+end
+
+
+O2       EoS = 107         
+O2(1)
+GH = -61180.38  S0 = 205.2  
+c1 = 48.3  c2 = -.691E-3  c3 = 499200  c5 = -420.7  
+end
+
+
+H2        EoS = 105  
+H2(1)
+GH = -38968.2  S0 = 130.7  
+c1 = 23.3  c2 = .4627E-2  c5 = 76.3  
+end
+
+
+S2       EoS = 1 | H=   128540.0 
+S2(1)
+GH = 59667.35  S0 = 231  
+c1 = 37.1  c2 = .2398E-2  c3 = -161000  c5 = -65  
+end
+
+
+H2S       EoS = 106  
+H2(1)S2(.5)
+GH = -81650.32  S0 = 205.77  
+c1 = 47.4  c2 = .1024E-1  c3 = 615900  c5 = -397.8  
+end
+
+SO2      EoS = 108 | SO2,g    SUPCRT DATA       SULFUR-DIOXIDE            ref:6,8       
+O2(1)S2(.5)
+G0 = -300194. S0 = 248.237  
+c1 = 46.1914 c2 = .786592E-2 c3 = -769856  
+end
+
+N2        EoS = 110  
+N2(1)
+S0 = 191.61  
+c1 = 27.75318  c2 = .60476E-3  c3 = 72831  c4 = .495984E-5  
+transition = 1  type = 2  t1 = 700  t4 = 23.52868  t5 = .1211645E-1  t6 = 121039  t7 = -.30762E-5  
+end
+
+
+Cv        EoS = 1  
+Cu(1)S2(.5)
+G0 = -52768.6  S0 = 66.5256  V0 = 2.042  
+c1 = 44.3504  c2 = .110458E-1  
+end
+
+
+Bn        EoS = 1  
+Fe(1)Cu(5)S2(2)
+G0 = -362770  S0 = 415.429  V0 = 9.86  
+c1 = 208.196  c2 = .146775  c3 = -564840  
+transition = 1  type = 2  t1 = 485  t3 = 12.3363  t4 = -143.553  t5 = 1.03345  
+end
+
+
+Cc        EoS = 1  
+Cu(2)S2(.5)
+G0 = -86299.2  S0 = 120.918  V0 = 2.748  
+c1 = 52.8439  c2 = .787429E-1  
+transition = 1  type = 2  t1 = 376  t3 = 10.2375  t4 = 112.047  t5 = -.307524E-1  
+end
+
+
+Ccp       EoS = 1  
+Fe(1)Cu(1)S2(1)
+G0 = -187862  S0 = 130.332  V0 = 4.283  
+c1 = 86.9854  c2 = .535552E-1  c3 = -560656  
+transition = 1  type = 2  t1 = 830  t3 = 12.1235  t4 = -591.618  t5 = .87864  
+end
+
+
+Azr       EoS = 1  
+O2(4)H2(1)C(2)Cu(3)
+G0 = -1399201.  S0 = 280.202  V0 = 9.101  
+c1 = 154.306  c2 = .324009  c3 = -384928  
+end
+
+
+Mal       EoS = 1  
+O2(2.5)H2(1)C(1)Cu(2)
+G0 = -896230  S0 = 186.188  V0 = 5.486  
+c1 = 116.148  c2 = .183175  c3 = -560656  
+end
+
+
+NH3       EoS = 111  
+H2(1.5)N2(.5)
+GH = -103416.9  S0 = 192.7776  
+c1 = 24.90389  c2 = .3632064E-1  c3 = 48713  c4 = -.460882E-5  
+transition = 1  type = 2  t1 = 1000  t4 = 65.06398  t5 = .764413E-2  t6 = -.1658366E+08  t7 = -.85095E-6  
+end
+
+
+syvL      EoS = 9  
+K(1)Cl2(.5)
+GH = -445585.2  S0 = 94.5  V0 = 3.822  
+c1 = 66.9  
+b1 = .301E-3  b5 = -20  b6 = 56000  b7 = -.83E-4  b8 = 4.65  
+end
+
+
+hltL      EoS = 9  
+Na(1)Cl2(.5)
+GH = -416871.8  S0 = 80.1  V0 = 2.938  
+c1 = 72  c2 = -.3223E-2  
+b1 = .295E-3  b5 = -15  b6 = 64000  b7 = -.72E-4  b8 = 4.61  
+end
+
+
+perL      EoS = 9  
+Mg(1)O2(.5)
+GH = -634949  S0 = -64.3  V0 = .839  
+c1 = 99  
+b1 = .226E-3  b5 = -41  b6 = 362000  b7 = -.278E-4  b8 = 10.06  
+end
+
+
+limL      EoS = 9  
+Ca(1)O2(.5)
+GH = -678117.9  S0 = -47.5  V0 = 1.303  
+c1 = 99  
+b1 = .175E-3  b5 = -41  b6 = 362000  b7 = -.278E-4  b8 = 10.06  
+end
+
+
+corL      EoS = 9  
+Al(2)O2(1.5)
+GH = -1636602.  S0 = 14.9  V0 = 3.369  
+c1 = 157.6  
+b1 = .703E-4  b5 = -35  b6 = 150000  b7 = .4E-4  b8 = 6  
+end
+
+
+qL        EoS = 9  
+Si(1)O2(1)
+GH = -925929.8  S0 = 16.3  V0 = 2.73  
+c1 = 82.5  
+b5 = -35  b6 = 220000  b7 = -.43E-4  b8 = 9.46  
+end
+
+
+h2oL      EoS = 9  
+O2(.5)H2(1)
+GH = -308575.8  S0 = 45.5  V0 = 1.39  
+c1 = 80  
+b1 = .521E-3  b5 = -3.7  b6 = 50600  b7 = -.79E-4  b8 = 4  
+end
+
+
+foL       EoS = 9  
+Mg(2)Si(1)O2(2)
+GH = -2218865.  S0 = -62  V0 = 4.312  
+c1 = 269.4  
+b1 = .92E-4  b5 = -44  b6 = 362000  b7 = -.278E-4  b8 = 10.06  
+end
+
+
+faL       EoS = 9  
+Si(1)Fe(2)O2(2)
+GH = -1491642.  S0 = 96  V0 = 4.677  
+c1 = 243.7  
+b1 = .1071E-3  b5 = -55  b6 = 290000  b7 = -.359E-4  b8 = 10.42  
+end
+
+
+woL       EoS = 9  
+Si(1)Ca(1)O2(1.5)
+GH = -1648928.  S0 = 22.5  V0 = 3.965  
+c1 = 167.4  
+b1 = .669E-4  b5 = -20  b6 = 305000  b7 = -.308E-4  b8 = 9.38  
+end
+
+
+enL       EoS = 9  
+Mg(2)Si(2)O2(3)
+GH = -3095377.  S0 = -4  V0 = 6.984  
+c1 = 353.6  
+b1 = .681E-4  b5 = -24  b6 = 218000  b7 = -.33E-4  b8 = 7.2
+end
+
+
+diL       EoS = 9  
+Mg(1)Si(2)Ca(1)O2(3)
+GH = -3206422.  S0 = 42.1  V0 = 7.288  
+c1 = 334  
+b1 = .851E-4  b5 = -37.3  b6 = 249000  b7 = -.323E-4  b8 = 8.04  
+end
+
+
+silL      EoS = 9  
+Al(2)Si(1)O2(2.5)
+GH = -2596411.  S0 = 10  V0 = 6.051  
+c1 = 253  
+b1 = .408E-4  b5 = -29  b6 = 220000  b7 = -.289E-4  b8 = 6.36  
+end
+
+
+anL       EoS = 9  
+Al(2)Si(2)Ca(1)O2(4)
+GH = -4286616.  S0 = 29  V0 = 10.014  
+c1 = 430  
+b1 = .514E-4  b5 = -55  b6 = 210000  b7 = -.304E-4  b8 = 6.38  
+end
+
+
+kspL      EoS = 9  
+Al(1)Si(3)K(1)O2(4)
+GH = -4023711.  S0 = 129.2  V0 = 11.431  
+c1 = 368  
+b1 = .493E-4  b5 = -9  b6 = 173000  b7 = -.393E-4  b8 = 6.84  
+end
+
+
+abL       EoS = 9  
+Na(1)Al(1)Si(3)O2(4)
+GH = -3971213.  S0 = 149.9  V0 = 10.858  
+c1 = 358  
+b1 = .337E-4  b5 = -26  b6 = 176000  b7 = -.815E-4  b8 = 14.35  
+end
+
+
+neL       EoS = 9  
+Na(1)Al(1)Si(1)O2(2)
+GH = -2132502.  S0 = 52.9  V0 = 5.2  
+c1 = 216.5  
+b1 = .137E-3  b5 = -8  b6 = 250000  b7 = -.295E-4  b8 = 7.37
+end
+
+ilm_nol   EoS = 8 | H= -1230460.  Ilmenite with landau transition suppressed for Ilm(WPH) model.                 
+Ti(1)Fe(1)O2(1.5)
+GH = -1263097  S0 = 109.5  V0 = 3.169  
+c1 = 138.9  c2 = .5081E-2  c3 = -1288800  c5 = -463.7  
+b1 = .24E-4  b5 = 375.2999  b6 = 1700000  b7 = -.49E-5  b8 = 8.3
+end
+
+ACETATE, EoS = 16 | Gf =  -369322. CH3COO-  revised January 26th, 2016; new a1 value from complexes and organics correlation. 
+C(2)H2(1.5)O2(1) 
+G0 = -369321.7  S0 = 86.1904  w = 551534.9  q = -1  
+a1 = 4.191531  a2 = 1175.286  a3 = 28.11648  a4 = -121089.1  c1 = 110.0392  c2 = -161502.4  
+end
+
+
+ACETIC-A EoS = 16 | Gf =  -396476. CH3COOH  Plyasunov & Shock (2001) 
+C(2)H2(2)O2(1) 
+G0 = -396475.8  S0 = 178.6568  w = -31798.4  
+a1 = 4.8116  a2 = 2301.2  a3 = 6.98728  a4 = -120080.8  c1 = 187.8616  c2 = -110039.2  
+end
+
+
+Al+3     EoS = 16 | Gf =  -483708. Al(+3)  Shock et al. (1997) 
+Al(1) 
+G0 = -483708.1  S0 = -325.0968  w = 1151855.  q = 3  
+a1 = -1.414276  a2 = -7115.771  a3 = 60.7454  a4 = -86851.47  c1 = 44.7688  c2 = -337230.4  
+end
+
+
+AlO2-    EoS = 16 | Gf =  -831332. AlO2(-)  Sverjensky et al. (2014) 
+Al(1)O2(1) 
+G0 = -831331.5  S0 = -30.20848  w = 728769.1  q = -1  
+a1 = 1.798283  a2 = 1044.996  a3 = -7.639147  a4 = -120595.4  c1 = 79.9144  c2 = -259408  
+end
+
+
+BENZENE, EoS = 16 | Gf =   133888. C6H6(0)  Plyasunov & Shock (2001) for c1, c2 & omega; a1 predicted with new correlation for complex species from Sverjensky et al
+C(6)H2(3) 
+G0 = 133888  S0 = 149.3688  w = -104600  
+a1 = 7.330326  a2 = 5187.156  a3 = -23.25091  a4 = -137716.4  c1 = 279.9096  c2 = 410032  
+end
+
+
+Ca(HCO3) EoS = 16 | Gf = -1145705. Ca(HCO3)(+)  Facq et al. (2014) 
+Ca(1)C(1)H2(.5)O2(1.5) 
+G0 = -1145705.  S0 = 66.944  w = 292880  q = 1  
+a1 = 3.824176  a2 = 1849.328  a3 = 4.72792  a4 = -123846.4  c1 = 275.7256  c2 = 648520  
+end
+
+
+Ca(OH)+  EoS = 16 | Gf =  -716719. Ca(OH)(+)  Shock et al. (1997) with new a1 prediction 
+Ca(1)H2(.5)O2(.5) 
+G0 = -716719.2  S0 = 28.0328  w = 188112.6  q = 1  
+a1 = .8807738  a2 = -953.4918  a3 = 28.23782  a4 = -112332  c1 = 46.56457  c2 = -115034.9  
+end
+
+
+Ca+2     EoS = 16 | Gf =  -552790. Ca(+2)  Facq et al. (2014) 
+Ca(1) 
+G0 = -552790.1  S0 = -56.484  w = 517393.4  q = 2  
+a1 = -.102508  a2 = -3034.237  a3 = 20.92  a4 = -103763.2  c1 = 37.656  c2 = -105436.8  
+end
+
+
+CaCl+    EoS = 16 | Gf =  -682410. CaCl(+)  Sverjensky et al. (1997) with new V from the sum of a1 values of ions 
+Ca(1)Cl2(.5) 
+G0 = -682410.4  S0 = 18.828  w = 195602  q = 1  
+a1 = 1.648161  a2 = -222.8398  a3 = 22.11118  a4 = -115352.9  c1 = 86.73306  c2 = 22183.57  
+end
+
+
+CaCl2,aq EoS = 16 | Gf =  -811696. CaCl(0)  Sverjensky et al. (1997) with new V from the sum of a1 values of ions 
+Ca(1)Cl2(1) 
+G0 = -811696  S0 = 25.104  w = -15899.2  
+a1 = 3.334397  a2 = 1382.603  a3 = 8.649583  a4 = -121988.7  c1 = 97.3349  c2 = 126758.5  
+end
+
+
+CaCO3,aq EoS = 16 | Gf = -1099346. CaCO3(0)  Facq et al. (2014) 
+Ca(1)C(1)O2(1.5) 
+G0 = -1099346  w = 836800  
+a1 = 2.786544  a2 = 857.72  a3 = 13.05408  a4 = -119662.4  c1 = 137.2352  c2 = -7531.2  
+end
+
+
+CaSO4,aq EoS = 16 | Gf = -1309299. CaSO4(0)  Sverjensky et al. (1997) revised using exptl V and pred. a1 from new correlation 
+Ca(1)S2(.5)O2(2) 
+G0 = -1309299.  S0 = 20.92  w = -15899.2  
+a1 = 1.010436  a2 = -830.0638  a3 = 27.20228  a4 = -112842.5  c1 = -36.96564  c2 = -340037.9  
+end
+
+
+Cl-      EoS = 16 | Gf =  -131290. Cl(-)  Shock & Helgeson (1988) 
+Cl2(.5) 
+G0 = -131289.7  S0 = 56.73504  w = 609190.4  q = -1  
+a1 = 1.686989  a2 = 2008.738  a3 = 23.27559  a4 = -119118.5  c1 = -18.4096  c2 = -239073.8  
+end
+
+
+CO,aq    EoS = 16 | Gf =  -120005. CO(0)  Shock & McKibben (1993) for c1, c2 and omega with revised a1 from correlation for complex species 
+C(1)O2(.5) 
+G0 = -120005.5  S0 = 102.6335  w = -155435.6  
+a1 = 3.30808  a2 = 1357.541  a3 = 8.85962  a4 = -121884.1  c1 = 169.6403  c2 = 422755.5  
+end
+
+
+CO2,aq   EoS = 16 | Gf =  -385974. CO2(0)  Facq et al. (2014) 
+C(1)O2(1) 
+G0 = -385974  S0 = 117.5704  w = -83680  
+a1 = 3.259336  a2 = 1313.776  a3 = 9.24664  a4 = -121754.4  c1 = 154.808  c2 = 271960  
+end
+
+
+CO3-2    EoS = 16 | Gf =  -527983. CO3(-2)  Facq et al. (2014) 
+C(1)O2(1.5) 
+G0 = -527983.1  S0 = -54.1828  w = 1924640.  q = -2  
+a1 = 2.42672  a2 = 2092  a3 = -8.368  a4 = -451872  c1 = 75.312  c2 = -836800  
+end
+
+
+Cr+2     EoS = 16 | Gf =  -164850. Cr(+2)  Shock et al. (1997) revised with new predicted a1 for cations 
+Cr(1) 
+G0 = -164849.6  S0 = -101.2528  w = 597768.1  q = 2  
+a1 = -.4000322  a2 = -3910.868  a3 = 40.34548  a4 = -100106.4  c1 = 62.97213  c2 = -189183.7  
+end
+
+
+Cr+3     EoS = 16 | Gf =  -206271. Cr(+3)  Shock et al. (1997) revised with new predicted a1 for cations 
+Cr(1) 
+G0 = -206271.2  S0 = -322.168  w = 1146542.  q = 3  
+a1 = -3.050345  a2 = -1192.524  a3 = 55.8246  a4 = -111344.6  c1 = 75.27727  c2 = -322138.7  
+end
+
+
+Cr2O7-2  EoS = 16 | Gf = -1301224. Cr2O7(-2)  Shock et al. (1997) revised with new predicted a1 for cations 
+Cr(2)O2(3.5) 
+G0 = -1301224  S0 = 261.9184  w = 947843.4  q = -2  
+a1 = 7.022593  a2 = 4894.15  a3 = -20.79406  a4 = -136507.2  c1 = 63.10267  c2 = -300829.6  
+end
+
+
+CrO4-2   EoS = 16 | Gf =  -731363. CrO4(-2)  Shock et al. (1997) revised with new predicted a1 for cations 
+Cr(1)O2(2) 
+G0 = -731363.2  S0 = 57.7392  w = 1256204.  q = -2  
+a1 = 4.200443  a2 = -2599.645  a3 = 6.943348  a4 = -105524.7  c1 = -11.96791  c2 = -660498.8  
+end
+
+
+Cu+      EoS = 16 | Gf =    49999. Cu(+)  Shock et al. (1997) revised with new predicted a1 for cations 
+Cu(1) 
+G0 = 49998.8  S0 = 40.5848  w = 140205.8  q = 1  
+a1 = .5421627  a2 = -3012.731  a3 = 32.82222  a4 = -103817.6  c1 = 72.31207  c2 = -10204.78  
+end
+
+
+Cu+2     EoS = 16 | Gf =    65584. Cu(+2)  Shock et al. (1997) revised with new predicted a1 for cations 
+Cu(1) 
+G0 = 65584.2  S0 = -97.0688  w = 617935  q = 2  
+a1 = -.6182278  a2 = -3973.085  a3 = 41.92954  a4 = -99846.98  c1 = 77.26886  c2 = -145950.5  
+end
+
+
+ETHANE,A EoS = 16 | Gf =   -16259. C2H6  Shock & Helgeson (1990) revised with new predicted a1 for complex species 
+C(2)H2(3) 
+G0 = -16259.02  S0 = 112.173  w = -169870.4  
+a1 = 4.715033  a2 = 2697.132  a3 = -2.372328  a4 = -127423.7  c1 = 226.6703  c2 = 625595.9  
+end
+
+
+ETHANOL, EoS = 16 | Gf =  -181293. C2H5OH  Plyasunov & Shock (2001) 
+C(2)H2(3)O2(.5) 
+G0 = -181292.7  S0 = 150.2056  w = -85228.08  
+a1 = 3.863213  a2 = 4166.469  a3 = 50.81259  a4 = -133494.7  c1 = 251.1132  c2 = 6305.288  
+end
+
+
+ETHYLENE EoS = 16 | Gf =    81379. C2H4  Plyasunov & Shock (2001) for c1, c2 & omega; a1 predicted with new correlation for complex species from Sverjensky et al. (2
+C(2)H2(2) 
+G0 = 81378.8  S0 = 119.6624  w = -129704  
+a1 = 4.311779  a2 = 2313.166  a3 = .8468416  a4 = -125838  c1 = 177.8957  c2 = 443206.9  
+end
+
+
+F-       EoS = 16 | Gf =  -281751. F(-)  Shock & Helgeson (1988) 
+F2(.5) 
+G0 = -281750.6  S0 = -13.1796  w = 747680.8  q = -1  
+a1 = .2874408  a2 = 568.5219  a3 = 31.81221  a4 = -118624.8  c1 = 18.66064  c2 = -313297.9  
+end
+
+
+Fe(Ac)+  EoS = 16 | Gf =  -468190. Fe(CH3COO)(+)  Sverjensky et al. (1997) with revised volume increased in order that a1 of the complex is the sum of the a1 valu
+Fe(1)C(2)H2(1.5)O2(1) 
+G0 = -468189.6  S0 = -6.276  w = 240831  q = 1  
+a1 = 2.799347  a2 = 873.2008  a3 = 12.92103  a4 = -119884.2  c1 = 247.097  c2 = 565082.7  
+end
+
+
+Fe(Ac)2  EoS = 16 | Gf =  -844331. Fe(CH3COO)2(0)  Sverjensky et al. (1997) with revised volume increased in order that a1 of the complex is the sum of th
+Fe(1)C(4)H2(3)O2(3)                          | corrected stoichiometry
+G0 = -844331.2  S0 = 48.24152  w = -15899.2  
+a1 = 6.064624  a2 = 3982.08  a3 = -13.14655  a4 = -132733.2  c1 = 476.0099  c2 = 1442932.  
+end
+
+
+Fe(OH)+  EoS = 16 | Gf =  -275516. FeOH(+)  G, S, Cp from SSWS97 regression of Sweeton & Baes (1970); V from estimate to have similar behavior to MgO,aq 
+Fe(1)H2(.5)O2(.5) 
+G0 = -275516.4  S0 = -41.84  w = 294177  q = 1  
+a1 = .9397682  a2 = -897.3006  a3 = 27.7667  a4 = -112562.2  c1 = 89.68571  c2 = 874.456  
+end
+
+
+Fe+2     EoS = 16 | Gf =   -91504. Fe(+2)  Shock et al. (1997) revised with new predicted a1 for cations 
+Fe(1) 
+G0 = -91504.08  S0 = -105.8552  w = 609776.2  q = 2  
+a1 = -.3829615  a2 = -3906.015  a3 = 40.22121  a4 = -100127.3  c1 = 62.60687  c2 = -194300.8  
+end
+
+
+Fe+3     EoS = 16 | Gf =   -17238. Fe(+3)  Shock et al. (1997) revised with new predicted a1 for cations 
+Fe(1) 
+G0 = -17238.08  S0 = -277.3992  w = 1079974.  q = 3  
+a1 = -2.647259  a2 = -1488.165  a3 = 53.34307  a4 = -110122.9  c1 = 79.68888  c2 = -285491.1  
+end
+
+
+FeCl+    EoS = 16 | Gf =  -221878. FeCl(+)  Sverjensky et al. (1997) with revised volume increased in order that a1 of the complex is the sum of the a1 values of the ions
+Fe(1)Cl2(.5) 
+G0 = -221877.5  S0 = -42.09104  w = 293005.5  q = 1  
+a1 = 1.247962  a2 = -603.8767  a3 = 25.30609  a4 = -113775.5  c1 = 103.2348  c2 = 48346.12  
+end
+
+
+FeCl2,aq EoS = 16 | Gf =  -307440. FeCl2(0)  Sverjensky et al. (1997) with revised volume increased in order that a1 of the complex is the sum of the a1 values of the 
+Fe(1)Cl2(1) 
+G0 = -307440.3  S0 = 179.912  w = -15899.2  
+a1 = 2.936206  a2 = 1003.491  a3 = 11.82817  a4 = -120423.9  c1 = 93.33793  c2 = 112863.4  
+end
+
+
+FeCl2+   EoS = 16 | Gf =  -290491. FeCl2(+)  Fit to Liu et al. (2006) with revised volume increased in order that a1 of the complex a bit greater than the sum o
+Fe(1)Cl2(1) 
+G0 = -290490.9  S0 = -8.368  w = 243969  q = 1  
+a1 = 1.40323  a2 = -456.056  a3 = 24.06679  a4 = -114386.4  c1 = 60.78306  c2 = -83500.09  
+end
+
+
+FeCl3,aq EoS = 16 | Gf =  -415500. FeCl3(0)  Fit to Liu et al. (2006) with revised volume increased in order that a1 of the complex is equal to the sum of 
+Fe(1)Cl2(1.5) 
+G0 = -415500.5  S0 = 75.312  w = 125520  
+a1 = 3.735392  a2 = 1764.393  a3 = 5.448405  a4 = -123566.1  c1 = -31.29339  c2 = -365606.3  
+end
+
+
+FeCl4-   EoS = 16 | Gf =  -535205. FeCl4(-)  Fit to Liu et al. (200vv6) with revised volume increased in order that a1 of the complex is equal to the s
+Fe(1)Cl2(2) 
+G0 = -535204.7  S0 = 108.784  w = 517267.9  q = -1  
+a1 = 5.418406  a2 = 3366.781  a3 = -7.987674  a4 = -130193.5  c1 = -161.6986  c2 = -944303.7  
+end
+
+
+FeO,aq   EoS = 16 | Gf =  -212212. FeO(0)  
+Fe(1)O2(.5) 
+G0 = -212212.5  S0 = -41.84  w = 125520  
+a1 = .940103  a2 = -896.9659  a3 = 27.76377  a4 = -112566.3  c1 = 37.36521  c2 = -126967.7  
+end
+
+
+FORMATE, EoS = 16 | Gf =  -350879. HCOO-  Shock & Helgeson (1990) revised with new predicted a1 for ions 
+C(1)H2(.5)O2(1) 
+G0 = -350878.6  S0 = 90.7928  w = 544045.5  q = -1  
+a1 = 2.204299  a2 = 3214.818  a3 = 14.52099  a4 = -129561.7  c1 = 71.128  c2 = -518816  
+end
+
+
+FORMIC-A EoS = 16 | Gf =  -372301. HCOOH  Shock & Helgeson (1990) revised with new predicted a1 for complex species 
+C(1)H2(1)O2(1) 
+G0 = -372300.7  S0 = 162.7576  w = -144013.3  
+a1 = 3.385902  a2 = 1431.639  a3 = 8.238714  a4 = -122193.7  c1 = 92.853  c2 = -130524.1  
+end
+
+
+GLUTAMAT EoS = 16 | Gf =  -699807. C5H8NO4-  Revised 1/22/15 based on V at 25 C from Ziemer & Woolley (2007) and predicted a1, a2, and a4; c1 and c2 from fits to delCpr 
+C(5)H2(4)O2(2)N2(.5) 
+G0 = -699807.5  S0 = 185.7696  w = 400367  q = -1  
+a1 = 7.305264  a2 = 5163.056  a3 = -23.05384  a4 = -137653.6  c1 = 209.2  c2 = -619232  
+end
+
+
+GLUTAMIC EoS = 16 | Gf =  -724041. C5H9NO4  Revised 1/22/15 based on fitting Cp and V vs T data from Hakin et al. (1994) + revised correlation for a1 from Sverjensky e
+C(5)H2(4.5)O2(2)N2(.5) 
+G0 = -724041.2  S0 = 256.0608  w = 292880  
+a1 = 8.07512  a2 = 5564.72  a3 = -18.4096  a4 = -139327.2  c1 = 289.5328  c2 = -385764.8  
+end
+
+
+GLUTAMIN EoS = 16 | Gf =  -528356. C5H10N2O3  Shock & Helgeson (1990) revised with new predicted a1 for complex species 
+C(5)H2(5)N2(1)O2(1.5) 
+G0 = -528355.5  S0 = 261.1234  w = 75312  
+a1 = 8.287458  a2 = 6098.431  a3 = -30.89215  a4 = -141486.1  c1 = 140.0812  c2 = 246123.8  
+end
+
+
+GLUTARAT EoS = 16 | Gf =  -714878. C5H7O4-  Shock & Helgeson (1990) revised with new predicted a1 for complex species 
+C(5)H2(3.5)O2(2) 
+G0 = -714878.2  S0 = 221.3336  w = 346393.4  q = -1  
+a1 = 7.783037  a2 = 5618.159  a3 = -26.86512  a4 = -139498.8  c1 = 107.0221  c2 = 44415.74  
+end
+
+
+GLUTARIC EoS = 16 | Gf =  -739648. C5H8O4  Shock & Helgeson (1990) revised with new predicted a1 for complex species 
+C(5)H2(4)O2(2) 
+G0 = -739647.5  S0 = 306.2688  w = -41840  
+a1 = 8.667951  a2 = 6460.682  a3 = -33.92973  a4 = -142979.8  c1 = 179.138  c2 = 419387.4  
+end
+
+
+GLYCINE, EoS = 16 | Gf =  -380535. C2H5NO2  Plyasunov & Shock (2001) 
+C(2)H2(2.5)O2(1)N2(.5) 
+G0 = -380534.8  S0 = 164.4312  w = 83680  
+a1 = 4.51872  a2 = 543.92  a3 = 31.7984  a4 = -146440  c1 = 117.152  c2 = -343088  
+end
+
+
+GLYCOLAT EoS = 16 | Gf =  -506975. C2H3O3-  Shock & Helgeson (1990) revised with new predicted a1 for complex species 
+C(2)H2(1.5)O2(1.5) 
+G0 = -506975.3  S0 = 109.6208  w = 516054.6  q = -1  
+a1 = 2.819263  a2 = 5520.077  a3 = 7.74835  a4 = -139092.9  c1 = 89.28238  c2 = -71571.5  
+end
+
+
+GLYCOLIC EoS = 16 | Gf =  -528858. C2H4O3  Shock & Helgeson (1990) revised with new predicted a1 for complex species 
+C(2)H2(2)O2(1.5) 
+G0 = -528857.6  S0 = 180.3304  w = -126231.3  
+a1 = 4.78068  a2 = 2759.599  a3 = -2.896583  a4 = -127683.1  c1 = 125.7426  c2 = 260822.2  
+end
+
+
+H-SUCCIN EoS = 16 | Gf =  -719899. C4H5O4-  Shock & Helgeson (1990) revised with new predicted a1 for complex species 
+C(4)H2(2.5)O2(2) 
+G0 = -719899  S0 = 189.1168  w = 395220.6  q = -1  
+a1 = 6.51294  a2 = 4408.89  a3 = -16.72554  a4 = -134498.9  c1 = 85.01637  c2 = -47705.97  
+end
+
+
+H+       EoS = 16 | Gf =        0. H(+)  Perfectly known, by convention! 
+H2(.5) 
+q = 1  
+HOH = 1  
+end
+
+
+H2,aq    EoS = 16 | Gf =    17723. H2(0)  Shock et al. (1989) 
+H2(1) 
+G0 = 17723.42  S0 = 57.7392  w = -87445.6  
+a1 = 2.151706  a2 = 1998.195  a3 = 16.20421  a4 = -124532.6  c1 = 115.5834  c2 = 213091.1  
+end
+
+
+H2S,aq   EoS = 16 | Gf =   -27920. H2S(0)  Shock et al. (1989) with revised prediction of a1 using new correlation 
+H2(1)S2(.5) 
+G0 = -27919.83  S0 = 125.52  w = -41840  
+a1 = 3.453599  a2 = 1496.073  a3 = 7.698142  a4 = -122457.3  c1 = 126.9769  c2 = 238090.5  
+end
+
+
+HAlO2,aq EoS = 16 | Gf =  -868180. HAlO2(0)  Sverjensky et al. (2014) 
+Al(1)H2(.5)O2(1) 
+G0 = -868180  S0 = -27.196  w = 209200  
+a1 = 1.792844  a2 = -85.10256  a3 = 20.9564  a4 = -115921.9  c1 = 161.548  c2 = 277867.8  
+end
+
+
+HCl,aq   EoS = 16 | Gf =  -127235. HCl(0)  Regression of Ruaya & Seward (1987) & Tagirov et al. (1997) with new full correlations 
+H2(.5)Cl2(.5) 
+G0 = -127235.4  S0 = 13.3888  w = -83680  
+a1 = 1.814852  a2 = -64.14072  a3 = 20.78025  a4 = -116009.8  c1 = 113.7228  c2 = 205421.8  
+end
+
+
+HCO3-    EoS = 16 | Gf =  -586940. HCO3(-)  Facq et al. (2014) 
+C(1)H2(.5)O2(1.5) 
+G0 = -586939.9  S0 = 98.44952  w = 532748.7  q = -1  
+a1 = 3.20076  a2 = 384.928  a3 = 2.5104  a4 = -117988.8  c1 = 46.024  c2 = -158992  
+end
+
+
+HCrO4-   EoS = 16 | Gf =  -764835. HCrO4(-)  Shock et al. (1997) revised with new predicted a1 for complex species 
+Cr(1)H2(.5)O2(2) 
+G0 = -764835.2  S0 = 184.096  w = 402584.5  q = -1  
+a1 = 4.40458  a2 = 2401.532  a3 = .1058552  a4 = -126202  c1 = 112.914  c2 = 46902.64  
+end
+
+
+HEXANE,A EoS = 16 | Gf =    18493. C6H14  Plyasunov & Shock (2001) for c1, c2 & omega; a1 predicted with new correlation for complex species from Sverjensky et 
+C(6)H2(7) 
+G0 = 18493.28  S0 = 222.5888  w = -196648  
+a1 = 9.805162  a2 = 7543.417  a3 = -43.00817  a4 = -147456.7  c1 = 451.872  c2 = 962320  
+end
+
+
+HFeO2-   EoS = 16 | Gf =  -394970. HFeO2(-)  
+Fe(1)H2(.5)O2(1) 
+G0 = -394969.6  S0 = -62.76  w = 776675.9  q = -1  
+a1 = 2.633828  a2 = 715.5895  a3 = 14.24234  a4 = -119231.4  c1 = 151.2993  c2 = 60534.11  
+end
+
+
+HO2-     EoS = 16 | Gf =   -67362. HO2(-)  Shock et al. (1997) revised with new predicted a1 for complex species 
+H2(.5)O2(1) 
+G0 = -67362.4  S0 = 23.8488  w = 646386.2  q = -1  
+a1 = 1.409339  a2 = -450.2402  a3 = 24.01783  a4 = -114411.5  c1 = 11.29931  c2 = -384354.8  
+end
+
+
+HS-      EoS = 16 | Gf =    11966. HS(-)  Shock et al. (1997) revised with new predicted a1 for complex species 
+H2(.5)S2(.5) 
+G0 = 11966.24  S0 = 68.1992  w = 602914.4  q = -1  
+a1 = 2.603285  a2 = 686.5107  a3 = 14.48626  a4 = -119110.1  c1 = 25.93703  c2 = -319557.2  
+end
+
+
+HSiO3-   EoS = 16 | Gf = -1016105. HSiO3(-)  Revised late Oct. (2014) to fit Baes and Mesmer (1977) along Psat. and high pressure logK's from fitting Kessel et al. (2
+Si(1)H2(.5)O2(1.5) 
+G0 = -1016105.  S0 = -8.368  w = 694293  q = -1  
+a1 = 2.448058  a2 = 538.7318  a3 = 15.72556  a4 = -118499.2  c1 = 115.5119  c2 = -37480.27  
+end
+
+
+HSO3-    EoS = 16 | Gf =  -527728. HSO3(-)  Sverjensky et al. (1997) revised using published estimated V and pred. a1 from new correlation 
+H2(.5)S2(.5)O2(1.5) 
+G0 = -527727.9  S0 = 139.7456  w = 469988.7  q = -1  
+a1 = 2.803866  a2 = 3590.541  a3 = 9.945786  a4 = -131118.2  c1 = 65.66746  c2 = -138900.4  
+end
+
+
+HSO4-    EoS = 16 | Gf =  -755756. HSO4(-)  Shock et al. (1997) revised with new predicted a1 for complex species 
+H2(.5)S2(.5)O2(2) 
+G0 = -755755.9  S0 = 125.52  w = 491536.3  q = -1  
+a1 = 3.73217  a2 = 1761.338  a3 = 5.473927  a4 = -123553.5  c1 = 84.08166  c2 = -81797.2  
+end
+
+
+HSO5-    EoS = 16 | Gf =  -637516. HSO5(-)  Shock et al. (1997) revised with new predicted a1 for complex species 
+H2(.5)S2(.5)O2(2.5) 
+G0 = -637516.1  S0 = 212.1288  w = 360284.2  q = -1  
+a1 = 4.928668  a2 = 2900.516  a3 = -4.078145  a4 = -128264.7  c1 = 130.5935  c2 = 121896.7  
+end
+
+
+Isobutan EoS = 16 | Gf =      151. C4H10(0)  G, H, S, Cp, V from Shock & Helgeson (1990); a1 estimated with Sverjensky et al. (2014; c2 estimated with a new hydro
+C(4)H2(5) 
+G0 = 150.624  S0 = 167.4437  w = -125520  
+a1 = 7.305264  a2 = 5163.056  a3 = -23.05384  a4 = -137653.6  c1 = 386.1832  c2 = 799980.8  
+end
+
+
+K+       EoS = 16 | Gf =  -282462. K(+)  Shock & Helgeson (1988) 
+K(1) 
+G0 = -282461.8  S0 = 101.0436  w = 80625.68  q = 1  
+a1 = 1.489086  a2 = -616.3032  a3 = 22.74004  a4 = -113470.1  c1 = 30.9616  c2 = -74935.44  
+end
+
+
+KCl,aq   EoS = 16 | Gf =  -413588. KCl(0)  May, 2017 Fitted to logKs from Oelkers & Helgeson (1988) + retrieved logKs from Hemley experiments at 1.0 kb using the HCl referred t
+K(1)Cl2(.5) 
+G0 = -413588.4  S0 = 142.256  w = 41840  
+a1 = 3.418956  a2 = 1463.103  a3 = 7.974286  a4 = -122323.4  c1 = 25.97762  c2 = -139754  
+end
+
+
+KOH,aq   EoS = 16 | Gf =  -430115. KOH(0)  Fitted to Ho & Palmer (1997) data with a1 pred. from the sum of the ions and used to predict the volume 
+K(1)H2(.5)O2(.5) 
+G0 = -430115.2  S0 = 151.8792  w = 200832  
+a1 = 2.381993  a2 = 475.8463  a3 = 16.25275  a4 = -118239.8  c1 = 28.36501  c2 = -182368  
+end
+
+
+KSO4-    EoS = 16 | Gf = -1031649. KSO4(-)  Revised G, S and Cp to fit Noyes et al. (1906) & Sharygin et al. (2006) with a1 of the complex equal to the sum of the a1
+K(1)S2(.5)O2(2) 
+G0 = -1031649.  S0 = 142.256  w = 460072.6  q = -1  
+a1 = 4.976575  a2 = 2946.122  a3 = -4.460144  a4 = -128453  c1 = 14.24108  c2 = -314469.4  
+end
+
+
+LACTATE, EoS = 16 | Gf =  -512666. C3H5O3-  Shock & Helgeson (1990) revised with new predicted a1 for ions 
+C(3)H2(2.5)O2(1.5) 
+G0 = -512665.5  S0 = 133.4696  w = 479863  q = -1  
+a1 = 3.555438  a2 = 8278.588  a3 = -.357732  a4 = -150498.5  c1 = 135.4796  c2 = 100587.5  
+end
+
+
+LACTIC-A EoS = 16 | Gf =  -534715. C3H6O3  Shock & Helgeson (1990) revised with new predicted a1 for complex species 
+C(3)H2(3)O2(1.5) 
+G0 = -534715.2  S0 = 208.3632  w = -107612.5  
+a1 = 6.222152  a2 = 4132.035  a3 = -14.40426  a4 = -133356.6  c1 = 179.44  c2 = 441499.9  
+end
+
+
+METHANE, EoS = 16 | Gf =   -34451. CH4  Plyasunov & Shock (2001) for c1, c2 & omega; a1 predicted with new correlation for complex species from Sverjensky et al. (201
+C(1)H2(2) 
+G0 = -34451.06  S0 = 87.82216  w = -167360  
+a1 = 3.481088  a2 = 1522.976  a3 = 7.48936  a4 = -122591.2  c1 = 171.1256  c2 = 269868  
+end
+
+
+METHANOL EoS = 16 | Gf =  -175937. CH3OH  Plyasunov & Shock (2001) 
+C(1)H2(2)O2(.5) 
+G0 = -175937.2  S0 = 132.2144  w = -62760  
+a1 = 3.51456  a2 = 1715.44  a3 = -1.00416  a4 = -59831.2  c1 = 143.9296  c2 = 40166.4  
+end
+
+
+Mg(HCO3) EoS = 16 | Gf = -1047172. Mg(HCO3)(+)  Fit to Stéfansson et al. (2014) & Siebert & Hostetler (1977); plus revised V increased so that a1 of the complex is t
+Mg(1)C(1)H2(.5)O2(1.5) 
+G0 = -1047172.  S0 = -20.92  w = 262504.2  q = 1  
+a1 = 2.866626  a2 = 937.2578  a3 = 12.3838  a4 = -120147.7  c1 = 194.6589  c2 = 375878  
+end
+
+
+Mg(HSiO3 EoS = 16 | Gf = -1477057. Mg(HSiO3)(+)  Sverjensky et al. (1997) with new a1 from the sum of the ions and V predicted from a1 value 
+Mg(1)Si(1)H2(.5)O2(1.5) 
+G0 = -1477057.  S0 = -99.49552  w = 381497.1  q = 1  
+a1 = 1.022277  a2 = -818.767  a3 = 27.10772  a4 = -112888.5  c1 = 153.6863  c2 = 195363.5  
+end
+
+
+Mg+2     EoS = 16 | Gf =  -453985. Mg(+2)  Shock & Helgeson (1988) 
+Mg(1) 
+G0 = -453984.9  S0 = -138.072  w = 643164.5  q = 2  
+a1 = -.3437993  a2 = -3597.822  a3 = 35.10376  a4 = -99997.6  c1 = 87.0272  c2 = -246521.3  
+end
+
+
+MgCl+    EoS = 16 | Gf =  -584505. MgCl(+)  Sverjensky et al. (1997) revised V increased so that a1 of the complex is the sum of the a1 values of the ions 
+Mg(1)Cl2(.5) 
+G0 = -584504.8  S0 = -79.496  w = 353506.2  q = 1  
+a1 = 1.343064  a2 = -2058.528  a3 = 26.23368  a4 = -107947.2  c1 = 119.6624  c2 = 86106.72  
+end
+
+
+MgCO3,aq EoS = 16 | Gf =  -998972. MgCO3(0)  Sverjensky et al. (1997) revised volume increased in order that a1 of the complex is the sum of the a1 values of the i
+Mg(1)C(1)O2(1.5) 
+G0 = -998971.8  S0 = -100.416  w = 125520  
+a1 = 2.150869  a2 = 255.7679  a3 = 18.09831  a4 = -117331.9  c1 = -23.44672  c2 = -338335  
+end
+
+
+MgOH+    EoS = 16 | Gf =  -624357. MgOH(+)  Revised by Dimitri, March, 2015 
+Mg(1)H2(.5)O2(.5) 
+G0 = -624357.4  S0 = -71.128  w = 353506.2  q = 1  
+a1 = .2368981  a2 = -1566.531  a3 = 33.37786  a4 = -109796.5  c1 = 156.4523  c2 = 213944.7  
+end
+
+
+MgSO4,aq EoS = 16 | Gf = -1211055. MgSO4  S, Cp, V, omega from fit to Akilan et al. (2006a) and Frantz et al. (1994) 
+Mg(1)S2(.5)O2(2) 
+G0 = -1211055.  S0 = -4.184  w = 20920  
+a1 = 3.490167  a2 = 1530.926  a3 = 7.40568  a4 = -122603.8  c1 = 76.77012  c2 = 43488.5  
+end
+
+
+Mn+2     EoS = 16 | Gf =  -228028. Mn(+2)  Shock et al. (1997) revised with new predicted a1 for cations 
+Mn(1) 
+G0 = -228028  S0 = -73.6384  w = 586011  q = 2  
+a1 = -.4722899  a2 = -2241.704  a3 = 39.03923  a4 = -107005.8  c1 = 69.73598  c2 = -161912.4  
+end
+
+
+MnCl+    EoS = 16 | Gf =  -361037. MnCl(+)  Sverjensky et al. (1997) with revised a1 equal to the sum of the ions used to predict new values of V using new correlation in 
+Mn(1)Cl2(.5) 
+G0 = -361037.4  S0 = 50.208  w = 154222.2  q = 1  
+a1 = 1.222021  a2 = -628.5623  a3 = 25.5132  a4 = -113675.1  c1 = 100.403  c2 = 82943.62  
+end
+
+
+MnO4-    EoS = 16 | Gf =  -447270. MnO4(-)  Shock et al. (1997) revised with new predicted a1 for ions 
+Mn(1)O2(2) 
+G0 = -447269.6  S0 = 191.2088  w = 391957.1  q = -1  
+a1 = 2.883738  a2 = 5761.661  a3 = 7.038325  a4 = -140092.9  c1 = 57.49862  c2 = -142306.2  
+end
+
+
+MnO4-2   EoS = 16 | Gf =  -500825. MnO4(-2)  Shock et al. (1997) revised with new predicted a1 for ions 
+Mn(1)O2(2) 
+G0 = -500824.8  S0 = 58.576  w = 1256204.  q = -2  
+a1 = 4.960718  a2 = -2382.955  a3 = 1.423397  a4 = -106424.2  c1 = -3.876476  c2 = -632373.9  
+end
+
+
+MnSO4,aq EoS = 16 | Gf =  -985918. MnSO4(0)  Sverjensky et al. (1997) with revised a1 equal to the sum of the ions used to predict new values of V using new correla
+Mn(1)S2(.5)O2(2) 
+G0 = -985917.8  S0 = 20.92  w = -15899.2  
+a1 = 3.001225  a2 = 1065.414  a3 = 11.30935  a4 = -120679.1  c1 = -28.33363  c2 = -310034.4  
+end
+
+
+Na(Ac),a EoS = 16 | Gf =  -630612. NaCH3COO(0)  G, H, S, Cp, V from Shock & Koretsky (1993); a1 estimated with Sverjensky et al. (2014) 
+Na(1)C(2)H2(1.5)O2(1) 
+G0 = -630612.5  S0 = 143.0928  w = 125520  
+a1 = 4.677963  a2 = 2661.819  a3 = -2.076519  a4 = -127277.3  c1 = 221.5164  c2 = 513096.5  
+end
+
+
+Na(Ac)2- EoS = 16 | Gf =  -997758. Na(CH3COO)2(-1)  G, H, S, Cp, V from Shock & Koretsky (1993); a1 estimated with Sverjensky et al. (2014) 
+Na(1)C(4)H2(3)O2(3)                                | corrected stoichiometry
+G0 = -997758.5  S0 = 184.096  w = 402835.5  q = -1  
+a1 = 9.215134  a2 = 6981.632  a3 = -38.29783  a4 = -145134.6  c1 = 479.7663  c2 = 1321910.  
+end
+
+
+Na+      EoS = 16 | Gf =  -261881. Na(+)  Shock & Helgeson (1988) 
+Na(1) 
+G0 = -261880.7  S0 = 58.40864  w = 138323  q = 1  
+a1 = .7694376  a2 = -956.044  a3 = 13.6231  a4 = -114055.8  c1 = 76.06512  c2 = -124725  
+end
+
+
+NaCl,aq  EoS = 16 | Gf =  -388735. NaCl(0)  Sverjensky et al. (1997) with new predicted a1 value 
+Na(1)Cl2(.5) 
+G0 = -388735.4  S0 = 117.152  w = -15899.2  
+a1 = 2.578683  a2 = 663.1222  a3 = 14.68249  a4 = -119013.9  c1 = 45.19933  c2 = -54450.58  
+end
+
+
+NaCO3-   EoS = 16 | Gf =  -797311. NaCO3(-)  Fit to Stefansson et al. (2013; 80 to 200 C) & Garrels et al., (1961; at 25 C) to get G, S and Cp; with a1 pred. from the sum of
+Na(1)C(1)O2(1.5) 
+G0 = -797311.4  S0 = 33.472  w = 630905.4  q = -1  
+a1 = 3.197706  a2 = 1252.48  a3 = 9.74077  a4 = -121453.2  c1 = 81.47503  c2 = -135490.5  
+end
+
+
+NaHCO3,a EoS = 16 | Gf =  -849720. NaHCO3(0)  Fit to Stefansson et al. (2013; 80 to 200 C) & Nakayama (1971; at 25 C) to get G, S and Cp; with V, a1, and omega fro
+Na(1)C(1)H2(.5)O2(1.5) 
+G0 = -849720.2  S0 = 129.704  w = 271960  
+a1 = 4.020824  a2 = 1071.104  a3 = 4.22584  a4 = -120499.2  c1 = 232.212  c2 = 502080  
+end
+
+
+NaHSiO3, EoS = 16 | Gf = -1285074. NaHSiO3(0)  Sverjensky et al. (1997) with revised a1 equal to the sum of the ions used to predict new values of V using new corre
+Na(1)Si(1)H2(.5)O2(1.5) 
+G0 = -1285074.  S0 = 79.496  w = -15899.2  
+a1 = 2.148024  a2 = 253.0483  a3 = 18.12049  a4 = -117319.4  c1 = 30.07459  c2 = -107022.5  
+end
+
+
+NaOH,aq  EoS = 16 | Gf =  -422166. NaOH(0)  Fitted to Ho & Palmer (1997) data with a1 pred. from the sum of the ions and used to predict the volume 
+Na(1)H2(.5)O2(.5) 
+G0 = -422165.6  S0 = 27.196  w = 83680  
+a1 = 1.651383  a2 = -219.7855  a3 = 22.08566  a4 = -115365.4  c1 = 136.498  c2 = 230990.3  
+end
+
+
+O2,aq    EoS = 16 | Gf =    16544. O2(0)  Shock et al. (1989) 
+O2(1) 
+G0 = 16543.54  S0 = 108.9514  w = -164975.1  
+a1 = 2.422076  a2 = 2658.346  a3 = 13.60972  a4 = -127264.7  c1 = 147.917  c2 = 350309.6  
+end
+
+
+OH-      EoS = 16 | Gf =  -157297. OH(-)  August 16th, 2013 fit to Bandura & Lvov (2005) 
+H2(.5)O2(.5) 
+G0 = -157297.5  S0 = -20.92  w = 719648  q = -1  
+a1 = .87864  a2 = -2092  a3 = 4.184  a4 = -112968  c1 = 50.71008  c2 = -314636.8  HOH = 2  
+end
+
+
+PROPANE, EoS = 16 | Gf =    -8213. C3H8  Shock & Helgeson (1990) with new a1-a4 based on revised correlation to predict a1 in Sverjensky et al. (2013) 
+C(3)H2(4) 
+G0 = -8213.192  S0 = 139.6201  w = -211417.5  
+a1 = 5.978978  a2 = 3900.492  a3 = -12.46288  a4 = -132398.5  c1 = 277.5226  c2 = 815649.9  
+end
+
+
+PROPANOA EoS = 16 | Gf =  -363046. C2H5COO-  Revised a1 from new delVn correlation for -1 ions; kept original regression c1 and c2 plus omega from Shock & Helg
+C(3)H2(2.5)O2(1) 
+G0 = -363045.7  S0 = 110.876  w = 513627.8  q = -1  
+a1 = 3.505606  a2 = 8090.392  a3 = .192464  a4 = -149720.3  c1 = 218.8232  c2 = -175728  
+end
+
+
+PROPANOI EoS = 16 | Gf =  -390995. C3H6O2  Plyasunov & Shock (2001) 
+C(3)H2(3)O2(1) 
+G0 = -390994.8  S0 = 206.6896  w = -37656  
+a1 = 6.10864  a2 = 3305.36  a3 = 28.8696  a4 = -179912  c1 = 264.8472  c2 = -58576  
+end
+
+
+PROPANOL EoS = 16 | Gf =  -175351. C3H7OH  Plyasunov & Shock (2001) 
+C(3)H2(4)O2(.5) 
+G0 = -175351.4  S0 = 169.8704  w = -83680  
+a1 = 6.10864  a2 = 3807.44  a3 = 51.0448  a4 = -230120  c1 = 310.8712  c2 = 138072  
+end
+
+
+S2-2     EoS = 16 | Gf =    79496. S2(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(1) 
+G0 = 79496  S0 = 28.4512  w = 1300513.  q = -2  
+a1 = 4.266634  a2 = -2580.775  a3 = 6.462606  a4 = -105604.2  c1 = -14.01514  c2 = -681803.7  
+end
+
+
+S2O3-2   EoS = 16 | Gf =  -522582. S2O3(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(1)O2(1.5) 
+G0 = -522581.6  S0 = 66.944  w = 1242397.  q = -2  
+a1 = 5.06264  a2 = -2353.918  a3 = .6832472  a4 = -106541.4  c1 = -.2422536  c2 = -615320  
+end
+
+
+S2O4-2   EoS = 16 | Gf =  -600404. S2O4(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(1)O2(2) 
+G0 = -600404  S0 = 92.048  w = 1203820.  q = -2  
+a1 = 5.730114  a2 = -2163.672  a3 = -4.16308  a4 = -107328  c1 = 6.991046  c2 = -577827.1  
+end
+
+
+S2O5-2   EoS = 16 | Gf =  -790776. S2O5(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(1)O2(2.5) 
+G0 = -790776  S0 = 104.6  w = 1185871.  q = -2  
+a1 = 6.019604  a2 = -2081.163  a3 = -6.265122  a4 = -107671.1  c1 = 11.22316  c2 = -557371.6  
+end
+
+
+S2O6-2   EoS = 16 | Gf =  -966504. S2O6(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(1)O2(3) 
+G0 = -966504  S0 = 125.52  w = 1154240.  q = -2  
+a1 = 6.491141  a2 = -1946.773  a3 = -9.68847  a4 = -108227.5  c1 = 18.11756  c2 = -523276.1  
+end
+
+
+S2O8-2   EoS = 16 | Gf = -1115036. S2O8(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(1)O2(4) 
+G0 = -1115036  S0 = 244.3456  w = 974077  q = -2  
+a1 = 9.956163  a2 = -959.1402  a3 = -34.84686  a4 = -112306.9  c1 = 54.23845  c2 = -340042  
+end
+
+
+S3-      EoS = 16 | Gf =    55061. S3(-)  Regression of data from Pokrovski & Dubessy (2015, Guggenheim (1971); Feb. 2015 
+S2(1.5) 
+G0 = 55061.44  S0 = 96.232  w = 669440  q = -1  
+a1 = 7.214053  a2 = 5076.447  a3 = -22.3229  a4 = -137260.3  c1 = 320.4233  c2 = 682699.1  
+end
+
+
+S3-2     EoS = 16 | Gf =    73638. S3(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(1.5) 
+G0 = 73638.4  S0 = 66.1072  w = 1244698.  q = -2  
+a1 = 5.133977  a2 = -2333.584  a3 = .165268  a4 = -106625.1  c1 = -1.503311  c2 = -620441.2  
+end
+
+
+S3O6-2   EoS = 16 | Gf =  -958136. S3O6(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(1.5)O2(3) 
+G0 = -958136  S0 = 138.072  w = 1135161.  q = -2  
+a1 = 6.790004  a2 = -1861.587  a3 = -11.85871  a4 = -108579  c1 = 22.24549  c2 = -502820.6  
+end
+
+
+S4-2     EoS = 16 | Gf =    69036. S4(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(2) 
+G0 = 69036  S0 = 103.3448  w = 1187838.  q = -2  
+a1 = 5.990777  a2 = -2089.364  a3 = -6.055503  a4 = -107637.6  c1 = 10.91313  c2 = -559078.6  
+end
+
+
+S4O6-2   EoS = 16 | Gf = -1040561. S4O6(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(2)O2(3) 
+G0 = -1040561.  S0 = 257.316  w = 954161.2  q = -2  
+a1 = 9.534206  a2 = -1079.43  a3 = -31.78292  a4 = -111809  c1 = 61.47677  c2 = -308503.1  
+end
+
+
+S5-2     EoS = 16 | Gf =    65689. S5(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(2.5) 
+G0 = 65688.8  S0 = 140.5824  w = 1131814.  q = -2  
+a1 = 6.848036  a2 = -1845.018  a3 = -12.28004  a4 = -108645.9  c1 = 23.16304  c2 = -498561.3  
+end
+
+
+S5O6-2   EoS = 16 | Gf =  -958136. S5O6(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(2.5)O2(3) 
+G0 = -958136  S0 = 167.36  w = 1091020.  q = -2  
+a1 = 7.464214  a2 = -1669.416  a3 = -16.75357  a4 = -109373.9  c1 = 31.91011  c2 = -455093.7  
+end
+
+
+Si2O4,aq EoS = 16 | Gf = -1676742. Si2O4(0)  Fit to Raman speciation and quartz solubility data (Sverjensky et al., 2014). 
+Si(2)O2(2) 
+G0 = -1676742.  S0 = 75.312  w = 41840  
+a1 = 4.214292  a2 = 1126.793  a3 = 2.809556  a4 = -120930.2  c1 = 149.8077  c2 = 290649.9  
+end
+
+
+SiO2,aq  EoS = 16 | Gf =  -834946. SiO2(0)  Fit to Raman speciation and quartz solubility data (Sverjensky et al., 2014). 
+Si(1)O2(1) 
+G0 = -834946.5  S0 = 22.1752  w = 150624  
+a1 = 2.050076  a2 = 589.5256  a3 = 18.43721  a4 = -118708.4  c1 = 107.6003  c2 = 109114.5  
+end
+
+
+SO2,aq   EoS = 16 | Gf =  -301164. SO2(0)  Shock et al. (1989) with revised a1 predicted as a complex from delVn 
+S2(.5)O2(1) 
+G0 = -301164.3  S0 = 161.9208  w = -102968.2  
+a1 = 3.715141  a2 = 1745.146  a3 = 5.609907  a4 = -123486.6  c1 = 130.5826  c2 = 270198.5  
+end
+
+
+SO3-2    EoS = 16 | Gf =  -486599. SO3(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
+S2(.5)O2(1.5) 
+G0 = -486599.2  S0 = -29.288  w = 1389506.  q = -2  
+a1 = 2.858592  a2 = -2982.104  a3 = 16.68579  a4 = -103947.3  c1 = -32.78959  c2 = -775554.6  
+end
+
+
+SO4-2    EoS = 16 | Gf =  -744459. SO4(-2)  Shock & Helgeson (1988) 
+S2(.5)O2(2) 
+G0 = -744459.1  S0 = 18.828  w = 1316412.  q = -2  
+a1 = 3.473306  a2 = -830.3566  a3 = -25.99184  a4 = -112842.5  c1 = 6.86176  c2 = -753036.3  
+end
+
+
+TOLUENE, EoS = 16 | Gf =   126608. C6H5CH3  Plyasunov & Shock (2001) with new a1 to a4 predicted with revised a1 consistent with Sverjensky et al. (2013) 
+C(7)H2(4) 
+G0 = 126607.8  S0 = 184.096  w = -121336  
+a1 = 8.500549  a2 = 6301.271  a3 = -32.59294  a4 = -142322.9  c1 = 281.8995  c2 = 802018.4  
+end

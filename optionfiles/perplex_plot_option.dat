@@ -1,0 +1,45 @@
+|----------------------------------------------------------------------
+        | Run-time Perple_X plotting options:
+        | Comments must be preceeded by the "|" character.
+        | Keywords and values are case sensitive!
+        | For documentation refer to:
+        |         www.perplex.ethz.ch/perplex_plot_options.html
+|----------------------------------------------------------------------
+axis_label_scale        1.2     | relative scale for axes labels and numbers
+
+bounding_box       0 0 800 800  | EPS bounding box, A4={0 0 595 842}, US letter={0 0 612 792}
+                                | small bounding boxes may cause clipping of long text labels
+                                | obsolete in PerplexPDF.
+
+page_size              612 792  | For PerplexPDF. 
+                                | Page size in points (width, heigth). (72 pts/inch)
+                                | A4={595 842}, US letter={612 792}
+                                | small bounding boxes may cause clipping
+
+field_fill               T      | [T] variance based field fill for gridded minimization results
+field_label              T      | [T] label fields in gridded minimization results
+numeric_field_label      F      | [F] use numeric field labels -> PSSECT writes text field list to my_project_assemblages.txt
+field_label_scale      0.75     | [0.75] relative scale for field labels
+replicate_label        0.25     | [0.25] 0->1, 0 - all replicate fields labeled, 1 - no replicate field labels
+
+font               Helvetica    | any fontname recognized by your plotting program (e.g., Illustrator, Corel, etc.)
+                                | for Mac's, according to John Schumacher, a good bet is MyriadPro-Regular
+                                | obsolete in PerplexPDF.
+
+new_font               serif    | For PerplexPDF.  Choices are "serif"/"sans"/"monospace".  
+                                | Specific font names (e.g, "Times") may also work correctly, 
+                                | depending on your system and the choice of plot_output_type
+
+grid                     F      | superpose a grid on the axes
+half_ticks               T      | draw half-interval ticks on axes                    
+line_width               1.     | default line width in points, 0 - use minimum width lines for everything
+
+picture_transformation 0.18 0.18 130 220 0 
+                                | obsolete in PerplexPDF.
+                                | x,y-scale, x,y-translation, rotation
+
+plot_aspect_ratio        1.     | x_axis_length/y_axis_length 
+plot_output_type        PDF     | graphics output type: PS/PDF/SVG
+splines                  T      | use B-splines to smooth curves (psvdraw only; not pssect)
+tenth_ticks              F      | draw tenth-interval ticks on axes 
+text_scale              1.0     | default scaling for text

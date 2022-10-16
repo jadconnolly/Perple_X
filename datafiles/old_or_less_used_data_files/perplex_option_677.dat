@@ -1,0 +1,75 @@
+|----------------------------------------------------------------------
+        | Run-time Perple_X 6.7.6 options:
+        | Comments must be preceeded by the "|" character.
+        | Keywords and values are case sensitive!
+        | For documentation refer to:
+        |         www.perplex.ethz.ch/perplex_options.html
+|----------------------------------------------------------------------
+1d_path                  40 150 | exploratory and autorefine (grid parameters keyword group)
+approx_alpha               T    | use approximation exp(x)~1+x to evaluate expansivity effect on volume
+Anderson-Gruneisen         F    | Anderson-Gruneisen parameter correction for polythermal Murnaghan and Birch-Murnaghan
+auto_refine                aut  | auto, manual, or off (auto_refine keyword group)
+auto_refine_factor_I       2    | refine factor for gridded minimization and phase fractionation (auto_refine keyword group)
+auto_refine_factor_II      6    | refine factor for composition and mixed variable diagrams (auto_refine keyword group)
+auto_refine_factor_III     2    | refine factor for Schreinemakers diagrams (auto_refine keyword group)
+auto_refine_file           F    | echo auto-refine data to my_project_auto_refine.txt
+bad_number                 NaN  | any number or NaN (not-a-number)
+bounds                     VRH  | [VRH] HS; Voigt-Reuss-Hill or Hashin-Shtrikman, see vrh/hs_averaging
+closed_c_space             T    | T[rue] or F[alse], default is T => closed composition space for gridded minimization 
+composition_constant       F    | T[rue] or F[alse], default is F; allows constants in composition expressions
+composition_phase          mol  | mol or wt; phase compositions in WERAMI output
+composition_system         wt   | mol or wt; system composition in WERAMI mode 2-4 output
+console_messages           on   | on or off
+dependent_potentials       on   | on or off
+efficiency                 3    | 1->5
+explicit_bulk_modulus      T    | T[rue] or F[alse], default is F; T => use explicit function for K if available
+fd_expansion_factor        2    | [2], nth order finite difference increment is increased by fd_expansion_factor^(n-1)
+final_resolution  2.5e-4 2.5e-4 | >0, <1, default 1e-3; exploratory and autorefine
+finite_difference_p    1d4 1d-2 | threshold [1d4] and fraction [1d-2] for 1st order finite difference increment on pressure
+global_reach_increment      0   | >= 0; overridden by reach_factor specified in solution model file
+grid_levels                1 4  | exploratory and autorefine (grid parameters keyword group)
+hard_limits                off  | on or off; on => use compositional limits specified in solution model
+hybrid_EoS_H2O            2     | [4] 0-2, 4-5
+hybrid_EoS_CO2            2     | [4] 0-4
+hybrid_EoS_CH4            1     | [1] 0-1
+increment             0.1 0.025 | 0, <1; exploratory and autorefine
+initial_resolution        0.067 | >0, <1, default 1e-2
+interpolation           on   2  | value 1: on or off [on]; value 2, 1->99 [2]
+iteration                  3  4 | value 1: 2->99 [3]; value 2: 1->7 [4]
+linear_model               on   | on or off
+logarithmic_p              F    | T[rue] or F[alse], default is F
+melt_is_fluid              F    | T[rue] or F[alse], default is F
+option_list_files          T    | T[rue] or F[alse], T => echo run-time options to my_project_PROGRAM_options.txt
+order_check                on   | on or off, on => compare order-disorder solutions with fully ordered and disordered states
+pause_on_error              T   | T[rue] or F[alse], T => wait for user response after errors
+pc_perturbation           5d-3  | perturbation to pseudo-compound compositions, for Schreinemakers and Mixed-variable calculations
+poisson_ratio        on   0.35  | value 1: on, off or all; value 2: 0->0.5; poisson ratio estimates for shear moduli
+poisson_test               F    | T[rue] or F[alse], default is F, T => use poisson ratio to check for valid results
+proportions               vol   | vol or wt; phase proportions
+pseudocompound_file        F    | echo static pseudocompound compositions to my_project_pseudocompound_list.txt
+reach_increment_switch     on   | all, on, off; default is on; all consumes more resources
+reaction_format        minimum  | minimum, full, stoich, S+V, or everything
+reaction_list             off   | on or off
+refinement_points_II        5   | > 0, number of metstable refinement points retained during the second phase of adaptive minimization
+refinement_threshold       1d5  | > 0, [10000 J] relative metastable Gibbs Energy at which a composition will be rejected
+seismic_output            some  | all, some, none
+short_print                on   | on or off
+site_check                  T   | T[rue] or F[alse], T=> reject solution compositions with negative site fractions
+solution_names            abb   | mod[el], abb[reviation], ful[l] 
+solvus_tolerance          auto  | auto or 0->1 [0.05] should be > initial_resolution/auto_refine_factor
+solvus_tolerance_II        0.25 | 0->1 [0.25]
+speciation_factor          100  | >10, speciation precision = final resolution/speciation factor
+speciation_max_it          100  | max number of iterations permitted in speciation/order-disorder calculations
+species_output              T   | T[rue] or F[alse], T => output phase speciation in MEEMUM/WERAMI mode 1 output
+species_Gibbs_energies      F   | T[rue] or F[alse], T => output species Gibbs energies in MEEMUM/WERAMI mode 1 output
+spreadsheet                 T   | T[rue] or F[alse], T => include independent variable values in werami tab output files 
+stretch_factor            0.016 | >0, <1
+subdivision_override       off  | off, linear, or stretch
+T_melt                     873. | melt solution model endmember temperature (K) cut off
+T_stop                       0. | equilibration temperature (K) cut off
+variance                  1 99  | 1->99; exploratory and autorefine
+vrh/hs_weighting           0.5  | 0->1, weighting factor for the stiff average in VRH/HS averaging (see bounds)
+x_nodes                   40 60 | exploratory and autorefine (grid parameters keyword group)
+y_nodes                   40 60 | exploratory and autorefine (grid parameters keyword group)
+zero_mode                 1e-6  | 0->1
+zero_bulk                 1e-6  | 0->1
