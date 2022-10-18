@@ -45,7 +45,7 @@ This will download the most recent binaries for your system (note that the versi
 6) Return to the REPL (command-window) of julia by using the `<backspace>` button.
 
 ## 2. Using Perple_X from within julia
-You can call any of the Perple_X binaries directly from within julia; it'll set the correct path's for you. 
+You can call any of the Perple_X binaries directly from within julia. 
 For example, you can run `build` with: 
 ```julia
 julia> using Perple_X_jll
@@ -63,7 +63,7 @@ Enter a name for this project (the name will be used as the
 root for all output file names) [default = my_project]:
 ```
 
-All other Perple_X programs can be accessed in a similar manner, e.g.:
+All other Perple_X programs can be accessed in the same way, e.g.:
 ```julia
 julia> run(Perple_X_jll.vertex())
 julia> run(Perple_X_jll.psvdraw())
@@ -90,17 +90,36 @@ julia> ;
 shell> ls /Users/kausb/.julia/artifacts/b04b94c4088232c1ff10e3536d0edb88eaa54ce4/bin
 actcor  build   convex  ctransf fluids  frendly meemum  pspts   pssect  pstable psvdraw pt2curv vertex  werami
 ```
+
 Yet, in addition to the binaries itself, you will also have to tell your system where some required dynamic libraries (such as libgfortran) are located.
-julia> Perple_X_jll.PATH_list
-1-element Vector{String}:
- "/Users/kausb/.julia/artifacts/b04b94c4088232c1ff10e3536d0edb88eaa54ce4/bin"
-julia> ;
-shell> ls /Users/kausb/.julia/artifacts/b04b94c4088232c1ff10e3536d0edb88eaa54ce4/bin
-actcor  build   convex  ctransf fluids  frendly meemum  pspts   pssect  pstable psvdraw pt2curv vertex  werami
+```julia
+julia> Perple_X_jll.LIBPATH_list
+2-element Vector{String}:
+ "/Applications/Julia-1.7.app/Contents/Resources/julia/lib/julia"
+ "/Users/kausb/.julia/artifacts/b04b94c4088232c1ff10e3536d0edb88eaa54ce4/lib"
+```
+On your system, you will have to set the correct path.
+Unsurprisingly, things are a bit different on windows *vs* linux/mac:
+
+#### *linux/mac*
+```
+$ export DYLD_LIBRARY_PATH=/Applications/Julia-1.7.app/Contents/Resources/julia/lib/julia:$DYLD_LIBRARY_PATH
+$ export PATH=/Users/kausb/.julia/artifacts/b04b94c4088232c1ff10e3536d0edb88eaa54ce4/bin:$PATH
+```
+Once this is done, you should be able to call Perple_X files:
+```
+$ build
 ```
 
-
-** linux
+#### *windows*
+```
+$ set DYLD_LIBRARY_PATH=:$DYLD_LIBRARY_PATH
+$ set PATH=/Users/kausb/.julia/artifacts/b04b94c4088232c1ff10e3536d0edb88eaa54ce4/bin;/Applications/Julia-1.7.app/Contents/Resources/julia/lib/julia;%PATH%
+```
+The ending for executables is a bit different on windows:
+```
+$ build.exe
+```
 
 
 Note that if you upgrade the version of Perple_X, it will put the files in a different directory so you'll have to redo this step.
