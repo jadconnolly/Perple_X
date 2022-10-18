@@ -100,7 +100,7 @@ julia> Perple_X_jll.LIBPATH_list
  "/Applications/Julia-1.7.app/Contents/Resources/julia/lib/julia"
  "/Users/kausb/.julia/artifacts/b04b94c4088232c1ff10e3536d0edb88eaa54ce4/lib"
 ```
-On your system, you will have to set the correct path.
+On your system, you will have to set the correct path (note: they will *not* be the same as shown above, as they are generally different on every system).
 Unsurprisingly, things are a bit different on windows *vs* linux/mac:
 
 #### *linux/mac*
