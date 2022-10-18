@@ -73,49 +73,49 @@ clean:
 # These 691+ targets, the 690- versions can be made by swapping in LIBRARY_690
 #
 convex: convex_691.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) convex_691.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) convex_691.o $(LIBRARY_691) -o $@$(EXT)
 
 meemum: meemum_691.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) meemum_691.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) meemum_691.o $(LIBRARY_691) -o $@$(EXT)
 
 vertex: vertex_691.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) vertex_691.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) vertex_691.o $(LIBRARY_691) -o $@$(EXT)
 
 werami: werami.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@$(EXT)
 
 pssect: psect.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) psect.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) psect.o $(LIBRARY_691) -o $@$(EXT)
 
 pstable: pstable.o $(LIBRARY_PS)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
 
 pspts: pspts.o $(LIBRARY_PS) 
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
 
 psvdraw: psvdraw.o $(LIBRARY_PS)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
 
 pt2curv: pt2curv.o $(LIBRARY_PS)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
 
 actcor: actcor.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@$(EXT)
 
 build: build.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@$(EXT)
 
 fluids: fluids.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@$(EXT)
 
 ctransf: ctransf.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@$(EXT)
 
 DEW_2_ver: DEW_2_ver.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@$(EXT)
 
 frendly: frendly.o $(LIBRARY_691)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_691) -o $@$(EXT)
 
 
 #################################################################################
