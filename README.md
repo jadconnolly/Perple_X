@@ -44,7 +44,7 @@ This will download the most recent binaries for your system (note that the versi
 ```
 6) Return to the REPL (command-window) of julia by using the `<backspace>` button.
 
-## 2. Running the Perple_X binaries from within julia
+## 2. Running the Perple_X binaries from julia
 You can call any of the Perple_X binaries directly from within julia. 
 For example, you can run `build` with: 
 ```julia
