@@ -77,6 +77,8 @@ shell>
 ```
 Once you are in there, you can change directories just as you would in the windows or linux shell.
 
+Note that this simply runs the executables, but you won't have the data back into julia (for plotting etc.). If you are interested in that see below.
+
 ## 3. Using the downloaded binaries from the terminal
 Alternatively, you can also use the downloaded binaries directly from the terminal/shell. 
 Yet, where on Earth did it put those files? 
