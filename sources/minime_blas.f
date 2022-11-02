@@ -249,6 +249,9 @@ c                                 not allow non-degenerate scatter points
             end if
 c                                 if logical arg = T use implicit ordering
             gfinal = gsol1 (rids,.true.)
+c                                 if savrpc is going to use the pp array, it
+c                                 must be reset here for non-equimolar o/d?
+c           if (.not.equimo(rids)) call makepp (rids)
 c                                 increment the counter
             call savrpc (gfinal,nopt(48)/2d0,idif,swap)
 
@@ -387,9 +390,9 @@ c-----------------------------------------------------------------------
 
       logical swap, swapit
 
-      integer i, j, ntot, idif
+      integer i, j, ntot, ltot, ttot, idif, ipt
 
-      double precision g, diff, tol, mindif
+      double precision g, diff, tol, psum
 
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
@@ -409,6 +412,24 @@ c-----------------------------------------------------------------------
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c-----------------------------------------------------------------------
       ntot = nstot(rids)
+      ltot = lstot(rids)
+      ttot = tstot(rids)
+c                                o/d models use the pp array, which is 
+c                                not normalized for non-equimolar o/d, do
+c                                the normalization here
+      if (.not.equimo(rids)) then
+
+         psum = 0d0
+
+         do j = 1, lstot(rids)
+            psum = psum + pp(j)
+         end do
+
+         do j = 1, lstot(rids)
+            pp(j) = pp(j)/psum
+         end do
+
+      end if
 
       if (tol.eq.0d0) then
          swapit = .true.
@@ -417,20 +438,8 @@ c-----------------------------------------------------------------------
       end if
 
       swap = .false.
-c                                 degenerate bulk, only 
-c                                 save degenerate results:
-      if (idegen.gt.1000) then 
-      do j = 1, idegen
-         if (rcp(idg(j)).gt.0d0.and..not.dispro(idg(j))) then
-            if (rcp(idg(j)).lt.zero) then 
-               write (*,*) 'wonka ',rcp(idg(j))
-            end if
-            return
-         end if
-      end do
-      end if
-
-      mindif = 0d0
+c                                 degenerate bulk check is in earlier 
+c                                 versions, probably was never done right
       idif = 0
 c                                 check if duplicate
       do i = jpoint + 1, jphct
@@ -439,9 +448,22 @@ c                                 check if duplicate
 
             diff = 0d0
 
-            do j = 1, ntot
-               diff = diff + dabs(pa(j) - zco(icoz(i)+j))
-            end do
+            if (.not.lorder(rids)) then
+
+               do j = 1, ntot
+                  diff = diff + dabs(pa(j) - zco(icoz(i)+j))
+               end do
+
+            else 
+c                                 o/d models convert speciation 
+c                                 to bulk composition
+               ipt = icoz(i) + ntot
+
+               do j = 1, ltot
+                  diff = diff + dabs(pp(j) - zco(ipt+j))
+               end do
+
+            end if
 
             if (diff.eq.0d0) then 
 c                                 swap if lower g
@@ -475,9 +497,8 @@ c                                 swap non-identical comps
 c                                 increment counters
          jphct = jphct + 1
          icoz(jphct) = zcoct
-         zcoct = zcoct + ntot
          idif = jphct
-
+         zcoct = zcoct + ttot
       end if
 c                                 lagged speciation quack flag
       quack(idif) = rkwak
@@ -502,6 +523,9 @@ c                                 me why this is desireable.
       quack(idif) = rkwak
 c                                 save the endmember fractions
       zco(icoz(idif)+1:icoz(idif)+ntot) = pa(1:ntot)
+c                                 and normalized bulk fractions if o/d
+      if (lorder(rids)) 
+     *   zco(icoz(idif)+ntot+1:icoz(idif)+ttot) = pp(1:ltot)
 
       end 
 

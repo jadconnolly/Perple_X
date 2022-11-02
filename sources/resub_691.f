@@ -215,10 +215,10 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer liw, lw, iter, idead, jstart, opt, kter, kitmax, i, j,
+      integer liw, lw, iter, idead, jstart, opt, i, j,
      *        idead1, jter, iprint, lpprob, xphct
 
-      logical quit, kterat
+      logical quit
 
       parameter (liw=2*k21+3,lw=2*(k5+1)**2+7*k21+5*k5)
 
@@ -255,9 +255,6 @@ c                                 the pseudocompounds to be refined
 c                                 are identified in jdv(1..npt)
       quit = .false.
       opt = npt
-      kterat = .false.
-      kitmax = 0
-      kter = 0
       idead1 = 0
       d2g(1) = ogtot
 
@@ -267,7 +264,7 @@ c                                 global composition coordinate counter
 c                                 --------------------------------------
 c                                 generate pseudo compounds for the first 
 c                                 iteration from static arrays
-      call resub (1,kterat)
+      call resub (1)
 
       if (jphct.eq.jpoint) then
 c                                 if nothing to refine, set idead 
@@ -314,21 +311,14 @@ c                                  set constraint states
 
       end if
 
-      if (kterat) kitmax = iopt(33)
-
       iter = 2
 
       do
 c                                 iter is incremented before the operations,
 c                                 i.e., on the nth iteration, iter is n+1
-         if (kter.gt.kitmax) then 
-            iter = iter + 1
-            kter = 0
-         end if
+         iter = iter + 1
 c                                 set quit flag
-         if (iter.gt.iopt(20).and.kter.eq.kitmax) then 
-            quit = .true.
-         end if
+         if (iter.gt.iopt(20)) quit = .true.
 c                                 cold 0/warm 1 start
          if (iopt(38).eq.2) then
             jstart = 1
@@ -421,8 +411,6 @@ c    *                   'question: Do I feel lucky? Well, do ya, punk?'
 
          end if
 
-         kter = kter + 1
-
          if (dabs(gtot-ogtot).lt.nopt(21)) then 
             quit = .true.
          else
@@ -470,7 +458,7 @@ c                                 the zco array.
 
          if (quit) exit
 c                                 generate new pseudocompounds
-         call resub (iter,kterat)
+         call resub (iter)
 c                                 set the new values of is, x
          is(xphct+1:jphct) = 1
          x(xphct+1:jphct) = 0d0
@@ -483,7 +471,7 @@ c                                  save the old count
 
       end
 
-      subroutine resub (iter,kterat)
+      subroutine resub (iter)
 c----------------------------------------------------------------------
 c subroutine to generate new pseudocompounds around each refinenent 
 c point during adaptive optimization. 
@@ -492,7 +480,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical kterat, swap
+      logical swap, bad
 
       integer i, ids, lds, id, kd, iter, idif
 
@@ -550,14 +538,10 @@ c                                 solution model pointer is
             ids = ikp(id)
 c                                 refine if a solution
             if (ids.eq.0) cycle 
-c                                 special (pointless) iterations?
-            if (lopt(32).and.iopt(33).gt.0) then
-               if (ksmod(ikp(id)).eq.39) kterat = .true.
-            end if
 c                                 get the refinement point composition
             if (id.gt.ipoint) then
 
-               call setxyp (ids,id,kterat)
+               call setxyp (ids,id,bad)
 c                                 save the composition for autorefine
                ststbl(id) = .true.
             else
@@ -718,8 +702,13 @@ c                                 it's a solution:
          kcoct = kcoct + nstot(ids)
 
          if (lopt(58).and.(.not.refine.or.lopt(55))) then
+
             pa(1:nstot(ids)) = zco(icoz(id)+1:icoz(id)+nstot(ids))
+c                                 only for pp comparison
+            if (lorder(ids)) call makepp (ids)
+
             call savdyn (nopt(35),ids)
+
          end if
 
       end do 
@@ -1142,7 +1131,11 @@ c                                 lopt(58) is true.
 c           if (.not.lopt(58).and.(.not.refine.or.lopt(55))) then 
 c                                 load into pa and save for refinement
                pa(1:nstot(ids)) = pa3(jd,1:nstot(ids))
+c                                 for pp comparison only
+               if (lorder(ids)) call makepp (ids)
+
                call savdyn (zero,ids)
+
             end if
 c                                conditional for zero-mode stable phases
             if (bnew(i).gt.0d0) then 
@@ -1602,8 +1595,6 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical bad
-
       integer ic,jc,i,j,ids
 c                                 -------------------------------------
 c                                 global variables
@@ -1642,19 +1633,6 @@ c                                lagged speciation
 
       end do
 c                                dependent potentials
-c     bad = .false.
-c     do i = 1, kbulk
-c        if (isnan(mu(i))) then
-c           bad = .true.
-c           write (*,*) i, mus
-c        end if
-c     end do
-
-c     if (bad) then
-c        write (*,*) (mu(i),i=1,kbulk)
-c        write (*,*) (xmu(i),i=1,kbulk)
-c     end if
-
       write (n5,1010) (mu(i),i=1,kbulk)
 
 1010  format (10(g16.8,1x))

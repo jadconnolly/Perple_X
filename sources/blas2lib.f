@@ -161,17 +161,21 @@ c                                 only used for static composition optimizations
       if (lcrash.eq.0) then
          start = 'cold'
       else if (lcrash.eq.1) then
-         lcrash = 1
          start  = 'warm'
       else if (lcrash.eq.2) then
          start = 'hot '
       end if
 
+c DEBUG DEBUG                     an optimization issue for gfortran on Euler
+c                                 or Amir's programming, take your pick.
+      if (istart.ne.lcrash) 
+     *   call errdbg ('Optimization problem: lcrash~=istart?')
+
       cold = lcrash.eq.0
       warm = lcrash.eq.1
       hot = lcrash.eq.2
 
-c     allocate remaining work arrays.
+c                                 allocate remaining work arrays.
 
       litotl = 3
       lwtotl = 0

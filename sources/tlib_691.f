@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X version 6.9.1, source updated October 14, 2022.',
+     *     'Perple_X version 6.9.1, source updated November 2, 2022.',
 
      *     'Copyright (C) 1986-2022 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -386,8 +386,6 @@ c                                 refinement_points_II renamed refinement_points
       iopt(31) = 5
 c                                 maximum number of aqueous species
       iopt(32) = 20
-c                                 aq_lagged_iterations
-      iopt(33) = 0
 c                                 interim_results, 1 - auto, 0 - off, 2 - man
       iopt(34) = 1
       valu(34) = 'aut'
@@ -604,10 +602,6 @@ c                                 phase composition key
          else if (key.eq.'auto_exclude') then 
 
             if (val.ne.'T') lopt(5) = .false.
-
-         else if (key.eq.'aq_lagged_iterations') then
-
-            read (strg,*) iopt(33)
 
          else if (key.eq.'aq_output') then
 

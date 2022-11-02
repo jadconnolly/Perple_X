@@ -174,12 +174,12 @@ c---------------------------------------------------------------------
 
       integer id, iwarn, oldid, j
 
-      logical proj, err
+      logical proj
 
-      double precision ialpha, vt, trv, pth, vdp, vdpbm3, gsixtr, dg,
+      double precision ialpha, vt, trv, pth, vdp, vdpbm3, gsixtr,
      *                 gstxgi, fs2, fo2, kt, gval, gmake, gkomab, kp,
      *                 a, b, c, gstxlq, glacaz, v1, v2, gmet, gmet2,
-     *                 gterm2, km, kmk, lnfpur, gaq, ghkf, lamla2, pgpa
+     *                 gterm2, km, kmk, lnfpur, gaq, ghkf, lamla2
 
       external vdpbm3, gsixtr, gstxgi, gmake, gkomab, gstxlq, glacaz,
      *         gaq,    lnfpur, gmet, gmet2, gterm2, ghkf, lamla2
@@ -5562,7 +5562,7 @@ c summary of the gsol functions/subroutines:
 
 c gsol  - assumes the endmember g's have not been calculated by gall and is
 c         only called by WERAMI/MEEMUM/FRENDLY via function ginc. may be
-c         called for any tybe of solution model.
+c         called for any type of solution model.
 
 c gsol1 - identical to gsol but can only been called after gall and is
 c         only called by minfrc. ingsol must be called prior to
@@ -6834,6 +6834,9 @@ c                                 number of independent + ordered endmembers
       nstot(im) = kstot + norder
 c                                 number of independent disordered endmembers
       lstot(im) = kstot
+c                                 counter for o/d model coordinates
+      tstot(im) = nstot(im)
+      if (ordmod) tstot(im) = tstot(im) + kstot
 c                                 reject bad compositions, only relevant
 c                                 for relict equipartition models
       bdx(im) = badx
@@ -7683,7 +7686,7 @@ c----------------------------------------------------------------------
 
       logical minfx, error
 
-      double precision g, oldg, oldp(m14), g0, gordp0, dg
+      double precision g, oldg, oldp(m14), g0, gordp0
 
       external gordp0
 
@@ -10304,7 +10307,7 @@ c-----------------------------------------------------------------------
 
       logical bad, file
 
-      integer id, i, j, ntot, ids, tmp, tco
+      integer id, i, j, ntot, ids, tmp, tco, ttot
 
       character sname(h9)*10, tag*11
 
@@ -10352,7 +10355,9 @@ c                                 compositions from the arf file
 
             if (sname(i).ne.fname(i)) 
      *         call error (63,y(1),i,'RELOAD/sname')
-            tmp = jend(i,2)*nstot(i)
+
+            tmp = jend(i,2)*tstot(i)
+
             read (n10,*) txco(tcct+1:tcct+tmp)
 
             tcct = tcct + tmp
@@ -10364,13 +10369,13 @@ c                                 compositions from the arf file
 
          do i = 1, isoct
 
-            ntot = nstot(i)
+            ttot = nstot(i)
 
             do j = 1, jend(i,2)
 
                tpct = tpct + 1
                itxp(tpct) = tcct
-               tcct = tcct + ntot
+               tcct = tcct + ttot
 
             end do
 
@@ -10385,12 +10390,14 @@ c                                 in the first loop:
 c                                 load stable static compositions to 
 c                                 the list of dynamic compositions
             do i = ipoint + 1, iphct
+
                if (ststbl(i).or.lopt(30)) then
                   ids = ikp(i)
                   call setxyp (ids,i,bad)
                   if (bad) cycle
                   call savdyn (nopt(35),ids)
                end if
+
             end do
 
          else if (lopt(55)) then
@@ -10413,16 +10420,26 @@ c                                 sort through the static compositions
 c                                 to see if any (or all should be added)
 c                                 to the future static array:
             do i = 1, isoct
+
                ntot = nstot(i)
+               ttot = tstot(i)
+
                do j = 1, jend(i,2)
+
                   tmp = tmp + 1
+
                   if (ststbl(ipoint+tmp).or.lopt(30)) then
+
                      pa(1:ntot) = txco(itxp(tmp)+1:itxp(tmp)+ntot)
+c                                 only for pp comparison
+                     if (lorder(i)) call makepp (i)
 c                                 negative tolerance means these
 c                                 will be saved no matter what.
                      call savdyn (nopt(35),i)
-                     zcoct = zcoct + ntot
-                     if (tcct+ntot.gt.m25) call errdbg ('increase m25')
+
+                     zcoct = zcoct + ttot
+                     if (tcct+ttot.gt.m25) call errdbg ('increase m25')
+
                   end if
                end do
             end do
@@ -10441,15 +10458,17 @@ c                                 solution model pointer
 c                                 curent position
                tco = itxp(i)
 c                                 shift composition
-               ntot = nstot(ids)
-               txco(zcoct+1:zcoct+ntot) = txco(tco+1:tco+ntot)
+               ttot = tstot(ids)
+
+               txco(zcoct+1:zcoct+ttot) = txco(tco+1:tco+ttot)
 c                                 counters, pointers:
                tmp = tmp + 1
                dkp(tmp) = ids
                itxp(tmp) = zcoct
-               zcoct = zcoct + ntot
+               zcoct = zcoct + ttot
 c                                 static counter
                jend(ids,2) = jend(ids,2) + 1
+
             end do
 
             tpct = tmp
@@ -10462,7 +10481,8 @@ c                                 static counter
          do i = 1, isoct
 
             jend(i,2) = 0
-            ntot = nstot(i)
+
+            ttot = tstot(i)
 c                                 for each solution cycle 
 c                                 through the unsorted compositions
             do j = 1, tpct
@@ -10474,13 +10494,9 @@ c                                 its a composition of solution i
 c                                 load temporarily into the static compound 
 c                                 a array
                is(id) = zcoct
-               a(zcoct+1:zcoct+ntot) = txco(itxp(j)+1:itxp(j)+ntot)
+               a(zcoct+1:zcoct+ttot) = txco(itxp(j)+1:itxp(j)+ttot)
 
-c DEBUG
-c              pa(1:ntot) = a(zcoct+1:zcoct+ntot)
-c              call chkpa (i)
-
-               zcoct = zcoct + ntot
+               zcoct = zcoct + ttot
 
             end do
 
@@ -10491,18 +10507,15 @@ c                                 sort results
 c                                 copy the sorted results back into txco
          do i = 1, isoct
 
-            ntot = nstot(i)
+            ttot = tstot(i)
 
             do j = 1, jend(i,2)
 
                id = id + 1
 
-               txco(zcoct+1:zcoct+ntot) =  a(is(id)+1:is(id)+ntot)
-c DEBUG
-c              pa(1:ntot) = a(is(id)+1:is(id)+ntot)
-c              call chkpa (i)
+               txco(zcoct+1:zcoct+ttot) =  a(is(id)+1:is(id)+ttot)
                itxp(id) = zcoct
-               zcoct = zcoct + ntot
+               zcoct = zcoct + ttot
 
             end do
 
@@ -10537,9 +10550,8 @@ c                                 set tname for soload diagnostics
             dkp(iphct - ipoint) = i
 
             pa(1:ntot) = txco(tmp + 1:tmp + ntot)
+
             call makepp (i)
-c DEBUG
-c              call chkpa (i)
 
             call soload (i,bad)
 
@@ -13970,7 +13982,7 @@ c                                 output to arf
 
          do i = 1, isoct
 
-            tmp = jend(i,2)*nstot(i)
+            tmp = jend(i,2)*tstot(i)
             write (n10,*) txco(tcct+1:tcct+tmp)
             tcct = tcct + tmp
 
@@ -15467,8 +15479,7 @@ c----------------------------------------------------------------------
 
       logical error, done
 
-      double precision g, qmax, qmin, q, q0, dqq, rqmax, gold,
-     *                 adqq(1),aq(1)
+      double precision g, qmax, qmin, q, q0, dqq, rqmax, gold
 
       double precision omega, gex
       external omega, gex
@@ -15700,7 +15711,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, k, jd, id, itic, lord
+      integer k, id, itic, lord
 
       logical error, minfx
 
@@ -22124,7 +22135,6 @@ c                                 George's Hillert & Jarl magnetic transition mo
 
       end
 
-
       subroutine savdyn (tol,ids)
 c----------------------------------------------------------------------
 c subroutine to save exploratory stage dynamic compositions for use
@@ -22137,7 +22147,7 @@ c----------------------------------------------------------------------
 
       logical rplica, isend
 
-      integer ids, j
+      integer ids
 
       double precision tol
 
@@ -22149,33 +22159,14 @@ c----------------------------------------------------------------------
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
 
-      external rplica
+      external rplica, isend
 c----------------------------------------------------------------------
-c     call chkpa (ids)
-
       if (refine.and..not.lopt(55)) return
 c                                 currently all calls to savdyn set tol
 c                                 > 0, and rplica hardwires a tolerance
 c                                 = nopt(35)
-      if (tol.gt.0d0) then
-         if (rplica(ids)) return
-      end if
-
-      if (idegen.gt.1000) then
-
-         call getscp (rcp,rsum,ids,1)
-
-         do j = 1, idegen
-            if (rcp(idg(j)).gt.0d0.and..not.dispro(idg(j))) then
-               if (rcp(idg(j)).lt.1d-8) then
-                  write (*,*) 'wonka ',rcp(idg(j))
-               end if
-               return
-            end if
-         end do
-
-      end if
-
+      if (tol.gt.0d0.and.rplica(ids)) return
+c                                 deleted degneracy test.
       if (isend(ids)) return
 
       tpct = tpct + 1
@@ -22186,10 +22177,14 @@ c                                 solution pointer
       dkp(tpct) = ids
 c                                 save the composition
       txco(tcct+1:tcct+nstot(ids)) = pa(1:nstot(ids))
+
+      if (lorder(ids))
+     *       txco(tcct+nstot(ids)+1:tcct+tstot(ids)) = 
+     *       pp(1:lstot(ids))
 c                                 save the starting position - 1
       itxp(tpct) = tcct
 c                                 increment the counter
-      tcct = tcct + nstot(ids)
+      tcct = tcct + tstot(ids)
 
       end 
 
@@ -22233,30 +22228,68 @@ c-----------------------------------------------------------------------
 
       integer id, i, j, tmp
 
-      double precision diff
+      double precision diff, psum
 
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
+
+      integer ideps,icase,nrct
+      common/ cxt3i /ideps(j4,j3,h9),icase(h9),nrct(j3,h9)
+
+      character fname*10, aname*6, lname*22
+      common/ csta7 /fname(h9),aname(h9),lname(h9)
+
+      double precision units, r13, r23, r43, r59, zero, one, r1
+      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c-----------------------------------------------------------------------
-c                                 simple model
-         do i = stpct, tpct
+c                                o/d models use the pp array, which is 
+c                                not normalized for non-equimolar o/d, do
+c                                the normalization here
+      if (.not.equimo(id)) then
 
-            if (dkp(i).ne.id) cycle
+         psum = 0d0
 
-            diff = 0d0
+         do j = 1, lstot(id)
+            psum = psum + pp(j)
+         end do
+
+         do j = 1, lstot(id)
+            pp(j) = pp(j)/psum
+         end do
+
+      end if
+
+      do i = stpct, tpct
+
+         if (dkp(i).ne.id) cycle
+
+         diff = 0d0
+
+         if (.not.lorder(id)) then
+
             tmp = itxp(i)
 
             do j = 1, nstot(id)
                diff = diff + dabs(pa(j) - txco(tmp+j))
-            end do 
+            end do
 
-            if (diff.lt.nopt(35)) then
-               rplica = .true.
-               return
-            end if
+         else
 
-         end do
+            tmp = itxp(i) + nstot(id)
+
+            do j = 1, lstot(id)
+               diff = diff + dabs(pp(j) - txco(tmp+j))
+            end do
+
+         end if
+
+         if (diff.lt.nopt(35)) then
+            rplica = .true.
+            return
+         end if
+
+      end do
 
       rplica = .false.
 
