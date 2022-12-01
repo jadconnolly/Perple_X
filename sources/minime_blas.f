@@ -20,10 +20,10 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical tic, zbad, swap, quit, xref
+      logical tic, zbad, swap, xref
 
-      integer i, j, nvar, iter, iwork(m22), itic, idif,
-     *        ivars(13), istate(m21), idead, nclin, ntot
+      integer i, nvar, iter, iwork(m22), itic, idif,
+     *        ivars(13), istate(m21), nclin, ntot
 
       double precision ggrd(m19), lapz(m20,m19),gsol1, pinc,
      *                 bl(m21), bu(m21), gfinal, ppp(m19), fac,
@@ -117,10 +117,8 @@ c                                 closure for molecular models
       end if
 
       itic = 0
-
-10    idead = -1
 c                                 EPSRF, function precision
-      rvars(1) = (wmach(3)*fac)**(0.9)
+10    rvars(1) = (wmach(3)*fac)**(0.9)
 c                                 FTOL, optimality tolerance
       rvars(2) = (wmach(3)*fac)**(0.8)
 c                                 CTOL,feasibility tolerance
@@ -164,19 +162,15 @@ c                                 derivatives.
 
       call nlpsol (nvar,nclin,0,m20,1,m19,lapz,bl,bu,dummy,gsol2,iter,
      *            istate,c,cjac,clamda,gfinal,ggrd,r,ppp,iwork,m22,work,
-     *            m23,ivars,rvars,idead)
+     *            m23,ivars,rvars)
 
-      if (iter.eq.0.and.idead.eq.0.and.itic.le.1.and.deriv(rids)) then
+      if (iter.eq.0.and.itic.le.1.and.deriv(rids)) then
 
          pa = yt
 c                                 error counter
          itic = itic + 1
 
          goto 10
-
-      else if (idead.ne.0) then 
-    
-         write (*,*) 'woana woaba, wanka?'
 
       else
 
@@ -209,7 +203,7 @@ c                                 if logical arg = T use implicit ordering
          return
       end if
 c                                 save the final QP result
-      call savrpc (gfinal,0d0,idif,swap)
+      call savrpc (gfinal,0d0,swap,idif)
 c---------------
       if (lopt(54).and..not.swap) then
 c                                 scatter in only for nstot-1 gradients
@@ -229,28 +223,11 @@ c                                 exit
             if (zbad(pa,rids,zsite,fname(rids),.false.,fname(rids))) 
      *                                                            cycle 
             call makepp (rids)
-c                                 if the system is chemically degenerate do
-c                                 not allow non-degenerate scatter points
-            if (idegen.gt.1000) then
-
-               call getscp (rcp,rsum,rids,1)
-
-               quit = .false.
-
-               do j = 1, idegen
-                  if (rcp(idg(j)).ne.0d0) then
-                     quit = .true.
-                     exit
-                  end if
-               end do
-
-               if (quit) cycle
-
-            end if
+c                                 degeneracy test removed
 c                                 if logical arg = T use implicit ordering
             gfinal = gsol1 (rids,.true.)
-c                                 increment the counter
-            call savrpc (gfinal,nopt(48)/2d0,idif,swap)
+c                                 save the scatter point
+            call savrpc (gfinal,nopt(48)/2d0,swap,idif)
 
          end do
 c                                 reset refine
@@ -369,7 +346,7 @@ c                                 if logical arg = T use implicit ordering
 
          if (zbad(pa,rids,zsite,fname(rids),.false.,fname(rids))) return
 c                                 save the composition
-         call savrpc (g,nopt(37),idif,saved)
+         call savrpc (g,nopt(37),saved,idif)
 
       end if
 
@@ -377,7 +354,7 @@ c                                 save the composition
 
       end
 
-      subroutine savrpc (g,tol,idif,swap)
+      subroutine savrpc (g,tol,swap,idif)
 c-----------------------------------------------------------------------
 c save a dynamic composition/g for the lp solver
 c-----------------------------------------------------------------------
@@ -385,11 +362,11 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical swap, swapit
+      logical swap
 
-      integer i, j, ntot, idif
+      integer i, j, ntot, ltot, ttot, ipt, ist, idif
 
-      double precision g, diff, tol, mindif
+      double precision g, diff, tol, psum, dtol
 
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
@@ -409,99 +386,111 @@ c-----------------------------------------------------------------------
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c-----------------------------------------------------------------------
       ntot = nstot(rids)
+      ltot = lstot(rids)
+      ttot = tstot(rids)
+
+      idif = 0
+c                                o/d models use the pp array, which is 
+c                                not normalized for non-equimolar o/d, do
+c                                the normalization here
+      if (.not.equimo(rids)) then
+
+         diff = 0d0
+
+         do j = 1, ltot
+            diff = diff + pp(j)
+         end do
+
+         pp(1:ltot) = pp(1:ltot)/diff
+
+      end if
 
       if (tol.eq.0d0) then
-         swapit = .true.
+         dtol = zero
       else
-         swapit = .false.
+         dtol = tol
       end if
 
       swap = .false.
-c                                 degenerate bulk, only 
-c                                 save degenerate results:
-      if (idegen.gt.1000) then 
-      do j = 1, idegen
-         if (rcp(idg(j)).gt.0d0.and..not.dispro(idg(j))) then
-            if (rcp(idg(j)).lt.zero) then 
-               write (*,*) 'wonka ',rcp(idg(j))
-            end if
-            return
-         end if
-      end do
-      end if
+c                                 degenerate bulk check is in earlier 
+c                                 versions, probably was never done right
 
-      mindif = 0d0
-      idif = 0
-c                                 check if duplicate
       do i = jpoint + 1, jphct
+c                                 check if duplicate
+         if (jkp(i).ne.rids) cycle
 
-         if (jkp(i).eq.rids) then
+         if (lorder(rids)) then
+            ist = icoz(i) + ntot
+         else 
+            ist = icoz(i)
+         end if
 
-            diff = 0d0
+         diff = 0d0
 
-            do j = 1, ntot
-               diff = diff + dabs(pa(j) - zco(icoz(i)+j))
-            end do
+         do j = 1, ltot
 
-            if (diff.eq.0d0) then 
-c                                 swap if lower g
-               swap = .true.
+            ipt = ist + j
 
-               idif = i
-
-              if (g2(i).gt.g/rsum) then
-                  exit
-               else
-                  return
-               end if
-
-            end if
-
-            if (.not.swapit) then
-
-               if (diff.lt.tol) return
-
+            if (lorder(rids)) then
+               diff = diff + dabs(pp(j) - zco(ipt))
             else
-c                                 swap non-identical comps
-               if (diff.lt.zero) return
-
+               diff = diff + dabs(pa(j) - zco(ipt))
             end if
+
+         end do
+
+         if (diff.gt.dtol) cycle
+
+         if (diff.lt.zero) then
+c                                 true zero difference, set swap to 
+c                                 avoid scatter point replication.
+            swap = .true.
+c                                 if perfect replica swap lower g's
+            if (diff.eq.0d0.and.g2(i).gt.g/rsum) g2(i) = g/rsum
+
+            idif = i
+
+            return
+
+         else
+
+            return
 
          end if
 
       end do
-
-      if (.not.swap) then
 c                                 increment counters
-         jphct = jphct + 1
-         icoz(jphct) = zcoct
-         zcoct = zcoct + ntot
-         idif = jphct
+      jphct = jphct + 1
+      idif = jphct
+      icoz(jphct) = zcoct
+      zcoct = zcoct + ttot
 
-      end if
 c                                 lagged speciation quack flag
-      quack(idif) = rkwak
+      quack(jphct) = rkwak
 c                                 normalize and save the composition
-      cp2(1:icomp,idif) = rcp(1:icomp)/rsum
+      cp2(1:icomp,jphct) = rcp(1:icomp)/rsum
 c                                 the solution model pointer
-      jkp(idif) = rids
+      jkp(jphct) = rids
 c                                 the refinement point pointer
-      hkp(idif) = rkds
+      hkp(jphct) = rkds
 c                                 save the normalized g
-      g2(idif) = g/rsum
+      g2(jphct) = g/rsum
 c                                 sum scp(1:icp)
       if (ksmod(rids).eq.39.and.lopt(32).and..not.rkwak) then
 c                                 this will renormalize the bulk to a 
 c                                 mole of solvent, it's no longer clear to 
 c                                 me why this is desireable.
-         c2tot(idif) = rsum/rsmo
+         c2tot(jphct) = rsum/rsmo
       else
-         c2tot(idif) = rsum
+         c2tot(jphct) = rsum
       end if
 
-      quack(idif) = rkwak
+      quack(jphct) = rkwak
 c                                 save the endmember fractions
-      zco(icoz(idif)+1:icoz(idif)+ntot) = pa(1:ntot)
+      zco(icoz(jphct)+1:icoz(jphct)+ntot) = pa(1:ntot)
+c                                 and normalized bulk fractions if o/d
+      if (lorder(rids)) 
+     *   zco(icoz(jphct)+ntot+1:icoz(jphct)+ttot) = pp(1:ltot)
 
       end 
 
@@ -644,7 +633,7 @@ c-----------------------------------------------------------------------
 
       logical bad, site, comp, clos, inv, zbad
 
-      integer liw, lw, mvar, mcon, nvar, i, jter, iprint, iwarn,
+      integer liw, lw, mvar, mcon, nvar, i, jter, iwarn,
      *        iwarn1, iwarn2, lpprob
 
       double precision scp(k5), tol
@@ -805,8 +794,6 @@ c                                 add the closure constraint
       end if
 c                                 cold start
       istart = 0
-      idead = -1
-      iprint = 0
 c                                 feasible point
       lpprob = 1
 
@@ -965,8 +952,8 @@ c-----------------------------------------------------------------------
 
       logical maxs
 
-      integer ids, i, j, k, nvar, iter, iwork(m22), iprint, itic,
-     *        ivars(15),istate(m21), idead, nclin, lord
+      integer ids, i, j, k, nvar, iter, iwork(m22), itic,
+     *        ivars(15),istate(m21), nclin, lord
 
       double precision ggrd(m19), gordp0, g0, fac,
      *                 bl(m21), bu(m21), gfinal, ppp(m19), 
@@ -1142,13 +1129,10 @@ c                                 derivatives are available
 
       itic = 0
 
-      iprint = 0
-
       xp(1:nvar) = ppp(1:nvar)
 
-10    idead = -1
 c                                 EPSRF, function precision
-      rvars(1) = (wmach(3)*fac)**(0.9)
+10    rvars(1) = (wmach(3)*fac)**(0.9)
 c                                 FTOL, optimality tolerance
       rvars(2) = (wmach(3)*fac)**(0.8)
 c                                 CTOL,feasibility tolerance
@@ -1185,13 +1169,13 @@ c                                 LVLDER = 0, no derivatives
 
       call nlpsol (nvar,nclin,0,m20,1,m19,lapz,bl,bu,dummy,gsol4,iter,
      *            istate,c,cjac,clamda,gfinal,ggrd,r,ppp,iwork,m22,work,
-     *            m23,ivars,rvars,idead)
-c                                 if nlpsol returns iter = 0 and idead 
-c                                 = 0, it's likely failed, make 2 additional 
+     *            m23,ivars,rvars)
+c                                 if nlpsol returns iter = 0
+c                                 it's likely failed, make 2 additional 
 c                                 attempts, 1st try numerical verification of 
 c                                 the derivatives, 2nd try use only numerical 
 c                                 derivatives.
-      if (iter.eq.0.and.idead.eq.0.and.itic.le.1.and.deriv(ids)) then 
+      if (iter.eq.0.and.itic.le.1.and.deriv(ids)) then 
 
          ppp(1:nvar) = xp(1:nvar)
          itic = itic + 1
@@ -1203,16 +1187,6 @@ c                                   set pa to correspond to the final
 c                                   values in ppp.
          call ppp2pa (ppp,ids)
 
-      end if
-
-      if (idead.eq.2) then 
-         write (*,*) 'minfxc infeasible initial conditions'
-      else if (idead.eq.7) then
-         write (*,*) 'weak solution'
-      else if (idead.eq.7) then
-         write (*,*) 'bad derivatives'
-      else if (idead.ne.0) then 
-         write (*,*) 'sommat else bad',idead
       end if
 
       if (.not.maxs) then

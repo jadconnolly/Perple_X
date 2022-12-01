@@ -174,12 +174,12 @@ c---------------------------------------------------------------------
 
       integer id, iwarn, oldid, j
 
-      logical proj, err
+      logical proj
 
-      double precision ialpha, vt, trv, pth, vdp, vdpbm3, gsixtr, dg,
+      double precision ialpha, vt, trv, pth, vdp, vdpbm3, gsixtr,
      *                 gstxgi, fs2, fo2, kt, gval, gmake, gkomab, kp,
      *                 a, b, c, gstxlq, glacaz, v1, v2, gmet, gmet2,
-     *                 gterm2, km, kmk, lnfpur, gaq, ghkf, lamla2, pgpa
+     *                 gterm2, km, kmk, lnfpur, gaq, ghkf, lamla2
 
       external vdpbm3, gsixtr, gstxgi, gmake, gkomab, gstxlq, glacaz,
      *         gaq,    lnfpur, gmet, gmet2, gterm2, ghkf, lamla2
@@ -5562,7 +5562,7 @@ c summary of the gsol functions/subroutines:
 
 c gsol  - assumes the endmember g's have not been calculated by gall and is
 c         only called by WERAMI/MEEMUM/FRENDLY via function ginc. may be
-c         called for any tybe of solution model.
+c         called for any type of solution model.
 
 c gsol1 - identical to gsol but can only been called after gall and is
 c         only called by minfrc. ingsol must be called prior to
@@ -6834,6 +6834,9 @@ c                                 number of independent + ordered endmembers
       nstot(im) = kstot + norder
 c                                 number of independent disordered endmembers
       lstot(im) = kstot
+c                                 counter for o/d model coordinates
+      tstot(im) = nstot(im)
+      if (ordmod) tstot(im) = tstot(im) + kstot
 c                                 reject bad compositions, only relevant
 c                                 for relict equipartition models
       bdx(im) = badx
@@ -7404,8 +7407,8 @@ c                                 phase:
       end if
 c                                 classify liquid model as fluid/not fluid
 c                                 according to the melt_is_fluid option, this
-c                                 is only relevant for WERAMI
-      if (lname(im).eq.'liquid'.and.iam.eq.3.and.lopt(6))
+c                                 is only relevant for WERAMI and MEEMUM
+      if (lname(im).eq.'liquid'.and.(iam.eq.3.or.iam.eq.2).and.lopt(6))
      *                                                 fp(im) = .true.
 
       do i = 1, lstot(im)
@@ -7683,7 +7686,7 @@ c----------------------------------------------------------------------
 
       logical minfx, error
 
-      double precision g, oldg, oldp(m14), g0, gordp0, dg
+      double precision g, oldg, oldp(m14), g0, gordp0
 
       external gordp0
 
@@ -8406,7 +8409,7 @@ c                                 use the last increment
 
             else if (dp.eq.xdp) then 
 
-               write (*,*) 'wroink! oscillating?',g-gold,id
+               write (*,*) 'wroink! oscillating?',g-gold,id,itic
 
             else
 c                                 apply the increment
@@ -8450,185 +8453,6 @@ c                                 anti-ordered
             call pincs (pmin-p0a(jd),dy,ind,jd,nr)
 
          end if
-
-      end if
-
-      end
-
-      subroutine xpeci1 (g,id,k)
-c----------------------------------------------------------------------
-c subroutine to speciation of a solution with a single ordering parameter
-c composition is returned in array pa.
-
-c    k  - the ordered species
-c    id - the solution.
-c    g  - the change in G for the stable speciation relative to a mechanical
-c         mixture of the endmembers.
-
-c by default the search begins from the maximum ordered endmember fraction 
-c consequently it will usually find the ordered local minimum before it finds
-c the antiordered minium. 
-c----------------------------------------------------------------------
-      implicit none
-
-      include 'perplex_parameters.h'
-
-      integer i, id, jd, k, itic, ind(m14), nr
-
-      logical error, done
-
-      double precision g, ga, pmax, pmin, dp, gord, dy(m14), gold, xdp
-
-      external gord
-
-      double precision z, pa, p0a, x, w, y, wl, pp
-      common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
-     *              wl(m17,m18),pp(m4)
-
-      integer ideps,icase,nrct
-      common/ cxt3i /ideps(j4,j3,h9),icase(h9),nrct(j3,h9)
-
-      logical pin
-      common/ cyt2 /pin(j3)
-
-      character tname*10
-      logical refine, lresub
-      common/ cxt26 /refine,lresub,tname
-
-      double precision goodc, badc
-      common/ cst20 /goodc(3),badc(3)
-c----------------------------------------------------------------------
-c                                 number of reactants to form ordered species k
-      nr = nrct(k,id)
-
-      do i = 1, nr
-c                                 dependent disordered species
-         ind(i) = ideps(i,k,id)
-c                                 stoichiometric coefficients
-         dy(i) = dydy(ind(i),k,id)
-
-      end do 
-
-      jd = lstot(id) + k
-
-      error = .false.
-c                                 starting point
-      call plimit (pmin,pmax,k,id)
-c                                 necessary?
-      pin(k) = .true.
-c                                 a composition for which no O/D 
-c                                 is possible
-      if (pmax-pmin.lt.nopt(50)) return
-c                                 to avoid singularity set the initial
-c                                 composition to the max - nopt(50), at this
-c                                 condition the first derivative < 0,
-c                                 and the second derivative > 0 (otherwise
-c                                 the root must lie at p > pmax - nopt(50).
-      pmax = pmax - nopt(50)
-      pmin = pmin + nopt(50)
-c                                 get starting point for the search
-c                                 first try the maximum
-      dp = pmax - p0a(jd)
-
-      call pincs (dp,dy,ind,jd,nr)
-
-      call gderi1 (k,id,dp,g)
-
-      if (dp.ge.0d0) then
-c                                 at the maximum concentration
-c                                 and the increment is positive,
-c                                 the solution is fully ordered
-c                                 or a local minimum, try the
-c                                 the disordered case:
-         call pincs (pmin-p0a(jd),dy,ind,jd,nr)
-
-         call gderi1 (k,id,dp,g)
-c                                 neither min nor max starting point
-c                                 is possible. setting error to
-c                                 true will cause specis to compare
-c                                 the min/max order cases, specis
-c                                 computes the min case g, therefore
-c                                 the case is set to max order here:
-         if (dp.le.0d0) error = .true.
-
-      end if
-
-      if (.not.error) then
-c                                 increment and check p
-         call pcheck (pa(jd),pmin,pmax,dp,done)
-
-         if (done) then 
-            write (*,*) 'oink33'
-         end if
-c                                 set speciation
-         call pincs (pa(jd)-p0a(jd),dy,ind,jd,nr)
-c                                 iteration counter
-         itic = 0
-         gold = g
-         xdp = 0d0
-c                                 newton raphson iteration
-         do
-
-            call gderi1 (k,id,dp,g)
-
-            call pcheck (pa(jd),pmin,pmax,dp,done)
-c                                 done means the search hit a limit
-c                                 or dp < tolerance.
-
-            if (done.or.dabs((gold-g)/(1d0+dabs(g))).lt.nopt(50)) then
-
-c              if (done.and.dabs((gold-g)/g).gt.nopt(53)) then 
-c                 write (*,*) 'oink1',gold-g,g,itic,id
-c              end if
-
-               goodc(1) = goodc(1) + 1d0
-               goodc(2) = goodc(2) + dfloat(itic)
-c                                 use the last increment
-               call pincs (pa(jd)-p0a(jd),dy,ind,jd,nr)
-
-               exit
-
-            else if (dp.eq.xdp) then 
-
-               write (*,*) 'wroink!',g-gold,id
-
-            else
-c                                 apply the increment
-               call pincs (pa(jd)-p0a(jd),dy,ind,jd,nr)
-
-               if (itic.gt.iopt(21)) then
-c                                 failed to converge. exit
-                  write (*,*) 'wroink2!',g-gold,id
-                  error = .true.
-                  badc(1) = badc(1) + 1d0
-                  goodc(2) = goodc(2) + dfloat(itic)
-
-                  exit
-
-               end if
-
-               xdp = dp
-               gold = g
-               itic = itic + 1
-
-            end if
-
-         end do
-
-      end if
-c                                 didn't converge or couldn't
-c                                 find a starting point, set
-c                                 ordered speciation, specis will
-c                                 compare this the disordered case.
-      if (error) then
-c                                 ordered
-         call pincs (pmax-p0a(jd),dy,ind,jd,nr)
-         g = gord(id)
-c                                 anti-ordered
-         call pincs (pmin-p0a(jd),dy,ind,jd,nr)
-         ga = gord(id)
-
-         if (g.lt.ga) call pincs (pmax-p0a(jd),dy,ind,jd,nr)
 
       end if
 
@@ -9189,10 +9013,6 @@ c-----------------------------------------------------------------------
 c                                 hit the limit, don't set x to
 c                                 the limit to save revaluating x
 c                                 dependent variables.
-
-        write (*,*) 'this should not happen!!',xt,xmin,xmax
-
-        x = xt
         quit = .true.
 
         return
@@ -10304,7 +10124,7 @@ c-----------------------------------------------------------------------
 
       logical bad, file
 
-      integer id, i, j, ntot, ids, tmp, tco
+      integer id, i, j, ntot, ids, tmp, tco, ttot
 
       character sname(h9)*10, tag*11
 
@@ -10352,7 +10172,9 @@ c                                 compositions from the arf file
 
             if (sname(i).ne.fname(i)) 
      *         call error (63,y(1),i,'RELOAD/sname')
-            tmp = jend(i,2)*nstot(i)
+
+            tmp = jend(i,2)*tstot(i)
+
             read (n10,*) txco(tcct+1:tcct+tmp)
 
             tcct = tcct + tmp
@@ -10364,13 +10186,13 @@ c                                 compositions from the arf file
 
          do i = 1, isoct
 
-            ntot = nstot(i)
+            ttot = tstot(i)
 
             do j = 1, jend(i,2)
 
                tpct = tpct + 1
                itxp(tpct) = tcct
-               tcct = tcct + ntot
+               tcct = tcct + ttot
 
             end do
 
@@ -10385,12 +10207,14 @@ c                                 in the first loop:
 c                                 load stable static compositions to 
 c                                 the list of dynamic compositions
             do i = ipoint + 1, iphct
+
                if (ststbl(i).or.lopt(30)) then
                   ids = ikp(i)
                   call setxyp (ids,i,bad)
                   if (bad) cycle
-                  call savdyn (nopt(35),ids)
+                  call savdyn (ids)
                end if
+
             end do
 
          else if (lopt(55)) then
@@ -10413,16 +10237,25 @@ c                                 sort through the static compositions
 c                                 to see if any (or all should be added)
 c                                 to the future static array:
             do i = 1, isoct
+
                ntot = nstot(i)
+               ttot = tstot(i)
+
                do j = 1, jend(i,2)
+
                   tmp = tmp + 1
+
                   if (ststbl(ipoint+tmp).or.lopt(30)) then
+
                      pa(1:ntot) = txco(itxp(tmp)+1:itxp(tmp)+ntot)
-c                                 negative tolerance means these
-c                                 will be saved no matter what.
-                     call savdyn (nopt(35),i)
-                     zcoct = zcoct + ntot
-                     if (tcct+ntot.gt.m25) call errdbg ('increase m25')
+c                                 only for pp comparison
+                     if (lorder(i)) call makepp (i)
+
+                     call savdyn (i)
+
+                     zcoct = zcoct + ttot
+                     if (tcct+ttot.gt.m25) call errdbg ('increase m25')
+
                   end if
                end do
             end do
@@ -10441,15 +10274,17 @@ c                                 solution model pointer
 c                                 curent position
                tco = itxp(i)
 c                                 shift composition
-               ntot = nstot(ids)
-               txco(zcoct+1:zcoct+ntot) = txco(tco+1:tco+ntot)
+               ttot = tstot(ids)
+
+               txco(zcoct+1:zcoct+ttot) = txco(tco+1:tco+ttot)
 c                                 counters, pointers:
                tmp = tmp + 1
                dkp(tmp) = ids
                itxp(tmp) = zcoct
-               zcoct = zcoct + ntot
+               zcoct = zcoct + ttot
 c                                 static counter
                jend(ids,2) = jend(ids,2) + 1
+
             end do
 
             tpct = tmp
@@ -10462,7 +10297,8 @@ c                                 static counter
          do i = 1, isoct
 
             jend(i,2) = 0
-            ntot = nstot(i)
+
+            ttot = tstot(i)
 c                                 for each solution cycle 
 c                                 through the unsorted compositions
             do j = 1, tpct
@@ -10474,13 +10310,9 @@ c                                 its a composition of solution i
 c                                 load temporarily into the static compound 
 c                                 a array
                is(id) = zcoct
-               a(zcoct+1:zcoct+ntot) = txco(itxp(j)+1:itxp(j)+ntot)
+               a(zcoct+1:zcoct+ttot) = txco(itxp(j)+1:itxp(j)+ttot)
 
-c DEBUG
-c              pa(1:ntot) = a(zcoct+1:zcoct+ntot)
-c              call chkpa (i)
-
-               zcoct = zcoct + ntot
+               zcoct = zcoct + ttot
 
             end do
 
@@ -10491,18 +10323,15 @@ c                                 sort results
 c                                 copy the sorted results back into txco
          do i = 1, isoct
 
-            ntot = nstot(i)
+            ttot = tstot(i)
 
             do j = 1, jend(i,2)
 
                id = id + 1
 
-               txco(zcoct+1:zcoct+ntot) =  a(is(id)+1:is(id)+ntot)
-c DEBUG
-c              pa(1:ntot) = a(is(id)+1:is(id)+ntot)
-c              call chkpa (i)
+               txco(zcoct+1:zcoct+ttot) =  a(is(id)+1:is(id)+ttot)
                itxp(id) = zcoct
-               zcoct = zcoct + ntot
+               zcoct = zcoct + ttot
 
             end do
 
@@ -10537,9 +10366,8 @@ c                                 set tname for soload diagnostics
             dkp(iphct - ipoint) = i
 
             pa(1:ntot) = txco(tmp + 1:tmp + ntot)
+
             call makepp (i)
-c DEBUG
-c              call chkpa (i)
 
             call soload (i,bad)
 
@@ -13970,7 +13798,7 @@ c                                 output to arf
 
          do i = 1, isoct
 
-            tmp = jend(i,2)*nstot(i)
+            tmp = jend(i,2)*tstot(i)
             write (n10,*) txco(tcct+1:tcct+tmp)
             tcct = tcct + tmp
 
@@ -15467,8 +15295,7 @@ c----------------------------------------------------------------------
 
       logical error, done
 
-      double precision g, qmax, qmin, q, q0, dqq, rqmax, gold,
-     *                 adqq(1),aq(1)
+      double precision g, qmax, qmin, q, q0, dqq, rqmax, rqmin, gold
 
       double precision omega, gex
       external omega, gex
@@ -15504,21 +15331,30 @@ c                                 fractions
 
 c                                 this solver DOES NOT account for the
 c                                 antiordered state! is there one? i donut
-c                                 think so
+c                                 think so. There is, but it's nonsense, JADC 11/22
       rqmax = 1d0
+      rqmin = 0d0 
 
       do i = 1, nrct(k,id)
 c                                 this is probably ok for HP melt models
 c                                 as the endmember fractions are generally
 c                                 related to a site fraction
-         if (dydy(ideps(i,k,id),k,id).gt.0d0) cycle
+         if (dydy(ideps(i,k,id),k,id).lt.0d0) then
 
-         if (-p0a(ideps(i,k,id))/dydy(ideps(i,k,id),k,id).lt.rqmax)
+            if (-p0a(ideps(i,k,id))/dydy(ideps(i,k,id),k,id).lt.rqmax)
      *              rqmax = -p0a(ideps(i,k,id))/dydy(ideps(i,k,id),k,id)
+
+         else 
+
+            if (-p0a(ideps(i,k,id))/dydy(ideps(i,k,id),k,id).gt.rqmin)
+     *              rqmin = -p0a(ideps(i,k,id))/dydy(ideps(i,k,id),k,id)
+
+         end if
 
       end do
 
       q0 = p0a(nstot(id))
+      rqmin = q0 + rqmin
       rqmax = q0 + rqmax
 c                                 to avoid singularity set the initial
 c                                 composition to the max - nopt(50), at this
@@ -15529,7 +15365,7 @@ c                                 the root must lie at p > pmax - nopt(50).
 
          pin(k) = .true.
          qmax = rqmax - nopt(50)
-         qmin = nopt(50)
+         qmin = rqmin + nopt(50)
 c                                 the p's are computed in gpderi
          call gpder1 (k,id,qmax-q0,dqq,g,.false.)
 
@@ -15700,7 +15536,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, k, jd, id, itic, lord
+      integer k, id, itic, lord
 
       logical error, minfx
 
@@ -21330,17 +21166,10 @@ c                                 save the coefficient and index:
                         jc(jt(ln(k,im),k,im),ln(k,im),k,im) = c1(ik)
                         jid(jt(ln(k,im),k,im),ln(k,im),k,im) = ik
 
-c                          write (*,*) i,j,jt(ln(k,im),k,im)
-c                          write (*,*) c0(ik),ik
-
-
                      end do
 c                                load the constant and delta:
                      l0c(1,ln(k,im),k,im) = c0(0)
                      l0c(2,ln(k,im),k,im) = delta
-
-c                       write (*,*) 'cst delta ', c0(0),delta
-c                       write (*,*) ' '
 
                   end if
 
@@ -22117,15 +21946,13 @@ c                                 George's Hillert & Jarl magnetic transition mo
 
          else
 
-            write (*,*) 'no such transition model'
-            call errpau
+            call errdbg ('no such transition model')
 
          end if
 
       end
 
-
-      subroutine savdyn (tol,ids)
+      subroutine savdyn (ids)
 c----------------------------------------------------------------------
 c subroutine to save exploratory stage dynamic compositions for use
 c as static compositions during auto-refine, pa loaded by sollim
@@ -22137,9 +21964,7 @@ c----------------------------------------------------------------------
 
       logical rplica, isend
 
-      integer ids, j
-
-      double precision tol
+      integer ids
 
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
@@ -22149,33 +21974,13 @@ c----------------------------------------------------------------------
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
 
-      external rplica
+      external rplica, isend
 c----------------------------------------------------------------------
-c     call chkpa (ids)
-
       if (refine.and..not.lopt(55)) return
-c                                 currently all calls to savdyn set tol
-c                                 > 0, and rplica hardwires a tolerance
-c                                 = nopt(35)
-      if (tol.gt.0d0) then
-         if (rplica(ids)) return
-      end if
-
-      if (idegen.gt.1000) then
-
-         call getscp (rcp,rsum,ids,1)
-
-         do j = 1, idegen
-            if (rcp(idg(j)).gt.0d0.and..not.dispro(idg(j))) then
-               if (rcp(idg(j)).lt.1d-8) then
-                  write (*,*) 'wonka ',rcp(idg(j))
-               end if
-               return
-            end if
-         end do
-
-      end if
-
+c                                 currently all calls to savdyn make replicate 
+c                                 test with hardwired tolerance nopt(35)
+      if (rplica(ids)) return
+c                                 deleted degeneracy test.
       if (isend(ids)) return
 
       tpct = tpct + 1
@@ -22186,10 +21991,14 @@ c                                 solution pointer
       dkp(tpct) = ids
 c                                 save the composition
       txco(tcct+1:tcct+nstot(ids)) = pa(1:nstot(ids))
+
+      if (lorder(ids))
+     *       txco(tcct+nstot(ids)+1:tcct+tstot(ids)) = 
+     *       pp(1:lstot(ids))
 c                                 save the starting position - 1
       itxp(tpct) = tcct
 c                                 increment the counter
-      tcct = tcct + nstot(ids)
+      tcct = tcct + tstot(ids)
 
       end 
 
@@ -22231,32 +22040,76 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer id, i, j, tmp
+      integer id, i, j, tmp, ltot, ntot
 
-      double precision diff
+      double precision tol, diff
 
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
+
+      integer ideps,icase,nrct
+      common/ cxt3i /ideps(j4,j3,h9),icase(h9),nrct(j3,h9)
+
+      character fname*10, aname*6, lname*22
+      common/ csta7 /fname(h9),aname(h9),lname(h9)
+
+      double precision units, r13, r23, r43, r59, zero, one, r1
+      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c-----------------------------------------------------------------------
-c                                 simple model
-         do i = stpct, tpct
+      ltot = lstot(id)
+      ntot = nstot(id)
 
-            if (dkp(i).ne.id) cycle
+      tol = nopt(35)
 
-            diff = 0d0
+      if (.not.lorder(id).and.ntot.ne.ltot) call errdbg ('oink')
+c                                o/d models use the pp array, which is 
+c                                not normalized for non-equimolar o/d, do
+c                                the normalization here
+      if (.not.equimo(id)) then
+
+         diff = 0d0
+
+         do j = 1, ltot
+            diff = diff + pp(j)
+         end do
+
+         do j = 1, ltot
+            pp(j) = pp(j)/diff
+         end do
+
+      end if
+
+      do i = stpct, tpct
+
+         if (dkp(i).ne.id) cycle
+
+         diff = 0d0
+
+         if (lorder(id)) then
+
+            tmp = itxp(i) + ntot
+
+            do j = 1, ltot
+               diff = diff + dabs(pp(j) - txco(tmp+j))
+            end do
+
+         else
+
             tmp = itxp(i)
 
-            do j = 1, nstot(id)
+            do j = 1, ltot
                diff = diff + dabs(pa(j) - txco(tmp+j))
-            end do 
+            end do
 
-            if (diff.lt.nopt(35)) then
-               rplica = .true.
-               return
-            end if
+         end if
 
-         end do
+         if (diff.gt.tol) cycle
+
+         rplica = .true.
+         return
+
+      end do
 
       rplica = .false.
 

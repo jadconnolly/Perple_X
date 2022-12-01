@@ -2610,7 +2610,7 @@ c-----------------------------------------------------------------------
 
       integer i, j, iwarn, m
 
-      double precision chi, chi1, root, k, g, v, vs
+      double precision chi, chi1, root, k, g, v, vs, phi
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
@@ -2755,12 +2755,21 @@ c                                 accumulate aggregate totals, some
 c                                 totals may be incomplete if volume or 
 c                                 shear is false for an individual phase
 c                                 weighting scheme for seismic velocity
+      phi = 0d0 
+
       do i = 1, ntot 
 c                                 total volume fraction
          v = props(1,i)*props(16,i)/psys(1)
+
+         if (.not.fluid(i).and.aflu) then
 c                                 solid volume fraction
-         if (.not.fluid(i).and.aflu) 
-     *                    vs = props(1,i)*props(16,i)/psys1(1)
+            vs = props(1,i)*props(16,i)/psys1(1)
+
+         else if (fluid(i)) then
+c                                 total fluid fraction
+            phi = phi + v
+
+         end if
 c                                 for elastic properties use
 c                                 VRH if lopt(16), else HS
          if (lopt(16)) then 
@@ -2918,7 +2927,19 @@ c                                 HS
 
          end if 
  
-      end do 
+      end do
+
+      if (lopt(65).and.aflu) then
+c                                 fluid_shear_modulus model, compute the
+c                                 total aggregate shear modulus as the
+c                                 fluid_absent modulus * (1-sqrt(phi/phi_d))
+         if (phi.lt.nopt(65)) then
+            psys(5) = psys1(5)*(1d0-dsqrt(phi/nopt(65)))
+         else 
+            psys(5) = 0d0
+         end if
+
+      end if
 c                                 ----------------------------------
 c                                 aggregate velocities
       if (volume) then

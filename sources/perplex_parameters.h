@@ -321,8 +321,9 @@ c                 endmember, -1 or 0 if ordered(non - vertex), -2 if dependent ?
 c dedpol(ii) - true if polytope ii has no valid endmembers
 c pvptr(ii, 1:2) - beginning and ending indexes of polytope ii
 
-      integer lstot,mstot,nstot,ndep,nord
-      common/ cxt25 /lstot(h9),mstot(h9),nstot(h9),ndep(h9),nord(h9)
+      integer tstot,lstot,mstot,nstot,ndep,nord
+      common/ cxt25 /tstot(h9),lstot(h9),mstot(h9),nstot(h9),ndep(h9),
+     *               nord(h9)
 c                                 -------------------------------
 c                                 model type
       logical lorder, lexces, llaar, lrecip, specil, simple, deriv
@@ -512,5 +513,5 @@ c                                 previous LP result amounts for
 c                                 dynamic optimization starting points
       integer lcpt, lspt, ldv, lsdv, lsst
       double precision lsamt, lamt
-      common/ cst120 / lsamt(k19), lamt(k19),
+      common/ cst120 / lsamt(k19), lamt(k19), 
      *                 lcpt, lspt, ldv(k19), lsdv(k19), lsst(k19)

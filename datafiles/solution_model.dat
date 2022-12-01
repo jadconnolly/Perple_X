@@ -1,4 +1,4 @@
-691 DO NOT DELETE THIS LINE
+690 DO NOT DELETE THIS LINE
 
                             ---------------------------------------------------------------------------
                              FOR MODEL DEFINITIONS AND REFERENCES READ THE MODEL COMMENTARY OR REFER TO
@@ -7816,13 +7816,13 @@ full_name    feldspathoid
 2                          | macroscopic
 
 2                          | 2 endmembers
-ne       kals
+ne       kls
   0  0                                endmember flags
 0  1  .1 0                 | subdivision range, imod = 0 -> cartesian subdivision
 
 begin_excess_function
-w(ne kals kals) 85057       -20.0500     -.550000
-w(ne ne kals) 35945        23.7800     0.69
+w(ne kls kls) 85057       -20.0500     -.550000
+w(ne ne kls) 35945        23.7800     0.69
 end_excess_function
 
 1                          | 1 site model
@@ -15437,10 +15437,6 @@ begin_flagged_endmembers
                                     | endmembers listed in this section are not associated with the
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
-
-reach_increment 0
-                                    | low_reach and reach_increment conflict, set only one.
-| low_reach
 
 end_of_model
                       --------------------------------------------------------
