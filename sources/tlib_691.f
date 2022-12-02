@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X version 6.9.1, source updated December 1, 2022.',
+     *     'Perple_X version 6.9.1, source updated December 2, 2022.',
 
      *     'Copyright (C) 1986-2022 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -1689,9 +1689,8 @@ c                                 reaction format and lists
          else 
 c                                 adaptive optimization
             write (n,1180) nopt(49),iopt(37),iopt(20),nopt(21),
-     *                     valu(38),lopt(62),iopt(31),k5,
-     *                     lopt(49),
-     *                     lopt(54),nopt(48),nval2,nopt(9)
+     *                     valu(38),valu(39),lopt(62),iopt(31),k5,
+     *                     lopt(49),lopt(54),nopt(48),nval2,nopt(9)
 c                                 gridding parameters
             if (iam.eq.1.and.icopt.eq.5.and.oned) then
 c                                 1d multilevel grid
