@@ -1,7 +1,5 @@
-      subroutine dummy
-      end 
 
-      subroutine minfrc
+      subroutine minfrc (ifail)
 c-----------------------------------------------------------------------
 c minimize the omega function for the independent endmember fractions
 c of solution ids subject to site fraction constraints
@@ -20,19 +18,17 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical tic, zbad, swap, xref
+      logical zbad, xref, swap
 
-      integer i, nvar, iter, iwork(m22), itic, idif,
-     *        ivars(13), istate(m21), nclin, ntot
+      integer i, nvar, iter, iwork(m22), idif, idead,
+     *        istate(m21), nclin, ntot, ifail, itic 
 
       double precision ggrd(m19), lapz(m20,m19),gsol1, pinc,
-     *                 bl(m21), bu(m21), gfinal, ppp(m19), fac,
-     *                 clamda(m21),r(m19,m19),work(m23),rvars(9)
-c DEBUG691                    dummies for NCNLN > 0
-     *                 ,c(1),cjac(1,1),yt(m4),
-     *                 zsite(m10,m11), sum
+     *                 bl(m21), bu(m21), gfinal, ppp(m19),
+     *                 clamda(m21),r(m19,m19),work(m23),
+     *                 yt(m4),zsite(m10,m11), sum
 
-      external gsol2, gsol1, dummy
+      external gsol2, gsol1
 
       integer nz
       double precision apz, zl, zu
@@ -59,13 +55,13 @@ c DEBUG691                    dummies for NCNLN > 0
       double precision wmach
       common/ cstmch /wmach(10)
 
-      data fac/1d-2/
+      logical fdset, cntrl, numric, fdincs
+      common/ cstfds /fdset, cntrl, numric, fdincs
 
-      save fac
+      data itic/0/
+      save itic
 c-----------------------------------------------------------------------
       yt = pa
-
-      tic = .true.
 
       nclin = nz(rids)
       ntot = nstot(rids)
@@ -74,14 +70,11 @@ c-----------------------------------------------------------------------
          nvar = ntot - 1
       else 
          nvar = ntot
-      end if 
-c                                 finite difference increments
-c                                 will be estimated at this 
-c                                 coordinate, so choose a feasible 
-c                                 composition
+      end if
+
       ppp(1:nvar) = pa(1:nvar)
 c                                 initialize bounds
-      if (boundd(rids)) then 
+      if (boundd(rids)) then
 c                                 the endmember fractions are bounded
          bu(1:nvar) = 1d0
          bl(1:nvar) = 0d0
@@ -116,79 +109,58 @@ c                                 closure for molecular models
 
       end if
 
-      itic = 0
-c                                 EPSRF, function precision
-10    rvars(1) = (wmach(3)*fac)**(0.9)
-c                                 FTOL, optimality tolerance
-      rvars(2) = (wmach(3)*fac)**(0.8)
-c                                 CTOL,feasibility tolerance
-      rvars(3) = zero
-c                                 DXLIM, step limit < nopt(5) leads to bad results
-      rvars(4) = 0.5d0
-c                                 ETA, linesearch tolerance, low values -> more accurate search 
-c                                 -> more function calls, 0.05-.4 seem best
-      rvars(5) = 0.225d0
-c                                 FDINT, finite difference interval, forward.
-      rvars(6) = nopt(49)
-c                                 ---------------------------------------------
-c                                 ivars(1:10) reserved for flags, counters used by GSOL2
-c                                 ---------------------------------------------
-c                                 obj call counter
-      ivars(3) = 0
-c                                 LVLDER, derivative level, default all derivatives available
-      ivars(13) = 3
+      if (deriv(rids)) then
 
-      if (deriv(rids).and.itic.lt.2) then
-c                                 LVLDER = 3, all derivatives available
-         ivars(13) = 3
-c                                 LVERFY = 1, verify derivatives 
-         ivars(11) = itic
-c                                 flag (if ~0) to force numerical
-c                                 finite differences even when 
-c                                 derivatives are available
-         ivars(6) = 0
-
-      else
-c                                 Derivatives not available; or failed once:
-c                                 LVERFY = 0, don't verify
-         ivars(11) = 0
-c                                 LVLDER = 0, no derivatives
-         ivars(13) = 0
-c                                 Set flag to prevent GSOL2 from returning
-c                                 derivatives.
-         ivars(6) = 1
-
-      end if
-
-      call nlpsol (nvar,nclin,0,m20,1,m19,lapz,bl,bu,dummy,gsol2,iter,
-     *            istate,c,cjac,clamda,gfinal,ggrd,r,ppp,iwork,m22,work,
-     *            m23,ivars,rvars)
-
-      if (iter.eq.0.and.itic.le.1.and.deriv(rids)) then
-
-         pa = yt
-c                                 error counter
-         itic = itic + 1
-
-         goto 10
+         numric = .false.
 
       else
 
-         if (iter.eq.0) return
+         numric = .true.
+c                                 settings for numeric derivatives:
+c                                 -----------------------------------
+c                                 fdset: compute increments the 1st
+c                                 time numeric derivatives are computed.
+         fdset = .true. 
+c                                 cntrl: use 2nd order estimate
+         cntrl = .false.
+c                                 fdincs: computed increments available
+         fdincs = .false.
 
       end if
-c--------------------------
-      sum = 0d0
-      do i = 1, nvar
-         sum = sum + ppp(i)
-         pa(i) = ppp(i)
-      end do
 
-      if (nvar.lt.ntot) pa(ntot) = 1d0 - sum
-c                                 reject bad site populations
-      if (zbad(pa,rids,zsite,fname(rids),.false.,fname(rids))) return
+      call nlpsol (nvar,nclin,m20,m19,lapz,bl,bu,gsol2,iter,istate,
+     *            clamda,gfinal,ggrd,r,ppp,iwork,m22,work,m23,idead)
 
-      yt = pa
+      itic = itic + 1
+
+c         write (*,*) rids, gfinal,itic, iter
+
+      if (idead.eq.1) then
+c        write (*,*) 'starting point is as good as it gets',rids,idead
+      else if (idead.eq.6) then
+c        write (*,*) 'starting point is as good as it gets',rids,idead
+      else if (idead.eq.4) then
+c         write (*,*) 'ran out of time',rids
+      else if (idead.lt.0.or.idead.eq.3) then 
+c           write (*,*) 'and i am outta here ',rids, idead
+            return
+      end if
+
+c                                 reconstruct pa-array, necessary? yes
+      yt(1:nstot(rids)) = pa(1:nstot(rids))
+      call ppp2pa (ppp,sum,nvar)
+c                                 reject bad site populations, necessary?
+      if (boundd(rids)) then
+         if (pa(nstot(rids)).lt.0d0) then 
+            ifail = 2
+            return
+         end if
+      end if
+
+      if (zbad(pa,rids,zsite,fname(rids),.false.,fname(rids))) then
+         ifail = 3
+         return
+      end if
 c                                 save the final point, the point may have
 c                                 already been saved by gsol2 but because
 c                                 gsol2 uses a replicate threshold of nopt(37)
@@ -196,16 +168,21 @@ c                                 a near solution rpc would prevent gsol2 from
 c                                 saving the final composition. here the replicate
 c                                 threshold is reduced to zero (sqrt(eps)).
       call makepp (rids)
+
+      call getscp (rcp,rsum,rids,rids)
 c                                 if logical arg = T use implicit ordering
       gfinal = gsol1 (rids,.false.)
 
       if (rsum.eq.0d0) then 
+         ifail = 4
          return
       end if
 c                                 save the final QP result
       call savrpc (gfinal,0d0,swap,idif)
-c---------------
+
       if (lopt(54).and..not.swap) then
+
+         yt(1:nstot(rids)) = pa(1:nstot(rids))
 c                                 scatter in only for nstot-1 gradients
          pinc = 1d0 + nopt(48)
 c                                 in case on 1st iteration set refine to 
@@ -216,7 +193,7 @@ c                                 exit
 
          do i = 1, lstot(rids)
 
-            pa = yt/pinc
+            pa(1:nstot(rids)) = yt(1:nstot(rids))/pinc
 
             pa(i) = pa(i) + (1d0 - 1d0/pinc)
 
@@ -226,6 +203,8 @@ c                                 exit
 c                                 degeneracy test removed
 c                                 if logical arg = T use implicit ordering
             gfinal = gsol1 (rids,.true.)
+
+            call getscp (rcp,rsum,rids,rids)
 c                                 save the scatter point
             call savrpc (gfinal,nopt(48)/2d0,swap,idif)
 
@@ -237,7 +216,36 @@ c                                 reset refine
 
       end
 
-      subroutine gsol2 (mode,nvar,ppp,gval,dgdp,istart,ivars,rvars)
+      subroutine ppp2pa (ppp,sum,nvar)
+c-----------------------------------------------------------------------
+c reconstruct pa array from ppp array for minfxc/minfrc
+c-----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer i, nvar
+
+      double precision ppp(*), sum
+
+      double precision z, pa, p0a, x, w, y, wl, pp
+      common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
+     *              wl(m17,m18),pp(m4)
+c-----------------------------------------------------------------------
+      sum = 0d0
+
+      do i = 1, nvar
+
+         sum = sum + ppp(i)
+         pa(i) = ppp(i)
+
+      end do
+
+      if (nvar.lt.nstot(rids)) pa(nstot(rids)) = 1d0 - sum
+
+      end
+
+      subroutine gsol2 (nvar,ppp,gval,dgdp,fdnorm,bl,bu)
 c-----------------------------------------------------------------------
 c function to evaluate gibbs energy of a solution for minfrc. can call 
 c either gsol1 with order true or false, true seems to give better results
@@ -249,10 +257,11 @@ c-----------------------------------------------------------------------
 
       logical zbad, saved
 
-      integer i, j, nvar, mode, ivars(*), istart, idif
+      integer i, j, nvar, idif
 
-      double precision ppp(*), gval, dgdp(*), rvars(*),
-     *                 gsol1, g, sum1, zsite(m10,m11)
+      double precision ppp(*), gval, dgdp(*), psum, 
+     *                 gsol1, g, bsum, zsite(m10,m11),
+     *                 bl(*), bu(*), fdnorm
 
       external gsol1, zbad
 
@@ -267,61 +276,51 @@ c-----------------------------------------------------------------------
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
 
-      character fname*10, aname*6, lname*22
-      common/ csta7 /fname(h9),aname(h9),lname(h9)
-
       integer jphct
       double precision g2, cp2, c2tot
       common/ cxt12 /g2(k21),cp2(k5,k21),c2tot(k21),jphct
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
+
+      logical outrpc
+      common/ ngg015 /outrpc
+
+      logical fdset, cntrl, numric, fdincs
+      common/ cstfds /fdset, cntrl, numric, fdincs
+
+      integer count
+      common/ cstcnt /count
 c-----------------------------------------------------------------------
-      if (lopt(61)) call begtim (2)
+      if (rids.eq.1) then 
 
-      sum1 = 0d0
+c        ppp(1:7) = 0.125d0
 
-      do i = 1, nvar
-         sum1 = sum1 + ppp(i)
-         pa(i) = ppp(i)
-      end do
-
-      if (nvar.lt.nstot(rids)) pa(nstot(rids)) = 1d0 - sum1
-
-      if (ksmod(rids).eq.39) then
-
-         do i = 1, nstot(rids)
-
-            if (pa(i).gt.1d0.or.pa(i).lt.0d0) then
-
-               if (pa(i).gt.1d0.and.pa(i).lt.1d0+zero) then 
-                  pa(i) = 1d0
-               else if (pa(i).lt.0d0.and.dabs(pa(i)).lt.zero) then
-                  pa(i) = 0d0
-               else
-                  mode = -1
-                  return
-               end if
-
-            end if
-
-         end do
-
+c        write (*,*) count, fdnorm
       end if
+         count = count + 1
+
+
+      if (lopt(61)) call begtim (2)
+c                                 reconstruct pa array
+      call ppp2pa (ppp,psum,nvar)
 
       call makepp (rids)
-
-      if (deriv(rids).and.ivars(6).eq.0) then
-
-         call getder (g,dgdp,rids)
 c                                 get the bulk composition from pa
-         call getscp (rcp,rsum,rids,rids)
-c                                 convert dgdp to dg'dp
+      call getscp (rcp,rsum,rids,rids)
+
+      if (deriv(rids)) then
+c                                 analytical derivatives:
+         call getder (g,dgdp,rids)
+c                                 ------------------------------------
+         gval = g
 
          do j = 1, icp
 c                                 degenerate sys, mu undefined:
             if (isnan(mu(j))) cycle
-
+c                                 convert g to g'
+            gval = gval - rcp(j)*mu(j)
+c                                 convert dgdp to dg'dp
             do i = 1, nvar
                dgdp(i) = dgdp(i) - dcdp(j,i,rids)*mu(j)
             end do
@@ -329,22 +328,30 @@ c                                 degenerate sys, mu undefined:
          end do
 
       else
-c                                 if logical arg = T use implicit ordering
-         g = gsol1 (rids,.false.)
+c                                 only numeric derivatives are
+c                                 available, get g at the composition
+         g = gsol1(rids,.false.)
+c                                 level it
+         call gsol5 (g,gval)
+c                                  compute derivatives
+         call numder (gval,dgdp,ppp,fdnorm,bl,bu,nvar)
 
       end if
 
-      gval = g
+      if (lopt(57).and.outrpc) then
 
-      do i = 1, icp
-         if (isnan(mu(i))) cycle
-         gval = gval - rcp(i)*mu(i)
-      end do
+         if (numric) then
+c                                 if numeric derivatives were
+c                                 evaluated reset composition
+c                                 data
+            call makepp (rids)
+c                                 get the bulk composition from pa
+            call getscp (rcp,rsum,rids,rids)
 
-      if (lopt(57).and.ivars(2).ne.0.and.(nvar.lt.nstot(rids).or.
-     *    sum1.ge.one.and.sum1.le.1d0+zero).and.rsum.gt.zero) then
-
-         if (zbad(pa,rids,zsite,fname(rids),.false.,fname(rids))) return
+          end if
+c                                 try to eliminate bad results
+         if (psum.lt.one.or.psum.gt.1d0+zero.or.bsum.lt.zero) return
+         if (zbad(pa,rids,zsite,'a',.false.,'a')) return
 c                                 save the composition
          call savrpc (g,nopt(37),saved,idif)
 
@@ -352,6 +359,77 @@ c                                 save the composition
 
       if (lopt(61)) call endtim (2,.false.,'Dynamic G')
 
+      end
+
+      subroutine gsol5 (g,gval)
+c-----------------------------------------------------------------------
+c gsol5 is a shell called by minfrc/gsol2 that calls gsol1 to compute
+c the true gibbs energy (g) and the leveled g (gval). both pa and pp
+c must be set prior to calling gsol5.
+c-----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer j
+
+      double precision gval, gsol1, g
+
+      external gsol1
+
+      logical mus
+      double precision mu
+      common/ cst330 /mu(k8),mus
+
+      double precision z, pa, p0a, x, w, y, wl, pp
+      common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
+     *              wl(m17,m18),pp(m4)
+
+      integer icomp,istct,iphct,icp
+      common/ cst6  /icomp,istct,iphct,icp
+c-----------------------------------------------------------------------
+      gval = g
+
+      do j = 1, icp
+c                                 degenerate sys, mu undefined:
+         if (isnan(mu(j))) cycle
+c                                 convert g to g'
+         gval = gval - rcp(j)*mu(j)
+
+      end do
+
+      end
+
+      subroutine gsol6 (gval,ppp,nvar)
+c----------------------------------------------------------------------
+c gsol6 is a shell to compute the leveled g for numerical derivatives
+c invoked by minfrc via gsol2.
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer nvar
+
+      double precision ppp(*), gval, gsol1, g, psum
+
+      external gsol1
+
+      integer count
+      common/ cstcnt /count
+c-----------------------------------------------------------------------
+      count = count + 1
+c                                 reconstruct pa array from ppp
+      call ppp2pa (ppp,psum,nvar)
+c                                 make the pp array for gsol1
+      call makepp (rids)
+c                                 get the bulk composition from pa
+      call getscp (rcp,rsum,rids,rids)
+c                                 get the real g
+      g = gsol1 (rids,.false.)
+c                                 get the leveled gval
+      call gsol5 (g,gval)
+c
       end
 
       subroutine savrpc (g,tol,swap,idif)
@@ -366,7 +444,7 @@ c-----------------------------------------------------------------------
 
       integer i, j, ntot, ltot, ttot, ipt, ist, idif
 
-      double precision g, diff, tol, psum, dtol
+      double precision g, diff, tol, dtol
 
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
@@ -494,7 +572,107 @@ c                                 and normalized bulk fractions if o/d
 
       end 
 
-      subroutine gsol4 (mode,nvar,ppp,gval,dgdp,istart,ivars,rvars)
+      subroutine numder (g,dgdp,ppp,fdnorm,bl,bu,nvar)
+c-----------------------------------------------------------------------
+c subroutine to evaluate the gradient numerically for minfrc/minfxc
+c on input sum is the total of the fractions, for bounded models this
+c can be used to choose increment sign.
+c-----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer i, nvar
+
+      double precision ppp(*), dgdp(*), oldpa(m14), 
+     *            dpp, g, g1, g3, bl(*), bu(*), fdnorm
+
+      double precision z, pa, p0a, x, w, y, wl, pp
+      common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
+     *              wl(m17,m18),pp(m4)
+
+      double precision cdint, ctol, dxlim, epsrf, eta, fdint, ftol,
+     *                 hcndbd
+      common/ ngg021 /cdint, ctol, dxlim, epsrf, eta,
+     *                fdint, ftol, hcndbd
+
+      logical fdset, cntrl, numric, fdincs
+      common/ cstfds /fdset, cntrl, numric, fdincs
+c-----------------------------------------------------------------------
+c                                 one or more derivatives are singular
+c                                 because of ln(0) entropy term, evaluate
+c                                 by finite difference, save old 0 values:
+      oldpa(1:nstot(rids)) = pa(1:nstot(rids))
+
+      fdnorm = 0d0
+
+      do i = 1, nvar
+
+         if (cntrl) then
+c                                 2nd order
+            if (fdincs) then
+               dpp = hctl(i)
+            else
+               dpp = cdint
+            end if
+
+         else
+c                                1st order
+            if (fdincs) then
+               dpp = hfwd(i)
+            else 
+               dpp = fdint
+            end if
+
+         end if
+c                                 rel/abs scaling
+         dpp = dpp * (1d0 + dabs(ppp(i)))
+c                                 first increment, doubled for central
+         if (cntrl) dpp = 2d0*dpp
+c                                 try to avoid invalid values (z<=0)
+         if (pa(i).gt.bu(i)-dpp) then 
+
+            dpp = -dpp
+
+         else if (pa(i).gt.bl(i)+2d0*dpp) then
+c                                 choose direction away from closest bound
+           if (bl(i) + bu(i) - 2d0*ppp(i).lt.0d0) dpp = -dpp
+
+         end if
+c                                 apply the increment
+         ppp(i) = oldpa(i) + dpp
+
+         if (dabs(dpp).gt.fdnorm) fdnorm = dabs(dpp)
+
+         if (cntrl) then
+c                                 g at the double increment
+            call gsol6 (g3,ppp,nvar)
+c                                 single increment
+            ppp(i) = oldpa(i) + dpp/2d0
+c                                 g at the single increment
+            call gsol6 (g1,ppp,nvar)
+
+            dgdp(i) = (4d0*g1- 3d0*g-g3)/dpp
+
+         else
+c                                 g at the single increment
+            call gsol6 (g1,ppp,nvar)
+
+            dgdp(i) = (g1 - g)/dpp
+
+         end if
+c                                 reset ppp
+         ppp(i) = oldpa(i)
+
+      end do
+c                                 reset pa and make pp:
+      pa(1:nstot(rids)) = oldpa(1:nstot(rids))
+
+      call makepp (rids)
+
+      end
+
+      subroutine gsol4 (nvar,ppp,gval,dgdp,fdnorm,bl,bu)
 c-----------------------------------------------------------------------
 c gsol4 - a shell to call gsol1 from minfxc, ingsol must be called
 c         prior to minfxc to initialize solution specific paramters. only
@@ -508,48 +686,35 @@ c-----------------------------------------------------------------------
 
       logical error 
 
-      integer ids, i, nvar, istart, mode, ivars(*)
+      integer ids, i, nvar
 
-      double precision ppp(*), gval, dgdp(*), rvars(*), d2s(j3,j3), 
-     *                 gord, ddq(j3), norm
+      double precision ppp(*), gval, dgdp(*), d2s(j3,j3), 
+     *                 gord, ddq(j3), norm, fdnorm, bl(*), bu(*)
 
       double precision zz, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),zz(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
 
+      logical outrpc, maxs
+      common/ ngg015 /outrpc, maxs
+
       external gord
 c-----------------------------------------------------------------------
-      ids = ivars(1)
+      ids = rids
 c                                   ppp(1:nord) contains the 
 c                                   proportions of the ordered species
 c                                   pa(lstot+1:nstot).
 c                                   -----------------------------------
 c                                   set the remaining proportions
-      call ppp2pa (ppp,ids)
+      call ppp2p0 (ppp,ids)
 
-      if (ivars(3).eq.0) then
+      if (.not.maxs) then
 
-        if (ivars(6).eq.1) then 
-c                                   numerical derivatives
-           gval = gord(ids) 
-
-           if (.not.equimo(ids)) then
-
-              norm = 1d0
-
-              do i = 1, nvar
-                 norm = norm +  dnu(i,ids) * (ppp(i)-p0a(lstot(ids)+i))
-              end do
-
-              gval = gval * norm
-
-           end if
-
-        else if (equimo(ids)) then
+         if (equimo(ids)) then
 c                                   analytical derivatives, equimolar o/d
-           call gderiv (ids,gval,dgdp,.true.,error)
+            call gderiv (ids,gval,dgdp,.true.,error)
 
-        else 
+         else 
 c                                   analytical derivatives, non-equimolar
            do i = 1, nvar
               ddq(i) = ppp(i)-p0a(lstot(ids)+i)
@@ -571,10 +736,10 @@ c                                   dnu = 0 case.
 
       end
 
-      subroutine ppp2pa (ppp,ids)
+      subroutine ppp2p0 (ppp,ids)
 c-----------------------------------------------------------------------
 c set pa from p0a given current proportions of the ordered species in
-c ppp
+c ppp, used by minfxc
 c-----------------------------------------------------------------------
       implicit none
 
@@ -615,7 +780,6 @@ c                                 non-equimolar normalization
       pa(1:nstot(ids)) = pa(1:nstot(ids)) / norm
 
       end
-
 
       subroutine p2yx (id,bad)
 c-----------------------------------------------------------------------
@@ -928,7 +1092,7 @@ c                                 convert the y's to x's
 
       end
 
-      subroutine minfxc (gfinal,ids,maxs)
+      subroutine minfxc (gfinal,ids,mxs)
 c-----------------------------------------------------------------------
 c optimize solution gibbs energy or configurational entropy at constant 
 c composition subject to site fraction constraints.
@@ -950,17 +1114,15 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical maxs
+      logical mxs
 
       integer ids, i, j, k, nvar, iter, iwork(m22), itic,
-     *        ivars(15),istate(m21), nclin, lord
+     *        istate(m21), nclin, lord, idead
 
-      double precision ggrd(m19), gordp0, g0, fac,
+      double precision ggrd(m19), gordp0, g0, 
      *                 bl(m21), bu(m21), gfinal, ppp(m19), 
-     *                 clamda(m21),r(m19,m19),work(m23),rvars(6),
-     *                 lapz(m20,m19)
-c DEBUG691                    dummies for NCNLN > 0
-     *                 ,c(1),cjac(1,1),xp(m14)
+     *                 clamda(m21),r(m19,m19),work(m23),
+     *                 lapz(m20,m19),xp(m14)
 
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
@@ -997,13 +1159,18 @@ c DEBUG691                    dummies for NCNLN > 0
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
-      external gsol4, gordp0, dummy
+      logical fdset, cntrl, numric, fdincs
+      common/ cstfds /fdset, cntrl, numric, fdincs
+
+      logical outrpc, maxs
+      common/ ngg015 /outrpc, maxs
+
+      external gsol4, gordp0
 c-----------------------------------------------------------------------
 c                                 compute the disordered g for bailouts
       g0 = gordp0(ids)
-
-      fac = 1d-2
       nvar = nord(ids)
+      maxs = mxs
 
       if (equimo(ids)) then 
 c                                 initialize limit expressions from p0
@@ -1032,7 +1199,6 @@ c                                 maxs inversion is mostly likely to be
 c                                 called for a general composition, the
 c                                 lazy solution here is to keep everything
 c                                 in:
-            fac = 1d0
             pin = .true.
             lord = nvar
 
@@ -1113,86 +1279,34 @@ c                                 need to extract sderivs from gpderi
 
       end if
 c                                 solution model index
-      ivars(1) = ids
-c                                 ivars(2) is set by NLP and is
-c                                 irrelevant.
-c                                 ivars(3) = 1 min g, 0 max entropy
-      if (maxs) then 
-         ivars(3) = 1
-      else 
-         ivars(3) = 0
-      end if
-c                                 flag (if ~0) to force numerical
-c                                 finite differences even when 
-c                                 derivatives are available
-      ivars(6) = 0
+      rids = ids
 
       itic = 0
 
       xp(1:nvar) = ppp(1:nvar)
 
-c                                 EPSRF, function precision
-10    rvars(1) = (wmach(3)*fac)**(0.9)
-c                                 FTOL, optimality tolerance
-      rvars(2) = (wmach(3)*fac)**(0.8)
-c                                 CTOL,feasibility tolerance
-      rvars(3) = zero
-c                                 ETA, step limit < nopt(5) leads to bad results
-      rvars(4) = 0.5d0
-c                                 DXLIM, linesearch tolerance, low values -> more accurate search 
-c                                 -> more function calls, 0.05-.4 seem best
-      rvars(5) = 0.225
-c                                 FDINT, finite difference interval, forward.
-      rvars(6) = nopt(49)
-c                                 ---------------------------------------------
-c                                 ivars(1:10) reserved for flags, counters used by GSOL2
-c                                 ---------------------------------------------
-c                                 LVLDER, derivative level, default all derivatives available
-      ivars(13) = 3
+      numric = .false.
 
-      if (itic.lt.2) then
-c                                 LVLDER = 3, all derivatives available
-         ivars(13) = 3
-c                                 LVERFY = 1, verify derivatives 
-         ivars(11) = itic
-
-      else
-c                                 Derivatives not available; or failed once:
-c                                 LVERFY = 0, don't verify
-         ivars(11) = 0
-c                                 LVLDER = 0, no derivatives
-         ivars(13) = 0
-
-         ivars(6) = 1
-
-      end if
-
-      call nlpsol (nvar,nclin,0,m20,1,m19,lapz,bl,bu,dummy,gsol4,iter,
-     *            istate,c,cjac,clamda,gfinal,ggrd,r,ppp,iwork,m22,work,
-     *            m23,ivars,rvars)
+      call nlpsol (nvar,nclin,m20,m19,lapz,bl,bu,gsol4,iter,istate,
+     *            clamda,gfinal,ggrd,r,ppp,iwork,m22,work,m23,idead)
 c                                 if nlpsol returns iter = 0
 c                                 it's likely failed, make 2 additional 
 c                                 attempts, 1st try numerical verification of 
 c                                 the derivatives, 2nd try use only numerical 
 c                                 derivatives.
-      if (iter.eq.0.and.itic.le.1.and.deriv(ids)) then 
 
-         ppp(1:nvar) = xp(1:nvar)
-         itic = itic + 1
+c                                 need error testing on idead here! 
+c                                 on failure could switch to numeric
 
-         goto 10
-
-      else if (iter.gt.0) then
-c                                   set pa to correspond to the final 
-c                                   values in ppp.
-         call ppp2pa (ppp,ids)
-
-      end if
+c                                 if ok:
+c                                 set pa to correspond to the final 
+c                                 values in ppp.
+      call ppp2p0 (ppp,ids)
 
       if (.not.maxs) then
 
          if (itic.gt.0) then 
-c                                   check for fuck-ups
+c                                 check for fuck-ups
             ppp(1:nstot(ids)) = p0a(1:nstot(ids))
 
             p0a(1:nstot(ids)) = pa(1:nstot(ids))
@@ -1214,3 +1328,599 @@ c                                 the mechanical component?
 
       end
 
+      subroutine chfd (n,fdnorm,fx,objfun,bl,bu,grad,x,dummy)
+c----------------------------------------------------------------------
+c chfd  computes difference intervals for gradients of f(x). intervals 
+c are computed using a procedure that usually requires about two 
+c function evaluations if the function is well scaled. fdest and cdest 
+c are the 1st and 2nd order forward differences, sdest is the 2nd order
+c centered difference.
+
+c because npcore expects 1st order numerics, grad is set to fdest here.
+
+c assumes the function at x (objf) has been computed on entry.
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      logical done, first
+
+      integer n, info, iter, itmax, j
+
+      double precision fdnorm, bl(n), bu(n), dummy(n), 
+     *                 grad(n), x(n), cdest, epsa,
+     *                 errbnd, errmax, errmin, f1, f2, fdest, fx,
+     *                 h, hcd, hfd, hmax, hmin, hopt, hphi,
+     *                 sdest, sumeps, sumsd, xj
+
+      external objfun
+
+      logical fdset, cntrl, numric, fdincs
+      common/ cstfds /fdset, cntrl, numric, fdincs
+
+      double precision cdint, ctol, dxlim, epsrf, eta, fdint, ftol,
+     *                 hcndbd
+      common/ ngg021 /cdint, ctol, dxlim, epsrf, eta,
+     *                fdint, ftol, hcndbd
+
+      double precision epspt3, epspt5, epspt8, epspt9
+      common/ ngg006 /epspt3, epspt5, epspt8, epspt9
+c----------------------------------------------------------------------
+      itmax = 3
+
+      fdnorm = 0d0
+
+      epsa = epsrf*(1d0+abs(fx))
+
+      do j = 1, n
+
+         xj = x(j)
+
+         sumsd = 0d0
+         sumeps = 0d0
+         hfd = 0d0
+         hcd = 0d0
+         hmax = 0d0
+         hmin = 1d0/epspt3
+         errmax = 0d0
+         errmin = 0d0
+         hopt = 2d0*(1d0+abs(xj))*sqrt(epsrf)
+c                                 set step direction away from the nearest
+c                                 bound (without regard to other constraints,
+c                                 numder may do this better),
+         if (bu(j) + bl(j)- 2d0*xj.lt.0d0) then
+            h = -1d1*hopt
+         else
+            h = 1d1*hopt
+         end if
+
+         iter = 0
+         cdest = 0d0
+         sdest = 0d0
+         first = .true.
+
+         do
+
+            x(j) = xj + h
+            call objfun (n,x,f1,dummy,fdnorm,bl,bu)
+
+            x(j) = xj + h + h
+            call objfun (n,x,f2,dummy,fdnorm,bl,bu)
+
+            call chcore (done,first,epsa,epsrf,fx,info,iter,itmax,cdest,
+     *                   fdest,sdest,errbnd,f1,f2,h,hopt,hphi)
+
+            if (done) exit
+
+         end do
+
+         grad(j) = cdest
+
+         sumsd = sumsd + abs(sdest)
+         sumeps = sumeps + epsa
+
+         if (hopt.gt.hmax) then
+            hmax = hopt
+            errmax = errbnd
+         end if
+
+         if (hopt.lt.hmin) then
+            hmin = hopt
+            errmin = errbnd
+         end if
+
+         if (info.eq.0) hcd = max(hcd,hphi)
+
+         if (hmin.gt.hmax) then
+            hmin = hmax
+            errmin = errmax
+         end if
+
+         if (4d0*sumeps.lt.hmin*hmin*sumsd) then
+            hfd = hmin
+            errmax = errmin
+         else if (4d0*sumeps.gt.hmax*hmax*sumsd) then
+            hfd = hmax
+         else
+            hfd = 2d0*sqrt(sumeps/sumsd)
+            errmax = 2d0*sqrt(sumeps*sumsd)
+         end if
+
+         if (hcd.eq.0d0) hcd = 1d1*hfd
+
+         fdnorm = max(fdnorm,hfd)
+         hfwd(j) = hfd/(1d0+abs(xj))
+         hctl(j) = hcd/(1d0+abs(xj))
+
+         x(j) = xj
+
+      end do
+c                                 signal individual increments available:
+      fdincs = .true.
+
+200   return
+
+      end
+
+      subroutine chcore (done,first,epsa,epsr,fx,inform,iter,itmax,
+     *                   cdest,fdest,sdest,errbnd,f1,f2,h,hopt,hphi)
+c----------------------------------------------------------------------
+c     chcore  implements algorithm  fd, the method described in
+c     gill, p.e., murray, w., saunders, m.a., and wright, m. h.,
+c     computing forward-difference intervals for numerical optimization,
+c     siam journal on scientific and statistical computing, vol. 4,
+c     pp. 310-321, june 1983.
+
+c     the procedure is based on finding an interval (hphi) that
+c     produces an acceptable estimate of the second derivative, and
+c     then using that estimate to compute an interval that should
+c     produce a reasonable forward-difference approximation.
+
+c     one-sided difference estimates are used to ensure feasibility with
+c     respect to an upper or lower bound on x. if x is close to an upper
+c     bound, the trial intervals will be negative. the final interval is
+c     always positive.
+
+c     chcore has been designed to use a reverse communication
+c     control structure, i.e., all evaluations of the function occur
+c     outside this routine. the calling routine repeatedly calls  chcore
+c     after computing the indicated function values.
+
+c     bndlo, bndup, and rho control the logic of the routine.
+c     bndlo and bndup are the lower and upper bounds that define an
+c     acceptable value of the bound on the relative condition error in
+c     the second derivative estimate.
+
+c     the scalar rho is the factor by which the interval is multiplied
+c     or divided, and also the multiple of the well-scaled interval
+c     that is used as the initial trial interval.
+c----------------------------------------------------------------------
+      implicit none
+
+      double precision bndlo, bndup
+
+      parameter (bndlo=1.0d-3,bndup=1.0d-1)
+
+      logical done, first, ce1big, ce2big, overfl, te2big
+
+      integer inform, iter, itmax
+
+      double precision cdest, epsa, epsr, errbnd, f1, f2, fdest, fx, h,
+     *                 hopt, hphi, sdest, afdmin, cdsave, err1, err2, 
+     *                 fdcerr, fdest2, fdsave, hsave, oldcd, oldh, oldsd
+     *               , rho, sdcerr, sdsave, sdiv
+
+      external sdiv
+
+      save              cdsave, fdsave, hsave, oldh, rho, sdsave,
+     *                  ce1big, ce2big, te2big
+c----------------------------------------------------------------------
+      iter = iter + 1
+c                                 compute forward, backward, central and second-order
+c                                 difference estimates.
+      fdest = sdiv (f1-fx,h,overfl)
+      fdest2 = sdiv (f2-fx, 2d0*h,overfl)
+
+      oldcd = cdest
+      cdest = sdiv (4d0*f1- 3d0*fx-f2, 2d0*h,overfl)
+
+      oldsd = sdest
+      sdest = sdiv (fx- 2d0*f1+f2, h*h, overfl)
+c                                 compute  fdcerr  and  sdcerr,  bounds on relative condition
+c                                 errors in first and second derivative estimates.
+      afdmin = min(abs(fdest),abs(fdest2))
+      fdcerr = sdiv (epsa, abs(h)/2d0 *afdmin, overfl)
+      sdcerr = sdiv (epsa, abs(sdest)/4d0 *h*h, overfl)
+c                                 select the correct case.
+      if (first) then
+c                                 first time through.
+c                                 check that sdcerr is in the acceptable range.
+         first = .false.
+         done = sdcerr .ge. bndlo .and. sdcerr .le. bndup
+         te2big = sdcerr.lt.bndlo
+         ce2big = sdcerr.gt.bndup
+         ce1big = fdcerr.gt.bndup
+
+         if (.not. ce1big) then
+
+            hsave = h
+            fdsave = fdest
+            cdsave = cdest
+            sdsave = sdest
+
+         end if
+
+         rho = epsr**(-0.16d0)/4d0
+
+         if (te2big) then
+c                                 truncation error may be too big 
+c                                 (sdcerr is too small). decrease trial interval.
+            rho = 1d1*rho
+            oldh = h
+            h = h/rho
+
+         else if (ce2big) then
+c                                 sdcerr is too large. increase trial interval.
+            oldh = h
+            h = h*rho
+
+         end if
+
+      else if (ce2big) then
+c                                 during the last iteration, the trial interval was
+c                                 increased in order to decrease sdcerr.
+         if (ce1big .and. fdcerr.le.bndup) then
+
+            ce1big = .false.
+            hsave = h
+            fdsave = fdest
+            cdsave = cdest
+            sdsave = sdest
+
+         end if
+c                               if sdcerr is small, accept h. otherwise,
+c                               increase h
+         done = sdcerr .le. bndup
+
+         if (.not. done) then
+            oldh = h
+            h = h*rho
+         end if
+
+      else if (te2big) then
+c                                 in last iteration, interval was decreased in order
+c                                 to reduce truncation error.
+         done = sdcerr.gt.bndup
+
+         if (done) then
+c                                 sdcerr jumped from too small to too
+c                           l     large. accept the previous value of h.
+            h = oldh
+            sdest = oldsd
+            cdest = oldcd
+
+         else
+c                                 test whether fdcerr is sufficiently small.
+            if (fdcerr.le.bndup) then
+
+               ce1big = .false.
+               hsave = h
+               fdsave = fdest
+               cdsave = cdest
+               sdsave = sdest
+
+            end if
+c                                 check whether sdcerr is in range.
+            done = sdcerr .ge. bndlo
+
+            if (.not. done) then
+c                                 sdcerr is still too small, decrease h again.
+               oldh = h
+               h = h/rho
+
+            end if
+
+         end if
+
+      end if
+c                                 either finished or have a new estimate of h.
+      if (done) then
+c                                 good second-derivative estimate found.
+c                                 compute optimal interval.
+         hphi = abs(h)
+         hopt = 2d0*sqrt(epsa)/sqrt(abs(sdest))
+c                                 err1 is the error bound on the forward estimate
+c                                 with the final value of h. err2 is the difference of fdest
+c                                 and the central-difference estimate with hphi.
+         err1 = hopt*abs(sdest)
+         err2 = abs(fdest-cdest)
+         errbnd = max(err1,err2)
+c                                 inform = 4 if the forward- and central-difference
+c                                 estimates are not close.
+         inform = 0
+         if (errbnd.gt.abs(fdest)/2d0) inform = 4
+
+      else
+
+         done = iter .ge. itmax
+
+         if (done) then
+
+            if (ce1big) then
+c                                 fdcerr was never small.  
+c                                 probably a constant function.
+               inform = 1
+               hphi = hopt
+               fdest = 0d0
+               cdest = 0d0
+               sdest = 0d0
+               errbnd = 0d0
+
+            else if (ce2big) then
+c                                  fdcerr was small,  but sdcerr was 
+c                                  never small probably a linear or odd function.
+               inform = 2
+               hphi = abs(hsave)
+               hopt = hphi
+               fdest = fdsave
+               cdest = cdsave
+               sdest = 0d0
+               errbnd = 2d0*epsa/hopt
+
+            else
+c                                  the remaining case is the second
+c                                  derivative changes too rapidly for an 
+c                                  adequate interval to be found (sdcerr 
+c                                  remained small as h was decreased itmax times).
+               inform = 3
+               hphi = abs(hsave)
+               hopt = hphi
+               fdest = fdsave
+               cdest = cdsave
+               sdest = sdsave
+               errbnd = hopt*abs(sdest)/2d0 + 2d0*epsa/hopt
+
+            end if
+
+         end if
+
+      end if
+c                                 end of chcore
+      end
+
+      subroutine lscrsh (nclin,nctotl,nactiv,nfree,n,lda,istate,kactiv,
+     *                   tolact,a,ax,bl,bu,x,wx)
+c----------------------------------------------------------------------
+c     lscrsh  computes the quantities istate, kactiv, nactiv, and nfree 
+c     associated with the working set at x.
+
+c     an initial working set is selected. nearly-satisfied or violated 
+c     bounds are added, and lastly general linear constraints are added.
+
+c     values of istate(j)
+c        - 2         - 1         0           1          2         3
+c     a'x lt bl   a'x gt bu   a'x free   a'x = bl   a'x = bu   bl = bu
+c----------------------------------------------------------------------
+      implicit none
+
+      integer lda, n, nactiv, nclin, nctotl, nfree, istate(nctotl), 
+     *        kactiv(n), i, imin, is, j, nfixed
+
+      double precision a(lda,*), ax(*), bl(nctotl), bu(nctotl),
+     *                 wx(n), x(n), tolact, residl, resl, resmin, 
+     *                 resu, toobig, ddot
+
+      external ddot
+
+      double precision wmach
+      common/ cstmch /wmach(10)
+c----------------------------------------------------------------------
+      call dcopy (n,x,1,wx,1)
+c                                 initialize variables
+      nfixed = 0
+      istate(1:nctotl) = 0
+c                                 initialize constraints
+      nactiv = 0
+
+      do j = n+1, nctotl
+
+         if (bl(j).eq.bu(j)) then
+            istate(j) = 3
+            nactiv = nactiv + 1
+            kactiv(nactiv) = j - n
+         end if
+
+      end do
+c                                 attempt to add as many constraints as possible to 
+c                                 the working set.
+c                                 -----------------------
+c                                 check if any bounds are violated or nearly 
+c                                 satisfied. if so, add these bounds to the working set and set the
+c                                 variables exactly on their bounds.
+      do j = n, 1, -1
+
+         if (nfixed+nactiv.lt.n) then
+
+               is = 0
+
+               if (wx(j)-bl(j).le.(1d0+abs(bl(j)))*tolact) is = 1
+
+               if (bu(j)-wx(j).le.(1d0+abs(bu(j)))*tolact) is = 2
+
+               if (is.gt.0) then
+
+                  istate(j) = is
+
+                  if (is.eq.1) wx(j) = bl(j)
+                  if (is.eq.2) wx(j) = bu(j)
+
+                  nfixed = nfixed + 1
+
+               end if
+
+         else
+
+            exit
+
+         end if
+
+      end do
+c                                 find the linear constraint with
+c                                 smallest residual <= tolact and add it
+c                                 to the working set. repeat until the working set
+c                                 is complete or all remaining residuals are too large.
+      if (nclin.gt.0 .and. nactiv+nfixed.lt.n) then
+c                                 compute residuals for all constraints not in
+c                                 working set.
+         do i = 1, nclin
+            if (istate(n+i).le.0) ax(i) = ddot (n,a(i,1),lda,wx)
+         end do
+
+         is = 1
+
+         toobig = tolact + tolact
+
+         do
+
+            if (is.gt.0 .and. nfixed+nactiv.lt.n) then
+
+               is = 0
+               resmin = tolact
+
+               do i = 1, nclin
+
+                  j = n + i
+
+                  if (istate(j).eq.0) then
+
+                     resl = abs(ax(i)-bl(j))/(1d0+abs(bl(j)))
+                     resu = abs(ax(i)-bu(j))/(1d0+abs(bu(j)))
+
+                     residl = min(resl,resu)
+
+                     if (residl.lt.resmin) then
+
+                        resmin = residl
+                        imin = i
+                        is = 1
+                        if (resl.gt.resu) is = 2
+
+                     end if
+
+                  end if
+
+               end do
+
+               if (is.gt.0) then
+
+                  nactiv = nactiv + 1
+                  kactiv(nactiv) = imin
+                  j = n + imin
+                  istate(j) = is
+
+               end if
+
+            else
+
+               exit
+
+            end if
+
+         end do
+
+      end if
+
+      nfree = n - nfixed
+c                                 end of lscrsh
+      end
+
+      subroutine lsadds (unitq,inform,k2,nactiv,nz,nfree,nrank,nrejtd,
+     *                   nres,ngq,n,ldzy,lda,ldr,ldt,istate,kactiv,kx,
+     *                   condmx,a,r,t,res,gq,zy,w,c,s)
+c----------------------------------------------------------------------
+c     lsadds  includes general constraints 1 thru k2 as new rows of
+c     the tq factorization stored in t, zy. if nrank is nonzero, the
+c     changes in q are reflected in nrank by n triangular factor r such
+c     that
+c                         c  =  p (r) q,
+c                                 (0)
+c     where  p  is orthogonal.
+c----------------------------------------------------------------------
+      implicit none
+
+      logical unitq
+
+      integer inform, k2, lda, ldr, ldt, ldzy, n, nz, istate(*), k,
+     *        nactiv, nfree, ngq, nrank, nrejtd, nres, jadd, l,
+     *        i, iadd, ifix, iswap, kactiv(n), kx(n)
+
+      double precision a(lda,*), c(n), gq(n,*), r(ldr,*), res(n,*),
+     *                 s(n), t(ldt,*), w(n), zy(ldzy,*), condmx, 
+     *                 dnrm2
+
+      external dnrm2
+
+      double precision wmach
+      common/ cstmch /wmach(10)
+
+      double precision asize, dtmax, dtmin
+      common/ ngg008 /asize, dtmax, dtmin
+c----------------------------------------------------------------------
+c                                 estimate the condition number of the constraints that are not
+c                                 to be refactorized.
+      if (nactiv.eq.0) then
+         dtmax = 0d0
+         dtmin = 1d0
+      else
+         call scond (nactiv,t(nactiv,nz+1),ldt-1,dtmax,dtmin)
+      end if
+
+      do k = 1, k2
+
+         iadd = kactiv(k)
+         jadd = n + iadd
+
+         if (nactiv.lt.nfree) then
+
+            call lsadd (unitq,inform,ifix,iadd,jadd,nactiv,nz,nfree,
+     *                  nrank,nres,ngq,n,lda,ldzy,ldr,ldt,kx,condmx,a,r,
+     *                  t,res,gq,zy,w,c,s)
+
+            if (inform.eq.0) then
+               nactiv = nactiv + 1
+               nz = nz - 1
+            else
+               istate(jadd) = 0
+               kactiv(k) = -kactiv(k)
+            end if
+         end if
+      end do
+
+      if (nactiv.lt.k2) then
+
+c        some of the constraints were classed as dependent and not
+c        included in the factorization. re-order the part of  kactiv
+c        that holds the indices of the general constraints in the
+c        working set. move accepted indices to the front and shift
+c        rejected indices (with negative values) to the end.
+
+         l = 0
+
+         do k = 1, k2
+            i = kactiv(k)
+            if (i.ge.0) then
+               l = l + 1
+               if (l.ne.k) then
+                  iswap = kactiv(l)
+                  kactiv(l) = i
+                  kactiv(k) = iswap
+               end if
+            end if
+         end do
+
+      end if
+
+      nrejtd = k2 - nactiv
+c                                 end of lsadds
+      end

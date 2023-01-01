@@ -446,14 +446,13 @@ c                                 local solution model variables:
       double precision deph,dydy,dnu
       common/ cxt3r /deph(3,j3,h9),dydy(m4,j3,h9),dnu(j3,h9),equimo(h9)
 
-      double precision dzdp, dmdp, ds0dp, dgex, dcdp, gend
+      double precision dzdp, ds0dp, dgex, dcdp, gend
 c                                 derivatives with respect to the p' th endmember fraction:
 c                                 derivative of site fraction (endmember, species, site, model)
-c                                 derivative of site mulitplicity (site,endmember,model) 
 c                                 derivative of the mechanical negentropy (endmember,model)
 c                                 derivative of the excess function (endmember,factor,term,model)
 c                                 derivative of the bulk composition (component,endmember,model)
-      common/ cdzdp /dzdp(m11,m10,m14,h9), dmdp(m19,m14,h9),
+      common/ cdzdp /dzdp(m11,m10,m14,h9),
      *               ds0dp(m14,h9), dgex(m14,m2,m1,h9), 
      *               dcdp(k5,m14,h9), gend(m14)
 
@@ -472,8 +471,8 @@ c                                 flag for near stable static compositions
       logical ststbl
       common/ cststb /ststbl(k1)
 c                                 local solution model logical variables
-      logical depmod,laar,ordmod,recip,lres,unbd
-      common/ cst160 /depmod,laar,ordmod,recip,lres,unbd
+      logical depmod,laar,ordmod,recip,modres,unbd
+      common/ cst160 /depmod,laar,ordmod,recip,modres,unbd
 c                                 compenent degeneracy flags/counters
       logical dispro
       integer idegen, idg, jdegen, jdg
@@ -515,3 +514,15 @@ c                                 dynamic optimization starting points
       double precision lsamt, lamt
       common/ cst120 / lsamt(k19), lamt(k19), 
      *                 lcpt, lspt, ldv(k19), lsdv(k19), lsst(k19)
+c                                 nlpsol blocks
+      double precision bigbnd, bigdx, bndlow, bndupp, tolact, tolfea, 
+     *                 tolrnk
+      common/ ngg019 /bigbnd, bigdx, bndlow, bndupp, tolact, tolfea, 
+     *                tolrnk
+
+      logical incrun
+      double precision rhomax, rhonrm, rhodmp
+      common/ ngg017 /rhomax, rhonrm, rhodmp, incrun
+
+      double precision hfwd, hctl
+      common/ cxt009 /hfwd(m14), hctl(m14)

@@ -472,6 +472,8 @@ c                                  save the old count
 
       end do
 
+c     write (*,*) 'end of reopt'
+
       end
 
       subroutine resub (iter)
@@ -485,7 +487,7 @@ c----------------------------------------------------------------------
 
       logical swap, bad
 
-      integer i, ids, lds, id, kd, iter, idif
+      integer i, ids, lds, id, kd, iter, idif, ifail
 
       double precision gg, gsol1
 
@@ -516,6 +518,10 @@ c----------------------------------------------------------------------
 
       integer ipoint,kphct,imyn
       common/ cst60 /ipoint,kphct,imyn
+
+      integer igood(h9), ibad(h9)
+      data igood, ibad/h9*0,h9*0/
+      save igood, ibad
 c----------------------------------------------------------------------
 c                                 reset refinement point flags
       do i = 1, jpoint
@@ -595,9 +601,9 @@ c                                 for lagged speciation with only
 c                                 one solvent species this is
 c                                 all that needs to be done.
          if (iter.eq.1) then
-            gg = gsol1 (rids,.true.)
+            gg = gsol1 (ids,.true.)
          else 
-            gg = gsol1 (rids,.false.)
+            gg = gsol1 (ids,.false.)
          end if
 
          call savrpc (gg,nopt(37),swap,idif)
@@ -609,15 +615,47 @@ c                                 amount can be initialized
 
             if (lopt(61)) call begtim (15)
 c                                  normal solution
-            call minfrc
+            call minfrc (ifail)
 
             if (lopt(61)) call endtim (15,.false.,'minfrc')
+
+            if (ifail.eq.0) then
+               
+               igood(ids) = igood(ids) + 1
+            
+               if (iter.eq.1.and..not.ststbl(id)) then
+c                 write (*,*) 'not good now good ',id,ids
+               end if 
+            
+            else
+            
+               ibad(ids) = ibad(ids) + 1
+            
+               if (ifail.eq.1) then
+c                 write (*,*) 'and i am outta here 0 iter',ids
+               else if (ifail.eq.2) then
+c                 write (*,*) 'bounded w/<0 fraction',ids
+               else if (ifail.eq.3) then 
+c                 write (*,*) 'bad site fraction',ids
+               else if (ifail.eq.4) then 
+c                 write (*,*) 'never happens',ids
+               end if
+            
+               if (iter.eq.1.and.ststbl(id)) then
+c                 write (*,*) 'not good',id,ids
+               else if (iter.eq.1.and..not.ststbl(id)) then
+c                 write (*,*) 'not good & not good',id,ids
+               end if 
+            
+            end if
 
          end if
 
          lds = ids
 
       end do
+
+c     write (*,*) 'end of resub'
 
       end
 

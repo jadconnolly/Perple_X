@@ -5795,10 +5795,10 @@ c                                 closure => sio2:
          write (*,*) 'wugga rksi5 ',t,p,xc,y
       end if 
 
-      if (itic.gt.200000) then 
-         itic = 0 
-         write (*,*) 'good,bad:',igood,ibad
-      end if 
+c     if (itic.gt.200000) then 
+c        itic = 0 
+c        write (*,*) 'good,bad:',igood,ibad
+c     end if 
 
 c      if (nit.gt.20) write (*,*) 'rk5 long nit',nit
       end
@@ -6126,11 +6126,7 @@ c                                 grad points to an out of range solution
          if (nit.gt.iopt(21)) then 
 
             bad = .true.
-            exit 
-
-         else if (isnan(x)) then 
-
-            write (*,*) 
+            exit
 
          end if 
 

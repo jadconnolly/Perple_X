@@ -626,10 +626,17 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       if (z.gt.-nopt(50).and.z.le.nopt(55)) then
          badz = .false.
-      else if (z.gt.-nopt(50)) then
-         z = 0d0
-         badz = .false.
+         !if (z.lt.nopt(50)) then
+         !   z = nopt(50)
+         !else if (z.gt.1d0) then
+         !   z = 1d0
+         !end if
       else
+      !    if (dabs(z).lt.dsqrt(nopt(50)).or.
+      !*       z.gt.1d0+dsqrt(nopt(50))) then
+      !
+      !       write (*,*) 'badz',z
+      !    end if 
          badz = .true.
       end if
 
@@ -2152,7 +2159,7 @@ c----------------------------------------------------------------------
       stck = .true.
       norf = .true.
       badx = .false.
-      lres = .false.
+      modres = .false.
       unbd = .false.
 
       do
@@ -2189,7 +2196,7 @@ c           write (*,*) 'low_reach obsolete, 6.9.1+ '//tname
 
          else if (key.eq.'use_model_resolution') then
 
-            lres = .true.
+            modres = .true.
 c           write (*,*) 'set low res for '//tname
 
          else if (key.eq.'reject_bad_composition') then
@@ -6787,7 +6794,7 @@ c                                 read switch to make GALL use MINFXC
 c                                 initialize autorefine arrays
       stable(im) = .false.
       limit(im) = .false.
-      lorch(im) = lres
+      lorch(im) = modres
 c                                 initialize compositional distances
       do i = 1, icp
          dcp(i,im) = 0d0
@@ -9188,17 +9195,15 @@ c                                 for each term:
 c                                 sdzdp is (dz(i,j)/dp(l))
             dzdy = sdzdp(l,j,i,id)
 
-            if (zl.lt.nopt(50)) then
-               zl = nopt(50)
-               lnz = nopt(54)
-            else
-               zt = zt + zl
-               lnz = (1d0 + dlog(zl))
+            if (zl.lt.nopt(50)) zl = nopt(50)
+
+            zt = zt + zl
+
+            lnz = dlog(zl)
 c                                 the entropy
-               sy = sy + zl*dlog(zl)
-            end if
+            sy = sy + zl * lnz
 c                                 the first derivative
-            dzy = dzy - dzdy * lnz
+            dzy = dzy - dzdy * (1d0 + lnz)
 c                                 the second
             dzyy = dzyy  - dzdy**2 / zl
 
@@ -9209,16 +9214,13 @@ c                                 species:
 
          dzdy = sdzdp(l,j,i,id)
 
-         if (zl.lt.nopt(50)) then
-            zl = nopt(50)
-            lnz = nopt(54)
-         else
-            lnz = (1d0 + dlog(zl))
+         if (zl.lt.nopt(50)) zl = nopt(50)
+
+         lnz = dlog(zl)
 c                                 the entropy
-            sy = sy + zl*dlog(zl)
-         end if
+         sy = sy + zl * lnz
 c                                 the first derivative is
-         dzy = dzy - dzdy * lnz
+         dzy = dzy - dzdy * (1d0 + lnz)
 c                                 and the second is
          dzyy = dzyy  - dzdy**2 / zl
 
@@ -20139,8 +20141,6 @@ c----------------------------------------------------------------------
 c                                 configurational negentropy derivatives:
 c                                 for each site
       do i = 1, msite(ids)
-c                                 multiplicity derivatives (for temkin models)
-         dmdp(i,1:nvar,ids) = 0d0
 c                                 site fraction derivatives
          dzdp(1:zsp1(ids,i),i,1:nvar,ids) = 0d0
 c                                 for each species
@@ -20163,10 +20163,6 @@ c                                  to all remaining endmembers
                   end do
 
                end if
-
-               do l = 1, nvar
-                  dmdp(i,l,ids) = dmdp(i,l,ids) + dzdp(j,i,l,ids)
-               end do
 
             end do
 
@@ -20468,11 +20464,11 @@ c                                 for each term:
                   z(j) = z(j) + dcoef(k,j,i,ids) * pa(ksub(k,j,i,ids))
                end do
 
-               call ckzlnz (z(j),zlnz)
-
                zt = zt + z(j)
 
-               call ckdlnz (z(j),lnz)
+               call ckzlnz (z(j),zlnz)
+
+               lnz = 1d0 + dlog(z(j))
 
                do l = 1, nvar
 
@@ -20488,7 +20484,7 @@ c                                 for each term:
 c                                 site negentropy
             zlnz = zmult(ids,i) * zlnz
 c                                 for non-temkin sites dzdp is already scaled by q*R
-            call ckdlnz (zt,lnz)
+            lnz = 1d0 + dlog(zt)
 
             do l = 1, nvar
 
@@ -20515,7 +20511,9 @@ c                                 convert molar amounts to fractions
             z(1:zsp(ids,i)) = z(1:zsp(ids,i)) / zt
 
             do j = 1, zsp(ids,i)
+c                                 ckzlnz sets z < nopt(50) = nopt(50)
                call ckzlnz (z(j),zlnz)
+
             end do
 c                                 site negentropy
             zlnz = r * zt * zlnz
@@ -20526,13 +20524,11 @@ c                                 derivatives
 c                                 for each species
                do j = 1, zsp(ids,i)
 
-                  call ckdlnz (z(j),lnz)
-
-                  dzlnz = dzlnz + dzdp(j,i,l,ids) * lnz
+                  dzlnz = dzlnz +  dzdp(j,i,l,ids) * dlog(z(j))
 
                end do
 
-               dsdp(l) = dsdp(l) + dmdp(i,l,ids)*zlnz + r*zt*dzlnz
+               dsdp(l) = dsdp(l) + r*dzlnz
 
             end do
 
@@ -20554,18 +20550,18 @@ c----------------------------------------------------------------------
 
       double precision z, zlnz, dlnz
 c----------------------------------------------------------------------
-      if (z.gt.0d0) then
- 
-         dlnz = dlog(z) + 1d0
-         zlnz = zlnz + z * dlog(z)
+      if (z.gt.1d0) then
 
-      else
-c                                 z is set only for evaluation of second 
-c                                 derivative
+         z = 1d0
+
+      else if (z.lt.nopt(50)) then
+
          z = nopt(50)
-         dlnz = nopt(54)
 
       end if
+
+      dlnz = dlog(z) + 1d0
+      zlnz = zlnz + z * dlog(z)
 
       end 
 
@@ -20582,30 +20578,13 @@ c----------------------------------------------------------------------
       if (z.gt.1d0) then
          z = 1d0
       else if (z.lt.nopt(50)) then
-         z = 0d0
-      else
-         zlnz = zlnz + z * dlog(z)
+         z = nopt(50)
       end if
+
+      zlnz = zlnz + z * dlog(z)
 
       end
 
-      subroutine ckdlnz (z,dlnz)
-c----------------------------------------------------------------------
-c subroutine to test/reset site fraction value z and accumulate 1+ln(z)
-c----------------------------------------------------------------------
-      implicit none
-
-      include 'perplex_parameters.h'
-
-      double precision z, dlnz
-c----------------------------------------------------------------------
-      if (z.gt.0d0) then
-         dlnz = 1d0 + dlog(z)
-      else
-         dlnz = nopt(54)
-      end if
-
-      end
 
       subroutine makayz (id)
 c----------------------------------------------------------------------

@@ -2,7 +2,7 @@ c----------------------------------------------------------------------
 
 c TLIB - a library of subprograms called by the PERPLEX programs.
 
-c Copyright (C) 1986-2022 James A D Connolly
+c Copyright (C) 1986-2023 James A D Connolly
 
 c This file is part of Perple_X.
 
@@ -31,9 +31,9 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X version 6.9.1, source updated December 2, 2022.',
+     *     'Perple_X version 6.9.2, source updated January 1, 2023.',
 
-     *     'Copyright (C) 1986-2022 James A D Connolly '//
+     *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
 
       end
@@ -137,26 +137,10 @@ c----------------------------------------------------------------------
       double precision wmach
       common/ cstmch /wmach(10)
 
-      integer itnfix, kdegen, ndegen, nfix
-      double precision tolinc, tolx0
-      common/ ngg005 /tolx0, tolinc, kdegen, ndegen, itnfix, nfix(2)
-
       integer itmax1, itmax2, kchk, kcycle, lcrash, lprob, 
-     *        maxact, mxfree, maxnz, mm, nn, nnclin
+     *        maxact, mxfree, maxnz
       common/ ngg010 /itmax1, itmax2, kchk, kcycle, lcrash, lprob, 
-     *                maxact, mxfree, maxnz, mm, nn, nnclin
-
-      double precision bigbnd, bigdx, bndlow, bndupp, tolact, tolfea, 
-     *                 tolrnk
-      common/ ngg011 /bigbnd, bigdx, bndlow, bndupp,
-     *                tolact, tolfea, tolrnk
-
-      logical incrun
-      double precision rhomax, rhonrm, rhodmp, scale
-      common/ ngg017 /rhomax, rhonrm, rhodmp, scale, incrun
-
-      double precision big1, big2, bnd3, bnd4, tol5, tol6, tol7
-      common/ ngg019 /big1, big2, bnd3, bnd4, tol5, tol6, tol7
+     *                maxact, mxfree, maxnz
 c----------------------------------------------------------------------
 c                                 periodic fractions
       r13 = 1d0/3d0
@@ -206,8 +190,8 @@ c                                 feasibility tolerance (often used as numeric z
       nopt(52) = 2d0*wmach(3)
       nopt(53) = wmach(1)
 c                                 infinite log + 1, for configurational entropy derivatives
-      nopt(50) = wmach(4)/1d4
-      nopt(54) = 1d0 + dlog(nopt(50))
+      nopt(50) = wmach(1)
+
       nopt(55) = 1d0 + nopt(50)
       nopt(56) = 1d0 - nopt(50)
 
@@ -224,30 +208,6 @@ c                                 solution composition zero and one
       zero = dsqrt(r2)
       r1 = 1d0 + zero
       one = 1d0 - zero
-c                                 -------------------------------------
-c                                 set permanent parameters for lpsol
-c                                 common blocks ngg010, ng011, ngg005,
-c                                 itmax2 may be reset below as iopt(7)
-      itmax2 = 500
-      kchk = 50
-      kcycle = 10000
-c                                 kdegen:  expand frequency
-      kdegen = kcycle
-      tolact = 1d-2
-      bigbnd = 0.99999d20
-      bigdx = bigbnd
-c                                 tolinc: scaled increment to the current featol
-      tolinc = 0.49d0/kcycle
-c                                 tolx0: the minimum (scaled) feasibility tolerance
-      tolx0 = 0.5d0
-c                                 -------------------------------------
-c                                 set permanent parameters for nlpsol
-c                                 common blocks ngg017, ng019. 
-c                                 NOTE common block variable names are local
-      rhomax = 1d0/wmach(3)
-      tol5 = 1d-2
-      big1 = 0.99999d20
-      big2 = big1
 c                                 -------------------------------------
 c                                 default option values:
 c                                 reserved for temporary use:
@@ -400,7 +360,7 @@ c                                  0 - only use minfx when speci2 sets minfx, do
 c                                  1 - set minfx on any constraint, but allow speci2 to continue
 c                                  2 - set minfx on any constraint, only continue for icase = 0
 c                                  3 - set minfx on any constraint, continue for all cases.
-      iopt(37) = 0
+      iopt(37) = 5
 c                                 dynamic_LP_start
 c                                  0 - cold
 c                                  1 - warm
@@ -412,7 +372,7 @@ c                                  0 - cold
 c                                  1 - warm
 c                                  2 - hot
       iopt(39) = 1
-      valu(39) = 'hot'
+      valu(39) = 'war'
 c                                 keep_max
       iopt(52) = 20000
 c                                 -------------------------------------
@@ -908,8 +868,8 @@ c                                 use cold starts for dynamic LP
 c                                 use cold starts for dynamic LP
             if (val.eq.'col') then 
                iopt(39) = 0
-            else if (val.eq.'war') then 
-               iopt(39) = 1
+            else if (val.eq.'hot') then 
+               iopt(39) = 2
             end if
 
             valu(39) = val
@@ -1362,6 +1322,14 @@ c                                 reserved values for debugging, etc
 
       close (n8)
 c                                 -------------------------------------
+c                                 set permanent parameters for lpsol
+c                                 common blocks ngg010, ng011, ngg005
+      call lpset 
+c                                 -------------------------------------
+c                                 set permanent parameters for nlpsol
+c                                 common blocks ngg017, ng019.
+      call nlpset
+c                                 -------------------------------------
 c                                 computation dependent options
 c                                 -------------------------------------
 c                                 automatic specification of metastable
@@ -1608,6 +1576,94 @@ c                                 consequent value for k1
 1180  format (/,'Error: value ',a,' is invalid for Perple_X option ',
      *        'keyword ',a,/,'see www.perplex.ch/perplex_options.html ',
      *        'for a list of valid values',/)
+      end 
+
+      subroutine lpset
+c----------------------------------------------------------------------
+c                                 set permanent parameters for lpsol
+c                                 common blocks ngg010, ng011, ngg005,
+c                                 itmax2 may be reset in 
+c---------------------------------------------------------------------
+      implicit none
+
+      integer itnfix, kdegen, ndegen, nfix
+      double precision tolinc, tolx0
+      common/ ngg005 /tolx0, tolinc, kdegen, ndegen, itnfix, nfix(2)
+
+      integer itmax1, itmax2, kchk, kcycle, lcrash, lprob, 
+     *        maxact, mxfree, maxnz
+      common/ ngg010 /itmax1, itmax2, kchk, kcycle, lcrash, lprob, 
+     *                maxact, mxfree, maxnz
+
+      double precision bigbnd, bigdx, bndlow, bndupp, tolact, tolfea, 
+     *                 tolrnk
+      common/ ngg011 /bigbnd, bigdx, bndlow, bndupp,
+     *                tolact, tolfea, tolrnk
+c----------------------------------------------------------------------
+      itmax2 = 500
+      kchk = 50
+      kcycle = 10000
+c                                 kdegen:  expand frequency
+      kdegen = kcycle
+      tolact = 1d-2
+      bigbnd = 0.99999d20
+      bigdx = bigbnd
+c                                 tolinc: scaled increment to the current featol
+      tolinc = 0.49d0/kcycle
+c                                 tolx0: the minimum (scaled) feasibility tolerance
+      tolx0 = 0.5d0
+
+      end
+
+      subroutine nlpset
+c----------------------------------------------------------------------
+c                                 set permanent parameters for nlpsol
+c                                 common blocks ngg017, ngg019, ngg021
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      double precision fac 
+
+      double precision wmach
+      common/ cstmch /wmach(10)
+
+      double precision cdint, ctol, dxlim, epsrf, eta, fdint, ftol,
+     *                 hcndbd
+      common/ ngg021 /cdint, ctol, dxlim, epsrf, eta,
+     *                fdint, ftol, hcndbd
+
+      double precision epspt3, epspt5, epspt8, epspt9
+      common/ ngg006 /epspt3, epspt5, epspt8, epspt9
+
+      integer count
+      common/ cstcnt /count
+c----------------------------------------------------------------------
+      rhomax = 1d0/wmach(3)
+      tolact = 1d-2
+      bigbnd = 0.99999d20
+      bigdx  = bigbnd
+c                                 fac = 1d-2 was being used in 691:
+      fac = 1d0
+c                                 EPSRF, function precision
+      epsrf = (wmach(3)*fac)**(0.9)
+c                                 FTOL, optimality tolerance
+      ftol = (wmach(3)*fac)**(0.8)
+c                                 CTOL, feasibility tolerance
+      ctol = epspt5
+c                                 DXLIM, step limit < nopt(5) leads to bad results
+      dxlim = 0.5d0
+c                                 ETA, linesearch tolerance, low values -> more accurate search 
+c                                 -> more function calls, 0.05-.4 seem best
+      eta = 0.225d0
+c                                 FDINT, finite difference interval, forward.
+      fdint = nopt(49)
+c                                 CDINT, 2nd order forward finite difference interval
+      cdint = fdint**(0.67d0)
+c                                 objective function calls for minfrc
+      count = 0
+
       end 
 
       subroutine outopt (n)
