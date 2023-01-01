@@ -283,8 +283,8 @@ c-----------------------------------------------------------------------
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
-      logical outrpc
-      common/ ngg015 /outrpc
+      logical outrpc, maxs
+      common/ ngg015 /outrpc, maxs
 
       logical fdset, cntrl, numric, fdincs
       common/ cstfds /fdset, cntrl, numric, fdincs
