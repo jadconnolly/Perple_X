@@ -59,6 +59,9 @@ LIBRARY = pscom.o pslib.o rlib.o tlib.o flib.o olib.o resub.o minime_blas.o blas
 
 LIBRARY_PS = cont_lib.o pscom.o pslib.o tlib.o
 
+clean: 
+	rm -f *.o $(MYOBJ)
+
 ###################### TARGETS FOR 692+ PROGRAMS ######################### 
 #
 #
