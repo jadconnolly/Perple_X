@@ -292,14 +292,7 @@ c-----------------------------------------------------------------------
       integer count
       common/ cstcnt /count
 c-----------------------------------------------------------------------
-      if (rids.eq.1) then 
-
-c        ppp(1:7) = 0.125d0
-
-c        write (*,*) count, fdnorm
-      end if
-         count = count + 1
-
+      count = count + 1
 
       if (lopt(61)) call begtim (2)
 c                                 reconstruct pa array

@@ -626,17 +626,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       if (z.gt.-nopt(50).and.z.le.nopt(55)) then
          badz = .false.
-         !if (z.lt.nopt(50)) then
-         !   z = nopt(50)
-         !else if (z.gt.1d0) then
-         !   z = 1d0
-         !end if
       else
-      !    if (dabs(z).lt.dsqrt(nopt(50)).or.
-      !*       z.gt.1d0+dsqrt(nopt(50))) then
-      !
-      !       write (*,*) 'badz',z
-      !    end if 
          badz = .true.
       end if
 

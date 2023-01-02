@@ -625,7 +625,7 @@ c                                 into w(lgrd)
       w(lgq:lgq+n-1) = gradu(1:n)
 c                                 transform grad (w(lgq))
       call cmqmul (6,n,nz,nfree,ldq,unitq,iw(lkx),w(lgq),w(lq),w(lwrk1))
-c                                 signal gsol2 to save g
+c                                 signal gsol2 to save g on request
       outrpc = .true.
 c                                 solve the problem.
       call npcore (unitq,inform,iter,n,nclin,nctotl,
