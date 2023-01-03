@@ -606,7 +606,7 @@ c                                compute objective function
 
       g0 = objf
 
-      if (numric.and.rids.eq.99) then
+      if (numric) then
 c                                 forward increments are in w(1:n)
 c                                 central increments are in w(lhctrl:+n)
 c                                 w(ldx) is used as a dummy for grad when
@@ -4702,7 +4702,7 @@ c----------------------------------------------------------------------
 
       double precision alfa, alfmax, alfsml, dxnorm, epsrf,
      *                 eta, gdx, glf, grdalf, objalf, objf,
-     *                 xnorm, dx(n), grad(n),
+     *                 xnorm, dx(n), grad(n), newa, sum,
      *                 gradu(n), x(n), x1(n), alfbst, epsaf,
      *                 fbest, ftry, g0, gbest, gtry,
      *                 oldf, oldg, q, s, t, targtg, tgdx, tglf,
@@ -4808,25 +4808,56 @@ c                (alfmax le toltny  or  oldg ge 0).
 
          end if
 
-c     if done = .false.,  the problem functions must be computed for
-c     the next entry to srchc  or srchq.
-c     if done = .true.,   this is the last time through.
-
          if (.not. done) then
-
+c                                 if ~done, compute objfun for srchc/q
             call dcopy (n,x1,1,x,1)
             call daxpy (n,alfa,dx,1,x,1)
+c                                 hack for simplicial composition
+            if (bl(1).eq.0) then
 
-c        compute the value and gradient of the objective function.
+               newa = alfa
+               sum = 0d0
+
+               do j = 1, n
+
+                  sum = sum + x(j)
+
+                  if (x(j).lt.nopt(50)) then
+
+                     if (x(j).gt.-nopt(50)) then 
+                        x(j) = 0d0
+                     else 
+                        if (x1(j)/dx(j).lt.newa) newa = -x1(j)/dx(j)
+                     end if
+
+                  end if
+
+               end do
+
+               if (newa.lt.alfa.and.newa.ge.0d0) then
+
+                     write (*,*) 'alfa from ',alfa,'to',newa,
+     *                           ' rids/num ',rids,numric
+
+                     alfa = newa
+
+                     call dcopy (n,x1,1,x,1)
+                     call daxpy (n,alfa,dx,1,x,1)
+
+               end if
+
+               if (sum.gt.1d0) then
+                  write (*,*) 'uh oh?',sum
+               end if
+
+            end if 
 
             call objfun (n,x,tobj,gradu,fdnorm,bl,bu)
 
             tobjm = tobj
 
             ftry = tobjm - oldf - 1d-4 * oldg * alfa
-
-c        compute auxiliary gradient information.
-
+c                                 compute auxiliary gradient info 
             if (.not.numric) then
 
                gtry = ddot (n,gradu,1,dx)
@@ -5896,7 +5927,7 @@ c                                 hot start for the first qp subproblem.
       do
 
 c        if (rids.eq.3) then
-c           isum = isum + minits 
+            isum = isum + minits 
 c           write (*,*) isum, objf
 c           write (*,*) x
 c        end if

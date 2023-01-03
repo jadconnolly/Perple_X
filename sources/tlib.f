@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X version 7.0.0, January 2, 2023.',
+     *     'Perple_X version 7.0.1, January 3, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -194,7 +194,8 @@ c                                 infinite log + 1, for configurational entropy 
 
       nopt(55) = 1d0 + nopt(50)
       nopt(56) = 1d0 - nopt(50)
-
+c                                 the biggest exponent
+      nopt(57) = dlog(huge(0d0)**(0.998d0))
       wmach(5) = 1d0 + r2
 c                                 largest number, sqrt
       wmach(7) = huge(0d0)**(0.998d0)
@@ -1653,7 +1654,8 @@ c                                 FTOL, optimality tolerance
 c                                 CTOL, feasibility tolerance
       ctol = epspt5
 c                                 DXLIM, step limit < nopt(5) leads to bad results
-      dxlim = 0.5d0
+c                                 relates to alfamax as (1+norm(x))*dxlim 
+      dxlim = 0.05d0
 c                                 ETA, linesearch tolerance, low values -> more accurate search 
 c                                 -> more function calls, 0.05-.4 seem best
       eta = 0.225d0

@@ -8928,7 +8928,6 @@ c                                 check for degenerate compositions
 
       end
 
-
       logical function degpin (k,id)
 c----------------------------------------------------------------------
 c check if ordered species k contains a component that the system is 
@@ -14696,6 +14695,9 @@ c                                 cannot be made with oxide components.
 c                                 normalize by RT
             if (kill) then
                dg = 0d0
+            else if (dg/rt.gt.nopt(57)) then
+               bad = .true.
+               return
             else
                dg = dexp(dg/rt)
             end if
@@ -18150,8 +18152,9 @@ c getscp gets the bulk chemical composition of solution ids from the composition
 c of its endmembers. the composition of the solution in terms of its endmembers
 c must be set by a prior call to setxyp.
 
-c jd is a pointer that is used only for lagged speciation. For 
-c meemum/vertex it points to the the composition in the cp2 array.
+c jd is a pointer that is used only for lagged speciation. After a call to
+c savrpc in meemum/vertex it points to the the composition in the cp2 array.
+c However, prior to a call to savrpc it getscp cannot be used!
 c For werami it points to the composition in the local caq array.
 c-----------------------------------------------------------------------
       implicit none

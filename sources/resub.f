@@ -251,6 +251,14 @@ c-----------------------------------------------------------------------
       integer npt,jdv
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
+
+      integer count
+      common/ cstcnt /count
+
+      double precision cdint, ctol, dxlim, epsrf, eta, fdint, ftol,
+     *                 hcndbd
+      common/ ngg021 /cdint, ctol, dxlim, epsrf, eta,
+     *                fdint, ftol, hcndbd
 c-----------------------------------------------------------------------
 c                                 the pseudocompounds to be refined
 c                                 are identified in jdv(1..npt)
@@ -472,6 +480,9 @@ c                                  save the old count
 
       end do
 
+c     write (*,*) count
+c     count = 0
+
 c     write (*,*) 'end of reopt'
 
       end
@@ -487,7 +498,7 @@ c----------------------------------------------------------------------
 
       logical swap, bad
 
-      integer i, ids, lds, id, kd, iter, idif, ifail
+      integer i, ids, lds, id, kd, iter, idif, ifail, help
 
       double precision gg, gsol1
 
@@ -575,6 +586,11 @@ c                                 point to solution models
                if (ids.eq.0) cycle 
 
                if (nrf(ids)) cycle
+
+c           if (rkds.eq.0) then
+c              write (*,*) rkds
+c            end if 
+               rkds = id
 c                                 endmember refinement point:
                call endpa (kd,-id,ids)
 
@@ -640,13 +656,7 @@ c                 write (*,*) 'bad site fraction',ids
                else if (ifail.eq.4) then 
 c                 write (*,*) 'never happens',ids
                end if
-            
-               if (iter.eq.1.and.ststbl(id)) then
-c                 write (*,*) 'not good',id,ids
-               else if (iter.eq.1.and..not.ststbl(id)) then
-c                 write (*,*) 'not good & not good',id,ids
-               end if 
-            
+
             end if
 
          end if
@@ -2366,13 +2376,15 @@ c                                 dump iteration details
 
          else if (jkp(i).gt.0) then
 c                                 a metastable solution cpd
-            if (clamda(i).lt.clam(id)) then
+            if (id.gt.0) then
+c                                 and not an endmember
+               if (clamda(i).lt.clam(id)) then
 c                                 keep the least metastable point
-                  jmin(id) = i
-                  clam(id) = clamda(i)
+                     jmin(id) = i
+                     clam(id) = clamda(i)
 
+               end if
             end if
-
          end if
 
       end do
@@ -2525,6 +2537,9 @@ c                                 make a pointer to the original refinement
 c                                 point, this is used by resub
          do i = 1, npt
             mkp(i) = hkp(jdv(i))
+c           if (mkp(i).eq.0) then 
+c              write (*,*) 'oink?'
+c           end if 
          end do
 
       else
@@ -2894,6 +2909,9 @@ c                                 make a pointer to the original refinement
 c                                 point
          do i = 1, npt
             mkp(i) = hkp(jdv(i))
+c           if (mkp(i).eq.0) then 
+c              write (*,*) 'oink?'
+c           end if 
          end do
 
       else
