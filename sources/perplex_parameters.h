@@ -520,9 +520,20 @@ c                                 nlpsol blocks
       common/ ngg019 /bigbnd, bigdx, bndlow, bndupp, tolact, tolfea, 
      *                tolrnk
 
-      logical incrun
       double precision rhomax, rhonrm, rhodmp
-      common/ ngg017 /rhomax, rhonrm, rhodmp, incrun
+      common/ ngg017 /rhomax, rhonrm, rhodmp
 
       double precision hfwd, hctl
       common/ cxt009 /hfwd(m14), hctl(m14)
+
+      integer itmxnp
+      common/ ngg020 /itmxnp
+
+      logical outrpc, maxs
+      common/ ngg015 /outrpc, maxs
+
+      logical fdset, cntrl, numric, fdincs
+      common/ cstfds /fdset, cntrl, numric, fdincs
+
+      integer count
+      common/ cstcnt /count

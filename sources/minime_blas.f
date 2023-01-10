@@ -1,5 +1,5 @@
 
-      subroutine minfrc (ifail)
+      subroutine minfrc
 c-----------------------------------------------------------------------
 c minimize the omega function for the independent endmember fractions
 c of solution ids subject to site fraction constraints
@@ -21,7 +21,7 @@ c-----------------------------------------------------------------------
       logical zbad, xref, swap
 
       integer i, nvar, iter, iwork(m22), idif, idead,
-     *        istate(m21), nclin, ntot, ifail, itic 
+     *        istate(m21), nclin, ntot
 
       double precision ggrd(m19), lapz(m20,m19),gsol1, pinc,
      *                 bl(m21), bu(m21), gfinal, ppp(m19),
@@ -54,12 +54,6 @@ c-----------------------------------------------------------------------
 
       double precision wmach
       common/ cstmch /wmach(10)
-
-      logical fdset, cntrl, numric, fdincs
-      common/ cstfds /fdset, cntrl, numric, fdincs
-
-      data itic/0/
-      save itic
 c-----------------------------------------------------------------------
       yt = pa
 
@@ -116,50 +110,32 @@ c                                 closure for molecular models
       else
 
          numric = .true.
-c                                 settings for numeric derivatives:
-c                                 -----------------------------------
-c                                 fdset: compute increments the 1st
-c                                 time numeric derivatives are computed.
-         fdset = .true. 
-c                                 cntrl: use 2nd order estimate
-         cntrl = .false.
-c                                 fdincs: computed increments available
-         fdincs = .false.
 
       end if
 
       call nlpsol (nvar,nclin,m20,m19,lapz,bl,bu,gsol2,iter,istate,
      *            clamda,gfinal,ggrd,r,ppp,iwork,m22,work,m23,idead)
-
-      itic = itic + 1
-
-c         write (*,*) rids, gfinal,itic, iter
-
-      if (idead.eq.1) then
-c        write (*,*) 'starting point is as good as it gets',rids,idead
-      else if (idead.eq.6) then
-c        write (*,*) 'starting point is as good as it gets',rids,idead
-      else if (idead.eq.4) then
-c         write (*,*) 'ran out of time',rids
-      else if (idead.lt.0.or.idead.eq.3) then 
-c           write (*,*) 'and i am outta here ',rids, idead
-            return
-      end if
-
-c                                 reconstruct pa-array, necessary? yes
-      yt(1:nstot(rids)) = pa(1:nstot(rids))
+c                                 reject results outright if no improvement
+c                                 (idead < 0) or infeasible (idead = 3)
+      if (idead.lt.0.or.idead.eq.3) return
+c                                 reconstruct pa-array, this IS necessary.
       call ppp2pa (ppp,sum,nvar)
-c                                 reject bad site populations, necessary?
+c                                 reject bad site populations, these may not
+c                                 be useful
       if (boundd(rids)) then
-         if (pa(nstot(rids)).lt.0d0) then 
-            ifail = 2
+         if (sum.gt.nopt(55)) then
+c           write (*,*) 'oink 1',sum,rids
             return
+         else if (sum.gt.1d0) then 
+            pa(nstot(rids)) = 0d0
          end if
       end if
-
+      
       if (zbad(pa,rids,zsite,fname(rids),.false.,fname(rids))) then
-         ifail = 3
+      
+c        write (*,*) 'oink 3',rids
          return
+      
       end if
 c                                 save the final point, the point may have
 c                                 already been saved by gsol2 but because
@@ -168,15 +144,8 @@ c                                 a near solution rpc would prevent gsol2 from
 c                                 saving the final composition. here the replicate
 c                                 threshold is reduced to zero (sqrt(eps)).
       call makepp (rids)
-
-      call getscp (rcp,rsum,rids,rids)
 c                                 if logical arg = T use implicit ordering
       gfinal = gsol1 (rids,.false.)
-
-      if (rsum.eq.0d0) then 
-         ifail = 4
-         return
-      end if
 c                                 save the final QP result
       call savrpc (gfinal,0d0,swap,idif)
 
@@ -203,8 +172,9 @@ c                                 exit
 c                                 degeneracy test removed
 c                                 if logical arg = T use implicit ordering
             gfinal = gsol1 (rids,.true.)
-
-            call getscp (rcp,rsum,rids,rids)
+c                                 gsol1 computes rcp, rsum for ksmod(39)
+c                                 but a direct call here to getscp will not.
+            if (ksmod(rids).ne.39) call getscp (rcp,rsum,rids,rids)
 c                                 save the scatter point
             call savrpc (gfinal,nopt(48)/2d0,swap,idif)
 
@@ -245,7 +215,7 @@ c-----------------------------------------------------------------------
 
       end
 
-      subroutine gsol2 (nvar,ppp,gval,dgdp,fdnorm,bl,bu)
+      subroutine gsol2 (nvar,ppp,gval,dgdp)
 c-----------------------------------------------------------------------
 c function to evaluate gibbs energy of a solution for minfrc. can call 
 c either gsol1 with order true or false, true seems to give better results
@@ -260,8 +230,7 @@ c-----------------------------------------------------------------------
       integer i, j, nvar, idif
 
       double precision ppp(*), gval, dgdp(*), psum, 
-     *                 gsol1, g, bsum, zsite(m10,m11),
-     *                 bl(*), bu(*), fdnorm
+     *                 gsol1, g, bsum, zsite(m10,m11)
 
       external gsol1, zbad
 
@@ -282,15 +251,6 @@ c-----------------------------------------------------------------------
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
-
-      logical outrpc, maxs
-      common/ ngg015 /outrpc, maxs
-
-      logical fdset, cntrl, numric, fdincs
-      common/ cstfds /fdset, cntrl, numric, fdincs
-
-      integer count
-      common/ cstcnt /count
 c-----------------------------------------------------------------------
       count = count + 1
 
@@ -299,13 +259,11 @@ c                                 reconstruct pa array
       call ppp2pa (ppp,psum,nvar)
 
       call makepp (rids)
-c                                 get the bulk composition from pa
-      call getscp (rcp,rsum,rids,rids)
 
       if (deriv(rids)) then
 c                                 analytical derivatives:
          call getder (g,dgdp,rids)
-c                                 ------------------------------------
+
          gval = g
 
          do j = 1, icp
@@ -326,22 +284,10 @@ c                                 available, get g at the composition
          g = gsol1(rids,.false.)
 c                                 level it
          call gsol5 (g,gval)
-c                                  compute derivatives
-         call numder (gval,dgdp,ppp,fdnorm,bl,bu,nvar)
 
       end if
 
       if (lopt(57).and.outrpc) then
-
-         if (numric) then
-c                                 if numeric derivatives were
-c                                 evaluated reset composition
-c                                 data
-            call makepp (rids)
-c                                 get the bulk composition from pa
-            call getscp (rcp,rsum,rids,rids)
-
-          end if
 c                                 try to eliminate bad results
          if (psum.lt.one.or.psum.gt.1d0+zero.or.bsum.lt.zero) return
          if (zbad(pa,rids,zsite,'a',.false.,'a')) return
@@ -366,9 +312,7 @@ c-----------------------------------------------------------------------
 
       integer j
 
-      double precision gval, gsol1, g
-
-      external gsol1
+      double precision gval, g
 
       logical mus
       double precision mu
@@ -391,38 +335,6 @@ c                                 convert g to g'
 
       end do
 
-      end
-
-      subroutine gsol6 (gval,ppp,nvar)
-c----------------------------------------------------------------------
-c gsol6 is a shell to compute the leveled g for numerical derivatives
-c invoked by minfrc via gsol2.
-c----------------------------------------------------------------------
-      implicit none
-
-      include 'perplex_parameters.h'
-
-      integer nvar
-
-      double precision ppp(*), gval, gsol1, g, psum
-
-      external gsol1
-
-      integer count
-      common/ cstcnt /count
-c-----------------------------------------------------------------------
-      count = count + 1
-c                                 reconstruct pa array from ppp
-      call ppp2pa (ppp,psum,nvar)
-c                                 make the pp array for gsol1
-      call makepp (rids)
-c                                 get the bulk composition from pa
-      call getscp (rcp,rsum,rids,rids)
-c                                 get the real g
-      g = gsol1 (rids,.false.)
-c                                 get the leveled gval
-      call gsol5 (g,gval)
-c
       end
 
       subroutine savrpc (g,tol,swap,idif)
@@ -535,7 +447,6 @@ c                                 increment counters
       idif = jphct
       icoz(jphct) = zcoct
       zcoct = zcoct + ttot
-
 c                                 lagged speciation quack flag
       quack(jphct) = rkwak
 c                                 normalize and save the composition
@@ -565,7 +476,7 @@ c                                 and normalized bulk fractions if o/d
 
       end 
 
-      subroutine numder (g,dgdp,ppp,fdnorm,bl,bu,nvar)
+      subroutine numder (g,objfun,dgdp,ppp,fdnorm,bl,bu,nvar)
 c-----------------------------------------------------------------------
 c subroutine to evaluate the gradient numerically for minfrc/minfxc
 c on input sum is the total of the fractions, for bounded models this
@@ -577,29 +488,21 @@ c-----------------------------------------------------------------------
 
       integer i, nvar
 
-      double precision ppp(*), dgdp(*), oldpa(m14), 
+      double precision ppp(*), dgdp(*), oldppp, 
      *            dpp, g, g1, g3, bl(*), bu(*), fdnorm
-
-      double precision z, pa, p0a, x, w, y, wl, pp
-      common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
-     *              wl(m17,m18),pp(m4)
 
       double precision cdint, ctol, dxlim, epsrf, eta, fdint, ftol,
      *                 hcndbd
       common/ ngg021 /cdint, ctol, dxlim, epsrf, eta,
      *                fdint, ftol, hcndbd
 
-      logical fdset, cntrl, numric, fdincs
-      common/ cstfds /fdset, cntrl, numric, fdincs
+      external objfun
 c-----------------------------------------------------------------------
-c                                 one or more derivatives are singular
-c                                 because of ln(0) entropy term, evaluate
-c                                 by finite difference, save old 0 values:
-      oldpa(1:nstot(rids)) = pa(1:nstot(rids))
-
       fdnorm = 0d0
 
       do i = 1, nvar
+
+         oldppp = ppp(i)
 
          if (cntrl) then
 c                                 2nd order
@@ -623,49 +526,45 @@ c                                 rel/abs scaling
 c                                 first increment, doubled for central
          if (cntrl) dpp = 2d0*dpp
 c                                 try to avoid invalid values (z<=0)
-         if (pa(i).gt.bu(i)-dpp) then 
-
+         if (ppp(i).gt.bu(i)-dpp) then 
+c
             dpp = -dpp
-
-         else if (pa(i).gt.bl(i)+2d0*dpp) then
+c
+         else if (ppp(i).gt.bl(i)+2d0*dpp) then
 c                                 choose direction away from closest bound
            if (bl(i) + bu(i) - 2d0*ppp(i).lt.0d0) dpp = -dpp
-
+c
          end if
 c                                 apply the increment
-         ppp(i) = oldpa(i) + dpp
+         ppp(i) = oldppp + dpp
 
          if (dabs(dpp).gt.fdnorm) fdnorm = dabs(dpp)
 
          if (cntrl) then
 c                                 g at the double increment
-            call gsol6 (g3,ppp,nvar)
+            call objfun (nvar,ppp,g3,dgdp)
 c                                 single increment
-            ppp(i) = oldpa(i) + dpp/2d0
+            ppp(i) = oldppp + dpp/2d0
 c                                 g at the single increment
-            call gsol6 (g1,ppp,nvar)
+            call objfun (nvar,ppp,g1,dgdp)
 
             dgdp(i) = (4d0*g1- 3d0*g-g3)/dpp
 
          else
 c                                 g at the single increment
-            call gsol6 (g1,ppp,nvar)
+            call objfun (nvar,ppp,g1,dgdp)
 
             dgdp(i) = (g1 - g)/dpp
 
          end if
 c                                 reset ppp
-         ppp(i) = oldpa(i)
+         ppp(i) = oldppp
 
       end do
-c                                 reset pa and make pp:
-      pa(1:nstot(rids)) = oldpa(1:nstot(rids))
-
-      call makepp (rids)
 
       end
 
-      subroutine gsol4 (nvar,ppp,gval,dgdp,fdnorm,bl,bu)
+      subroutine gsol4 (nvar,ppp,gval,dgdp)
 c-----------------------------------------------------------------------
 c gsol4 - a shell to call gsol1 from minfxc, ingsol must be called
 c         prior to minfxc to initialize solution specific paramters. only
@@ -681,15 +580,11 @@ c-----------------------------------------------------------------------
 
       integer ids, i, nvar
 
-      double precision ppp(*), gval, dgdp(*), d2s(j3,j3), 
-     *                 gord, ddq(j3), norm, fdnorm, bl(*), bu(*)
+      double precision ppp(*), gval, dgdp(*), d2s(j3,j3), gord, ddq(j3)
 
       double precision zz, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),zz(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
-
-      logical outrpc, maxs
-      common/ ngg015 /outrpc, maxs
 
       external gord
 c-----------------------------------------------------------------------
@@ -721,7 +616,7 @@ c                                   analytical derivatives, non-equimolar
 c                                   negentropy minimization:
 c                                   will only be called for analytical
 c                                   dnu = 0 case.
-         call sderiv (ids,gval,dgdp,d2s,.true.)
+         call sderiv (ids,gval,dgdp,d2s)
 
          if (.not.equimo(ids)) call errdbg ('piggy wee, piggy waa')
 
@@ -1152,12 +1047,6 @@ c-----------------------------------------------------------------------
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
-      logical fdset, cntrl, numric, fdincs
-      common/ cstfds /fdset, cntrl, numric, fdincs
-
-      logical outrpc, maxs
-      common/ ngg015 /outrpc, maxs
-
       external gsol4, gordp0
 c-----------------------------------------------------------------------
 c                                 compute the disordered g for bailouts
@@ -1282,46 +1171,22 @@ c                                 solution model index
 
       call nlpsol (nvar,nclin,m20,m19,lapz,bl,bu,gsol4,iter,istate,
      *            clamda,gfinal,ggrd,r,ppp,iwork,m22,work,m23,idead)
-c                                 if nlpsol returns iter = 0
-c                                 it's likely failed, make 2 additional 
-c                                 attempts, 1st try numerical verification of 
-c                                 the derivatives, 2nd try use only numerical 
-c                                 derivatives.
 
-c                                 need error testing on idead here! 
-c                                 on failure could switch to numeric
-
+      if (.not.maxs) then 
+         if (idead.lt.0.or.idead.eq.3) then 
+            gfinal = g0
+            pa = p0a
+            return
+         end if
+      end if
 c                                 if ok:
 c                                 set pa to correspond to the final 
 c                                 values in ppp.
       call ppp2p0 (ppp,ids)
 
-      if (.not.maxs) then
-
-         if (itic.gt.0) then 
-c                                 check for fuck-ups
-            ppp(1:nstot(ids)) = p0a(1:nstot(ids))
-
-            p0a(1:nstot(ids)) = pa(1:nstot(ids))
-
-            gfinal = gordp0(ids)
-
-            p0a(1:nstot(ids)) = ppp(1:nstot(ids))
-
-         end if
-c                                 need to call gsol1 here to get 
-c                                 total g, gsol4 is not computing 
-c                                 the mechanical component?
-         if (gfinal.gt.g0.or.iter.eq.0) then 
-            gfinal = g0
-            pa = p0a
-         end if
-
-      end if
-
       end
 
-      subroutine chfd (n,fdnorm,fx,objfun,bl,bu,grad,x,dummy)
+      subroutine chfd (n,fdnorm,fx,objfun,bl,bu,grad,x)
 c----------------------------------------------------------------------
 c chfd  computes difference intervals for gradients of f(x). intervals 
 c are computed using a procedure that usually requires about two 
@@ -1341,16 +1206,12 @@ c----------------------------------------------------------------------
 
       integer n, info, iter, itmax, j
 
-      double precision fdnorm, bl(n), bu(n), dummy(n), 
-     *                 grad(n), x(n), cdest, epsa,
-     *                 errbnd, errmax, errmin, f1, f2, fdest, fx,
-     *                 h, hcd, hfd, hmax, hmin, hopt, hphi,
-     *                 sdest, sumeps, sumsd, xj
+      double precision fdnorm, bl(n), bu(n),  grad(n), x(n), cdest,
+     *                 epsa, errbnd, errmax, errmin, f1, f2, fdest, fx,
+     *                 h, hcd, hfd, hmax, hmin, hopt, hphi, sdest, 
+     *                 sumeps, sumsd, xj
 
       external objfun
-
-      logical fdset, cntrl, numric, fdincs
-      common/ cstfds /fdset, cntrl, numric, fdincs
 
       double precision cdint, ctol, dxlim, epsrf, eta, fdint, ftol,
      *                 hcndbd
@@ -1396,10 +1257,10 @@ c                                 numder may do this better),
          do
 
             x(j) = xj + h
-            call objfun (n,x,f1,dummy,fdnorm,bl,bu)
+            call objfun (n,x,f1,grad)
 
             x(j) = xj + h + h
-            call objfun (n,x,f2,dummy,fdnorm,bl,bu)
+            call objfun (n,x,f2,grad)
 
             call chcore (done,first,epsa,epsrf,fx,info,iter,itmax,cdest,
      *                   fdest,sdest,errbnd,f1,f2,h,hopt,hphi)
@@ -1451,8 +1312,6 @@ c                                 numder may do this better),
       end do
 c                                 signal individual increments available:
       fdincs = .true.
-
-200   return
 
       end
 
@@ -1917,3 +1776,57 @@ c        rejected indices (with negative values) to the end.
       nrejtd = k2 - nactiv
 c                                 end of lsadds
       end
+
+      subroutine badalf (alfa,n,x,x1,dx,char)
+c---------------------------------------------------------------------
+c hack to prevent linesearch from generating bad alfa values for 
+c simplicial solution models
+c---------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer j, n
+
+      character char*1
+
+      double precision alfa, x(*), x1(*), dx(*), newa, sum
+c---------------------------------------------------------------------
+      return
+      if (.not.boundd(rids)) return
+
+      newa = alfa
+      sum = 0d0
+
+      do j = 1, n
+
+         sum = sum + x(j)
+
+         if (x(j).lt.nopt(50)) then
+
+            if (x(j).gt.-nopt(50)) then 
+               x(j) = 0d0
+            else if (dx(j).ne.0d0) then
+               if (x1(j)/dx(j).lt.newa) newa = -x1(j)/dx(j)
+            end if
+
+            end if
+
+         end do
+
+         if (newa.lt.alfa.and.newa.ge.0d0) then
+
+c           write (*,*) char,' from ',alfa,'to',newa,' rids',rids
+
+            alfa = newa
+
+            call dcopy (n,x1,1,x,1)
+            call daxpy (n,alfa,dx,1,x,1)
+
+         end if
+
+          if (sum.gt.1d0) then
+c             write (*,*) 'uh oh?',sum
+          end if
+c                                 end of badalf
+      end 

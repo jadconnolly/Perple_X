@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X version 7.0.1, January 3, 2023.',
+     *     'Perple_X release 7.0.1, January 10, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -361,7 +361,7 @@ c                                  0 - only use minfx when speci2 sets minfx, do
 c                                  1 - set minfx on any constraint, but allow speci2 to continue
 c                                  2 - set minfx on any constraint, only continue for icase = 0
 c                                  3 - set minfx on any constraint, continue for all cases.
-      iopt(37) = 5
+      iopt(37) = 0
 c                                 dynamic_LP_start
 c                                  0 - cold
 c                                  1 - warm
@@ -508,6 +508,8 @@ c                                 override counter limits for (some) warnings
       lopt(64) = .false.
 c                                 fluid_shear_modulus
       lopt(65) = .true.
+c                                 compute_FD_increments for MINFRC
+      lopt(66) = .false.
 c                                 phi_d
       nopt(65) = 0.36
 c                                 initialize mus flag lagged speciation
@@ -850,6 +852,10 @@ c                                 override counter limits for (some) warnings
          else if (key.eq.'fluid_shear_modulus') then
 c                                 compute shear modulus assuming textural eq
             if (val.eq.'F') lopt(65) = .false.
+ 
+         else if (key.eq.'compute_FD_increments') then
+c                                 compute finite difference increments for MINFRC
+            if (val.eq.'T') lopt(66) = .true.
 
          else if (key.eq.'phi_d') then
 c                                 disaggregation porosity for fluid_shear_modulus
@@ -1637,9 +1643,6 @@ c----------------------------------------------------------------------
 
       double precision epspt3, epspt5, epspt8, epspt9
       common/ ngg006 /epspt3, epspt5, epspt8, epspt9
-
-      integer count
-      common/ cstcnt /count
 c----------------------------------------------------------------------
       rhomax = 1d0/wmach(3)
       tolact = 1d-2
@@ -7615,7 +7618,7 @@ c----------------------------------------------------------------
 
       character*5 y*1, units*13, text*195, what*9, sym*1
 
-      integer jcomp, ier, i, ids, count
+      integer jcomp, ier, i, ids, kount
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
@@ -7695,16 +7698,16 @@ c                                define the numerator
 
          if (spec(jcomp)) then
             write (*,1010) (i,spnams(i,ids), i = 1, spct(ids))
-            count = spct(ids)
+            kount = spct(ids)
          else 
             write (*,1010) (i,cname(i), i = 1, icomp)
-            count = icomp
+            kount = icomp
          end if 
 
          read (*,*,iostat=ier) (icps(i,jcomp),rcps(i,jcomp), 
      *                                     i = 1, jcx(jcomp))
          do i = 1, jcx(jcomp)
-            if (icps(i,jcomp).lt.1.or.icps(i,jcomp).gt.count) then
+            if (icps(i,jcomp).lt.1.or.icps(i,jcomp).gt.kount) then
                ier = 1
                exit 
             end if 
@@ -12392,7 +12395,7 @@ c g = a + b*T + c*T*lnT + d/T + e/T**2 + f/T**3 + g/T**9 +
 c         h*T**2 + i*T**3 + j*T**4 + k*T**7
 c
 c EOS after Brosh et al., 2007, 2008:
-c v0 volume at pr,tr; nn number of atoms; gam0 Grüneisen parameter;
+c v0 volume at pr,tr; nn number of atoms; gam0 Grï¿½neisen parameter;
 c tet0 Enstein temperature; b1,dd1,b0,dd0 fitting coefficients;
 c Bo bulk modulus; Bpo pressure derivative of bulk modulus
 c                                 -------------------------------
@@ -12938,7 +12941,7 @@ c
 c G0 and S0 are loaded into thermo(31...) and thermo(32...) via
 c the ic2p pointer array.
 
-c v0 volume at pr,tr; nn number of atoms; gam0 Grüneisen parameter;
+c v0 volume at pr,tr; nn number of atoms; gam0 Grï¿½neisen parameter;
 c tet0 Enstein temperature; b1,dd1,b0,dd0 fitting coefficients;
 c Bo bulk modulus; Bpo pressure derivative of bulk modulus
 
@@ -13461,3 +13464,4 @@ c                                 automatically continue
      *        've has been set to F, this is often bad practice',/)
 
       end
+

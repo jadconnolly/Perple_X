@@ -2215,7 +2215,7 @@ c-----------------------------------------------------------------------
  
       double precision f(nsp),aj2(nsp),ev(3),c1,c2,ax,dv,ch,bx,aij,pdv,
      *                 c3,vmin,vmax,d1,d2,d3,d4,d5,d6,d7,rt,dsqrtt,r,
-     *                 vpb, vmb
+     *                 vpb, vmb, yl
 
       double precision p,t,xco2,u1,u2,tr,pr,rbar,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,rbar,ps
@@ -2255,11 +2255,8 @@ c----------------------------------------------------------------------
       do k = 1, isp
 
          i = ins(k)
-c DEBUG DEBUG 691
-         if (y(i).lt.-1d-9) then 
-            write (*,*) 'ratso il schmatzo',y(i)
-            return
-         end if
+c DEBUG DEBUG 691 RATSO
+         if (y(i).lt.0d0) y(i) = 0d0
 
          aj2(i) = 0d0
          bx = bx + b(i)*y(i)
@@ -2401,14 +2398,15 @@ c                                 pmv constants
       do i = 1, isp
 
          l = ins(i)
-          
-         if (y(l).gt.0d0) then
-            f(l) = dlog(y(l)) + b(l)*d3 - aj2(l)*d2 + d6
-            g(l) = dexp(f(l))/p/y(l)
-         else 
-            g(l) = 1d0
-            f(l) = dlog(1d12*p)
-         end if 
+         
+         if (y(l).gt.nopt(50)) then 
+            yl = y(l)
+         else
+            yl = nopt(50)
+         end if
+
+         f(l) = dlog(yl) + b(l)*d3 - aj2(l)*d2 + d6
+         g(l) = dexp(f(l))/p/y(l)
 c                                 pmv
          v(l) = (d4*aj2(l) - b(l) - vmb + d7*b(l)) / d5
 

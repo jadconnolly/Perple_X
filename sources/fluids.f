@@ -292,7 +292,7 @@ c-----------------------------------------------------------------------
 
       character y*1, n4name*100, title*100, tags(33)*14
 
-      integer ier, igo, i, isp, j, k, l, kmax, count, nel
+      integer ier, igo, i, isp, j, k, l, kmax, kount, nel
 
       double precision nc, nh, no, ns, nn, nsi, tentoe, fo2, fs2, fh2,
      *                 ag, tot, totx, var(l2), f, prop(40), vdif,
@@ -631,10 +631,10 @@ c                                 atomic fractions
             tags(ipot+isp+6) = 'Y_S'
             tags(ipot+isp+7) = 'Y_Si'
 
-            count = ipot+isp+8
+            kount = ipot+isp+8
 c                                  species fugacities
             j = 0
-            do i = count, count+isp-1
+            do i = kount, kount+isp-1
                j = j + 1 
                if (log) then 
                   write (tags(i),'(a,a,a)') 'log[f(',specie(ins(j)),')]'
@@ -644,17 +644,17 @@ c                                  species fugacities
                call unblnk (tags(i))
             end do
 
-            count = count + isp + 3
-            tags(count-3) = 'log[f(O2)]'
-            tags(count-2) = 'log[f(S2)]'
-            tags(count-1) = 'log[f(H2)]'
-            tags(count)   = 'log[a(C)] '
+            kount = kount + isp + 3
+            tags(kount-3) = 'log[f(O2)]'
+            tags(kount-2) = 'log[f(S2)]'
+            tags(kount-1) = 'log[f(H2)]'
+            tags(kount)   = 'log[a(C)] '
 
-            write (n4,*) count 
-            write (n4,'(40(a14,1x))') (tags(i),i=1,count)
+            write (n4,*) kount 
+            write (n4,'(40(a14,1x))') (tags(i),i=1,kount)
 c                                 terminal info on variables
             write (*,'(/,a,/)') 'Table columns will be:'
-            write (*,'(5(a14,1x))') (tags(i),i=1,count)
+            write (*,'(5(a14,1x))') (tags(i),i=1,kount)
          
             if (jpot.eq.1) then 
                call plblrb (4)
@@ -902,23 +902,23 @@ c
                   prop(ipot+isp+6) = ns/tot
                   prop(ipot+isp+7) = nsi/tot
 
-                  prop(count-3) = fo2/tentoe
-                  prop(count-2) = fs2/tentoe
+                  prop(kount-3) = fo2/tentoe
+                  prop(kount-2) = fs2/tentoe
 
                   if (ifug.eq.27) then 
 c                                   ac, fo2, fh2 computed from major
 c                                   species
-                     prop(count-3) = fhc(2)/tentoe
-                     prop(count-2) = nopt(7)
-                     prop(count-1) = fhc(3)/tentoe
-                     prop(count)   = fhc(1)/tentoe
+                     prop(kount-3) = fhc(2)/tentoe
+                     prop(kount-2) = nopt(7)
+                     prop(kount-1) = fhc(3)/tentoe
+                     prop(kount)   = fhc(1)/tentoe
 
                   else 
 
-                     prop(count-3) = fo2/tentoe
-                     prop(count-2) = fs2/tentoe
-                     prop(count-1) = nopt(7)
-                     prop(count)   = elag/tentoe
+                     prop(kount-3) = fo2/tentoe
+                     prop(kount-2) = fs2/tentoe
+                     prop(kount-1) = nopt(7)
+                     prop(kount)   = elag/tentoe
 
                   end if 
 
@@ -965,12 +965,12 @@ c                                 use finite difference total volume only if non
                   prop(ipot+1) = vol
 
                   if (bad) then 
-                     do k = ipot+1, count
+                     do k = ipot+1, kount
                         prop(k) = nopt(7)
                      end do
                   end if 
 
-                  write (n4,'(40(g14.7,1x))') (prop(k),k=1,count)
+                  write (n4,'(40(g14.7,1x))') (prop(k),k=1,kount)
      
                end do 
 

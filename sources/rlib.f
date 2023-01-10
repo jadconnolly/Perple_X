@@ -6118,7 +6118,7 @@ c                                 negative site?
 
       end do
 
-      if (msite(ids).eq.0) then 
+      if (boundd(ids)) then 
 c                                 molecular entropy, check fractions
           do i = 1, nstot(ids)
              if (y(i).lt.-nopt(50)) then
@@ -7975,7 +7975,7 @@ c                                 and the full excess energy
 
       end if
 c                                 get the delta configurational entropy and derivatives
-      call sderiv (id,s,ds,d2s,.false.)
+      call sderiv (id,s,ds,d2s)
 
       do k = 1, norder
 
@@ -8044,7 +8044,7 @@ c                                 newton-raphson increments for the ordered spec
 c                                 compositions.
       end
 
-      subroutine sderiv (id,s,dsy,dsyy,maxs)
+      subroutine sderiv (id,s,dsy,dsyy)
 c----------------------------------------------------------------------
 c subroutine to the derivative of the configurational entropy of a
 c solution with respect to the proportion of a dependent species.
@@ -8055,8 +8055,6 @@ c----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
-
-      logical maxs
 
       integer i,j,k,l,id
 
@@ -12271,7 +12269,7 @@ c-----------------------------------------------------------------------
 
          x = x + dx
 
-         if (x.le.0d0.or.x.gt.1d3.or.it.gt.iopt(21)) then
+         if (x.le.1d-50.or.x.gt.1d3.or.it.gt.iopt(21)) then
             bad = .true.
             exit
          else if (dabs(dx)/(1d0+x).lt.nopt(50)) then
@@ -19403,7 +19401,7 @@ c----------------------------------------------------------------------
 
       integer i, j, k, jst, irep, kd, jend, ier, iend
 
-      logical count, err
+      logical kount, err
 
       character text*(lchar)
 
@@ -19534,7 +19532,7 @@ c                                 each phase in the assemblage
 
          do j = 1, iavar(3,i)
 c                                 loop over all phases
-            count = .true.
+            kount = .true.
 
             if (j.le.iavar(1,i)) then 
 c                                 a solution phase
@@ -19543,7 +19541,7 @@ c                                 a solution phase
                   if (idsol(k,i).eq.idasls(j,i)) then 
 c                                 the phase has already been found
 c                                 in the assemblage, count the replicate
-                     count = .false.
+                     kount = .false.
                      nrep(k,i) = nrep(k,i) + 1
                      exit
 
@@ -19553,7 +19551,7 @@ c                                 in the assemblage, count the replicate
  
             end if
 
-            if (count) then
+            if (kount) then
 c                                  the phase as not yet been found in 
 c                                  the assemblage.
                nph(i) = nph(i) + 1
@@ -19573,21 +19571,21 @@ c                                 occurs only once
 c                                 next compare to the existing list
          do k = 1, nph(i)  
 
-            count = .true.
+            kount = .true.
 
             do j = 1, istab
 
                if (idsol(k,i).eq.idstab(j)) then
 
                   if (nrep(k,i).gt.nstab(j)) nstab(j) = nrep(k,i)
-                  count = .false.
+                  kount = .false.
                   exit
 
                end if
 
             end do 
 
-            if (count) then
+            if (kount) then
 
                istab = istab + 1
                if (istab.gt.k10) call error (999,0d0,istab,'ISTAB ')
@@ -20246,6 +20244,9 @@ c---------------------------------------------------------------------
 c----------------------------------------------------------------------
       ntot = nstot(ids)
       nvar = ntot - 1
+c                                 get the bulk composition needed for 
+c                                 leveling.
+      call getscp (rcp,rsum,rids,rids)
 
       g = 0d0
       dgdp(1:nvar) = 0d0

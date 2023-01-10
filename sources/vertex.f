@@ -79,9 +79,6 @@ c-----------------------------------------------------------------------
       character prject*100,tfname*100
       common/ cst228 /prject,tfname
 
-      integer count
-      common/ cstcnt /count
-
       integer iam
       common/ cst4 /iam
 c----------------------------------------------------------------------- 

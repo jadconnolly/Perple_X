@@ -251,14 +251,6 @@ c-----------------------------------------------------------------------
       integer npt,jdv
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
-
-      integer count
-      common/ cstcnt /count
-
-      double precision cdint, ctol, dxlim, epsrf, eta, fdint, ftol,
-     *                 hcndbd
-      common/ ngg021 /cdint, ctol, dxlim, epsrf, eta,
-     *                fdint, ftol, hcndbd
 c-----------------------------------------------------------------------
 c                                 the pseudocompounds to be refined
 c                                 are identified in jdv(1..npt)
@@ -587,9 +579,6 @@ c                                 point to solution models
 
                if (nrf(ids)) cycle
 
-c           if (rkds.eq.0) then
-c              write (*,*) rkds
-c            end if 
                rkds = id
 c                                 endmember refinement point:
                call endpa (kd,-id,ids)
@@ -631,33 +620,9 @@ c                                 amount can be initialized
 
             if (lopt(61)) call begtim (15)
 c                                  normal solution
-            call minfrc (ifail)
+            call minfrc
 
             if (lopt(61)) call endtim (15,.false.,'minfrc')
-
-            if (ifail.eq.0) then
-               
-               igood(ids) = igood(ids) + 1
-            
-               if (iter.eq.1.and..not.ststbl(id)) then
-c                 write (*,*) 'not good now good ',id,ids
-               end if 
-            
-            else
-            
-               ibad(ids) = ibad(ids) + 1
-            
-               if (ifail.eq.1) then
-c                 write (*,*) 'and i am outta here 0 iter',ids
-               else if (ifail.eq.2) then
-c                 write (*,*) 'bounded w/<0 fraction',ids
-               else if (ifail.eq.3) then 
-c                 write (*,*) 'bad site fraction',ids
-               else if (ifail.eq.4) then 
-c                 write (*,*) 'never happens',ids
-               end if
-
-            end if
 
          end if
 
@@ -2537,9 +2502,6 @@ c                                 make a pointer to the original refinement
 c                                 point, this is used by resub
          do i = 1, npt
             mkp(i) = hkp(jdv(i))
-c           if (mkp(i).eq.0) then 
-c              write (*,*) 'oink?'
-c           end if 
          end do
 
       else
@@ -2909,9 +2871,6 @@ c                                 make a pointer to the original refinement
 c                                 point
          do i = 1, npt
             mkp(i) = hkp(jdv(i))
-c           if (mkp(i).eq.0) then 
-c              write (*,*) 'oink?'
-c           end if 
          end do
 
       else
