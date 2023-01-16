@@ -358,12 +358,12 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical linobj, rowerr
+      logical linobj, rowerr, bad
 
       integer iter, lda, ldr, leniw, lenw, n, nclin, idead, i, ianrmj,
      *        ikx, inform, maxnz, minact, itmxsv, itns, j, jinf, jmax, 
      *        lax, lclam, ldaqp, litotl, lwtotl, maxact, minfxd, mxfree,
-     *        nact1, nctotl, nfun, ngq, ngrad,nres, numinf, nlperr, 
+     *        nact1, nctotl, ngq, nres, numinf, nlperr, 
      *        nmajor, nminor, nrank, nrejtd, nz1, istate(n+nclin), 
      *        iw(leniw), lent, lenzy, lfeatl, lgrad, lkx
 
@@ -501,14 +501,6 @@ c                                  addresses used by npcore
 c                                 load feasibility tolerances.
       w(lfeatl:lfeatl+nctotl-1) = tolfea
 
-      if (numric) then 
-         nfun = 1
-         ngrad = 1
-      else 
-         nfun = 0
-         ngrad = 0
-      end if 
-
       if (nclin.gt.0) then
 
          ianrmj = lanorm
@@ -597,7 +589,11 @@ c                                the point as already been output
 c                                by resub
       outrpc = .false.
 c                                compute objective function
-      call objfun (n,x,objf,gradu)
+      call objfun (n,x,objf,gradu,bad)
+
+      if (bad) then 
+         return
+      end if 
 
       g0 = objf
 
@@ -605,16 +601,20 @@ c                                compute objective function
 
       if (numric.and.lopt(66)) then
 c                                 get finite difference increments:
-         call chfd (n,fdnorm,objf,objfun,bl,bu,gradu,x)
+         call chfd (n,fdnorm,objf,objfun,bl,bu,gradu,x,bad)
 c                                 chfd will in fact return 2nd order 
 c                                 derivatives, but setting cntrl at this
 c                                 point is too costly
       else if (numric) then 
 c                                 recompute gradient at first order
-         call numder (objf,objfun,gradu,x,fdnorm,bl,bu,n)
+         call numder (objf,objfun,gradu,x,fdnorm,bl,bu,n,bad)
 
          fdincs = .false.
 
+      end if
+
+      if (bad) then 
+         return
       end if
 
       w(lgrad:lgrad+n-1) = gradu(1:n)
@@ -622,15 +622,15 @@ c                                 recompute gradient at first order
 c                                 transform grad (w(lgq))
       call cmqmul (6,n,nz,nfree,ldq,unitq,iw(lkx),w(lgq),w(lq),w(lwrk1))
 c                                 solve the problem.
-      call npcore (unitq,inform,iter,n,nclin,nctotl, nactiv,nfree,nz,
-     *             ldaqp,ldr,nfun,ngrad, istate,iw(lkactv),iw(lkx),objf,
+      call npcore (unitq,inform,iter,n,nclin,nctotl,nactiv,nfree,nz,
+     *             ldaqp,ldr,istate,iw(lkactv),iw(lkx),objf,
      *             fdnorm,xnorm,objfun,a,w(lax),bl,bu,clamda,
      *             w(lfeatl),w(lgrad),gradu,r,x,iw,w,lenw)
 
-      if (g0-objf.gt.ftol) then 
-       idead = inform
+      if (g0-objf.gt.ftol.or.inform.eq.-1) then 
+         idead = inform
       else
-       idead = -2
+         idead = -2
       end if
 
       end
@@ -697,7 +697,7 @@ c                            (0 )
 c                                 end of lsmove
       end
 
-      subroutine cmalf1(firstv,negstp,bigalf,bigbnd,pnorm,jadd1,jadd2,
+      subroutine cmalf1 (firstv,negstp,bigalf,bigbnd,pnorm,jadd1,jadd2,
      *                  palfa1,palfa2,istate,n,nctotl,anorm,ap,ax,bl,bu,
      *                  featol,p,x)
 c----------------------------------------------------------------------
@@ -923,7 +923,7 @@ c     +    while (j .le. n+nclin .and. alfa.gt.alfmin) do
             axi = x(j)
             adxi = dx(j)
             rownrm = 1d0
-         else if (j.le.n+nclin) then
+         else 
 
             i = j - n
             axi = ax(i)
@@ -2572,7 +2572,7 @@ c----------------------------------------------------------------------
 c                                 end of cmmul2
       end
 
-      subroutine nggnfm (side,n,k1,k2,s,a,lda)
+      subroutine nggnfm (n,k1,k2,s,a,lda)
 c----------------------------------------------------------------------
 c  nggnfm applies a  sequence  of  pairwise interchanges to either  the
 c  left,  or the right,  of the  n by n  upper triangular matrix  u,  to
@@ -2581,15 +2581,7 @@ c  applied in planes k1 up to k2.
 
 c  the upper hessenberg matrix, h, is formed as
 
-c     h = p*u,    when   side = 'l' or 'l',  ( left-hand side)
-
-c  where p is a permutation matrix of the form
-
-c     p = p(k1)*p(k1+1)*...*p(k2 - 1)
-
-c  and is formed as
-
-c     h = u*p',   when   side = 'r' or 'r',  (right-hand side)
+c     h = u*p',
 
 c  where p is a permutation matrix of the form
 
@@ -2614,37 +2606,11 @@ c  greater than n then an immediate return is effected.
 c----------------------------------------------------------------------
       implicit none
 
-      character side*1
-
       integer k1, k2, lda, n, i, j
 
-      double precision a(lda,*), s(*), aij, temp
+      double precision a(lda,*), s(*), temp
 c----------------------------------------------------------------------
       if ((min(n,k1).lt.1) .or. (k2.le.k1) .or. (k2.gt.n)) return
-      if (side.eq.'l') then
-
-c        apply the permutations to columns n back to k1.
-
-         do j = n, k1, -1
-            if (j.ge.k2) then
-               aij = a(k2,j)
-            else
-
-c              form  the  additional sub-diagonal element  h(j + 1, j)
-c              and store it in s(j).
-
-               aij = 0d0
-               s(j) = a(j,j)
-            end if
-            do i = min(k2,j) - 1, k1, -1
-               temp = a(i,j)
-               a(i+1,j) = temp
-               aij = aij
-            end do
-            a(k1,j) = aij
-         end do
-
-      else if (side.eq.'r') then
 
 c        apply  the  plane interchanges to  columns  k1  up to
 c        (k2 - 1) and  form   the   additional  sub-diagonal
@@ -2663,7 +2629,6 @@ c        elements,   storing  h(j + 1, j) in s(j).
 
          end do
 
-      end if
 c                                 end of nggnfm.
       end
 
@@ -3412,7 +3377,7 @@ c
 c                                 end of cmmul1
       end
 
-      subroutine npiqp (feasqp,unitq,nqperr,minits,n,nclin,
+      subroutine npiqp (feasqp,unitq,nqperr,n,nclin,
      *              ldaqp,ldr,linact,nlnact,nactiv,nfree,nz,
      *              numinf,istate,kactiv,kx,dxnorm,gdx,qpcurv,aqp,
      *              adx,ax,bl,bu,clamda, dx,qpbl,qpbu,qptol,r,x,wtinf,w)
@@ -3619,8 +3584,8 @@ c     objective function and  r(pq)  from the transformed residual.
 c                                 end of npiqp
       end
 
-      subroutine cmsinf(n,nclin,lda,istate,bigbnd,numinf,suminf,bl,bu,a,
-     *                  featol,cvec,x,wtinf)
+      subroutine cmsinf (n,nclin,lda,istate,bigbnd,numinf,suminf,bl,bu,
+     *                   a,featol,cvec,x,wtinf)
 c----------------------------------------------------------------------
 c     cmsinf  finds the number and weighted sum of infeasibilities for
 c     the bounds and linear constraints.   an appropriate gradient
@@ -4452,7 +4417,7 @@ c           the subdiagonal elements generated by this process are
 c           stored in  s(ifix), s(2), ..., s(nrz-1).
 
             nsup = nrz - ifix
-            call nggnfm('right',nrz,ifix,nrz,s,r,ldr)
+            call nggnfm (nrz,ifix,nrz,s,r,ldr)
          end if
       else
 
@@ -4654,8 +4619,7 @@ c        set the array of violations.
 c                                 end of npfeas
       end
 
-      subroutine npsrch (inform,n,nfun,ngrad,
-     *                  objfun,alfa,alfmax,alfsml,
+      subroutine npsrch (inform,n,objfun,alfa,alfmax,alfsml,
      *                  dxnorm,epsrf,eta,gdx,grdalf,glf,objf,
      *                  objalf,xnorm,dx,grad,gradu,x1,x)
 c----------------------------------------------------------------------
@@ -4687,9 +4651,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical done, first, imprvd
+      logical done, first, imprvd, bad
 
-      integer inform, n, nfun, ngrad, j, maxf, numf
+      integer inform, n, j, maxf, numf
 
       double precision alfa, alfmax, alfsml, dxnorm, epsrf,
      *                 eta, gdx, glf, grdalf, objalf, objf,
@@ -4805,9 +4769,14 @@ c                                 hack for simplicial composition
 
             outrpc = .true.
 
-            call objfun (n,x,tobj,gradu)
+            call objfun (n,x,tobj,gradu,bad)
 
             outrpc = .false.
+
+            if (bad) then 
+               inform = -1
+               return
+            end if
 
             ftry = tobj - oldf - 1d-4 * oldg * alfa
 c                                 compute auxiliary gradient info 
@@ -4828,8 +4797,6 @@ c                                 compute auxiliary gradient info
 
       end do
 
-      nfun = nfun + numf
-      if (.not. numric) ngrad = ngrad + numf
       alfa = alfbst
 
       if (.not. imprvd) then
@@ -5463,8 +5430,8 @@ c        first entry.  initialize.
 
       condmx = flmax
 
-      call cmsinf(n,nclin,lda,istate,bigbnd,numinf,suminf,bl,bu,a,
-     *            featol,w(lgq),x,w(lwtinf))
+      call cmsinf (n,nclin,lda,istate,bigbnd,numinf,suminf,bl,bu,a,
+     *             featol,w(lgq),x,w(lwtinf))
 
       if (numinf.gt.0) then
          call cmqmul(6,n,nz,nfree,ldq,unitq,kx,w(lgq),w(lq),w(lwrk))
@@ -5778,7 +5745,7 @@ c                                 end of lpcore
 
       subroutine npcore (unitq,inform,majits,n,nclin,
      *                  nctotl,nactiv,nfree,nz,ldaqp,ldr,
-     *                  nfun,ngrad,istate,kactiv,kx,objf,fdnorm,xnorm,
+     *                  istate,kactiv,kx,objf,fdnorm,xnorm,
      *                  objfun,aqp,ax,bl,bu,clamda,
      *                  featol,grad,gradu,r,x,iw,w,lenw)
 c----------------------------------------------------------------------
@@ -5790,13 +5757,13 @@ c----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       logical unitq, convpt, convrg, done, error, feasqp,
-     *        goodgq, infeas, newgq, optiml, overfl
+     *        goodgq, infeas, newgq, optiml, overfl, bad
 
       integer inform, ldaqp, ldr, lenw, majits, n, nactiv, nclin, 
-     *        nctotl, nfree, nfun, ngrad, nz, istate(*), iw(*), 
+     *        nctotl, nfree, nz, istate(*), iw(*), 
      *        kactiv(n), kx(n), isum, info, jmax, linact, majit0, 
-     *        minits, mnr, nqpinf, numinf, nviol,
-     *        mnrsum, nlnact, nlserr, nmajor, nminor, nqperr
+     *        nqpinf, numinf, nviol,
+     *        nlnact, nlserr, nmajor, nminor, nqperr
 
 
       double precision aqp(ldaqp,*), ax(*), bl(nctotl), bu(nctotl),
@@ -5850,7 +5817,6 @@ c                                 specify machine-dependent parameters.
       rtmax = wmach(8)
 c                                 initialize
       nqpinf = 0
-      mnrsum = 0
       majit0 = majits
 
       alfa = 0d0
@@ -5864,17 +5830,13 @@ c                                 hot start for the first qp subproblem.
       objalf = objf
       newgq = .false.
       isum = 0
-      minits = 0
 
       do
 c                                 loop to find good gradient
 c        if (rids.eq.3) then
-            isum = isum + minits 
 c           write (*,*) isum, objf
 c           write (*,*) x
 c        end if
-
-         minits = 0
 
          do
 c                                 loop to follow the gradient
@@ -5888,7 +5850,12 @@ c              if (obj.ne.objf) then
 c                 write (*,*) 'wtf',objf-obj
 c              end if 
 c                                 compute derivatives
-                  call numder (objf,objfun,grad,x,fdnorm,bl,bu,n)
+                  call numder (objf,objfun,grad,x,fdnorm,bl,bu,n,bad)
+
+                  if (bad) then
+                     inform = -1
+                     return
+                  end if
 
                end if
 
@@ -5903,15 +5870,12 @@ c                                 compute derivatives
 c                                 (1) solve iqp search direction and multiplier estimates.
 c                                 (2) compute the search direction for the slack variables
 c                                 and multipliers.
-            call npiqp (feasqp,unitq,nqperr,mnr,n,nclin,
+            call npiqp (feasqp,unitq,nqperr,n,nclin,
      *            ldaqp,ldr,linact,nlnact,nactiv,nfree,nz,numinf,istate,
      *            kactiv,kx,dxnorm,gdx,qpcurv,aqp,w(ladx),ax,
      *            bl,bu,clamda,w(ldx),w(lbl),w(lbu),w(lqptol),r,
      *            x,w(lwtinf),w)
-c
-            minits = minits + mnr
-            mnrsum = mnrsum + mnr
-c
+
             if (feasqp) then
                nqpinf = 0
             else
@@ -6049,11 +6013,12 @@ c                                 compute the steplength
             alflim = sdiv ((1d0+xnorm)*dxlim,dxnorm,overfl)
             alfa = min(alflim,1d0)
 
-            call npsrch (nlserr,n,nfun,ngrad,objfun,alfa,alfmax,alfsml,
+            call npsrch (nlserr,n,objfun,alfa,alfmax,alfsml,
      *                   dxnorm,epsrf,eta,gdx,grdalf,glf2,objf,objalf,
      *                   xnorm,w(ldx),grad,gradu,w(lx1),x)
 
 c                                 npsrch  sets nlserr to the following values...
+c                                -1  objective function failure
 c                                 1  if the search is successful and alfa < alfmax.
 c                                 2  if the search is successful and alfa = alfmax.
 c                                 3  if a better point was found but too many functions
@@ -6070,6 +6035,10 @@ c                                    or the gradients are not sufficiently accur
 c                                 7  if there were too many function calls.
 c                                 8  if the input parameters were bad
 c                                    (alfmax le toltny or uphill).
+            if (nlserr.lt.0) then
+               inform = -1
+               return
+            end if
 
             error = nlserr .ge. 4
 
@@ -6095,14 +6064,17 @@ c                                 and solve the qp again.
 
                if (numric) then
 c                                 compute the missing gradients.
-                  ngrad = ngrad + 1
-
 c              call objfun (n,x,obj,gradu)
 c              if (obj.ne.objf) then
 c                 write (*,*) 'wtf 2',objf-obj
 c              end if 
 
-                  call numder (objf,objfun,grad,x,fdnorm,bl,bu,n)
+                  call numder (objf,objfun,grad,x,fdnorm,bl,bu,n,bad)
+
+                  if (bad) then
+                     inform = -1
+                     return
+                  end if
 
                   gdx = ddot (n,grad,1,w(ldx))
                   glf2 = gdx

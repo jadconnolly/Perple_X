@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.0.1, January 10, 2023.',
+     *     'Perple_X release 7.0.2, January 16, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -195,10 +195,10 @@ c                                 infinite log + 1, for configurational entropy 
       nopt(55) = 1d0 + nopt(50)
       nopt(56) = 1d0 - nopt(50)
 c                                 the biggest exponent
-      nopt(57) = dlog(huge(0d0)**(0.998d0))
+      nopt(57) = dlog(huge(0d0)**(0.99d0))
       wmach(5) = 1d0 + r2
 c                                 largest number, sqrt
-      wmach(7) = huge(0d0)**(0.998d0)
+      wmach(7) = huge(0d0)**(0.99d0)
       wmach(8) = dsqrt(wmach(7))
 c                                 smallest number, sqrt
       wmach(10) = 1d0/wmach(7)
@@ -1668,6 +1668,8 @@ c                                 CDINT, 2nd order forward finite difference int
       cdint = fdint**(0.67d0)
 c                                 objective function calls for minfrc
       count = 0
+      rcount = 0
+      lcount = 0
 
       end 
 
@@ -3461,8 +3463,8 @@ c                                 generic warning, also 99
 64    format (/,'**warning ver064** AQSOLV failed to converge on ionic',
      *       ' stength, currently =',f7.1,', this',/,
      *       'usually occurs at conditions where the HKF assumptions a',
-     *       're invalid. To force convergence',/,
-     *       'increase the speciation_max_it option value.',/)
+     *       're invalid. Increasing speciation_max_it',/,
+     *       'may facilitate convergence.',/)
 68    format (/,'**warning ver068** degenerate initial assemblage in ',
      *          'COFACE, this should never occur',/,'if you see this ',
      *          'message please report the problem',/)

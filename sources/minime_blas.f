@@ -112,12 +112,29 @@ c                                 closure for molecular models
          numric = .true.
 
       end if
+c                                 for lagged speciation calcultions
+c                                 turn off lagged speciation if 
+c                                 speciaition failed at the rpc 
+c                                 composition
+      if (lopt(32).and.kwak0) then
+         swap= .true.
+         lopt(32) = .false.
+      else
+         swap = .false.
+      end if
 
       call nlpsol (nvar,nclin,m20,m19,lapz,bl,bu,gsol2,iter,istate,
      *            clamda,gfinal,ggrd,r,ppp,iwork,m22,work,m23,idead)
+
+      if (swap) lopt(32) = swap
+
+      rcount(1) = rcount(1) + iter
 c                                 reject results outright if no improvement
 c                                 (idead < 0) or infeasible (idead = 3)
-      if (idead.lt.0.or.idead.eq.3) return
+      if (idead.lt.0.or.idead.eq.3) then 
+         rcount(3) = rcount(3) + 1
+         return
+      end if 
 c                                 reconstruct pa-array, this IS necessary.
       call ppp2pa (ppp,sum,nvar)
 c                                 reject bad site populations, these may not
@@ -125,6 +142,7 @@ c                                 be useful
       if (boundd(rids)) then
          if (sum.gt.nopt(55)) then
 c           write (*,*) 'oink 1',sum,rids
+            rcount(3) = rcount(3) + 1
             return
          else if (sum.gt.1d0) then 
             pa(nstot(rids)) = 0d0
@@ -134,9 +152,12 @@ c           write (*,*) 'oink 1',sum,rids
       if (zbad(pa,rids,zsite,fname(rids),.false.,fname(rids))) then
       
 c        write (*,*) 'oink 3',rids
+         rcount(3) = rcount(3) + 1
          return
       
       end if
+
+      rcount(2) = rcount(2) + 1
 c                                 save the final point, the point may have
 c                                 already been saved by gsol2 but because
 c                                 gsol2 uses a replicate threshold of nopt(37)
@@ -215,7 +236,7 @@ c-----------------------------------------------------------------------
 
       end
 
-      subroutine gsol2 (nvar,ppp,gval,dgdp)
+      subroutine gsol2 (nvar,ppp,gval,dgdp,bad)
 c-----------------------------------------------------------------------
 c function to evaluate gibbs energy of a solution for minfrc. can call 
 c either gsol1 with order true or false, true seems to give better results
@@ -225,7 +246,7 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical zbad, saved
+      logical zbad, saved, bad
 
       integer i, j, nvar, idif
 
@@ -253,6 +274,8 @@ c-----------------------------------------------------------------------
       common/ cst6  /icomp,istct,iphct,icp
 c-----------------------------------------------------------------------
       count = count + 1
+
+      bad = .false.
 
       if (lopt(61)) call begtim (2)
 c                                 reconstruct pa array
@@ -284,6 +307,10 @@ c                                 available, get g at the composition
          g = gsol1(rids,.false.)
 c                                 level it
          call gsol5 (g,gval)
+
+         if (lopt(32).and.rkwak) then 
+            bad = .true.
+         end if
 
       end if
 
@@ -362,9 +389,6 @@ c-----------------------------------------------------------------------
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
-      double precision wmach
-      common/ cstmch /wmach(10)
-
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c-----------------------------------------------------------------------
@@ -373,6 +397,13 @@ c-----------------------------------------------------------------------
       ttot = tstot(rids)
 
       idif = 0
+
+      if (.not.rkwak) then
+c                                special case for electrolytic fluids
+         call savkwk (g,tol,swap,idif)
+         return
+
+       end if
 c                                o/d models use the pp array, which is 
 c                                not normalized for non-equimolar o/d, do
 c                                the normalization here
@@ -397,10 +428,9 @@ c                                the normalization here
       swap = .false.
 c                                 degenerate bulk check is in earlier 
 c                                 versions, probably was never done right
-
       do i = jpoint + 1, jphct
 c                                 check if duplicate
-         if (jkp(i).ne.rids) cycle
+         if (jkp(i).ne.rids.or..not.quack(i)) cycle
 
          if (lorder(rids)) then
             ist = icoz(i) + ntot
@@ -458,15 +488,8 @@ c                                 the refinement point pointer
 c                                 save the normalized g
       g2(jphct) = g/rsum
 c                                 sum scp(1:icp)
-      if (ksmod(rids).eq.39.and.lopt(32).and..not.rkwak) then
-c                                 this will renormalize the bulk to a 
-c                                 mole of solvent, it's no longer clear to 
-c                                 me why this is desireable.
-         c2tot(jphct) = rsum/rsmo
-      else
-         c2tot(jphct) = rsum
-      end if
-
+      c2tot(jphct) = rsum
+c                                 if it quacks like a duck then...
       quack(jphct) = rkwak
 c                                 save the endmember fractions
       zco(icoz(jphct)+1:icoz(jphct)+ntot) = pa(1:ntot)
@@ -476,7 +499,108 @@ c                                 and normalized bulk fractions if o/d
 
       end 
 
-      subroutine numder (g,objfun,dgdp,ppp,fdnorm,bl,bu,nvar)
+      subroutine savkwk (g,tol,swap,idif)
+c-----------------------------------------------------------------------
+c save dynamic electrolytic fluid compositions/g for the lp solver.
+c discriminate compositions on the basis of the solvent speciation
+c under the assumption that for a given solvent speciation the latest
+c result is always the best result.
+c-----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      logical swap
+
+      integer i, j, ltot, ist, idif
+
+      double precision g, diff, tol, dtol
+
+      double precision z, pa, p0a, x, w, y, wl, pp
+      common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
+     *              wl(m17,m18),pp(m4)
+
+      integer jphct
+      double precision g2, cp2, c2tot
+      common/ cxt12 /g2(k21),cp2(k5,k21),c2tot(k21),jphct
+
+      integer icomp,istct,iphct,icp
+      common/ cst6  /icomp,istct,iphct,icp
+
+      double precision units, r13, r23, r43, r59, zero, one, r1
+      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
+c-----------------------------------------------------------------------
+      ltot = lstot(rids)
+
+      if (tol.eq.0d0) then
+         dtol = zero
+      else
+         dtol = tol
+      end if
+
+      swap = .false.
+
+      do i = jpoint + 1, jphct
+c                                 check if duplicate
+         if (quack(i)) cycle
+
+         ist = icoz(i)
+         diff = 0d0
+
+c         do j = 1, ltot
+
+c            diff = diff + dabs(pa(j) - zco(ist + j))
+
+c         end do
+
+         do j = 1, icomp
+
+            diff = diff + dabs(cp2(j,i) - rcp(j)/rsum)
+
+         end do
+
+         if (diff.gt.dtol) then
+
+            cycle
+
+         else if (diff.le.zero) then
+
+            swap = .true.
+            idif = i
+            exit
+
+         end if
+
+      end do
+c                                 increment counters
+      if (.not.swap) then
+         jphct = jphct + 1
+         idif = jphct
+      end if
+
+      icoz(idif) = zcoct
+      zcoct = zcoct + ltot
+c                                 lagged speciation quack flag
+      quack(idif) = rkwak
+c                                 normalize and save the composition
+      cp2(1:icomp,idif) = rcp(1:icomp)/rsum
+c                                 the solution model pointer
+      jkp(idif) = rids
+c                                 the refinement point pointer
+      hkp(idif) = rkds
+c                                 save the normalized g
+      g2(idif) = g/rsum
+c                                 renormalize the bulk to a mole of solvent
+c                                 it's no longer clear to me why this is desireable.
+      c2tot(idif) = rsum/rsmo
+c                                 if it quacks like a duck...
+      quack(idif) = rkwak
+c                                 save the endmember fractions
+      zco(icoz(idif)+1:icoz(idif)+ltot) = pa(1:ltot)
+
+      end 
+
+      subroutine numder (g,objfun,dgdp,ppp,fdnorm,bl,bu,nvar,bad)
 c-----------------------------------------------------------------------
 c subroutine to evaluate the gradient numerically for minfrc/minfxc
 c on input sum is the total of the fractions, for bounded models this
@@ -485,6 +609,8 @@ c-----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
+
+      logical bad
 
       integer i, nvar
 
@@ -542,17 +668,17 @@ c                                 apply the increment
 
          if (cntrl) then
 c                                 g at the double increment
-            call objfun (nvar,ppp,g3,dgdp)
+            call objfun (nvar,ppp,g3,dgdp,bad)
 c                                 single increment
             ppp(i) = oldppp + dpp/2d0
 c                                 g at the single increment
-            call objfun (nvar,ppp,g1,dgdp)
+            call objfun (nvar,ppp,g1,dgdp,bad)
 
             dgdp(i) = (4d0*g1- 3d0*g-g3)/dpp
 
          else
 c                                 g at the single increment
-            call objfun (nvar,ppp,g1,dgdp)
+            call objfun (nvar,ppp,g1,dgdp,bad)
 
             dgdp(i) = (g1 - g)/dpp
 
@@ -1186,7 +1312,7 @@ c                                 values in ppp.
 
       end
 
-      subroutine chfd (n,fdnorm,fx,objfun,bl,bu,grad,x)
+      subroutine chfd (n,fdnorm,fx,objfun,bl,bu,grad,x,bad)
 c----------------------------------------------------------------------
 c chfd  computes difference intervals for gradients of f(x). intervals 
 c are computed using a procedure that usually requires about two 
@@ -1202,7 +1328,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical done, first
+      logical done, first, lbad1, lbad2, bad
 
       integer n, info, iter, itmax, j
 
@@ -1257,10 +1383,12 @@ c                                 numder may do this better),
          do
 
             x(j) = xj + h
-            call objfun (n,x,f1,grad)
+            call objfun (n,x,f1,grad,bad)
+            lbad1 = bad
 
             x(j) = xj + h + h
-            call objfun (n,x,f2,grad)
+            call objfun (n,x,f2,grad,bad)
+            lbad2 = bad
 
             call chcore (done,first,epsa,epsrf,fx,info,iter,itmax,cdest,
      *                   fdest,sdest,errbnd,f1,f2,h,hopt,hphi)
@@ -1268,6 +1396,13 @@ c                                 numder may do this better),
             if (done) exit
 
          end do
+
+         if (ksmod(rids).eq.39.and.lopt(32)) then
+            if (lbad1.or.lbad2) then
+               bad = .true.
+               return
+            end if
+         end if
 
          grad(j) = cdest
 

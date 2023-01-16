@@ -3044,6 +3044,9 @@ c                                 warn
 
             if (iwarn.lt.10) then
                write (*,1000) t, p
+               if (ns.eq.1) write (*,'(/,a,/)') 
+     *                      'No result will be output.'
+
                iwarn = iwarn + 1
                if (iwarn.eq.10) call warn (49,r,277,'GFUNC')
             end if
@@ -5584,7 +5587,7 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer id, iwarn
+      integer id
 
       logical order, bad
 
@@ -5616,10 +5619,6 @@ c                                 working arrays
 c                                 solution model names
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
-
-      save iwarn
-
-      data iwarn/0/
 c----------------------------------------------------------------------
       gg = 0d0
 c                                 quack flag needed to distinguish phases
@@ -5707,20 +5706,7 @@ c                                 species molality it is necessary for
 c                                 renormalization.
             call gaqlgd (gg,rcp,rsum,rsmo,id,bad,.false.)
 
-            if (.not.bad) then 
-
-               rkwak = .false.
-            
-            else
-
-               if (iwarn.lt.11) then
-                  write (*,1000) fname(rids)
-                  call prtptx
-                  if (iwarn.eq.10) call warn (49,0d0,205,'MINFRC')
-                  iwarn = iwarn + 1
-               end if
-
-            end if
+            if (.not.bad) rkwak = .false.
 
          end if
 c                                 if bad OR molecular:
@@ -5752,10 +5738,6 @@ c                                 speciation:
       if (rkwak) call getscp (rcp,rsum,rids,rids)
 
       gsol1 = gg
-
-1000  format (/,'**warning ver205** lagged speciation failed, ',
-     *       'for ',a,'. The molecular',/,'speciation will be ',
-     *       'output.',/)
 
       end
 
@@ -14158,7 +14140,7 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, j, id, badct
+      integer i, j, id
 
       logical bad, recalc, lmus, feos
 
@@ -14242,9 +14224,11 @@ c                                 adaptive coordinates
 
       logical abort
       common/ cstabo /abort
+c                                 solution model names
+      character fname*10, aname*6, lname*22
+      common/ csta7 /fname(h9),aname(h9),lname(h9)
 
-      save badct, lmu, lmus
-      data badct/0/
+      save lmu, lmus
 c----------------------------------------------------------------------
       if ((.not.mus .and..not.recalc).or.
      *    (.not.lmus.and.recalc)) then
@@ -14308,24 +14292,10 @@ c                                 solvent densities
       end if
 c                                 iterate on speciation
       call aqsolv (g0,gso,mo,tmu,is,gamm0,lnkw,bad)
+c                                 in new_solver.f needs to be debugged?
+c     call aqsol2 (g0,gso,mo,tmu,is,gamm0,lnkw,bad)
 
-      if (bad) then
-
-         badct = badct + 1
-
-         if (badct.lt.11) then
-
-            call warn (99,0d0,0,'AQLAGD did not converge on solute '//
-     *                'speciation, current solvent speciation:')
-            write (*,'(12(f7.4,1x))') pa(1:ns)
-
-         end if
-
-         if (badct.eq.10) call warn (49,0d0,99,'AQLAGD')
-
-         return
-
-      end if
+      if (bad) return
 c                                 back calculated bulk composition
       blk(1:kbulk) = 0d0
       smo = 0d0
@@ -14592,11 +14562,11 @@ c-----------------------------------------------------------------------
 
       integer i, j, k, it, jt, iexp, iwarn
 
-      logical bad, kill
+      logical bad, kill, switch
 
       double precision c(l9), mo(*), mu(*), dg, xis, dn, xdix,
      *                 d(l9), is, gamm0, g0(*), lnkw, dix,
-     *                 gso(*), xdn, qb(l9)
+     *                 gso(*), xdn, qb(l9), dnmax
 
       double precision gcpd, solve, aqact
 
@@ -14626,10 +14596,13 @@ c-----------------------------------------------------------------------
       logical abort
       common/ cstabo /abort
 
+      double precision units, r13, r23, r43, r59, zero, one, r1
+      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
+
       save iwarn
       data iwarn /0/
 c----------------------------------------------------------------------
-      if (epsln.lt.nopt(34).or.abort.or.yf(1).eq.0) then
+      if (epsln.lt.nopt(34).or.abort.or.yf(1).eq.0d0) then
 c                                  vapor, same as checking lnkw
          bad = .true.
          return
@@ -14693,7 +14666,7 @@ c                                 cannot be made with oxide components.
 c                                 normalize by RT
             if (kill) then
                dg = 0d0
-            else if (dg/rt.gt.nopt(57)) then
+            else if (dabs(dg/rt).gt.nopt(57)) then
                bad = .true.
                return
             else
@@ -14717,7 +14690,7 @@ c                                  neutral species assumed to be ideal, molality
 c                                  initialize iteration loop
          lnkw = (gso(ns) - g0(ioh))/rt
 
-         if (c(ioh).eq.0d0) then
+         if (c(ion).eq.0d0) then
 c                                 no hydrogen or no oxygen
             bad = .true.
             return
@@ -14733,20 +14706,22 @@ c                                 no hydrogen or no oxygen
          it = 0
          jt = 0
          xdix = 1d99
+         dnmax = 0.5d0
          bad = .false.
+         switch = .true.
 c                                  iteration loop for ionic strength
          do
 c                                  solve charge balance for ion
             mo(ion) = solve(c,qr,mo(ion),jchg,ichg,bad)
 
+            xis = is
+
             if (bad) then
-               xis = is
                kill = .false.
                exit
             end if
 c                                  back calculate charged species molalities
 c                                  and ionic strength
-            xis = is
             is = 0d0
 
             do i = 1, ichg
@@ -14759,11 +14734,32 @@ c                                  and ionic strength
 
             dn = is - xis
 
-            if (dabs(dn).gt.1d0/2d0**iexp) then
-               dn = dn/dabs(dn)/2d0**iexp
-               if (dn*xdn.lt.0d0) iexp = iexp + 1
-               is = xis + dn
+            if (dnmax.gt.zero) then 
+
+               if (dn/xdn.lt.0d0.and.switch) then
+c                                 switching directions
+                  dnmax = dabs(dn/10d0)
+                  switch = .false.
+
+               else if (dn/xdn.gt.0d0.and..not.switch) then
+
+                  dnmax = dabs(dn/10d0)
+                  switch = .true.
+
+               end if
+
             end if
+
+            if (dabs(dn).gt.dnmax) then 
+
+               is = xis + dabs(dn)/dn*dnmax
+
+            end if
+
+c           if (dabs(dn).gt.1d0/2d0**iexp) then
+c              dn = dn/dabs(dn)/2d0**iexp
+c              if (dn*xdn.lt.0d0) iexp = iexp + 1
+c           end if
 c                                 DH law activity coefficient factor (gamma = gamm0^(q^2))
             gamm0 = aqact(is)
             if (gamm0.lt.nopt(50)) gamm0 = nopt(50)
@@ -14772,6 +14768,8 @@ c                                 check for convergence
 
             if (dix.lt.nopt(50)) then
 c                                 converged
+c              call aqsol2 (g0,gso,mo,mu,is,gamm0,lnkw,bad)
+
                return
 
             else if (it.gt.iopt(21)) then
@@ -14786,6 +14784,8 @@ c                                 try again?
 c                                 diverging
                   kill = .true.
                   bad = kill
+
+c                 call aqsol2 (g0,gso,mo,mu,is,gamm0,lnkw,bad)
 
                   exit
 

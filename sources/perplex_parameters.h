@@ -463,10 +463,10 @@ c                                 derivative of the bulk composition (component,
       double precision txco
       common/ csts2d /txco(m25), tpct, tcct, itxp(m24), dkp(m24), stpct
 
-      logical rkwak
+      logical rkwak, kwak0
       integer rids, rkds, rnpt
       double precision rcp, rsum, rsmo
-      common/ cxt12a /rcp(k5),rsum,rsmo,rids,rkds,rnpt,rkwak
+      common/ cxt12a /rcp(k5),rsum,rsmo,rids,rkds,rnpt,rkwak,kwak0
 c                                 flag for near stable static compositions 
       logical ststbl
       common/ cststb /ststbl(k1)
@@ -535,5 +535,5 @@ c                                 nlpsol blocks
       logical fdset, cntrl, numric, fdincs
       common/ cstfds /fdset, cntrl, numric, fdincs
 
-      integer count
-      common/ cstcnt /count
+      integer count, rcount, lcount
+      common/ cstcnt /count, rcount(5), lcount(5)

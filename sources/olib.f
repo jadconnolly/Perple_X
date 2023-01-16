@@ -607,13 +607,12 @@ c                                 N, G, S, V, Cp, alpha, beta, density
      *                   props(10,i)
       end do
 
-      write (lu,1170) 'System        ',psys(17),int(psys(11)),psys(15),
-     *                psys(1),(psys(j),j=12,14),psys(28),psys(10)
-      if (aflu) write (lu,1170) 'System - fluid',psys1(17),
-     *                int(psys1(11)),
-     *                psys1(15),psys1(1),(psys1(j),j=12,14),psys1(28),
-     *                psys1(10)
+      write (lu,1170) 'System        ',psys(17),int(psys(11)),
+     *             psys(15),psys(1),(psys(j),j=12,14),psys(28),psys(10)
 
+      if (aflu) write (lu,1170) 'System - fluid',psys1(17),
+     *             int(psys1(11)),psys1(15),psys1(1),(psys1(j),j=12,14),
+     *              psys1(28),psys1(10)
 
       if (iopt(14).gt.0) then 
 c                                 phase/system summary, seismic:
@@ -2641,8 +2640,6 @@ c-----------------------------------------------------------------------
       save iwarn
       data iwarn/0/
 c----------------------------------------------------------------------
-c                                 check if volume is there, if not assume
-c                                 things are really bad
       if (rxn) then 
 c                                 frendly return if a reaction
          shear = .false.
@@ -2658,7 +2655,8 @@ c                                 frendly but not a reaction
          return         
  
       else if (psys(1).lt.0d0) then 
-
+c                                 check if volume < 0, if so assume 
+c                                 things are really bad
          bad = .true.
 
       else 

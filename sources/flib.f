@@ -2406,7 +2406,7 @@ c                                 pmv constants
          end if
 
          f(l) = dlog(yl) + b(l)*d3 - aj2(l)*d2 + d6
-         g(l) = dexp(f(l))/p/y(l)
+         g(l) = dexp(f(l))/p/yl
 c                                 pmv
          v(l) = (d4*aj2(l) - b(l) - vmb + d7*b(l)) / d5
 
