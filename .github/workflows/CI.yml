@@ -49,6 +49,7 @@ jobs:
         make -C sources -f makefile clean
         make -C sources -f makefile FLINK='-shared' FFLAGS='-fPIC -O3'
         
-   # Test julia     
-   # - uses: julia-actions/julia-buildpkg@latest
+   # Test julia  
+    - name: Setup julia testing framework
+      uses: julia-actions/julia-buildpkg@latest
    # - uses: julia-actions/julia-runtest@latest  
