@@ -1,0 +1,7 @@
+name = "Perple_X"
+uuid = "88ab8c40-b94f-498d-987e-1b5f57581f3d"
+authors = ["James Connolly <james.connolly@erdw.ethz.ch>", "Boris Kaus <kaus@uni-mainz.de>"]
+version = "7.0.2"
+
+[deps]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
