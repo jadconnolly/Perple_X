@@ -1,4 +1,7 @@
 using Test
 
-println("The julia Perple_X testing framework will be put here")
-println(readdir("../sources"))
+include("utils.jl")
+
+@testset "MEEMUM tests" begin
+    @test run_meemum(dir="bl691_MEEMUM", inputfile="bl691_MEEMUM_input.txt", dir_meemum="../sources/meemum") == true
+end
