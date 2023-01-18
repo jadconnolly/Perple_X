@@ -16,10 +16,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
     - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y gfortran
-        sudo apt install -y cmake
+      uses: ./
     - name: Compile sources
       run: |
         make -C sources -f makefile
