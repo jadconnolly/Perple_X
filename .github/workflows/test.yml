@@ -27,7 +27,12 @@ jobs:
       run: |
           choco install cmake
 
-    - name: Compile sources
+    - name: Compile sources windows
+      if: contains( matrix.os, 'windows')
+      run: |
+        make -C sources -f makefile EXT=.exe
+    - name: Compile sources Linux/mac    
+      if: false == contains( matrix.os, 'windows')
       run: |
         make -C sources -f makefile
     - name: Compile libraries
