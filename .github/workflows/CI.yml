@@ -52,4 +52,5 @@ jobs:
    # Test julia  
     - name: Setup julia testing framework
       uses: julia-actions/julia-buildpkg@latest
-   # - uses: julia-actions/julia-runtest@latest  
+    - name: Run tests (through julia)
+      uses: julia-actions/julia-runtest@latest  
