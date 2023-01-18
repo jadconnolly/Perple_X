@@ -25,7 +25,7 @@ jobs:
     - name: Install compilers windows
       if: contains( matrix.os, 'windows')
       run: |
-          choco install mingw cmake
+          choco install cmake
 
     - name: Compile sources
       run: |
