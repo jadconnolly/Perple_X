@@ -15,7 +15,8 @@ jobs:
         sudo apt install -y gfortran
     - name: Compile sources
       run: |
-        make -C sources -f makefile
+        make -f makefile
     - name: Compile libraries
       run: |
+        make -f makefile clean
         make -f makefile FLINK='-shared' FFLAGS='-fPIC -O3'
