@@ -16,8 +16,8 @@ jobs:
         sudo apt install -y cmake
     - name: Compile sources
       run: |
-        make -f makefile
+        make -C source -f makefile
     - name: Compile libraries
       run: |
-        make -f makefile clean
-        make -f makefile FLINK='-shared' FFLAGS='-fPIC -O3'
+        make -C source -f makefile clean
+        make -C source -f makefile FLINK='-shared' FFLAGS='-fPIC -O3'
