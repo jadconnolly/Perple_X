@@ -12,6 +12,7 @@ jobs:
         os:
           - ubuntu-latest
           - macOS-latest
+          - windows-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -21,6 +22,11 @@ jobs:
       run: |
           brew install gcc@12 
           sudo ln -s $(which gfortran-12) $(dirname $(which gfortran-12))/gfortran
+    - name: Install compilers windows
+      if: contains( matrix.os, 'windows')
+      run: |
+          choco install mingw cmake
+
     - name: Compile sources
       run: |
         make -C sources -f makefile
