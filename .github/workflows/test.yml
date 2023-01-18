@@ -19,8 +19,7 @@ jobs:
     - name: Install GCC compilers macOS
       if: contains( matrix.os, 'macOS')
       run: |
-          brew install gcc@10 || brew upgrade gcc@10 || true
-          brew link gcc@10
+          brew install gcc@12 
     - name: Compile sources
       run: |
         make -C sources -f makefile
