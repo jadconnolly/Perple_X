@@ -15,8 +15,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Install dependencies
-      uses: ./
     - name: Compile sources
       run: |
         make -C sources -f makefile
