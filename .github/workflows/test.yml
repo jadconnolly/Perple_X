@@ -17,4 +17,5 @@ jobs:
       run: |
         make -C sources -f makefile
     - name: Compile libraries
+      run: |
         make -f makefile FLINK='-shared' FFLAGS='-fPIC -O3'
