@@ -1,4 +1,4 @@
-name: Compilation testing
+name: CI
 
 on: [push, pull_request]
 
