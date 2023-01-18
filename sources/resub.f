@@ -176,7 +176,7 @@ c                                 final processing, .false. indicates dynamic
 c                                 bad solution (lagged speciation) identified
 c                                 in avrger
                   call lpwarn (102,'LPOPT0')
-                  if (iopt(22).lt.2) idead = 102
+                  if (iopt(22).gt.2) idead = 102
 
                end if 
 
@@ -1048,7 +1048,7 @@ c                                  special solvus test based on solvent
 c                                  speciation for lagged aq model.
                      if (solvs4(i,kk)) cycle
 
-                     if (iopt(22).gt.3) then 
+                     if (iopt(22).gt.2) then 
 c                                  check pure and impure solvent coexist
                         if (caq(i,na1).eq.0d0.and.caq(kk,na1).ne.0d0.or.
      *                      caq(i,na1).ne.0d0.and.caq(kk,na1).eq.0d0) 

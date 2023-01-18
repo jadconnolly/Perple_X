@@ -1,0 +1,123 @@
+
+----------------------------------------
+
+Stable phases at:
+                             T(K)     =  1050.00    
+                             P(bar)   =  4000.00    
+
+
+Phase Compositions (molar  proportions):
+                   wt %      vol %     mol %     mol        H2O      MgO      Al2O3    K2O      CaO      TiO2     FeO      O2       Na2O     SiO2 
+ cAmph(G)          50.79     46.67     13.99     3.48      0.92948  2.21222  1.06723  0.01780  1.60099  0.14103  2.47692  0.12134  0.26225  6.38695
+ Augite(G)          3.09      2.67      3.29    0.819      0.00000  0.49836  0.04948  0.00000  0.88088  0.00000  0.57644  0.02444  0.01458  1.91622
+ melt(G)            0.83      1.10      1.49    0.370      0.48853  0.00450  0.16925  0.03878  0.05200  0.00000  0.01883  0.00000  0.08589  1.63715
+ Ilm(WPH)           2.34      1.46      3.80    0.946      0.00000  0.00000  0.00000  0.00000  0.00000  0.90359  1.09641  0.04821  0.00000  0.00000
+ Fsp(C1)           31.05     34.40     28.38     7.06      0.00000  0.00000  0.77140  0.00412  0.54279  0.00000  0.00000  0.00000  0.22448  2.45721
+ q                 11.89     13.69     49.04     12.2      0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  0.00000  1.00000
+
+Phase speciation (molar proportions):
+
+ cAmph(G)          mrbG: 0.24269, gl: -0.21897, ts: 0.22334, parg: 0.47707, kprg: 0.03559, tts: 0.07052, cumm: 0.02844
+                   grun: 0.46573, tr: -0.00603, a: -0.32333, b: 0.00494
+ Augite(G)         acm: 0.09776, jd: -0.06861, cats: 0.00350, cenjh: 0.01927, cfsg: 0.40798, di: 0.79710, ocats: 0.08028
+                   fmc: -0.33729
+ melt(G)           foTL: 0.00113, faTL: 0.00471, abL: 0.17179, silL: 0.00907, kspL: 0.07756, woL: 0.01650, q8L: 0.19521
+                   h2oL: 0.48853, oanL: 0.03550
+ Ilm(WPH)          hem: 0.09641, dilm: 0.09524, oilm: 0.80835
+ Fsp(C1)           an: 0.54279, san: 0.00824, abh: 0.44897
+
+Structural formulae for 688 format solution models:
+
+ Phase           Site  Multiplicity  Molar Site Fractions
+
+ cAmph(G)      
+                  A       1.00       Na(.4771)K(.0356)Vac(.4873)
+                  M1      3.00       Fe(.4707)Mg(.5293)
+                  M2      2.00       Fe(.1424)Fe3(.2427)Al(.2607)Ti(.0705)Mg(.2837)
+                  M4      2.00       Mg(.0284)Na(.0237)Fe(.1473)Ca(.8005)
+                  T1      4.00       Al(.4033)Si(.5967)
+                  OH      2.00       O(.0705)OH(.9295)
+           Non-mixing stoichiometry: [Si4O22]                                                    
+
+ Augite(G)     
+                  M1      1.00       Fe(.4080)Mg(.4791)Fe3(.0978)Al(.0152)
+                  M2      1.00       Na(.0292)Mg(.0193)Fe(.0707)Ca(.8809)
+                  T1      1.00       Al(.0017)Si(.9983)
+                  T2      1.00       Al(.0820)Si(.9180)
+           Non-mixing stoichiometry: [O6]                                                        
+
+ melt(G)       
+                  OH      1.00       OH(.4885)Vac(.5115)
+                  Ol      0.02       Mg(.1930)Fe(.8070)
+                  M       1.00       q(.1952)ksp(.0776)ab(.1718)sil(.0091)an(.0355)wo(.0165)Ol(.0058)OH(.4885)
+
+Molar Properties and Density:
+                    N(g)          G(J)     S(J/K)     V(J/bar)      Cp(J/K)       Alpha(1/K)  Beta(1/bar)    Cp/Cv    Density(kg/m3)
+ cAmph(G)          899.28      -11809698   1837.5       28.094       1042.3      0.36832E-04  0.13634E-05   1.0290       3201.0    
+ Augite(G)         232.76       -3035821   446.98       6.8210       254.91      0.38499E-04  0.96698E-06   1.0450       3412.4    
+ melt(G)           137.85       -2086976   360.78       6.2426       216.13      0.97949E-04  0.63032E-05   1.0484       2208.2    
+ Ilm(WPH)          152.48       -1251661   266.12       3.2333       139.09      0.31945E-04  0.66736E-06   1.0388       4715.9    
+ Fsp(C1)           271.03       -4138052   562.20       10.208       319.26      0.24624E-04  0.15711E-05   1.0131       2655.2    
+ q                  60.08        -911162   119.45       2.3519       69.478       0.0000      0.13264E-05   0.0000       2554.7    
+ System           6162.82      -85883543   12574.       209.51       7150.2      0.28236E-04  0.14635E-05   1.0170       2941.5    
+ System - fluid   6111.76      -85110598   12441.       207.20       7070.1      0.27458E-04  0.14095E-05   1.0167       2949.7    
+
+Seismic Properties:
+                 Gruneisen_T      Ks(bar)      Mu(bar)    V0(km/s)     Vp(km/s)     Vs(km/s)   Poisson ratio
+ cAmph(G)          0.74929      0.75474E+06  0.25158E+06   4.8557       5.8359       2.8035      0.35000    
+ Augite(G)          1.1133      0.10807E+07  0.36023E+06   5.6276       6.7635       3.2491      0.35000    
+ melt(G)           0.47056      0.16633E+06   0.0000       2.7445       2.7445       0.0000      0.50000    
+ Ilm(WPH)           1.1559      0.15565E+07  0.51884E+06   5.7451       6.9047       3.3169      0.35000    
+ Fsp(C1)           0.50768      0.64484E+06  0.21495E+06   4.9281       5.9228       2.8452      0.35000    
+ q                         NaN          NaN          NaN          NaN          NaN          NaN          NaN
+ System                    NaN          NaN          NaN          NaN          NaN          NaN          NaN
+ System - fluid            NaN          NaN          NaN          NaN          NaN          NaN          NaN
+
+Bulk Composition:
+
+                     Complete Assemblage                            Solid+Melt Only
+              mol        g        wt %     mol/kg          mol        g        wt %     mol/kg
+    H2O       3.416    61.543     0.999     0.554          3.235    58.283     0.954     0.529
+    MgO       8.110   326.865     5.304     1.316          8.108   326.798     5.347     1.327
+    Al2O3     9.265   944.628    15.328     1.503          9.202   938.237    15.351     1.506
+    K2O       0.105     9.928     0.161     0.017          0.091     8.575     0.140     0.015
+    CaO      10.146   568.957     9.232     1.646         10.127   567.877     9.292     1.657
+    TiO2      1.346   107.500     1.744     0.218          1.346   107.500     1.759     0.220
+    FeO      10.138   728.369    11.819     1.645         10.131   727.868    11.909     1.658
+    O2        0.488    15.616     0.253     0.079          0.488    15.616     0.255     0.080
+    Na2O      2.542   157.526     2.556     0.412          2.510   155.554     2.545     0.411
+    SiO2     53.956  3241.886    52.604     8.755         53.350  3205.455    52.447     8.729
+
+Other Bulk Properties:
+
+ Enthalpy (J/kg) = -.117934E+08
+ Specific Enthalpy (J/m3) = -.346907E+11
+ Entropy (J/K/kg) =  2040.33    
+ Specific Entropy (J/K/m3) = 0.600170E+07
+ Heat Capacity (J/K/kg) =  1160.22    
+ Specific Heat Capacity (J/K/m3) = 0.341281E+07
+
+
+ Solid Enthalpy (J/kg) = -.117884E+08
+ Solid Secific Enthalpy (J/m3) (2) = -.347725E+11
+ Solid Entropy (J/K/kg) =  2035.51    
+ Solid Specific Entropy (J/K/m3) = 0.600418E+07
+ Solid Heat Capacity (J/K/kg) (1) =  1160.03    
+ Solid Specific Heat Capacity (J/K/m3) (1) = 0.341226E+07
+
+
+N.B.: Aggregate properties represent the entire stable assemblage.
+Solid aggregate properties represent solid and melt properties,
+but do not include molecular fluid properties.
+
+
+Chemical Potentials (J/mol):
+
+      H2O           MgO           Al2O3         K2O           CaO           TiO2          FeO           O2            Na2O          SiO2 
+    -321647.      -649446.     -0.168707E+07  -887647.      -759702.      -959748.      -330306.      -462443.      -809487.      -911162.    
+
+Variance (c-p+2) =  6
+
+
+----------------------------------------
+

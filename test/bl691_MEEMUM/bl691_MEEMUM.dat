@@ -1,0 +1,169 @@
+hp62ver.dat     thermodynamic data file                                                                                                    
+print | print generates print output
+plot     | no_plot suppresses plot output
+solution_model.dat     | solution model file, blank = none                                                                                                                                                                                                      
+Fig 4a Green et al 2016 BL478                                                                                                                                                                
+bl691_MEEMUM_perplex_option.dat    | Perple_X option file                                                                                                                                                                                                                   
+    5 calculation type: 0 - composition, 1 - Schreinemakers, 3 - Mixed, 4 - swash, 5 - gridded min, 7 - 1d fract, 8 - gwash, 9 - 2d fract, 10 - 7 w/file input
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 number component transformations
+   19 number of components in the data base
+    0 component amounts, 0 - molar, 1 weight
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 05
+   14 ifug EoS for saturated phase
+    2 gridded minimization dimension (1 or 2)
+    0 special dependencies: 0 - P and T independent, 1 - P(T), 2 - T(P)
+ 0.00000      0.00000      0.00000      0.00000      0.00000     Geothermal gradient polynomial coeffs.
+
+begin thermodynamic component list
+Na2O  1   2.5416      0.00000      0.00000     molar  amount
+MgO   1  8.110      0.00000      0.00000     molar  amount
+Al2O3 1  9.2646     0.00000      0.00000     molar  amount
+K2O   1  0.1054     0.00000      0.00000     molar  amount
+CaO   1  10.146      0.00000      0.00000     molar  amount
+TiO2  1   1.346      0.00000      0.00000     molar  amount
+FeO   1  10.1382      0.00000      0.00000     molar  amount
+O2    1  0.488     0.00000      0.00000     molar  amount
+H2O   1  3.4162    
+SiO2    1 53.9559 
+end thermodynamic component list
+
+begin saturated component list
+
+end saturated component list
+
+
+begin saturated phase component list
+end saturated phase component list
+
+
+begin independent potential/fugacity/activity list
+end independent potential list
+
+
+begin excluded phase list
+mic
+geik
+ilm
+ilm_nol
+ru
+end excluded phase list
+
+
+begin solution phase list
+cAmph(G)
+Augite(G)
+melt(G)   
+Ep(HP11)  
+Gt(W)      
+Opx(W)     
+Bi(W)     
+Ilm(WPH)
+Sp(WPC)
+Fsp(C1)
+end solution phase list
+
+ 10000.     1323.0     0.00000000  0.0000      0.0000     max p, t, xco2, u1, u2
+ 500.0      873.00     0.00000000  0.0000      0.0000     min p, t, xco2, u1, u2
+ 0.0000      0.0000     0.00000000  0.0000      0.0000     unused place holder post 06
+
+ 2  1  4  5  3   indices of 1st & 2nd independent & sectioning variables
+
+
+Verification of the objective gradients.
+ ----------------------------------------
+
+ XXX  The objective gradients seem to be incorrect.
+
+ Directional derivative of the objective   -1.52918102D+06
+ Difference approximation                  -1.56824811D+06
+
+
+    J    X(J)     DX(J)           G(J)           Difference approxn  Itns
+
+    1  2.00D-01  1.81D-10   -2.14303091D+07   -2.12356061D+07  BAD?     2
+    2 -2.00D-01  1.81D-10   -2.14257221D+07   -2.12310189D+07  BAD?     2
+    3  2.00D-01  8.62D-07   -2.10186060D+07   -2.10186060D+07    OK     2
+    4  4.00D-01  1.22D-06   -2.09995695D+07   -2.09995695D+07    OK     2
+    5  0.00D+00  2.34D-10   -2.12170071D+07   -2.11208119D+07  BAD?     2
+    6  0.00D+00  1.17D-10   -2.18461920D+07   -2.14613962D+07  BAD?     2
+    7  1.20D-01  7.62D-07   -2.09926462D+07   -2.09926462D+07    OK     2
+    8  5.60D-01  1.54D-06   -2.10132880D+07   -2.10132880D+07    OK     2
+    9  2.00D-01  1.05D-06   -2.10295296D+07   -2.10295296D+07    OK     2
+   10 -3.20D-01  1.14D-06    6.43903366D+05    6.43903366D+05    OK     2
+
+ XXX  There seem to be     4  incorrect objective gradients out of the    10
+        set in cols     1  through    10
+
+ The largest relative error was    1.76D-02   in element     6
+
+
+
+  Maj  Mnr    Step      Objective Norm Gz Cond Hz
+    0   10 0.0D+00  -1.027543D+07 0.0D+00 1.0D+00
+    1    6 1.0D+00  -4.253787D+07 2.4D+05 1.0D+00
+    2    5 1.0D+00  -4.259542D+07 3.8D+05 1.0D+00
+    3    9 8.0D-03  -4.259569D+07 5.4D+04 1.0D+00
+    4    5 5.6D-05  -4.259569D+07 5.6D+04 2.1D+03
+    5    5 9.8D-01  -4.261114D+07 5.8D+04 6.3D+04
+    6    7 1.2D-02  -4.261140D+07 2.9D+04 1.0D+00
+    7    2 9.7D-01  -4.263347D+07 8.8D+04 2.4D+03
+    8    6 3.6D-01  -4.263372D+07 8.7D+04 2.2D+04
+    9    7 6.5D-01  -4.263396D+07 8.0D+04 2.2D+05
+   10    5 3.2D-02  -4.263398D+07 7.8D+04 1.9D+03
+   11    3 6.6D-01  -4.263430D+07 8.0D+04 1.1D+04
+   12    7 3.6D-01  -4.263435D+07 7.4D+04 8.8D+04
+   13    2 4.2D-02  -4.263437D+07 7.6D+04 3.8D+04
+
+ Exit from NP problem after    13 major iterations,
+                               79 minor iterations.
+
+
+ Varbl State     Value     Lower Bound   Upper Bound    Lagr Mult   Residual
+
+ V  1    FR  -2.546544E-17     None          None        0.000      1.0000E+20
+ V  2    FR   3.641101E-05     None          None        0.000      1.0000E+20
+ V  3    FR  -4.185431E-02     None          None        0.000      1.0000E+20
+ V  4    FR   2.313017E-02     None          None        0.000      1.0000E+20
+ V  5    FR   6.050562E-02     None          None        0.000      1.0000E+20
+ V  6    FR    0.00000         None          None        0.000      1.0000E+20
+ V  7    FR   1.371040E-02     None          None        0.000      1.0000E+20
+ V  8    FR    2.00000         None          None        0.000      1.0000E+20
+ V  9    FR   0.944472         None          None        0.000      1.0000E+20
+ V 10    FR   -1.00000         None          None        0.000      1.0000E+20
+
+
+ L Con State     Value     Lower Bound   Upper Bound    Lagr Mult   Residual
+
+ L  1    FR   2.313017E-02   0.00000       1.00000       0.000      2.3130E-02
+ L  2    FR   6.050562E-02   0.00000       1.00000       0.000      6.0506E-02
+ L  3    FR  -8.363579E-02  -1.00000       0.00000       0.000      8.3636E-02
+ L  4    UL   2.220446E-16  -1.00000       0.00000     -2.0733E+07 -2.2204E-16
+ L  5    FR  -2.220446E-16   0.00000       1.00000       0.000     -2.2204E-16
+ L  6    FR    1.00000       0.00000       1.00000       0.000       0.000
+ L  7    LL  -2.546544E-17   0.00000       1.00000      2.0412E+07 -2.5465E-17
+ L  8    LL  -2.081668E-16   0.00000       1.00000      2.0423E+07 -2.0817E-16
+ L  9    LL    0.00000       0.00000       1.00000      1.9857E+07   0.000
+ L 10    LL   -1.00000      -1.00000       0.00000      2.0410E+07  1.1102E-16
+ L 11    FR   1.371040E-02   0.00000       1.00000       0.000      1.3710E-02
+ L 12    FR   3.641101E-05   0.00000       1.00000       0.000      3.6411E-05
+ L 13    LL   -1.00000      -1.00000       0.00000      4.2136E+07  9.9920E-16
+ L 14    FR   0.986253       0.00000       1.00000       0.000      1.3747E-02
+ L 15    FR   2.089074E-02   0.00000       1.00000       0.000      2.0891E-02
+ L 16    FR  -2.089074E-02  -1.00000       0.00000       0.000      2.0891E-02
+ L 17    FR    0.00000       0.00000       1.00000       0.000       0.000
+ L 18    FR    0.00000      -1.00000       0.00000       0.000       0.000
+
+ Exit E04UCF - Optimal solution found.
+
+ Final objective value =  -0.4263437E+08

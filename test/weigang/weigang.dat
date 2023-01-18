@@ -1,0 +1,121 @@
+DEW19HP633ver_elements.dat     thermodynamic data file                                                                                      
+no_print | print generates print output
+plot     | obsolete 6.8.4+
+solution_model.dat            | solution model file, blank = none                                                                                                                                                                                
+weigang                                                                                                                                                                                                                                                         
+weigang_perplex_option.dat     | Perple_X option file                                                                                                                                                                                                            
+    5 calculation type: 0- composition, 1- Schreinemakers, 3- Mixed, 4- swash, 5- gridded min, 7- 1d fract, 8- gwash, 9- 2d fract, 10- 7 w/file input, 11- 9 w/file input, 12- 0d infiltration
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 number component transformations
+   20 number of components in the data base
+    0 component amounts, 0 - mole, 1 mass
+    0 unused place holder, post 06
+    0 unused place holder, post 06
+    0 unused place holder, post 05
+    0 ifug EoS for saturated phase
+    2 gridded minimization dimension (1 or 2)
+    0 special dependencies: 0 - P and T independent, 1 - P(T), 2 - T(P)
+ 0.00000      0.00000      0.00000      0.00000      0.00000     Geothermal gradient polynomial coeffs.
+
+begin thermodynamic component list
+Mg    1  9.40500      0.00000      0.00000     molar amount
+Al    1 0.406000      0.00000      0.00000     molar amount
+Si    1  6.81400      0.00000      0.00000     molar amount
+Ca    1 0.262000      0.00000      0.00000     molar amount
+Fe    1  1.08800      0.00000      0.00000     molar amount
+O2    1  14.9460      0.00000      0.00000     molar amount
+H2    1  4.35000      0.00000      0.00000     molar amount
+C     1 0.107000      0.00000      0.00000     molar amount
+Cr    1 0.710000E-01  0.00000      0.00000     molar amount
+S2    1 0.140000E-01  0.00000      0.00000     molar amount
+end thermodynamic component list
+
+
+begin saturated component list
+end saturated component list
+
+
+begin saturated phase component list
+end saturated phase component list
+
+
+begin independent potential/fugacity/activity list
+end independent potential list
+
+
+begin excluded phase list
+ACETATE,
+ACETIC-A
+BENZENE,
+CO,aq
+CO2,aq
+ETHANE,A
+ETHANOL,
+ETHYLENE
+FORMATE,
+FORMIC-A
+GLUTARAT
+GLUTARIC
+GLYCOLAT
+GLYCOLIC
+H2,aq
+H2CO3,aq
+H2S,aq
+HEXANE,A
+HFeO2-
+Isobutan
+LACTATE,
+LACTIC-A
+METHANE,
+METHANOL
+MgSiC+
+O2,aq
+PROPANE,
+PROPANOA
+PROPANOI
+PROPANOL
+SO2,aq
+TOLUENE,
+O2
+cen
+dol
+h2oL
+liz
+tro
+end excluded phase list
+
+
+begin solution phase list
+A-phase
+Atg(PN)
+Cpx(HGP)
+cAmph(G)
+Chl(W)
+COH-Fluid
+Gt(HGP)
+O(HGP)
+oCcM(EF)
+Opx(HGP)
+Po(HP)
+Sp(HGP)
+T
+end solution phase list
+
+   60000.0        1273.15        0.00000        0.00000        0.00000     max p, t, xco2, mu_1, mu_2
+   5000.00        573.150        0.00000        0.00000        0.00000     min p, t, xco2, mu_1, mu_2
+   0.00000        0.00000        0.00000        0.00000        0.00000     unused place holder post 06
+
+ 2  1  4  5  3   indices of 1st & 2nd independent & sectioning variables
+
+1195.372 23333.3333
+
+
+ 734.6885   58589.74

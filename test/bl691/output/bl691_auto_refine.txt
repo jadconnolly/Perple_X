@@ -1,0 +1,20 @@
+
+
+NOTE: this file echoes the auto-refine data after the exploratory stage. If
+the composition of a phase has been relaxed (**warning ver991**) during this stage,
+best practice is to modify the appropriate subdivision scheme* and repeat the
+exploratory stage calculation until the warnings are eliminated. This process can be
+expedited by setting the auto_refine option = man or off
+
+For a summary of the compositional ranges at the end of the auto-refine stage refer
+to the console output.
+
+*refer to the header section of the solution model filefor explanation of subdivision schemes
+
+and:
+
+www.perplex.ethz.ch/perplex/faq/warning_ver991_relax_solution_model_limits.txt
+
+for additional information.
+
+
