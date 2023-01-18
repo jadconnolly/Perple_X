@@ -44,10 +44,18 @@ jobs:
         make -C sources -f makefile
         
    # Compile shared library
-    - name: Compile libraries
+    - name: Compile libraries windows 
       run: |
         make -C sources -f makefile clean
-        make -C sources -f makefile FLINK='-shared' FFLAGS='-fPIC -O3'
+        make -C sources -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.dll
+    - name: Compile libraries linux 
+      run: |
+        make -C sources -f makefile clean
+        make -C sources -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.so
+    - name: Compile libraries mac 
+      run: |
+        make -C sources -f makefile clean
+        make -C sources -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.dylib
         
    # Test julia  
     - name: Setup julia testing framework
