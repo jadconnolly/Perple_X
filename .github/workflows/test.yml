@@ -20,6 +20,7 @@ jobs:
       if: contains( matrix.os, 'macOS')
       run: |
           brew install gcc@12 
+          sudo ln -s $(which gfortran-12) $(dirname $(which gfortran-12))/gfortran
     - name: Compile sources
       run: |
         make -C sources -f makefile
