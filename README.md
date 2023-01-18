@@ -3,8 +3,8 @@
 [![Build Status](https://github.com/jadconnolly/Perple_X/workflows/CI/badge.svg)](https://github.com/jadconnolly/Perple_X/actions)
 
 
-This contains the latest source codes of [Perple_X](https://www.perplex.ethz.ch), which is a collection of Fortran77 programs for calculating phase diagrams, manipulating thermodynamic data, and modeling equilibrium phase fractionation and reactive transport. 
-More info can be found on the [Perple_X](https://www.perplex.ethz.ch) webpage.
+This repository contains the latest source codes of [Perple_X](https://www.perplex.ethz.ch), which is a collection of Fortran77 programs for calculating phase diagrams, manipulating thermodynamic data, and modeling equilibrium phase fractionation and reactive transport. 
+More information can be found on the [Perple_X](https://www.perplex.ethz.ch) webpage.
 
 We also provide precompiled binaries for all modern operating systems, which can be downloaded through the julia package manager.
 The binaries can be used from the command-line, or directly from within julia.  
