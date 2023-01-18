@@ -13,6 +13,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y gfortran
+        sudo apt install -y cmake
     - name: Compile sources
       run: |
         make -f makefile
