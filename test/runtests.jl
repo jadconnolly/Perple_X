@@ -9,7 +9,6 @@ include("utils.jl")
     file_test = "bl691_MEEMUM"
     file_input = "bl691_MEEMUM_input.txt"
 
-
     out = run_test_pipe(dir=dir_test, inputfile=file_input, meemum=true)  
     @test out == true
 
@@ -17,25 +16,7 @@ include("utils.jl")
     out_expected = read_meemum(dir=dir_expected, filename=file_test);
     out = read_meemum(dir=dir_test, filename=file_test);
 
-    # Compare scalars
-    Compare_Fields = [:H, :S, :Cp, :variance, :spec_Cp, :P, :T]
-    @testset "test field $field" for field in Compare_Fields
-        @test out[field] ≈ out_expected[field]
-    end
-
-    # Compare fields
-    Compare_Fields = (:H2O, :MgO, :Al2O3, :K2O, :CaO, :TiO2, :FeO, :O2, :Na2O, :SiO2)
-    @testset "test chem. pot. $field" for field in Compare_Fields
-        @test out.chem_pot[field] ≈ out_expected.chem_pot[field] rtol=1e-4
-    end
-
-    # Compare phase composition
-    Compare_Fields = (Symbol("wt%"), Symbol("vol%"), Symbol("mol%"), :mol, :H2O, :MgO, :Al2O3, :K2O, :CaO, :TiO2, :FeO, :O2, :Na2O, :SiO2)
-    for i=1:length(out.phase_comp)
-     @testset "test $(out.phase_comp[i].Name), $field" for field in Compare_Fields
-            @test out.phase_comp[i][field] ≈ out_expected.phase_comp[i][field] rtol=2e-3
-        end
-    end
+    compare_meemum_results(out, out_expected)       # test if they are sufficiently similar
 
 end
 
@@ -51,6 +32,31 @@ end
 
     # check size of generated plot
     @test  filesize("klb691/klb691.ps") ≈  filesize("klb691/output/klb691.ps") rtol=0.07    
-    
+
 end
 
+
+@testset "Vertex bl691 test" begin
+
+    testname = "bl691"
+
+    @test run_test_pipe(dir=testname, inputfile="$(testname)_input.txt", vertex=true) == true # run file
+    @test run_test_pipe(dir=testname, inputfile="$(testname)_input.txt", pssect=true) == true # create plot
+
+    @test  filesize("$(testname)/$(testname).blk") ≈  filesize("$(testname)/output/$(testname).blk") rtol=0.02      # number optim.
+    @test  filesize("$(testname)/$(testname).ps") ≈  filesize("$(testname)/output/$(testname).ps") rtol=0.07        # size plots
+
+end
+
+
+@testset "Vertex weigang test" begin
+
+    testname = "weigang"
+
+    @test run_test_pipe(dir=testname, inputfile="$(testname)_input.txt", vertex=true) == true # run file
+    @test run_test_pipe(dir=testname, inputfile="$(testname)_input.txt", pssect=true) == true # create plot
+
+    @test  filesize("$(testname)/$(testname).blk") ≈  filesize("$(testname)/output/$(testname).blk") rtol=0.02      # number optim.
+    @test  filesize("$(testname)/$(testname).ps") ≈  filesize("$(testname)/output/$(testname).ps") rtol=0.07        # size plots
+
+end
