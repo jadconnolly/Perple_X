@@ -48,7 +48,7 @@ jobs:
         run: |
           make -C src -f makefile
           mkdir binary
-          find src/ -executable -type f -exec cp {} binary \;
+          find src/ -perm +111 -type f -exec cp {} binary \;
           tar -pczf Perple_X_Linux_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
 
       - name: Compile and tar binaries for macOS
@@ -56,7 +56,7 @@ jobs:
         run: |
           make -C src -f makefile
           mkdir binary
-          find src/ -executable -type f -exec cp {} binary \;
+          find src/ -perm +111 -type f -exec cp {} binary \;
           tar -pczf Perple_X_Mac_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
           
       - name: Upload the artifacts
