@@ -40,7 +40,17 @@ include("utils.jl")
 end
 
 @testset "Vertex klb691 test" begin
-    out = run_test_pipe(dir="klb691", inputfile="klb691_input.txt", vertex=true)  
+    out = run_test_pipe(dir="klb691", inputfile="klb691_input.txt", vertex=true)  # run file
     @test out == true
+
+    out = run_test_pipe(dir="klb691", inputfile="klb691_input.txt", pssect=true)  # create plot
+    @test out == true
+
+    # check number of optimizations:
+    @test  filesize("klb691/klb691.blk") ≈  filesize("klb691/output/klb691.blk") rtol=0.02  
+
+    # check size of generated plot
+    @test  filesize("klb691/klb691.ps") ≈  filesize("klb691/output/klb691.ps") rtol=0.07    
+    
 end
 

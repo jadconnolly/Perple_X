@@ -9,7 +9,7 @@ The executable is located in directory `dir_exec` relative to the current direct
 
 If something goes wrong, it will return false.
 """
-function run_test_pipe(; dir="bl691_MEEMUM", inputfile="bl691_MEEMUM_input.txt", dir_exec="../src/", meemum=false, vertex=false)  
+function run_test_pipe(; dir="bl691_MEEMUM", inputfile="bl691_MEEMUM_input.txt", dir_exec="../src/", meemum=false, vertex=false, pssect=false)  
     cur_dir = pwd();
 
     # Indicate the executable you will run
@@ -18,6 +18,8 @@ function run_test_pipe(; dir="bl691_MEEMUM", inputfile="bl691_MEEMUM_input.txt",
         exec = "meemum"
     elseif vertex==true
         exec = "vertex"
+    elseif pssect==true
+        exec = "pssect"
     end
     if isnothing(exec)
         error("You need to indicate which executable you want to run")
