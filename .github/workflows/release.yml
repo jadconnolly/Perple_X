@@ -1,0 +1,30 @@
+name: Handle Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  generate:
+
+    name: Create release-artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y gfortran
+      - name: Compile sources
+        run: |
+          make -C src -f LINUX_makefile
+          mkdir binary
+          find src/ -executable -type f -exec cp {} binary \;
+          tar -pczf Perple_X_Linux_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
+      - name: Upload the artifacts
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: '*.tar.gz'
