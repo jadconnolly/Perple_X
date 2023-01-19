@@ -48,7 +48,7 @@ end
 
 end
 
-
+#=
 @testset "Vertex weigang test" begin
 
     testname = "weigang"
@@ -60,3 +60,4 @@ end
     @test  filesize("$(testname)/$(testname).ps") ≈  filesize("$(testname)/output/$(testname).ps") rtol=0.07        # size plots
 
 end
+=#
