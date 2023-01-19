@@ -8,7 +8,14 @@ jobs:
   generate:
 
     name: Create release-artifacts
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          #- macOS-latest
+          #- windows-latest
+          
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
@@ -16,9 +23,10 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y gfortran
-      - name: Compile sources
+      - name: Compile and tar binaries  linux/mac
+        if: false == contains( matrix.os, 'windows')
         run: |
-          make -C src -f LINUX_makefile
+          make -C src -f makefile
           mkdir binary
           find src/ -executable -type f -exec cp {} binary \;
           tar -pczf Perple_X_Linux_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
