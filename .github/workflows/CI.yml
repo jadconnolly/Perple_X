@@ -37,25 +37,25 @@ jobs:
     - name: Compile sources windows
       if: contains( matrix.os, 'windows')
       run: |
-        make -C sources -f makefile EXT=.exe
+        make -C src -f makefile EXT=.exe
     - name: Compile sources Linux/mac    
       if: false == contains( matrix.os, 'windows')
       run: |
-        make -C sources -f makefile
+        make -C src -f makefile
         
    # Compile shared library
     - name: Compile libraries windows 
       if: contains( matrix.os, 'windows')
       run: |
-        make -C sources -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.dll
+        make -C src -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.dll
     - name: Compile libraries linux 
       if: contains( matrix.os, 'ubuntu')
       run: |
-        make -C sources -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.so
+        make -C src -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.so
     - name: Compile libraries mac 
       if: contains( matrix.os, 'macOS')
       run: |
-        make -C sources -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.dylib
+        make -C src -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.dylib
         
    # Test julia  
     - name: Setup julia testing framework
