@@ -1,4 +1,4 @@
-name: Handle Release
+name: Release Linux binaries
 
 on:
   release:
@@ -14,8 +14,6 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macOS-latest
-          - windows-latest
           
     steps:
       - name: Checkout the repository
@@ -26,24 +24,6 @@ jobs:
           sudo apt update
           sudo apt install -y gfortran
           
-      - name: Install GCC compilers macOS
-        if: contains( matrix.os, 'macOS')
-        run: |
-          brew install gcc@12 
-          sudo ln -s $(which gfortran-12) $(dirname $(which gfortran-12))/gfortran
-      - name: Install compilers windows
-        if: contains( matrix.os, 'windows')
-        run: |
-          choco install cmake
-          
-      - name: Compile sources windows
-        if: contains( matrix.os, 'windows')
-        run: |
-          make -C src -f makefile EXT=.exe
-          mkdir binary
-          find src/ -perm +111 -type f -exec cp {} binary \;
-          tar -pczf Perple_X_WINDOWS_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
-          
       - name: Compile and tar binaries for linux
         if: contains( matrix.os, 'ubuntu')
         run: |
@@ -52,14 +32,6 @@ jobs:
           find src/ -executable -type f -exec cp {} binary \;
           tar -pczf Perple_X_Linux_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
 
-      - name: Compile and tar binaries for macOS
-        if: contains( matrix.os, 'macOS')
-        run: |
-          make -C src -f makefile
-          mkdir binary
-          find src/ -perm +111 -type f -exec cp {} binary \;
-          tar -pczf Perple_X_Mac_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
-          
       - name: Upload the artifacts
         uses: skx/github-action-publish-binaries@master
         env:
