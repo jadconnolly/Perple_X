@@ -41,7 +41,7 @@ jobs:
         run: |
           make -C src -f makefile EXT=.exe
           mkdir binary
-          find src/ -executable -type f -exec cp {} binary \;
+          find src/ -perm +111 -type f -exec cp {} binary \;
           tar -pczf Perple_X_WINDOWS_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
           
       - name: Compile and tar binaries for linux
