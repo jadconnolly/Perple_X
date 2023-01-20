@@ -21,17 +21,18 @@ include("utils.jl")
 end
 
 @testset "Vertex klb691 test" begin
-    out = run_test_pipe(dir="klb691", inputfile="klb691_input.txt", vertex=true)  # run file
-    @test out == true
+    testname = "klb691"
 
-    out = run_test_pipe(dir="klb691", inputfile="klb691_input.txt", pssect=true)  # create plot
-    @test out == true
+    @test run_test_pipe(dir=testname, inputfile="$(testname)_input.txt", vertex=true) == true # run file
+    @test run_test_pipe(dir=testname, inputfile="$(testname)_input.txt", pssect=true) == true # create plot
 
-    # check number of optimizations:
-    @test  filesize("klb691/klb691.blk") ≈  filesize("klb691/output/klb691.blk") rtol=0.02  
-
-    # check size of generated plot
-    @test  filesize("klb691/klb691.ps") ≈  filesize("klb691/output/klb691.ps") rtol=0.07    
+    @test  filesize("$(testname)/$(testname).blk") ≈  filesize("$(testname)/output/$(testname).blk") rtol=0.02      # number optim.
+    @test  filesize("$(testname)/$(testname).ps") ≈  filesize("$(testname)/output/$(testname).ps") rtol=0.07        # size plots
+  
+    # number of performed optimizations  
+    minG          = extract_value("$(testname)/$(testname).tim", "SQP G evaluations", " ")
+    minG_expected = extract_value("$(testname)/output/$(testname).tim", "SQP G evaluations", " ")
+    @test minG ≈ minG_expected rtol=1e-2
 
 end
 
@@ -46,6 +47,11 @@ end
     @test  filesize("$(testname)/$(testname).blk") ≈  filesize("$(testname)/output/$(testname).blk") rtol=0.02      # number optim.
     @test  filesize("$(testname)/$(testname).ps") ≈  filesize("$(testname)/output/$(testname).ps") rtol=0.07        # size plots
 
+    # number of performed optimizations  
+    minG          = extract_value("$(testname)/$(testname).tim", "SQP G evaluations", " ")
+    minG_expected = extract_value("$(testname)/output/$(testname).tim", "SQP G evaluations", " ")
+    @test minG ≈ minG_expected rtol=1e-2    
+
 end
 
 @testset "Vertex weigang test" begin
@@ -58,4 +64,8 @@ end
     @test  filesize("$(testname)/$(testname).blk") ≈  filesize("$(testname)/output/$(testname).blk") rtol=0.02      # number optim.
     @test  filesize("$(testname)/$(testname).ps") ≈  filesize("$(testname)/output/$(testname).ps") rtol=0.07        # size plots
 
+    # number of performed optimizations  
+    minG          = extract_value("$(testname)/$(testname).tim", "SQP G evaluations", " ")
+    minG_expected = extract_value("$(testname)/output/$(testname).tim", "SQP G evaluations", " ")
+    @test minG ≈ minG_expected rtol=1e-2    
 end

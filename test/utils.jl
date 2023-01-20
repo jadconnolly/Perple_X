@@ -81,11 +81,11 @@ end
 
 
 """
-    extract_value(file::String, keywords::NTuple{N,String}) 
+    extract_value(file::String, keywords::NTuple{N,String}, split_sign="=") 
 
 This scans the file `file` for `keywords` and returns the numerical extract_value 
 """
-function  extract_value(file::String, keyword::NTuple{N,String}) where N
+function  extract_value(file::String, keyword::NTuple{N,String}, split_sign="=") where N
     
     d =  Vector{Union{Nothing, Float64}}(nothing, N)
     open(file) do f
@@ -94,7 +94,7 @@ function  extract_value(file::String, keyword::NTuple{N,String}) where N
             line = readline(f)
             for i=1:N        
                 if contains(line, keyword[i])
-                    d[i] = parse(Float64,split(line,'=')[2]); 
+                    d[i] = parse(Float64,split(line,split_sign)[end]); 
                 end
             end
         end
@@ -105,12 +105,12 @@ end
 
 
 """
-    extract_value(file::String, keyword::String)
+    extract_value(file::String, keyword::String, split_sign="=")
 
 Extract a single value of a line
 """
-function  extract_value(file::String, keyword::String)
-    return extract_value(file, (keyword,))[1]
+function  extract_value(file::String, keyword::String, split_sign="=")
+    return extract_value(file, (keyword,), split_sign)[1]
 end
 
 
@@ -127,8 +127,9 @@ function  extract_data_block(file::String, keyword::String, additional_empty_lin
 
                 line_names = readline(f)
                 line_names = replace(line_names, "Poisson ratio"=>"Poisson_ratio")
+                line_names = replace(line_names, " % "=>"%")
 
-                names = split(remove_space_beforeafter_symbol(line_names,"%"));
+                names = split(line_names);
                 sym_names = Tuple([:Name; Symbol.(names)]);
       
                 # read the block itself
@@ -159,20 +160,6 @@ function  extract_data_block(file::String, keyword::String, additional_empty_lin
     return data
 end
     
-function remove_space_beforeafter_symbol(str::String, sym::String)
-    
-    ind_all = findall(sym, str)
-    id  = [ind_all[i][1]-1 for i=1:length(ind_all)];
-    id1 = [ind_all[i][1]+1 for i=1:length(ind_all)];
-    
-    id_vec = setdiff(Vector(1:length(str)), id)
-    id_vec = setdiff(id_vec, id1)
-
-    str = str[id_vec]
-    return str
-end
-
-
 """
     out = read_chemical_potentials(file::String)
 reads chemical potentials from a meemum file
