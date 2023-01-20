@@ -232,9 +232,20 @@ c                                 the total time is in etime(30)
      *                  tt/60.,tt/etime(30)*1d2
          write (n,1010) 'Total elapsed time   ',
      *                  etime(30)/60.,1d2
-         if (n.ne.6) write (n,1020)
+         if (n.ne.6) then 
 
-         if (n.eq.993) exit
+            write (n,1020)
+            write (n,'(2x,a,/)') 'Other statistics:'
+            write (n,1030) 'Good SLP minimizations ',rcount(4)
+            write (n,1030) 'Bad SLP minimizations  ',rcount(5)
+            write (n,1030) 'Good SQP minimizations ',rcount(2)
+            write (n,1030) 'Bad SQP minimizations  ',rcount(3)
+            write (n,1030) 'SQP G evaluations      ',count
+            write (n,1020)
+
+            exit
+
+         end if
 
          n = 993
 
@@ -242,7 +253,8 @@ c                                 the total time is in etime(30)
 
 1000  format (80('-')/,5x,'Timing',20x,'min.',9x,'% of total',/)
 1010  format (2x,a21,3x,g14.5,7x,f5.1)
-1020  format (80('-'),/)
+1020  format (80('-'))
+1030  format (5x,a,1x,i16)
 
       end 
 
@@ -1365,6 +1377,8 @@ c                                 check for positive bulk
       if (idead.eq.0) call lpopt0 (idead)
 c                                 if idead = 0 optimization was ok
       if (idead.eq.0) then 
+
+         rcount(4) = rcount(4) + 1
 c                                 at this point the compositions of
 c                                 the np solutions are in cp3, ctot3, x3 indexed
 c                                 by np and the original indices of the 
@@ -1372,7 +1386,9 @@ c                                 ncpd compounds are -kkp(np+1..ntot), and
 c                                 the molar amounts of the phases are in amt.
          call sorter (igrd(i,j),i,j)
 
-      else 
+      else
+
+         rcount(5) = rcount(5) + 1
  
          igrd(i,j) = k2
          iap(k2) = k3
