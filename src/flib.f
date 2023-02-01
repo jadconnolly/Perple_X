@@ -4524,7 +4524,7 @@ c                                 converged, compute ln(fugacity)
 
             exit
           
-         else if (v.lt.0d0.or.it.gt.10*iopt(21)) then
+         else if (v.lt.0d0.or.it.gt.iopt(21)) then
 c                                 will use cork fugacities
             iwarn = iwarn + 1
 
