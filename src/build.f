@@ -756,7 +756,7 @@ c                                 diagrams:
          read (*,*) v(1)
 
          write (n1,'(i4,1x,g14.6,1x,a)')  i, v(1),
-     *                         'Number and size (mole) of water '//
+     *                         'Number and size (mole) of fluid '//
      *                         'aliquots for 0d infilitration model'
 
       end if

@@ -629,6 +629,11 @@ c-----------------------------------------------------------------------
       ibulk = 0
       it = 0
 
+      if (iopt(36)+1.gt.l7) then
+         call warn (92,nopt(1),iopt(36)+1,'TITRAT')
+         iopt(36) = l7 - 1
+      end if
+
       do i = 1, icp
 c                                 the molar composition of the infiltrant
          iblk(i) = dblk(2,i)
@@ -2323,7 +2328,7 @@ c                                 error is the back-calculated bulk - input bulk
          end do
 
          do j = 1, ntot
-            mass(k) = mass(k)/tmass
+            mass(j) = mass(j)/tmass
          end do
 
          if (fmode.eq.2) then 

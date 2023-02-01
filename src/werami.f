@@ -596,7 +596,8 @@ c                                 only exact nodal coordinates allowed
 c                                 0-d infiltration, var(2) is the
 c                                 number of aliquots added. var(1)
 c                                 is the cumulative moles of aliquot.
-          var(1) = (var(2)-1d0) * nopt(36)
+c         var(1) = (var(2)-1d0) * nopt(36)
+          var(2) = var(1)/nopt(36) + 1d0
 
       else if (icopt.eq.9) then 
 c                                 change sign on dz because of downward
@@ -2719,12 +2720,12 @@ c                                 plotting. here assume only two
 c                                 cases icopt = 12 = nodal coordinate
 c                                 is the second variable, and other-
 c                                 wise the nodal coordinate is 
-c                                 get the independent output variable
+c                                 set the independent output variable
+      ind = 1
+
       if (icopt.eq.12) then 
-         ind = 2
          ipts = iopt(36) + 1
       else 
-         ind = 1
          ipts = int( (vmx(ind)-vmn(ind))/dvr(ind) + 1)
       end if 
 c                                 name and open plot file, write header 

@@ -764,6 +764,12 @@ c                                 chemical potentials variance
          do i = 1, ntot
             
             if (kkp(i).eq.idaq) then
+c                                 back calculation uses cblk to check for
+c                                 possible species, but for fractionation
+c                                 cblk in werami is the inital composition, 
+c                                 ergo set cblk to the phase based bulk 
+c                                 composition fbulk
+               cblk(1:kbulk) = fbulk(1:kbulk)
 
                call aqrxdo (i,lu)
 
