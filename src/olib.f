@@ -1014,10 +1014,15 @@ c                                 WERAMI, initialize
                pa3(i,1:nstot(ids)) = 0d0
 
                if (lopt(32).and.ksmod(ids).eq.39) then 
-c                               lagged speciation
+c                                 lagged speciation
                   do k = 1, nat
                      caq(i,k) = 0d0
                   end do
+
+               else 
+c                                 set caq(*,na1) as it is used by 
+c                                 getcmp to identify electrolytic fluids
+                  caq(i,na1) = 0d0
 
                end if
 c                                 start of the assemblage compositional 
