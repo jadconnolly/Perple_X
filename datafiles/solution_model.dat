@@ -3231,10 +3231,6 @@ begin_flagged_endmembers
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
-reach_increment 0
-                                    | low_reach and reach_increment conflict, set only one.
-| low_reach
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -3473,6 +3469,8 @@ z(m1,mg) = 1 py + 1 knor
 3 2.
 z(m2,cr)  = 1 knor
 z(m2,fe3) = 1 andr
+
+unbounded_composition
 
 end_of_model
                       --------------------------------------------------------
@@ -5621,7 +5619,7 @@ begin_model
 
                                       Added TiO2 endmember. JADC Feb 7, 2012
 
-                                      reformulated as ordinary solutiub model. JADC 12/18.
+                                      reformulated as ordinary solution model. JADC 12/18.
 
 mMELTS(G)
 abbreviation Melt

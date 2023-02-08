@@ -2857,20 +2857,20 @@ c                                 diff(theta/T,v,v)
          v = v - dv
 
          if (v.le.0d0.or.v/v0.gt.2d1.or.
-     *       itic.gt.100.or.dabs(f1).gt.1d40) goto 90
+     *       itic.gt.iopt(21).or.dabs(f1).gt.1d40) goto 90
 
       end do
 c                                 if everything is ok, now get
 c                                 helmoltz energy:
       goto 10
 c                                 if we get here, failed to converge
-90    if (izap.lt.10) then
+90    if (izap.lt.10.or.lopt(64)) then
          write (*,1000) t,p,names(id)
          izap = izap + 1
          if (izap.eq.10) call warn (49,r,369,'GETLOC')
       end if
 c                                 destabilize the phase:
-      gsixtr = 1d2*p
+      gsixtr = 1d2*(0*dabs(thermo(1,id))+p)
 
       return
 
@@ -3235,13 +3235,13 @@ c                                 da is actually diff(a,v) + p
 
       if (bad) then
 c                                 if we get here, failed to converge
-         if (izap.lt.10) then
+         if (izap.lt.10.or.lopt(64)) then
             write (*,1000) t,p,names(id)
             izap = izap + 1
             if (izap.eq.10) call warn (49,r,369,'GSTXLQ')
          end if
 c                                 destabilize the phase.
-         gstxlq  = 1d2*p
+         gstxlq  = 1d2*(0*thermo(1,id)+p)
 
       else
 c                                 everything ok, final f:
@@ -3290,7 +3290,7 @@ c-----------------------------------------------------------------------
      *           plg, c1, c2, c3, f1, aiikk, aiikk2, nr9t,
      *           root, aii, etas, a, ethv, gamma, da, nr9t0,
      *           fpoly, fpoly0, letht, letht0, z, aii2,
-     *           v23, t1, t2, a2f
+     *           v23, t1, t2, a2f, tol
 
       double precision nr9, d2f, tht, tht0, etht, etht0, df1,
      *                 dtht, dtht0, d2tht, d2tht0,
@@ -3353,6 +3353,11 @@ c                                 taylor(diff(FC,v),v=v0,3)
 
       itic = 0
 
+      tol = 1d-12 * p
+
+c     bad = .false.
+
+c     do while (dabs(f1).gt.tol)
       do
 
          itic = itic + 1
@@ -3367,7 +3372,7 @@ c                                 cold part derivatives
 c                                 debye T/T (tht)
          z  = 1d0+(aii+aiikk2*f)*f
 
-         if (z.lt.0d0) then
+         if (z.lt.0d0.or.v/v0.gt.1d2.or.v/v0.lt.1d-2) then
             bad = .true.
             exit
          end if
@@ -3428,7 +3433,7 @@ c                                 thermal part derivatives:
          if (itic.gt.iopt(21).or.dabs(f1).gt.1d40) then
             bad = .true.
             exit
-         else if (dabs(dv/(1d0+v)).lt.nopt(50)) then
+         else if (dabs(dv/(1d0+v)).lt.zero) then 
             bad = .false.
             exit
          end if
@@ -3437,13 +3442,14 @@ c                                 thermal part derivatives:
 
       if (bad) then
 c                                 if we get here, failed to converge
-         if (izap.lt.10) then
+         if (izap.lt.10.or.lopt(64)) then
             write (*,1000) t,p,names(id)
             izap = izap + 1
             if (izap.eq.10) call warn (49,r,369,'GSTX')
          end if
 c                                 destabilize the phase.
-         gstxgi  = 1d2*p
+         gstxgi  = 1d2*(0*thermo(1,id) + p)
+         badend(id) = .true.
 
       else
 
@@ -3504,8 +3510,8 @@ c     call begtim(3)
       p1 = 1d0
       p2 = t*t
       p3 = 2d0*t
-
-      plg = -2.1646464674223d0
+c                                 45/Pi
+      plg = -2.1646464674222763831d0
 
       do i = 1, 100000
 
@@ -3565,7 +3571,7 @@ c                                 initial guess for volume:
       v = vt * (1d0 - kprime*p/k)**(dv/kprime)
       itic = 0
 
-      do while (dabs(dv/(1d0+v)).gt.nopt(50))
+      do while (dabs(dv/(1d0+v)).gt.nopt(51))
 
          itic = itic + 1
          rat = (vt/v)**r13
@@ -13150,6 +13156,7 @@ c                                 necessary for mobile components, but if so, wh
 c                                 ah2o calculations work before??
       do id = 1, ipoint
 
+         badend(id) = .false.
          g(id) = gproj (id)
 
       end do

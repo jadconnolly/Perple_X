@@ -1261,7 +1261,9 @@ c                                 centered pressure derivative
             g = ginc(0d0,2d0*dp,-id)         
             mup = (mu2 - smu)/dp/2d0
 
-         end if 
+         end if
+
+         if (mu.le.0d0.or.mut.eq.0d0.or.mup.eq.0d0) ok = .false.
 
       else if (iemod(id).ne.0) then 
 
@@ -1418,7 +1420,7 @@ c                                 partial molar volumes for volume fractions
 
             end do
 
-            if (.not.liq) then
+            if (.not.liq.and.ok) then
 
                mu  = 1d0 / mu
                mut = 1d0 / mut
@@ -1432,18 +1434,13 @@ c                                 partial molar volumes for volume fractions
 
                end if
 
-            else
+            else if (liq) then 
 
                mu  = 0d0
                mut = 0d0
                mup = 0d0
 
             end if
-
-            if (mu.lt.0d0) then 
-               mu = nopt(7)
-               ok = .false.
-            end if 
 
          else
 
@@ -2355,7 +2352,8 @@ c                                 negative compressibility?
       else 
 
          call getgpp (g0,dp0,dp1,dp2,v,gpp,id,fow)
-         dp0 = dabs(fac*v/gpp)
+
+         if (gpp.ne.0d0) dp0 = dabs(fac*v/gpp)
 
       end if  
 c                                 final values
@@ -2418,7 +2416,8 @@ c                                 something has gone horribly wrong!
       else 
 
          call getgtt (g0,dt0,dt1,dt2,s,gtt,id)
-         dt0 = dabs(fac*s/gtt)  
+
+         if (gtt.ne.0d0) dt0 = dabs(fac*s/gtt)  
 
       end if  
 c                                 final values
@@ -2665,7 +2664,8 @@ c                                 frendly but not a reaction
          shear = .false.
          return         
  
-      else if (psys(1).lt.0d0) then 
+      else if (psys(1).lt.0d0.or.psys(12).eq.0d0.or.psys(14).eq.0d0) 
+     *        then 
 c                                 check if volume < 0, if so assume 
 c                                 things are really bad
          bad = .true.

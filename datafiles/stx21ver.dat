@@ -27,7 +27,9 @@ SIO2    60.0840
 CAO     56.0770
 FEO     71.8440
 O2      31.9990     
-end_components         
+end_components
+
+
 
 | Stixrude's endmember notation indicates the following endmembers should have configurational
 | entropy according to his notation. However, the phase relations in the 2011 paper are
@@ -172,11 +174,11 @@ m0 = 768000 m1 = 1.54596
 end
 
 
-enL      EoS = 11 | Mg_1Si_1O_3            MgSiO3 Liquid                                 
-MGO(1)SIO2(1)
-G0 = -1735148.59 S0 = -5 V0 = -3.8880
-c1 = 226263.1 c2 = 5.51723 c3 = 305.71098 c4 = 1.70882 c5 = -.14314
-end
+|enL      EoS = 11 | Mg_1Si_1O_3            MgSiO3 Liquid                                 
+|MGO(1)SIO2(1)
+|G0 = -1735148.59 S0 = 5 V0 = 3.8880
+|c1 = 226263.1 c2 = 5.51723 c3 = 305.71098 c4 = 1.70882 c5 = -.14314 c6 = 1773
+|end
 
 
 fa       EoS = 6 | Fe_2Si_1O_4            Fayalite                                
@@ -188,13 +190,13 @@ transition = 1 type = 7  t1 = 65 t2 = 26.76270
 end
 
 
-fapv     EoS = 6 | Fe_1Al_1O_3            FeAlO3-Perovskite                       
-AL2O3(1)FEO(1)
-G0 = -848315.02 S0 = -5 V0 = -2.7260
-c1 = 2233255 c2 = 4.1 c3 = 755.38117 c4 = 1.54222 c5 = 0.84088 c6 = 2.55505
-m0 = 1500420.9 m1 = 1.73259
-transition = 1 type = 7  t1 = 10 t2 = 14.89723
-end
+|fapv     EoS = 6 | Fe_1Al_1O_3            FeAlO3-Perovskite                       
+|AL2O3(1)FEO(1)
+|G0 = -848315.02 S0 = -5 V0 = -2.7260
+|c1 = 2233255 c2 = 4.1 c3 = 755.38117 c4 = 1.54222 c5 = 0.84088 c6 = 2.55505
+|m0 = 1500420.9 m1 = 1.73259
+|transition = 1 type = 7  t1 = 10 t2 = 14.89723
+|end
 
 
 fc2/c     EoS = 6 | Fe_2Si_2O_6  aka fec2          HP-Clinoferrosilite                     
@@ -251,12 +253,12 @@ transition = 1 type = 7  t1 = 5 t2 = 26.76270
 end
 
 
-lfperov  EoS = 6 | Fe_1Si_1O_3            low spin Fe-Perovskite                           
-SIO2(1)FEO(1)
-G0 = -879526.20 S0 = -5 V0 = -2.4970
-c1 = 2705825.5 c2 = 4.010 c3 = 692.38659 c4 = 1.54222 c5 = 0.84088 c6 = 1.99344
-m0 = 1303370.5 m1 = 1.37411
-end
+|lfperov  EoS = 6 | Fe_1Si_1O_3            low spin Fe-Perovskite                           
+|SIO2(1)FEO(1)
+|G0 = -879526.20 S0 = -5 V0 = -2.4970
+|c1 = 2705825.5 c2 = 4.010 c3 = 692.38659 c4 = 1.54222 c5 = 0.84088 c6 = 1.99344
+|m0 = 1303370.5 m1 = 1.37411
+|end
 
 
 fnal     EoS = 6 | Na_1Fe_2(Al_5Si_1)O_12 Fe-NAL                                  
@@ -514,11 +516,11 @@ transition = 1 type = 7  t1 = 191 t2 = 53.52540
 end
 
 
-wuls     EoS = 6 | Fe_2Fe_2O_4            W\"ustite       low-spin                        
-FEO(4)
-G0 = -621968.16 S0 = -8 V0 = -4.3400
-c1 = 1997000 c2 = 4 c3 = 524.57881 c4 = 1.45033 c5 = 1.54870 c6 = -.13801
-m0 = 590000 m1 = 1.44073
-end
+|wuls     EoS = 6 | Fe_2Fe_2O_4            W\"ustite       low-spin                        
+|FEO(4)
+|G0 = -621968.16 S0 = -8 V0 = -4.3400
+|c1 = 1997000 c2 = 4 c3 = 524.57881 c4 = 1.45033 c5 = 1.54870 c6 = -.13801
+|m0 = 590000 m1 = 1.44073
+|end
 
 

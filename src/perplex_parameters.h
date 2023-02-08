@@ -416,8 +416,9 @@ c                                 local solution model variables:
       double precision times, btime, etime
       common/ time /times(30),btime(30),etime(30)
 
+      logical badend
       double precision thermo
-      common/ cst1 /thermo(k4,k10)
+      common/ cst1 /thermo(k4,k10),badend(k10)
 
       double precision uf
       integer ifug, iff, idss

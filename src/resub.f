@@ -508,13 +508,13 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical swap, bad
+      logical swap, bad, badsol
 
       integer i, ids, lds, id, kd, iter, idif, ifail, help
 
       double precision gg, gsol1
 
-      external gsol1
+      external gsol1, badsol
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
@@ -569,7 +569,9 @@ c                                 static array pointer is
 c                                 solution model pointer is
             ids = ikp(id)
 c                                 refine if a solution
-            if (ids.eq.0) cycle 
+            if (ids.eq.0) cycle
+c                                 reject if bad endmember
+            if (badsol(ids)) cycle
 c                                 get the refinement point composition
             if (id.gt.ipoint) then
 
@@ -595,7 +597,9 @@ c                                 point to solution models
 
                ids = ikp(-id)
 
-               if (ids.eq.0) cycle 
+               if (ids.eq.0) cycle
+c                                 reject if bad endmember
+               if (badsol(ids)) cycle
 
                if (nrf(ids)) cycle
 
@@ -606,6 +610,8 @@ c                                 endmember refinement point:
             else
 
                ids = id
+c                                 reject if bad endmember
+               if (badsol(ids)) cycle
 c                                 solution refinement point:
                call getpa (ids,kd)
 
@@ -662,6 +668,31 @@ c                                 amount can be initialized
       end do
 
 c     write (*,*) 'end of resub'
+
+      end
+
+      logical function badsol (ids)
+c-----------------------------------------------------------------------
+c function to reject solutions with bad endmembers, currently only set
+c by stix EoS
+c-----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer ids, i
+
+      integer jend
+      common/ cxt23 /jend(h9,m14+2)
+c-----------------------------------------------------------------------
+      do i = 1, lstot(ids)
+         if (badend(jend(ids,2+i))) then 
+            badsol = .true.
+            return
+         end if
+      end do
+
+      badsol = .false.
 
       end
 
@@ -2223,9 +2254,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical solvus, degen
+      logical solvus, degen, badsol
 
-      external ffirst, solvus, degen
+      external ffirst, solvus, degen, badsol
 
       integer i, id, jd, is(*), jmin(k19), opt, kpt, mpt, iter, tic, 
      *        idead, j, k
@@ -2302,14 +2333,10 @@ c                                 solution.
       mpt = 0
 
       do i = 1, jphct
-
-         if (is(i).eq.1.and.x(i).ne.0d0) then 
-            write (*,*) ' is = 1, x = ',x(i),i,iter
-         end if
 c                                 id indicates the original refinement
 c                                 point.
          id = hkp(i)
-c                                 jd the solution model
+c                                 jd the solution model/compound pointer
          jd = jkp(i)
 c                                 is = -1 violates lower bound (bad solution)
 c                                 is = -2 violates upper bound (bad solution)
@@ -2330,22 +2357,26 @@ c                                 a stable point, add to list
             if (lopt(32)) then
 c                                 for lagged aq speciation
 c                                 classify as solvent/solid
-               if (jkp(i).lt.0) then
+               if (jd.lt.0) then
 c                                 setting abort to true signals 
 c                                 test in getmus:
-                  if (quack(-jkp(i))) abort = .true.
+                  if (quack(-jd)) abort = .true.
 
-                  if (ikp(-jkp(i)).eq.idaq) then
-                     if (.not.quack(-jkp(i))) mpt = mpt + 1
+                  if (ikp(-jd).eq.idaq) then
+
+                     if (.not.quack(-jd)) mpt = mpt + 1
                      solvnt(npt) = .true.
                      test = .true.
-                  else 
+
+                  else
+
                      solvnt(npt) = .false.
+
                   end if
 
-               else if (jkp(i).eq.idaq) then
+               else if (jd.eq.idaq) then
 
-                  if (.not.quack(jkp(i))) mpt = mpt + 1
+                  if (.not.quack(jd)) mpt = mpt + 1
                   solvnt(npt) = .true.
                   test = .true.
 
@@ -2356,16 +2387,29 @@ c                                 test in getmus:
                end if
 
             end if
+c                                 check bad eos results
+            if (jd.lt.0) then 
+               j = ikp(-jd)
+            else
+               j = jd
+            end if
+
+            if (j.ne.0) then 
+               if (badsol(j)) then
+                  idead = 102
+                  return
+               end if
+            end if
 
             if (lopt(34)) then
 c                                 dump iteration details
                if (npt.eq.1) write (*,'(/,a,i2,a,i7)') 'iteration ',
      *                      iter-1,' jphct = ',jphct
-               call dumper (2,i,hkp(i),jkp(i),x(i),clamda(i))
+               call dumper (2,i,id,jd,x(i),clamda(i))
 
             end if 
 
-         else if (jkp(i).gt.0) then
+         else if (jd.gt.0) then
 c                                 a metastable solution cpd
             if (id.gt.0) then
 c                                 and not an endmember
