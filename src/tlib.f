@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.0.5, February 8, 2023.',
+     *     'Perple_X release 7.0.5, February 20, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -7251,6 +7251,12 @@ c----------------------------------------------------------------------
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
+
+      integer ipoint,kphct,imyn
+      common/ cst60  /ipoint,kphct,imyn
+
+      character fname*10, aname*6, lname*22
+      common/ csta7 /fname(h9),aname(h9),lname(h9)
 c----------------------------------------------------------------------
       if (lun.ne.n4) then 
 c                                 write interim result file list
@@ -7357,7 +7363,38 @@ c                                 write assemblage list
       do i = 1, iasct
          write (lun,*) iavar(1,i),iavar(2,i),iavar(3,i)
          write (lun,*) (idasls(j,i), j = 1, iavar(3,i))
-      end do 
+      end do
+
+      if (lun.eq.n4) then
+c                                 the following information is not used in Perple_X.
+c                                 It permits intepretation of plt/blk files without 
+c                                 Perple_X input files
+c                                 ------------------------------------------------------
+c                                 write compound counter, indices, and names
+         write (lun,'(/,i4,1x,a)') ipoint,'compound counter'
+
+         do i = 1, ipoint
+            write (lun,'(i4,1x,a)') i, names(i)
+         end do
+c                                 write solution counter, indices, model type code, 
+c                                 number of compositional variables, and names
+         write (lun,'(/,i4,1x,a)') isoct,'solution model counter'
+
+         do i = 1, isoct
+            write (lun,'(3(i4,1x),a)') i, ksmod(i), nstot(i), fname(i)
+         end do
+c                                 write aqueous species counter, idices, and names
+         if (lopt(32)) then
+
+            write (lun,'(/,i4,1x,a)') aqct,'aqueos species counter'
+
+            do i = 1, aqct
+               write (lun,'(i4,1x,a)') i, aqnam(i)
+            end do
+
+         end if
+
+      end if
 
       if (lun.ne.n4) then
 c                                 close interim plt file
@@ -7379,6 +7416,7 @@ c                                 write assemblages to print file
      *        ,' will be unreadable unless the irf file is edited',/)
 
       end
+
 
       subroutine getvar  
 c--------------------------------------------------------------------
