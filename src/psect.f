@@ -289,12 +289,6 @@ c----------------------------------------------------------------------
 
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
-
-      integer igrd
-      common/ cst311/igrd(l7,l7)
-
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
   
       character*10 xnams
       common/ excl4 /xnams(50,3)
@@ -903,12 +897,6 @@ c psgrd1 - subprogram draw 1d gridded minimization diagrams.
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
 
-      integer igrd
-      common/ cst311/igrd(l7,l7)
-
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
-
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
@@ -1250,14 +1238,8 @@ c a different phase assmblage.
  
       integer i,j,id,im1,jm1,ip1,jp1
 
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
-
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
-
-      integer igrd
-      common/ cst311/igrd(l7,l7)
 c----------------------------------------------------------------------
 
       rline = 1d0
@@ -1321,14 +1303,8 @@ c a different phase assmblage.
  
       integer j,id,jm1,jp1
 
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
-
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
-
-      integer igrd
-      common/ cst311/igrd(l7,l7)
 c----------------------------------------------------------------------
 
       rline = 1d0
@@ -1377,14 +1353,8 @@ c    iend = 3, top edge is an end
  
       integer i,j,id,ijm1,ijp1,iend
 
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
-
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
-
-      integer igrd
-      common/ cst311/igrd(l7,l7)
 c----------------------------------------------------------------------
 
       id = iap(igrd(i,j))
