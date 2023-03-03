@@ -32,9 +32,6 @@ c----------------------------------------------------------------------
       integer ivar,ind
       common/ cst83 /ivar,ind
 
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
-
       integer iam
       common/ cst4 /iam
 
@@ -772,17 +769,8 @@ c----------------------------------------------------------------------
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
-
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
-
-      integer igrd
-      common/ cst311/igrd(l7,l7)
-c                                 global assemblage data
-      integer icog,jcog
-      common/ cxt17 /icog(k2),jcog(k2)
 
       logical oned
       common/ cst82 /oned
@@ -1266,12 +1254,6 @@ c-----------------------------------------------------------------------
 
       double precision wt(3), mode
 
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
-
       character*14 tname
       integer kop,kcx,k2c,iprop
       logical kfl, first
@@ -1279,9 +1261,6 @@ c-----------------------------------------------------------------------
       common/ cst77 /prop(i11),prmx(i11),prmn(i11),
      *               kop(i11),kcx(i11),k2c(i11),iprop,
      *               first,kfl(i11),tname
-
-      integer igrd
-      common/ cst311/igrd(l7,l7)
 c----------------------------------------------------------------------
 c                                 set variables to x-y value
       call setval
@@ -1590,9 +1569,6 @@ c----------------------------------------------------------------
 
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 
       logical mus
       double precision mu
@@ -3217,9 +3193,6 @@ c----------------------------------------------------------------
 
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 c----------------------------------------------------------------
       if (aflu.and.lflu.or.(.not.aflu).or.psys1(1).eq.0d0) then
 c                     total mode:
@@ -3440,9 +3413,6 @@ c----------------------------------------------------------------
 
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -3845,14 +3815,13 @@ c----------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
+      logical phluid
+
       integer i, j, icx, kprop, ier, lop, komp, mprop
 
       parameter (kprop=40)
 
       character propty(kprop)*60, y*1, pname*10
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
@@ -3865,6 +3834,10 @@ c----------------------------------------------------------------
 
       character cname*5
       common/ csta4  /cname(k5)
+
+      integer ifp
+      logical fp
+      common/ cxt32 /ifp(k10), fp(h9)
 
       character*14 tname
       integer kop,kcx,k2c,iprop
@@ -3991,9 +3964,20 @@ c                                 choose property
 c                                 modes:
 c                                 get phase name
              call rnam1 (icx,pname,2)
-c                                 ask if fluid should be included:
-             if (gflu) then 
 
+             if (icx.gt.0) then
+                if (fp(icx)) phluid = .true.
+             else if (icx.lt.0) then 
+                if (ifp(-icx).ne.0) phluid = .true.
+             end if
+
+             if (phluid) then
+
+                lflu = .true.
+
+             else if (gflu) then 
+c                                 the phase isn't fluid, ask if fluid should be 
+c                                 included in modes:
                 write (*,1120) 
                 read (*,'(a)') y
                 if (y.eq.'y'.or.y.eq.'Y') lflu = .true.
@@ -4364,9 +4348,6 @@ c----------------------------------------------------------------
       integer icx, jprop, lop, komp, l2p(39)
 
       character prname(45)*14, pname*10, temp*20
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 
       character*14 tname
       integer kop,kcx,k2c,iprop

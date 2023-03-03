@@ -2281,9 +2281,6 @@ c----------------------------------------------------------------------
 
       logical sick(i8), ssick, ppois, bulkg, bsick
 
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
-
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
 
@@ -2357,9 +2354,6 @@ c----------------------------------------------------------------------
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 
       save pt2prp
 

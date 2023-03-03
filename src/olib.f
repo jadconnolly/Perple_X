@@ -47,9 +47,6 @@ c----------------------------------------------------------------------
       double precision atwt
       common/ cst45 /atwt(k0)
 
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
-
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
@@ -884,26 +881,12 @@ c                                 for final adaptive solution
       double precision cp3,amt
       common/ cxt15 /cp3(k0,k19),amt(k19),kkp(k19),np,ncpd,ntot
 
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
-
-      integer igrd
-      common/ cst311/igrd(l7,l7)
-c                                 bookkeeping variables
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
-
-      double precision bg
-      common/ cxt19 /bg(k5,k2)
-
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
 
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
 
-      double precision amu
-      common/ cst48 /amu(k8,k2)
 
       logical mus
       double precision mu
@@ -1559,9 +1542,6 @@ c----------------------------------------------------------------------
       character pname*14
       common/ cxt21a /pname(k5)
 
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
-
       integer iam
       common/ cst4 /iam
 
@@ -1758,8 +1738,7 @@ c                                 whole list
 
 c                                 use sign of s and v and second derivatives
 c                                 to refine difference increments
-         call getdpt (g0,dp0,dp1,dp2,dt0,dt1,dt2,v,gpp,s,gtt,gpt,id,fow,
-     *                rxn)
+         call getdpt (g0,dp0,dp1,dp2,dt0,dt1,dt2,v,gpp,s,gtt,gpt,id,fow)
 
          e = g0 + t * s
 
@@ -1779,8 +1758,7 @@ c                                  for reactions:
       else if (ok1) then 
 c                                 real phase, use sign of s and v and second derivatives
 c                                 to refine difference increments
-         call getdpt (g0,dp0,dp1,dp2,dt0,dt1,dt2,v,gpp,s,gtt,gpt,id,fow,
-     *                rxn)
+         call getdpt (g0,dp0,dp1,dp2,dt0,dt1,dt2,v,gpp,s,gtt,gpt,id,fow)
 c                                 enthalpy
          e = g0 + t * s
 c                                 heat capacity
@@ -2272,7 +2250,7 @@ c                                 solid only totals:
       end
 
       subroutine getdpt (g0,dp0,dp1,dp2,dt0,dt1,dt2,v,gpp,s,gtt,gpt,
-     *                   id,fow,rxn)
+     *                   id,fow)
 c----------------------------------------------------------------------
 c getdpt computes finite difference increments for phase id based on finite
 c difference estimates of v, gpp (dv/dp), s, gtt (ds/dt) and initial guesses 
@@ -2289,7 +2267,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical fow, okt, rxn
+      logical fow, okt
 
       integer i, j, id
 
@@ -2623,9 +2601,6 @@ c-----------------------------------------------------------------------
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
@@ -3170,9 +3145,6 @@ c----------------------------------------------------------------------
       integer i
 
       logical ssick,ppois,bulkg,bsick
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)

@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.0.7, February 20, 2023.',
+     *     'Perple_X release 7.0.7, March 3, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -3373,11 +3373,11 @@ c                                 generic warning, also 99
      *          'or because the phases of the system do not span ',
      *          'its bulk composition.',//,
      *          4x,'In the 1st case (best solutions listed first):',/,
-     *          8x,'set intermediate_savrpc and intermediate_savrpc to',
-     *             ' T and/or',/,
-     *          8x,'increase (sic) optimization_precision and/or',/,
-     *          8x,'increase (sic) replicate_threshold and/or',/,
-     *          8x,'increase (sic) rep_dynamic_threshold.'/,
+     *          8x,'increase the optimization_precision keyword value',/
+     *         ,8x,'set intermediate_savrpc and intermediate_savrpc to',
+     *             ' T',/,
+     *          8x,'increase replicate_threshold',/,
+     *          8x,'increase rep_dynamic_threshold'/,
      *          4x,'see: www.perplex.ch/perplex_options.html for ',
      *          'explanation.',//,
      *          4x,'In the 2nd case: ',
@@ -4065,9 +4065,6 @@ c-----------------------------------------------------------------------
       double precision ptx
       integer ipt2
       common/ cst32 /ptx(l5),ipt2
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 
       character*2 strgs*3, mstrg, dstrg, tstrg*3, wstrg*3, e16st*3
       common/ cst56 /strgs(32),mstrg(6),dstrg(m8),tstrg(m7),wstrg(m16),
@@ -7231,9 +7228,6 @@ c----------------------------------------------------------------------
       logical ext 
 
       character string*(lchar), name*170, text*3
-
-      integer igrd
-      common/ cst311 /igrd(l7,l7)
 
       integer iam
       common/ cst4 /iam

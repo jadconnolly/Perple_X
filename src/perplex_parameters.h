@@ -538,3 +538,23 @@ c                                 nlpsol blocks
 
       integer count, rcount, lcount
       common/ cstcnt /count, rcount(5), lcount(5)
+c                                 ----------------------------------------
+c                                 global assemblage data, k2 <= l7^2, replace k2 w/ l7?
+c                                 bulk assemblage counter dependent arrays
+      double precision amu
+      common/ cst48 /amu(k8,k2)
+
+      integer icog,jcog
+      common/ cxt17 /icog(k2),jcog(k2)
+
+      integer iap,ibulk
+      common/ cst74 /iap(k2),ibulk
+
+      double precision bg
+      common/ cxt19 /bg(k5,k2)
+
+      integer igrd
+      common/ cst311 /igrd(l7,l7)
+
+      logical gflu,aflu,fluid,shear,lflu,volume,rxn
+      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn

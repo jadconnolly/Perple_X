@@ -1484,9 +1484,6 @@ c                                 x-coordinates for the final solution
       integer kd, na1, na2, na3, nat
       double precision x3, caq
       common/ cxt16 /x3(k5,h4,mst,msp),caq(k5,l10),na1,na2,na3,nat,kd
-
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
 c                                 composition and model flags
 c                                 for final adaptive solution
       integer kkp,np,ncpd,ntot
@@ -1670,9 +1667,6 @@ c----------------------------------------------------------------------
 
       integer ic,jc,i,j,ids
 c                                 -------------------------------------
-c                                 global variables
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
 c                                 composition and model flags
 c                                 for final adaptive solution
       integer kkp,np,ncpd,ntot
@@ -3662,9 +3656,6 @@ c----------------------------------------------------------------------
       integer is
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 
       integer npt,jdv
       logical fulrnk

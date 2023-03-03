@@ -47,9 +47,6 @@ c----------------------------------------------------------------------
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
 
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
-
       double precision goodc, badc
       common/ cst20 /goodc(3),badc(3)
 

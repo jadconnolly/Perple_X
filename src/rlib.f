@@ -699,9 +699,6 @@ c---------------------------------------------------------------------
       logical fp
       common/ cxt32 /ifp(k10), fp(h9)
 
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
-
       integer eos
       common/ cst303 /eos(k10)
 
@@ -7461,6 +7458,8 @@ c                                 look for endmembers to be killed
          end if
 
       end do
+c                                 set global fluid flag based on fp
+      if (fp(im)) gflu = .true.
 c                                 compute and save the total moles for the 
 c                                 ordered endmembers
       if (lstot(im).lt.nstot(im)) then 
@@ -12587,9 +12586,6 @@ c-----------------------------------------------------------------------
 
       integer ids,isct,icp1,isat,io2
       common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
 c                                 solution model names
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
@@ -15794,14 +15790,12 @@ c                                 each disordered species is related to only one
 c                                 ordered species, use of a pointer would eliminate
 c                                 this loop
          nn = p0a(i)
-         dnn = 0d0
 
          do k = 1, norder
 
             dnn = dydy(i,k,id)
             nn = nn + dnn * q(k)
             dp(i,k) = nn*dtheta(k) + dnn*theta
-            if (dnn.ne.0d0) exit
 
          end do
 
@@ -19289,21 +19283,9 @@ c----------------------------------------------------------------------
       integer jxco, kxco, i, j, ids, ier
 c                                 -------------------------------------
 c                                 global variables
-c                                 global assemblage data
-      integer icog,jcog
-      common/ cxt17 /icog(k2),jcog(k2)
-
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
-
-      double precision bg
-      common/ cxt19 /bg(k5,k2)
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
-
-      double precision amu
-      common/ cst48 /amu(k8,k2)
 
       integer iam
       common/ cst4 /iam
@@ -19412,9 +19394,6 @@ c----------------------------------------------------------------------
 
       character text*(lchar)
 
-      integer igrd
-      common/ cst311/igrd(l7,l7)
-
       integer iam
       common/ cst4 /iam
 
@@ -19423,9 +19402,6 @@ c----------------------------------------------------------------------
 
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
-
-      integer iap,ibulk
-      common/ cst74 /iap(k2),ibulk
 
       integer ipot,jv,iv
       common / cst24 /ipot,jv(l2),iv(l2)
