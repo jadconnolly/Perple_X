@@ -368,9 +368,6 @@ c-----------------------------------------------------------------------
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
 
-      integer iap,ibulk
-      common/ cst74 /iap(k2),ibulk
-
       integer fmode,ifrct,ifr
       logical gone
       common/ frct1 /fmode,ifrct,ifr(k23),gone(k5)
@@ -617,9 +614,6 @@ c-----------------------------------------------------------------------
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
 
-      integer iap,ibulk
-      common/ cst74 /iap(k2),ibulk
-
       integer fmode,ifrct,ifr
       logical gone
       common/ frct1 /fmode,ifrct,ifr(k23),gone(k5)
@@ -752,10 +746,7 @@ c-----------------------------------------------------------------------
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)  
 
       integer jlow,jlev,loopx,loopy,jinc
-      common/ cst312 /jlow,jlev,loopx,loopy,jinc 
-
-      integer iap,ibulk
-      common/ cst74 /iap(k2),ibulk
+      common/ cst312 /jlow,jlev,loopx,loopy,jinc
 
       logical pzfunc
       integer ilay,irep,npoly,ord
@@ -1349,15 +1340,9 @@ c-----------------------------------------------------------------------
 
       integer i,j,k,idead
 
-      integer igrd
-      common/ cst311 /igrd(l7,l7)
-
       integer is
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
-
-      integer iap,ibulk
-      common/ cst74  /iap(k2),ibulk
 
       integer hcp,idv
       common/ cst52  /hcp,idv(k7)
@@ -1411,12 +1396,6 @@ c----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer jinc, i, j, jhot
-
-      integer iap,ibulk
-      common/ cst74 /iap(k2),ibulk
-
-      integer igrd
-      common/ cst311 /igrd(l7,l7)
 c----------------------------------------------------------------------
       jhot = 1
 
@@ -1439,9 +1418,6 @@ c---------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer kinc, i, j, ii, jj, k
-
-      integer igrd
-      common/ cst311 /igrd(l7,l7)
 c----------------------------------------------------------------------
       if (kinc.eq.1) return 
 
@@ -1529,12 +1505,6 @@ c---------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      integer igrd
-      common/ cst311 /igrd(l7,l7)
-
-      integer iap,ibulk
-      common/ cst74 /iap(k2),ibulk
 
       integer jlow,jlev,loopx,loopy,jinc1
       common/ cst312 /jlow,jlev,loopx,loopy,jinc1
@@ -1836,12 +1806,6 @@ c----------------------------------------------------------------------
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
-      integer igrd
-      common/ cst311 /igrd(l7,l7)
-
-      integer iap,ibulk
-      common/ cst74 /iap(k2),ibulk
-
       integer jlow,jlev,loopx,loopy,jinc1
       common/ cst312 /jlow,jlev,loopx,loopy,jinc1
 c-----------------------------------------------------------------------
@@ -2008,9 +1972,6 @@ c---------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i, j, kinc, ii, jj, kinc2, kinc21
-
-      integer igrd
-      common/ cst311 /igrd(l7,l7)
 c                                 the commented version fills
 c                                 with just assemblage i,j this
 c                                 would be fine if compression is
@@ -2064,9 +2025,6 @@ c---------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i, j, ii, jcent, icent, jj, kinc
-
-      integer igrd
-      common/ cst311 /igrd(l7,l7)
 
       do ii = i, i + kinc
          do jj = j, j + kinc

@@ -4807,7 +4807,7 @@ c----------------------------------------------------------------------
       logical bad, both
 
       double precision c1,c2,c3,rat,rp1,rm1,nsi,no,oymin,nymin,oy(nsp),
-     *                 r2p1,r2m1,dquart,oymax,nymax,by(nsp), bg(nsp),
+     *                 r2p1,r2m1,dquart,oymax,nymax,by(nsp), bh(nsp),
      *                 bvol, gold, gnew
 
       external dquart
@@ -5050,14 +5050,14 @@ c                                on the second solution
      *         gnew =  (1d0-xc) * dlog(g(i3)*y(i3)) 
      *                     + xc * dlog(g(i5)*y(i5))
             if (by(i3).gt.1d-20.and.by(i5).gt.1d-20) 
-     *         gold =  (1d0-xc) * dlog(bg(i3)*by(i3)) 
-     *                     + xc * dlog(bg(i5)*by(i5))
+     *         gold =  (1d0-xc) * dlog(bh(i3)*by(i3)) 
+     *                     + xc * dlog(bh(i5)*by(i5))
 
             if (gold.lt.gnew) then 
 c                                swap to the old solution
                do i = 1, isp
                   y(ins(i)) = by(ins(i))
-                  g(ins(i)) = bg(ins(i))
+                  g(ins(i)) = bh(ins(i))
                end do 
 
                vol = bvol
@@ -5071,7 +5071,7 @@ c                                save old solution
             do i = 1, isp
                by(ins(i)) = y(ins(i))
                oy(ins(i)) = 0d0 
-               bg(ins(i)) = g(ins(i))
+               bh(ins(i)) = g(ins(i))
             end do 
 
             bvol = vol
@@ -5348,7 +5348,7 @@ c----------------------------------------------------------------------
       logical bad, both
 
       double precision c1,c2,c3,rat,rp1,rm1,nsi,no,oymin,nymin,oy(nsp),
-     *                 r2p1,r2m1,dquart,oymax,nymax,by(nsp), bg(nsp), 
+     *                 r2p1,r2m1,dquart,oymax,nymax,by(nsp), bh(nsp), 
      *                 bvol, gold, gnew
 
       external dquart
@@ -5603,14 +5603,14 @@ c                                on the second solution
      *         gnew =  (1d0-xc) * dlog(g(i3)*y(i3)) 
      *                     + xc * dlog(g(i5)*y(i5))
             if (by(i3).gt.1d-20.and.by(i5).gt.1d-20) 
-     *         gold =  (1d0-xc) * dlog(bg(i3)*by(i3)) 
-     *                     + xc * dlog(bg(i5)*by(i5))
+     *         gold =  (1d0-xc) * dlog(bh(i3)*by(i3)) 
+     *                     + xc * dlog(bh(i5)*by(i5))
 
             if (gold.lt.gnew) then 
 c                                swap to the old solution
                do i = 1, isp
                   y(ins(i)) = by(ins(i))
-                  g(ins(i)) = bg(ins(i))
+                  g(ins(i)) = bh(ins(i))
                end do 
 
                vol = bvol
@@ -5624,7 +5624,7 @@ c                                save old solution
             do i = 1, isp
                by(ins(i)) = y(ins(i))
                oy(ins(i)) = 0d0 
-               bg(ins(i)) = g(ins(i))
+               bh(ins(i)) = g(ins(i))
             end do 
 
             bvol = vol
