@@ -3279,7 +3279,9 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer id, itic, izap
+      character msg*15
+
+      integer id, itic, izap, ibad
 
       logical bad
 
@@ -3287,7 +3289,7 @@ c-----------------------------------------------------------------------
      *           plg, c1, c2, c3, f1, aiikk, aiikk2, nr9t,
      *           root, aii, etas, a, ethv, gamma, da, nr9t0,
      *           fpoly, fpoly0, letht, letht0, z, aii2,
-     *           v23, t1, t2, a2f, tol
+     *           v23, t1, t2, a2f
 
       double precision nr9, d2f, tht, tht0, etht, etht0, df1,
      *                 dtht, dtht0, d2tht, d2tht0,
@@ -3305,7 +3307,6 @@ c-----------------------------------------------------------------------
       save izap
       data izap /0/
 c----------------------------------------------------------------------
-c     call begtim(2)
 c                                 assign local variables:
       v0     = -thermo(3,id)
       nr9    = thermo(11,id)
@@ -3349,12 +3350,9 @@ c                                 taylor(diff(FC,v),v=v0,3)
       end if
 
       itic = 0
+      ibad = 4
+      bad = .true.
 
-      tol = 1d-12 * p
-
-c     bad = .false.
-
-c     do while (dabs(f1).gt.tol)
       do
 
          itic = itic + 1
@@ -3369,10 +3367,7 @@ c                                 cold part derivatives
 c                                 debye T/T (tht)
          z  = 1d0+(aii+aiikk2*f)*f
 
-         if (z.lt.0d0.or.v/v0.gt.1d2.or.v/v0.lt.1d-2) then
-            bad = .true.
-            exit
-         end if
+         if (z.lt.0d0.or.v/v0.gt.1d2.or.v/v0.lt.1d-2) exit
 
          root = dsqrt(z)
 
@@ -3393,10 +3388,7 @@ c                                 polylog functions:
 c                                 thermal part derivatives:
          etht  = dexp(-tht )
 
-         if (1d0-etht.lt.0d0) then
-            bad = .true.
-            exit
-         end if
+         if (1d0-etht.lt.0d0) exit
 
          letht = dlog(1d0-etht)
 
@@ -3406,10 +3398,7 @@ c                                 thermal part derivatives:
 
          etht0 = dexp(-tht0)
 
-         if (1d0-etht0.lt.0d0) then
-            bad = .true.
-            exit
-         end if
+         if (1d0-etht0.lt.0d0) exit
 
          letht0 = dlog(1d0-etht0)
 
@@ -3428,11 +3417,16 @@ c                                 thermal part derivatives:
          v = v - dv
 
          if (itic.gt.iopt(21).or.dabs(f1).gt.1d40) then
-            bad = .true.
+c                                 allow bad result
+            if (dabs(f1/p).lt.zero) ibad = 5
+
             exit
-         else if (dabs(dv/(1d0+v)).lt.zero) then 
+
+         else if (dabs(dv/(1d0+v)).lt.nopt(51)) then
+
             bad = .false.
             exit
+
          end if
 
       end do
@@ -3440,53 +3434,54 @@ c                                 thermal part derivatives:
       if (bad) then
 c                                 if we get here, failed to converge
          if (izap.lt.10.or.lopt(64)) then
-            write (*,1000) t,p,names(id)
+
+            msg = 'STXGJI/'//names(id)
+
+            call volwrn (ibad,msg)
+
             izap = izap + 1
-            if (izap.eq.10) call warn (49,r,369,'GSTX')
+
+            if (izap.eq.10.and..not.lopt(64)) 
+     *                                      call warn (49,r,93,'STXGJI')
+
          end if
+
+         if (ibad.eq.4) then 
 c                                 destabilize the phase.
-         gstxgi  = 1d2*(0*thermo(1,id) + p)
-         badend(id) = .true.
+            gstxgi  = 1d2*p
+            badend(id) = .true.
+            return
 
-      else
-
-c                                 everything is ok, now get
-c                                 helmoltz energy:
-         f = 0.5d0*(v0/v)**r23 - 0.5d0
-         z = 1d0+(aii+aiikk2*f)*f
-         root = dsqrt(z)
-c                                 final estimate for tht
-         tht   = t1*root
-         tht0  = tht*t2
-c                                 helmholtz enery
-         a = thermo(1,id) + c1*f**2*(0.5d0 + c2*f)
-     *     + nr9*(t/tht**3*plg(tht ) -tr/tht0**3*plg(tht0))
-
-         gstxgi = a + p*v - t*thermo(10,id)
-c                                 z = (theta/theta0)^2
-         gamma = (2d0*f+1d0)*(aii+aiikk*f)/6d0/z
-         etas = - gamma - thermo(17,id)/z*(2d0*f + 1d0)**2
-c                                 thermal energy/V, based on
-c                                 previous v estimate
-         if (gamma.ne.0d0) then
-            ethv = (dfth0-dfth)/gamma
-         else
-            ethv = 0d0
-         end if
-c                                 adiabatic shear modulus
-         smu = (1d0 + 2d0*f)**(2.5d0)*(
-     *         emod(1,id) + f*(thermo(21,id) + thermo(22,id)*f))
-     *       - etas*ethv
+        end if
 
       end if
+c                                 everything is ok, now get
+c                                 helmoltz energy:
+      f = 0.5d0*(v0/v)**r23 - 0.5d0
+      z = 1d0+(aii+aiikk2*f)*f
+      root = dsqrt(z)
+c                                 final estimate for tht
+      tht   = t1*root
+      tht0  = tht*t2
+c                                 helmholtz enery
+      a = thermo(1,id) + c1*f**2*(0.5d0 + c2*f)
+     *    + nr9*(t/tht**3*plg(tht ) -tr/tht0**3*plg(tht0))
 
-1000  format (/,'**warning ver369** failed to converge at T= ',f8.2,' K'
-     *       ,' P=',f9.1,' bar',/,'Using Sixtrude GI EoS.',
-     *        ' Phase ',a,' will be destabilized.',/)
-
-c     call endtim (1,.false.,'tot')
-c     call endtim (2,.false.,'stx')
-c     call begtim (1)
+      gstxgi = a + p*v - t*thermo(10,id)
+c                                 z = (theta/theta0)^2
+      gamma = (2d0*f+1d0)*(aii+aiikk*f)/6d0/z
+      etas = - gamma - thermo(17,id)/z*(2d0*f + 1d0)**2
+c                                 thermal energy/V, based on
+c                                 previous v estimate
+      if (gamma.ne.0d0) then
+         ethv = (dfth0-dfth)/gamma
+      else
+         ethv = 0d0
+      end if
+c                                 adiabatic shear modulus
+      smu = (1d0 + 2d0*f)**(2.5d0)*(
+     *      emod(1,id) + f*(thermo(21,id) + thermo(22,id)*f))
+     *      - etas*ethv
 
       end
 
@@ -7730,7 +7725,7 @@ c                                 this is necessary for pinc0
 
          call minfxc (g,id,.false.)
 
-         if (oldg-g.lt.-nopt(53)) then 
+         if (oldg-g.lt.-nopt(50)) then 
 c                                 restore the old result
                g = oldg
                pa(1:nstot(id)) = oldp(1:nstot(id))
@@ -8604,11 +8599,6 @@ c                                  just continue, minfx set T by pinc.
             if ((tdp.lt.nopt(50).or.
      *          dabs((gold-g)/(1d0+dabs(g))).lt.nopt(50))
      *         .and.itic.gt.1) then
-
-c              if (tdp.lt.nopt(52).and.dabs((gold-g)/g).gt.nopt(53))
-c    *            then 
-c                 write (*,*) 'oink2',gold-g,g,itic,id
-c              end if
 
                goodc(1) = goodc(1) + 1d0
                goodc(2) = goodc(2) + dfloat(itic)
@@ -15404,10 +15394,6 @@ c                                 newton raphson iteration
 c                                 done is just a flag to quit
             if (done.or.dabs((gold-g)/(1d0+dabs(g))).lt.nopt(50)) then
 
-c              if (done.and.dabs((gold-g)/g).gt.nopt(53)) then 
-c                 write (*,*) 'oink3',gold-g,g,itic,id
-c              end if
-
                goodc(1) = goodc(1) + 1d0
                goodc(2) = goodc(2) + dfloat(itic)
 c                                 in principle the p's could be incremented
@@ -15633,11 +15619,6 @@ c                                 check for convergence
             if ((tdp.lt.nopt(50).or.
      *          dabs((gold-g)/(1d0+dabs(g))).lt.nopt(50))
      *         .and.itic.gt.1) then
-
-c              if (tdp.lt.nopt(52).and.dabs((gold-g)/g).gt.nopt(53))
-c    *            then 
-c                 write (*,*) 'oink2',gold-g,g,itic,id
-c              end if
 
                goodc(1) = goodc(1) + 1d0
                goodc(2) = goodc(2) + dfloat(itic)

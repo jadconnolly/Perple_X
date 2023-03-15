@@ -2481,7 +2481,7 @@ c                                 shrink increment if invalid alpha
       double precision function endvol (id,ok)
 c----------------------------------------------------------------------
 c endvol is the molar volume of id, used for computing explicit
-c elastic moduli. 
+c elastic moduli. modified to use forward differences, 3/14/23.
 c----------------------------------------------------------------------
       implicit none
 
@@ -2493,7 +2493,7 @@ c----------------------------------------------------------------------
 
       external ginc
 c----------------------------------------------------------------------
-      endvol = (ginc(0d0,1d1,-id) - ginc(0d0,-1d1,-id))/2d1
+      endvol = (ginc(0d0,1d1,-id) - ginc(0d0,0d0,-id))/1d1
 
       if (endvol.gt.0) then
 
@@ -2503,7 +2503,7 @@ c----------------------------------------------------------------------
 
          ok = .false. 
 
-      end if 
+      end if
 
 
       end 
@@ -2574,7 +2574,7 @@ c----------------------------------------------------------------------
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 c----------------------------------------------------------------------
 
-      if (nopt(31)**2*dt0.ge.t) dt0 = t/nopt(31)**2*dt0*0.9d0
+      if ((dt0*nopt(31))**2.ge.t) dt0 = dsqrt(t*0.9d0)/nopt(31)
 
       dt1 = dt0 * nopt(31)
       dt2 = dt1 * nopt(31)

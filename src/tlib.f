@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.0.7, March 3, 2023.',
+     *     'Perple_X release 7.0.8, March 15, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -188,8 +188,7 @@ c                                 feasibility tolerance (often used as numeric z
 
       nopt(51) = wmach(2)
       nopt(52) = 2d0*wmach(3)
-      nopt(53) = wmach(1)
-c                                 infinite log + 1, for configurational entropy derivatives
+
       nopt(50) = wmach(1)
 
       nopt(55) = 1d0 + nopt(50)
@@ -228,6 +227,8 @@ c                                 bad_number keyword
       nopt(7) = dnan()
 c                                 zero_mode (<0 off)
       nopt(9) = 1d-6
+c                                 vol_tol_exponent
+      nopt(10) = 0.8
 c                                 set zero threshold for fractionation calculations
       if (icopt.eq.7.or.icopt.eq.9.or.icopt.eq.12) nopt(9) = zero
 c                                 tolerance below which a component is considered to 
@@ -746,6 +747,18 @@ c                                 bad number key
                lopt(9) = .false.
                read (strg,*) nopt(8)
             end if 
+
+         else if (key.eq.'volume_tolerance_exp') then 
+
+            read (strg,*) nopt(10)
+
+            if (nopt(10).lt.0.5d0.or.nopt(10).gt.0.9d0) then 
+               write (*,*) 'invalid value for volume_tolerance_exp (',
+     *                     nopt(10),') reset to 0.8'
+               nopt(10) = 0.8d0
+            end if 
+
+            nopt(51) = r2**nopt(10)
 
          else if (key.eq.'solvus_tolerance_II') then 
 
@@ -1790,8 +1803,8 @@ c                                 generic subdivision parameters:
      *                     lopt(38),valu(13),lopt(39)
          end if 
 c                                 generic thermo parameters:
-         write (n,1012) nval1,nopt(12),nopt(20),
-     *                  lopt(8),lopt(4),nopt(5),iopt(21),lopt(63),
+         write (n,1012) nval1,nopt(12),nopt(20),lopt(8),lopt(4),nopt(5),
+     *                  iopt(21),nopt(10),lopt(63),
      *                  iopt(25),iopt(26),iopt(27),valu(5),
      *                  lopt(32),lopt(44),lopt(36),lopt(46),nopt(34)
 c                                 for meemum add fd stuff
@@ -1903,6 +1916,8 @@ c                                 generic thermo options
      *        4x,'speciation_precision   ',g7.1E1,4x,
      *           '[1d-5] <1; absolute',/,
      *        4x,'speciation_max_it      ',i4,7x,'[100]',/,
+     *        4x,'volume_tolerance_exp    ',f3.1,7x,
+     8           '[0.8] sets x in tol = epsmch^x',/,
      *        4x,'GFSM                    ',l1,9x,
      *           '[F] T GFSM/special_component toggle',/,
      *        4x,'hybrid_EoS_H2O          ',i1,9x,'[4] 0-2, 4-7',/,
@@ -3404,7 +3419,7 @@ c                                 generic warning, also 99
 49    format (/,'**warning ver049** warning ',i3,' will not be repeated'
      *         ,' for future instances of this problem.',/,
      *          'currently in routine: ',a,//,
-     *          'To override this limit on the number of warnings set ',
+     *          'To override the limit on the number of warnings set ',
      *          'warn_no_limit to T',/)
 50    format (/,'**warning ver050** reformulating prismatic ',
      *          'solution: ',a,' because of missing endmembers. ',
@@ -7990,6 +8005,57 @@ c----------------------------------------------------------------------
 
       end
 
+      subroutine volwrn (jd,eos)
+c----------------------------------------------------------------------
+c write warning messages when numeric PVT EoS fail to converge
+c   jd indicates action on fail
+c       1 - uses CORK EoS
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer jd
+
+      double precision p,t,xco2,u1,u2,tr,pr,rc,ps
+      common/ cst5  /p,t,xco2,u1,u2,tr,pr,rc,ps
+
+      character eos*(*)
+c----------------------------------------------------------------------
+      write (*,1000) eos, p, t
+
+      if (jd.eq.1) then
+         write (*,1020)
+      else if (jd.eq.2) then
+         write (*,1030)
+      else if (jd.eq.3) then
+         write (*,1040)
+      else if (jd.eq.4) then
+         write (*,1050)
+      else if (jd.eq.5) then
+         write (*,1060)
+      end if
+
+      write (*,1010)
+
+1000  format (/,'**warning ver093** ',a,' did not converge at:',/,
+     *        /,4x,'P(bar) = ',g12.6,/,4x,'T(K) = ',g12.6,/)
+1010  format (/'This warning can usually be ignored; when not, remedies'
+     *       ,' include (best first):',/,
+     *        /,4x,'1 - set warn_no_limit to see how often and where ',
+     *             'the problem occurs',
+     *        /,4x,'2 - reduce convergence tolerance ',
+     *             '(volume_tolerance_exp option)',
+     *        /,4x,'3 - increase iteration limit ',
+     *             '(speciation_max_it)',/)
+1020  format ('CORK PVT EoS will be used at this condition.')
+1030  format ('MRK PVT EoS will be used at this condition.')
+1040  format ('Fugacity will be set to P(bar)*1d12.')
+1050  format ('Endmember will be destabilized by setting g(j/mol) = ',
+     *        '100*P(bar).')
+1060  format ('Low quality result will be used.')
+
+      end
 
       subroutine lpwarn (idead,char)
 c----------------------------------------------------------------------

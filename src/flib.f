@@ -2058,6 +2058,10 @@ c on return v is the HSMRK volume of species i
 c---------------------------------------------------------------------
       implicit none
 
+      include 'perplex_parameters.h'
+
+      character msg*10
+
       logical bad
 
       integer i
@@ -2068,6 +2072,10 @@ c---------------------------------------------------------------------
 
       double precision p,t,xc,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xc,u1,u2,tr,pr,r,ps
+
+      character specie*4
+      integer ins, isp
+      common/ cxt33 /isp,ins(nsp),specie(nsp)
 
       save bw, bc, bm, rr
       data bw, bc, bm, rr /29d0, 58d0, 60d0, 83.144126d0/
@@ -2096,10 +2104,18 @@ c----------------------------------------------------------------------
 
       call nurap (bm,c,d,e,yz,v,t12,rr,bad)
 
-      if (bad) then 
+      if (bad) then
+
          hsmrkf = dlog(1d12*p)
+
+         msg = 'HSMRK/'//specie(i)
+
+         call volwrn (3,msg)
+
       else 
+
          hsmrkf = dlog(p) + fugp (rtt,bm,yz,c,d,e,v)
+
       end if
 
       end 
@@ -2164,24 +2180,31 @@ c----------------------------------------------------------------------
      *         +p2)*vi+p3)*vi+p4)*vi+p5)*vi+p6)*vi+p7)*vi+p8)
          vi = vi + cor
 
-         if (dabs(cor/vi).lt.nopt(50)) then
+         if (dabs(cor/vi).lt.nopt(51)) then
+ 
+            yz = vi * p/r/t
+
+            vol = vi
+
             exit
+
          else if (vi.lt.0d0) then 
+
             bad = .true.
-            exit 
+
+            exit
+
          else 
+
             k = k + 1
             if (k.le.iopt(21)) cycle
             bad = .true.
-            exit 
+            exit
+
          end if
 
-      end do 
- 
-      yz = vi * p/r/t
+      end do
 
-      vol = vi
- 
       end
 
       subroutine mrkmix (ins, isp, iavg)
@@ -4415,9 +4438,11 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
+      character msg*9
+
       double precision r,prt,rt,f,c1,c2,c3,c4,c5,c6,c7,c8,c9,c0,v,a1,
      *                 a2,a3,c12,c20,c33,c34,c36,c44,c46,c55,c56,c66,
-     *                 c64,c53,c42,e1,e2,dv,t2
+     *                 c64,c53,c42,e1,e2,dv,t2,vcrk
 
       integer it, jam, iwarn
 
@@ -4469,7 +4494,7 @@ c                                 CORK volume guess and backup fugacity
 
          call error (11,xco2,jam,'species (routine pseos)')
 
-      end if 
+      end if
 
       c12 = 12d0*c5
       c20 = 20d0*c6
@@ -4488,6 +4513,7 @@ c                                 CORK volume guess and backup fugacity
       rt = r*t
       prt = p/rt
       it = 0
+      vcrk = v
 c                                 iteration loop for volume
       do
 
@@ -4517,7 +4543,7 @@ c                                 dpdv/rt
 
          end if 
 
-         if (dabs(dv/v).lt.nopt(50)) then
+         if (dabs(dv/v).lt.nopt(51)) then
 c                                 converged, compute ln(fugacity)
             f = c1/v+1d0/a1-1d0/c2-(e1-c7)/c8-(e2-c9)/c0
      *          + dlog(rt/v) + p*v/rt - 1d0
@@ -4528,21 +4554,30 @@ c                                 converged, compute ln(fugacity)
 c                                 will use cork fugacities
             iwarn = iwarn + 1
 
-            if (iwarn.le.50) then 
-               write (*,1000) p,t,v
-               if (iwarn.eq.50) call warn (49,p,93,'PSEOS')
-            end if 
+            if (iwarn.le.50.or.lopt(64)) then
 
-            exit 
+               if (jam.eq.1) then 
+                  msg = 'PSEoS/H2O'
+               else 
+                  msg = 'PSEoS/CO2'
+               end if
 
-         end if 
+               call volwrn (1,msg)
+
+               if (iwarn.eq.50.and..not.lopt(64)) 
+     *                                   call warn (49,p,93,msg)
+
+            end if
+
+            v = vcrk
+
+            exit
+
+         end if
 
          it = it + 1
 
-      end do 
-
-1000  format (/,'**warning ver093** PSEoS did not converge at:',
-     *        3(1x,g12.6))
+      end do
 
       end 
 
@@ -4575,9 +4610,7 @@ c-----------------------------------------------------------------------
       common/ cst11 /fh2o,fco2,funk
                   
       save whc
-      data whc/13000d0/ 
-c
-c 252.586d0 
+      data whc/13000d0/
 c----------------------------------------------------------------------
       if (xco2.eq.1d0) then
  
@@ -7974,7 +8007,7 @@ c                                           JADC, march 6 2018
 
       subroutine zd09pr (vol,lnfug,i)
 c----------------------------------------------------------------------
-c Zhand & Duan 2009 pure fluid EoS for species as below.
+c Zhang & Duan 2009 pure fluid EoS for species as below.
 c See: duan2009_CO2_volume_fugacity.mws
 
 c         1 = H2O
@@ -7989,11 +8022,17 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer it, iwarn, ins(1), i
+      character msg*9
+
+      integer it, iwarn, i, j
 
       double precision prt,b,c,d,e,f,ge,expg,gamm,vi,veq,dveq,lnfug,dv
 
       double precision vol, vmrk, fmrk, eps(16), sig3(16), et, et2
+
+      character specie*4
+      integer ins, isp
+      common/ cxt33 /isp,ins(nsp),specie(nsp)
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5  /p,t,xco2,u1,u2,tr,pr,r,ps
@@ -8011,6 +8050,7 @@ c---------------------------------------------------------------------
      *            25.153757d0, 0d0, 37.933056d0, 8*0d0, 82.312875d0/
 c---------------------------------------------------------------------
 c                                 MRK volume guess and backup fugacity
+      j = ins(1)
       ins(1) = i
       call mrkpur (ins, 1)
 
@@ -8062,18 +8102,36 @@ c                                 diff(veq,v)
 
          end if 
 
-         if (dabs(dv/vol).lt.nopt(50)) then
+         if (dabs(dv/vol).lt.nopt(51)) then
+
+            expg = dexp(gamm/vol/vol)
+
+            lnfug = dlog(r*t/vol/pr/1d-1) 
+     *            + 0.5d0*(f+ge/gamm)*(1d0-1d0/expg)/gamm
+     *            + (2d0*b + (1.5d0*c + (f-0.5d0*ge/gamm)/expg 
+     *            + (1.25d0*d + ge/expg + 1.2d0*e/vol)/vol**2)/vol)/vol
+c                                 convert volume from j/bar to cm3/mol
+            vol = 1d1 * vol
 
             exit
           
          else if (vol.lt.0d0.or.it.gt.iopt(21)) then
-c                                 use cork fugacities
+c                                 failed, use mrk fugacities
             iwarn = iwarn + 1
 
-            if (iwarn.le.50) then 
-               write (*,1000) p,t,vol
-               if (iwarn.eq.50) call warn (49,p,93,'zh09pr')
-            end if 
+            if (iwarn.le.50.or.lopt(64)) then
+
+               msg = 'ZD09/'//specie(i)
+
+               call volwrn (2,msg)
+
+               if (iwarn.eq.50.and..not.lopt(64)) 
+     *                                   call warn (49,p,93,msg)
+
+            end if
+
+            lnfug = fmrk
+            vol = 1d1 * vmrk
 
             exit 
 
@@ -8083,18 +8141,7 @@ c                                 use cork fugacities
 
       end do
 
-      expg = dexp(gamm/vol/vol)
-
-      lnfug = dlog(r*t/vol/pr/1d-1) 
-     *        + 0.5d0*(f+ge/gamm)*(1d0-1d0/expg)/gamm
-     *        + (2d0*b + (1.5d0*c + (f-0.5d0*ge/gamm)/expg 
-     *        + (1.25d0*d + ge/expg + 1.2d0*e/vol)/vol**2)/vol)/vol
-
-c                                 convert volume from j/bar to cm3/mol
-      vol = 1d1 * vol
-
-1000  format (/,'**warning ver093** zd09pr did not converge at:',
-     *        3(1x,g12.6))
+      ins(1) = j
 
       end 
 
@@ -8121,7 +8168,7 @@ c---------------------------------------------------------------------
 c                                 CORK volume guess and backup fugacity
       call crkh2o (p,t,vcrk,lnfug)
 
-      v = vcrk /1d1
+      v = vcrk / 1d1
       fcrk = lnfug
 
       prt = p/r/t
@@ -8161,40 +8208,40 @@ c                                 diff(veq,v)
 
          end if 
 
-         if (dabs(dv/v).lt.nopt(50)) then
+         if (dabs(dv/v).lt.nopt(51)) then
+
+            expg = dexp(gamm/v/v)
+
+            lnfug = dlog(r*t/v) + 0.5d0*(f+g/gamm)*(1d0-1d0/expg)/gamm
+     *            +(2d0*b + (1.5d0*c + (f-0.5d0*g/gamm)/expg 
+     *            + (1.25d0*d + g/expg + 1.2d0*e/v)/v**2)/v)/v
+c                                 convert volume from j/bar to cm3/mol
+             v = 1d1 * v
 
             exit
           
          else if (v.lt.0d0.or.it.gt.iopt(21)) then
-c                                 use cork fugacities
+c                                 use cork fugacity
             iwarn = iwarn + 1
 
-            if (iwarn.le.50) then 
-               write (*,1000) p,t,v
-               if (iwarn.eq.50) call warn (49,p,93,'ZHDH2O')
+            if (iwarn.le.50.or.lopt(64)) then
+
+               call volwrn (1,'ZD05/H2O')
+
+               if (iwarn.eq.50.and..not.lopt(64)) 
+     *                            call warn (49,p,93,'ZD05/H2O')
+
             end if
 
+            lnfug = fcrk
             v = vcrk
 
-            lnfug = fcrk
-
-            return
+            exit
 
          end if 
 
          it = it + 1
 
       end do
-
-      expg = dexp(gamm/v/v)
-
-      lnfug = dlog(r*t/v) + 0.5d0*(f+g/gamm)*(1d0-1d0/expg)/gamm
-     *        +(2d0*b + (1.5d0*c + (f-0.5d0*g/gamm)/expg 
-     *        + (1.25d0*d + g/expg + 1.2d0*e/v)/v**2)/v)/v
-c                                 convert volume from j/bar to cm3/mol
-      v = 1d1 * v
-
-1000  format (/,'**warning ver093** ZHDH2O did not converge at:',
-     *        3(1x,g12.6))
 
       end 

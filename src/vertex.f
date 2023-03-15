@@ -1571,7 +1571,6 @@ c                               increments at each level
 c                               init progress info
       tot = loopx/kinc + 1
       dinc = 1d2/tot
-      tot = 0d0
 
       if (lopt(28)) call begtim (11)
 c                               do all points on lowest level
