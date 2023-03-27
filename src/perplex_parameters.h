@@ -1,12 +1,11 @@
 
-
       integer h4,h5,h6,h8,h9,h0
       integer i6,i7,i8,i9,i10,i11
       integer j3,j4,j5,j6,j9
       integer k0,k1,k2,k3,k4,k5,k7,k8,k9,k10,k13,k14,k15
       integer k16,k17,k18,k19,k20,k21,k22,k23,k24,kd2,k25
       integer l2,l3,l5,l6,l7,l8,l9,l10,lchar
-      integer m0,m1,m2,m3,m4,m6,m7,m8,m9,m10,m11,m12,m14,m15
+      integer m0,m1,m2,m3,m4,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15
       integer m16,m17,m18,m19,m20,m21,m22,m23,m24,m25
       integer msp,mst,mdim,ms1
       integer n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,nsp,nx,ny
@@ -170,7 +169,7 @@ c----------------------------------------------------------------------
 !                                nsp - max number of species in fluid speciation routines 
 
       parameter (l2=5,l3=l2+2,l5=1000,l6=500,l7=2048,l8=10,l9=150,
-     *           nsp=17,l10=nsp+l9+4)
+     *           nsp=18,l10=nsp+l9+4)
 !                                 m0 - max number of terms for a species site fraction?
 !                                 m1 - max number of terms in excess function
 !                                 m2 - max order of term in excess function
@@ -186,7 +185,7 @@ c----------------------------------------------------------------------
 !                                m10 - maximum number of mixing sites in Sconf model
 !                                m11 - maximum number of species + 1 in Sconf model
 !                                m12 - maximum order of terms in Sconf model
-!                                m13 - 
+!                                m13 - maximum number of user defined compositional variables in werami
 !                                m14 - maximum number of independent endmembers
 !                                m15 - maximum number of dependent endmembers
 !                                m16 - max number of parameters in a redkich-kistler L
@@ -202,8 +201,8 @@ c----------------------------------------------------------------------
 !                                m25 - max number of dynamic compositional coordinates to be saved
 !                                      for use as static compositions during auto-refine stage.
       parameter (m0=12, m1=80, m2=8, m3=3, m4=96, m6=6, m7=15, m8=9,
-     *           m9=10,
-     *           m10=6, m11=k5, m12=4, m14=14, m15=85, m16=6, m17=5,
+     *           m9=10, m10 = 6, m11 = k5, m12 = 4, m13 = 30,
+     *           m14=14, m15=85, m16=6, m17=5,
      *           m18=6, m19=m14, m20=m10*(m11-2)+1, m21=m20+m19,
      *           m22=3*m19+m20, m23=2*m19**2+20*m19+11*m20, 
      *           m24 = 10*60*60*k5, m25 = m24*m14)
@@ -558,3 +557,11 @@ c                                 bulk assemblage counter dependent arrays
 
       logical gflu,aflu,fluid,shear,lflu,volume,rxn
       common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
+
+      integer spct
+      double precision ysp
+      character*8 spnams
+      common/ cxt34 /ysp(l10,k5),spct(h9),spnams(l10,h9)
+
+      double precision pcomp
+      common/ cst324 /pcomp(k0,k5)

@@ -63,16 +63,8 @@ c----------------------------------------------------------------------
       character*8 vname,xname
       common/ csta2  /xname(k5),vname(l2)
 
-      double precision pcomp
-      common/ cst324 /pcomp(k0,k5)
-
       character pname*14
       common/ cxt21a /pname(k5)
-
-      integer spct
-      double precision ysp
-      character spnams*8
-      common/ cxt34 /ysp(l10,k5),spct(h9),spnams(l10,h9)
 
       integer ld, na1, na2, na3, nat
       double precision x3, caq
@@ -1122,11 +1114,6 @@ c-----------------------------------------------------------------------
 
       integer k, id, jd
 
-      integer spct
-      double precision ysp
-      character spnams*8
-      common/ cxt34 /ysp(l10,k5),spct(h9),spnams(l10,h9)
-
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
@@ -1535,9 +1522,6 @@ c----------------------------------------------------------------------
 
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
-
-      double precision pcomp
-      common/ cst324 /pcomp(k0,k5)
 
       character pname*14
       common/ cxt21a /pname(k5)

@@ -518,7 +518,7 @@ c                                 and eos is set by ifug
 
             end if
 
-         else if (eos(id).lt.118) then
+         else if (eos(id).le.100+nsp) then
 c                                 call appropriate pure fluid EoS
             gval = gval + r*t * lnfpur(eos(id))
 
@@ -6721,11 +6721,6 @@ c                                 dqf parameters
       double precision aqg,q2,rt
       common/ cxt2 /aqg(m4),q2(m4),rt,jnd(m4)
 
-      integer spct
-      double precision ysp
-      character spnams*8
-      common/ cxt34 /ysp(l10,k5),spct(h9),spnams(l10,h9)
-
       character specie*4
       integer jsp, ins
       common/ cxt33 /jsp,ins(nsp),specie(nsp)
@@ -11443,11 +11438,6 @@ c-----------------------------------------------------------------------
       integer jnd
       double precision aqg,q2,rt
       common/ cxt2 /aqg(m4),q2(m4),rt,jnd(m4)
-
-      integer spct
-      double precision ysp
-      character spnams*8
-      common/ cxt34 /ysp(l10,k5),spct(h9),spnams(l10,h9)
 c----------------------------------------------------------------------
 c                                 solvent properties
       call slvnt3 (gso,.true.,.true.,id)
@@ -11558,8 +11548,14 @@ c                                11 - NH3 and 12-15 Si-O high T species
 c                                16 - Ethane, H&L 2005
      *     11.1552d0, 0.0112d0, 0d0, 36.759d0, 23.639d0, -808.03d0,
      *     -378.84d0, 1.75d0, 3*0d0,
-c                                17 - dilutant
-     *      11*0d0/
+c                                17 - HF, approximated by H2S
+     *     1.18d0, 5829.059676d0, 9.232464738d0, -.1213537391d-1, .9d0,
+     *     -453374.7482d0, 3.5d0, 1.241d0, -.241d0, -16.61833221d0,
+     *     .5d0,
+c                                18 - HCl, approximated by H2S
+     *     1.18d0, 5829.059676d0, 9.232464738d0, -.1213537391d-1, .9d0,
+     *     -453374.7482d0, 3.5d0, 1.241d0, -.241d0, -16.61833221d0,
+     *     .5d0/
 
       save po
 c----------------------------------------------------------------------
@@ -11746,11 +11742,6 @@ c-----------------------------------------------------------------------
       integer kd, na1, na2, na3, nat
       double precision x3, caq
       common/ cxt16 /x3(k5,h4,mst,msp),caq(k5,l10),na1,na2,na3,nat,kd
-
-      integer spct
-      double precision ysp
-      character spnams*8
-      common/ cxt34 /ysp(l10,k5),spct(h9),spnams(l10,h9)
 
       save badct
       data badct/0/
@@ -14475,11 +14466,6 @@ c-----------------------------------------------------------------------
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
-
-      integer spct
-      double precision ysp
-      character spnams*8
-      common/ cxt34 /ysp(l10,k5),spct(h9),spnams(l10,h9)
 c----------------------------------------------------------------------
       rt  = r*t
 
@@ -20778,11 +20764,6 @@ c                                 endmember pointers
       common/ cxt29 /lc(j6,j5,j3,h9),l0c(2,j5,j3,h9),lid(j6,j5,j3,h9),
      *               ln(j3,h9),lt(j5,j3,h9),jc(j3,j5,j3,h9),
      *               jid(j3,j5,j3,h9),jt(j5,j3,h9)
-
-      integer spct
-      double precision ysp
-      character spnams*8
-      common/ cxt34 /ysp(l10,k5),spct(h9),spnams(l10,h9)
 
       character specie*4
       integer jsp, ins

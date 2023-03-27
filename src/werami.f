@@ -42,8 +42,8 @@ c----------------------------------------------------------------------
       integer icps, jcx, jcx1, kds
       logical stol, savg, spec
       double precision rcps, a0
-      common/ comps /rcps(k7,2*k5),a0(k7,2),icps(k7,2*k5),jcx(2*k5),
-     *               jcx1(2*k5),kds(2*k5),stol(i11),savg(i11),spec(2*k5)
+      common/ comps /rcps(2*k5,m13),a0(m13,2),icps(2*k5,m13),jcx(m13),
+     *               jcx1(m13),kds(m13),stol(i11),savg(i11),spec(m13)
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 3
@@ -1967,20 +1967,12 @@ c ------------------------------------------------------------------
       double precision totden, comp
 
       integer jcomp, j, id, icx
- 
-      double precision pcomp
-      common/ cst324 /pcomp(k0,k5)
 
       integer icps, jcx, jcx1, kds
       logical stol, savg, spec
       double precision rcps, a0
-      common/ comps /rcps(k7,2*k5),a0(k7,2),icps(k7,2*k5),jcx(2*k5),
-     *               jcx1(2*k5),kds(2*k5),stol(i11),savg(i11),spec(2*k5)
-
-      integer spct
-      double precision ysp
-      character*8 spnams
-      common/ cxt34 /ysp(l10,k5),spct(h9),spnams(l10,h9)
+      common/ comps /rcps(2*k5,m13),a0(m13,2),icps(2*k5,m13),jcx(m13),
+     *               jcx1(m13),kds(m13),stol(i11),savg(i11),spec(m13)
 c----------------------------------------------------------------------
       if (icx.eq.kds(jcomp)) then 
 
@@ -2052,9 +2044,6 @@ c-------------------------------------------------------------------
       integer javg,jdsol
       common/ cxt5 /javg,jdsol(k5)
 
-      double precision pcomp
-      common/ cst324 /pcomp(k0,k5)
-
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
@@ -2068,8 +2057,8 @@ c-------------------------------------------------------------------
       integer icps, jcx, jcx1, kds
       logical stol, savg, spec
       double precision rcps, a0
-      common/ comps /rcps(k7,2*k5),a0(k7,2),icps(k7,2*k5),jcx(2*k5),
-     *               jcx1(2*k5),kds(2*k5),stol(i11),savg(i11),spec(2*k5)
+      common/ comps /rcps(2*k5,m13),a0(m13,2),icps(2*k5,m13),jcx(m13),
+     *               jcx1(m13),kds(m13),stol(i11),savg(i11),spec(m13)
 
       save cprop, cmin, cmax, mode, max
 c----------------------------------------------------------------------
@@ -2916,9 +2905,6 @@ c-------------------------------------------------------------------
 
       double precision x(k5), ntot
 
-      double precision pcomp
-      common/ cst324 /pcomp(k0,k5)
-
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
 
@@ -3428,9 +3414,6 @@ c----------------------------------------------------------------
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
-      double precision pcomp
-      common/ cst324 /pcomp(k0,k5)
-
       logical mus
       double precision mu
       common/ cst330 /mu(k8),mus
@@ -3864,8 +3847,8 @@ c----------------------------------------------------------------
       integer icps, jcx, jcx1, kds
       logical stol, savg, spec
       double precision rcps, a0
-      common/ comps /rcps(k7,2*k5),a0(k7,2),icps(k7,2*k5),jcx(2*k5),
-     *               jcx1(2*k5),kds(2*k5),stol(i11),savg(i11),spec(2*k5)
+      common/ comps /rcps(2*k5,m13),a0(m13,2),icps(2*k5,m13),jcx(m13),
+     *               jcx1(m13),kds(m13),stol(i11),savg(i11),spec(m13)
 
       save propty
 
@@ -3965,6 +3948,8 @@ c                                 modes:
 c                                 get phase name
              call rnam1 (icx,pname,2)
 
+             phluid = .false.
+
              if (icx.gt.0) then
                 if (fp(icx)) phluid = .true.
              else if (icx.lt.0) then 
@@ -3975,9 +3960,9 @@ c                                 get phase name
 
                 lflu = .true.
 
-             else if (gflu) then 
+             else if (gflu.and.lop.ne.37) then 
 c                                 the phase isn't fluid, ask if fluid should be 
-c                                 included in modes:
+c                                 included in relative modes:
                 write (*,1120) 
                 read (*,'(a)') y
                 if (y.eq.'y'.or.y.eq.'Y') lflu = .true.
@@ -4122,8 +4107,8 @@ c                                 get solution identity
 c                                 get user defined composition:
             komp = komp + 1
 
-            if (komp.gt.k5) then 
-               call warn (27,nopt(1),k5,'CHSPRP')
+            if (komp.gt.m13) then 
+               call warn (27,nopt(1),m13,'CHSPRP')
                cycle 
             end if 
 
@@ -4830,9 +4815,6 @@ c-----------------------------------------------------------------------
       integer kd, na1, na2, na3, nat
       double precision x3, caq
       common/ cxt16 /x3(k5,h4,mst,msp),caq(k5,l10),na1,na2,na3,nat,kd
-
-      double precision pcomp
-      common/ cst324 /pcomp(k0,k5)
 
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)

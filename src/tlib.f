@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.0.8, March 15, 2023.',
+     *     'Perple_X release 7.0.9, March 27, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -4142,7 +4142,7 @@ c                                 fluid eos species
       data specie /
      *      'H2O ','CO2 ','CO  ','CH4 ','H2  ','H2S ','O2  ',
      *      'SO2 ','COS ','N2  ','NH3 ','O   ','SiO ','SiO2',
-     *      'Si  ','C2H6','HF  '/
+     *      'Si  ','C2H6','HF  ','HCl '/
 
       data times,btime,etime/90*0d0/
 c                                 na1 must be initalized because the
@@ -7681,13 +7681,8 @@ c----------------------------------------------------------------
       integer icps, jcx, jcx1, kds
       logical stol, savg, spec
       double precision rcps, a0
-      common/ comps /rcps(k7,2*k5),a0(k7,2),icps(k7,2*k5),jcx(2*k5),
-     *               jcx1(2*k5),kds(2*k5),stol(i11),savg(i11),spec(2*k5)
-
-      integer spct
-      double precision ysp
-      character*8 spnams
-      common/ cxt34 /ysp(l10,k5),spct(h9),spnams(l10,h9)
+      common/ comps /rcps(2*k5,m13),a0(m13,2),icps(2*k5,m13),jcx(m13),
+     *               jcx1(m13),kds(m13),stol(i11),savg(i11),spec(m13)
 c----------------------------------------------------------------------
 c                                choose components vs species
       write (*,1000) fname(ids)

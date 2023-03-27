@@ -1567,10 +1567,9 @@ c                               increments at each level
       jinc1 = kinc
 
       call setvar
-
 c                               init progress info
-      tot = loopx/kinc + 1
-      dinc = 1d2/tot
+      dinc = 1d2/real(loopx/kinc + 1)
+      tot = 0d0
 
       if (lopt(28)) call begtim (11)
 c                               do all points on lowest level
