@@ -70,7 +70,6 @@ warn_no_limit             default | [F] overrides use of counters to limit the n
 absolute                  T       | [F] WERAMI - output absolute component amounts
 Anderson-Gruneisen        default | [F] Anderson-Gruneisen parameter correction for polythermal Murnaghan and Birch-Murnaghan
 approx_alpha              default | [T] use approximation exp(x) ~ 1+x to evaluate expansivity effect on volume
-aq_bad_results            ignore  | [error]* 101 102 103 or ignore => response to suspect lagged speciation results. *defaults to 101 for fractionation problems
 aq_output                 default | [T] output back-calculated solute chemistry when electrolyte data is available
 aq_oxide_components       default | [F] accomodate oxide components in aqueous speciation calculations
 aq_species                default | [20] maximum number of solute species output (ranked by concentration) for back-calculated results
