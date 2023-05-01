@@ -12,11 +12,13 @@ c----------------------------------------------------------------------
 
       integer i, ier
 
-      logical bulk, bad
+      logical bulk, bad, readyn
 
-      character amount*6, yes*1
+      character amount*6
 
       double precision num
+
+      external readyn
 
       integer npt,jdv
       logical fulrnk
@@ -62,10 +64,9 @@ c                                 iam is a flag indicating the Perple_X program
 c                                 initialization, read files etc.
       call iniprp
 
-      write (*,1000) 
-      read (*,'(a)') yes
+      write (*,1000)
 
-      if (yes.eq.'y'.or.yes.eq.'Y') then 
+      if (readyn()) then 
 c                                 bulk is true, user enters composition and p-t conditions
          bulk = .true.
 

@@ -355,7 +355,7 @@ c                                   molar solute
          if (laq.and.lopt(32).and.tag.ne.' ') then 
             write (text,'(a)') tag1//'concentrations.'
             call deblnk (text)
-            write (lu,'(/,1x,400a)') chars(1:length)
+            write (lu,'(/,400a)') chars(1:length)
          end if 
 
       end if
@@ -599,7 +599,7 @@ c                                 N, G, S, V, Cp, alpha, beta, density
       write (lu,1170) 'System        ',psys(17),int(psys(11)),
      *             psys(15),psys(1),(psys(j),j=12,14),psys(28),psys(10)
 
-      if (aflu) write (lu,1170) 'System - fluid',psys1(17),
+      if (aflu) write (lu,1170) 'System - Fluid',psys1(17),
      *             int(psys1(11)),psys1(15),psys1(1),(psys1(j),j=12,14),
      *              psys1(28),psys1(10)
 
@@ -616,7 +616,7 @@ c                                 phase/system summary, seismic:
          write (lu,1200) 'System        ',(psys(j), j = 3, 8),
      *                                    poiss(psys(7),psys(8))
 
-         if (aflu) write (lu,1200) 'System - fluid',(psys1(j), j = 3, 8)
+         if (aflu) write (lu,1200) 'System - Fluid',(psys1(j), j = 3, 8)
      *                             ,poiss(psys1(7),psys1(8))
 
          if (iopt(14).eq.2) then 
@@ -634,7 +634,7 @@ c                                 phase/system summary, seismic derivatives:
      *                     psys(21),psys(22),psys(25),psys(23),psys(26),
      *                     psys(24),psys(27)
 
-            if (aflu) write (lu,1250) 'System - fluid',psys1(18),
+            if (aflu) write (lu,1250) 'System - Fluid',psys1(18),
      *                psys1(20),psys1(19),psys1(21),psys1(22),psys1(25),
      *                psys1(23),psys1(26),psys1(24),psys1(27)
 
@@ -724,9 +724,19 @@ c                                 cp, specific cp
      *                   psys1(12)/psys1(1)*1d5/psys(10),
      *                   psys1(12)/psys1(1)*1d5
 
-         write (lu,1230) 
-
       end if
+
+      if (lopt(6).and.aflu) then
+c                                 melt_is_fluid is T, and a fluid is 
+c                                 present
+         write (lu,1231)
+
+       else if (.not.lopt(6)) then
+c                                 melt_is_fluid is F, melt might be 
+c                                 stable
+         write (lu,1232)
+
+       end if
 
 c      if (lopt(28)) then
 
@@ -777,7 +787,7 @@ c                                 composition fbulk
      *          5x,20(1x,a,3x))
 1030  format (1x,a,3x,3(f6.2,4x),g9.3,1x,20(f8.5,1x))
 1031  format (1x,a,3x,3(f6.2,4x),g9.3,1x,20(f8.3,1x))
-1040  format (/,14x,'mol',8x,'g',8x,'wt %',5x,'mol/kg')
+1040  format (14x,'mol',8x,'g',8x,'wt %',5x,'mol/kg')
 1060  format (/,' Enthalpy (J/kg) = ',g12.6,/,
      *          ' Specific Enthalpy (J/m3) = ',g12.6,/,
      *          ' Entropy (J/K/kg) = ',g12.6,/,
@@ -785,15 +795,15 @@ c                                 composition fbulk
      *          ' Heat Capacity (J/K/kg) = ',g12.6,/,
      *          ' Specific Heat Capacity (J/K/m3) = ',g12.6,/)
 1070  format (/,'Variance (c-p+',i1,') = ',i2,/)
-1080  format (/,21x,'Complete Assemblage',28x,'Solid+Melt Only',
+1080  format (21x,'Complete Assemblage',30x,'Solid Only',
      *        /,14x,'mol',8x,'g',8x,'wt %',5x,'mol/kg',
      *          10x,'mol',8x,'g',8x,'wt %',5x,'mol/kg')
-1100  format (/,' Solid Enthalpy (J/kg) = ',g12.6,/,
-     *          ' Solid Secific Enthalpy (J/m3) (2) = ',g12.6,/,
-     *          ' Solid Entropy (J/K/kg) = ',g12.6,/,
-     *          ' Solid Specific Entropy (J/K/m3) = ',g12.6,/,
-     *          ' Solid Heat Capacity (J/K/kg) (1) = ',g12.6,/,
-     *          ' Solid Specific Heat Capacity (J/K/m3) (1) = ',g12.6,/)
+1100  format (' Solid Enthalpy (J/kg) = ',g12.6,/,
+     *        ' Solid Secific Enthalpy (J/m3) = ',g12.6,/,
+     *        ' Solid Entropy (J/K/kg) = ',g12.6,/,
+     *        ' Solid Specific Entropy (J/K/m3) = ',g12.6,/,
+     *        ' Solid Heat Capacity (J/K/kg) = ',g12.6,/,
+     *        ' Solid Specific Heat Capacity (J/K/m3) = ',g12.6,/)
 1110  format (1x,a8,2x,4(f8.3,2x),5x,4(f8.3,2x))
 1120  format (29x,a8,' = ',g12.6)
 1121  format (29x,'X(C',i1,')    = ',g12.6)
@@ -813,10 +823,14 @@ c                                 composition fbulk
 1200  format (1x,a,3x,12(g12.5,1x))
 1210  format (/,'Bulk Composition:')
 1220  format (/,'Other Bulk Properties:')
-1230  format (/,'N.B.: Aggregate properties represent the entire stable'
-     *         ,' assemblage.',/,'Solid aggregate properties represent '
-     *         ,'solid and melt properties,',/,'but do not include '
-     *         ,'molecular fluid properties.',/)
+1231  format ('N.B.: melt, when stable, is identified as a fluid phase',
+     *   ' for purposes of computing aggregate',/,'properties. To incl',
+     *        'ude melt properties in the solid aggregate set melt_is_',
+     *        'fluid to F.')
+1232  format ('N.B.: melt, when stable, is identified as a solid phase',
+     *   ' for purposes of computing aggregate',/,'properties. To excl',
+     *        'ude melt properties from the solid aggregate set melt_i',
+     *        's_fluid to T.')
 1240  format (/,'Isochemical Seismic Derivatives:',
      *        /,16x,'Ks_T(bar/K)',2x,'Ks_P',2x,'Mu_T(bar/K)',
      *           2x,'Mu_P',2x,'Vphi_T(km/s/K)',1x,'Vphi_P(km/s/bar)',1x,
@@ -2020,7 +2034,7 @@ c                                 vp/vs
 c                                 check for negative poisson ratio
             if (poiss(props(7,jd),props(8,jd)).lt.0d0) then
 
-               if (iwarn3.lt.11.and.pname(jd).ne.wname3) then 
+               if (iwarn3.lt.iopt(1).and.pname(jd).ne.wname3) then 
 
                  write (*,1050) t,p,pname(jd)
 
@@ -2032,7 +2046,8 @@ c                                 check for negative poisson ratio
 
                  iwarn3 = iwarn3 + 1
                  wname3 = pname(jd)
-                 if (iwarn3.eq.11) call warn (49,r,180,'GETPHP') 
+
+                 if (iwarn3.eq.iopt(1)) call warn (49,r,180,'GETPHP') 
 
                end if
 
@@ -2144,22 +2159,25 @@ c                                 max solid prop
       end if 
 c                                 check and warn if necessary for negative
 c                                 expansivity
-      if (.not.sick(jd).and.v.gt.0d0.and.alpha.le.0d0.and.iwarn1.lt.6
-     *    .and.pname(jd).ne.wname1.and..not.rxn) then
+      if (.not.sick(jd).and.v.gt.0d0.and.alpha.le.0d0.and.
+     *    iwarn1.lt.iopt(1).and.pname(jd).ne.wname1.and..not.rxn) then
 
          write (*,1030) t,p,pname(jd)
          iwarn1 = iwarn1 + 1
          wname1 = pname(jd)
-         if (iwarn1.eq.6) call warn (49,r,179,'GETPHP') 
+
+         if (iwarn1.eq.iopt(1)) call warn (49,r,179,'GETPHP') 
 
       end if
 
-      if (ppois.and.iwarn2.lt.6.and.pname(jd).ne.wname2.and.pois) then 
+      if (ppois.and.iwarn2.lt.iopt(1).and.pname(jd).ne.wname2.
+     *                                               and.pois) then 
 
          iwarn2 = iwarn2 + 1
          wname2 = pname(jd)
          write (*,1040) t,p,pname(jd)
-         if (iwarn2.eq.6) call warn (49,r,178,'GETPHP')
+
+         if (iwarn2.eq.iopt(1)) call warn (49,r,178,'GETPHP')
 
       end if 
 c                                 accumulate non-seismic totals 
@@ -2220,8 +2238,7 @@ c                                 solid only totals:
      *        'with caution.',/)
 1040  format (/,'**warning ver178** at T(K)=',g12.4,' P(bar)=',g12.4,1x,
      *        /,'the shear modulus of: ',a,/,'is missing or invalid ',
-     *        'and has been estimated from the default poisson ',
-     *        'ratio',/)
+     *        'and has been estimated with the poisson_ratio option',/)
 1050  format (/,'**warning ver180** at T(K)=',g12.4,' P(bar)=',g12.4,1x,
      *        /,'the poisson ratio of: ',a,' is negative.')
 1060  format (/,'the suspect data will be output and used to ',
@@ -3093,7 +3110,7 @@ c                                 set missing data
          
       end if 
 
-      if ((.not.volume.or..not.shear).and.(iwarn.lt.11)) then
+      if ((.not.volume.or..not.shear).and.iwarn.lt.iopt(1)) then
 
          iwarn = iwarn + 1
 
@@ -3105,8 +3122,8 @@ c                                 set missing data
             end do 
          end if 
 
-         if (iwarn.eq.11) call warn (49,r,177,'GETSYP') 
-                  
+         if (iwarn.eq.iopt(1)) call warn (49,r,177,'GETSYP')
+
       end if  
 
 1000  format (/,'**warning ver177** at T(K)=',g12.4,' P(bar)=',g12.4,1x,

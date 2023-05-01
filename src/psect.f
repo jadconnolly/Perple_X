@@ -17,9 +17,9 @@ c Please do not distribute any part of this source.
 
       integer jop0
 
-      logical first, err
+      logical first, err, readyn
 
-      character yes*1
+      external readyn
  
       integer iop0 
       common / basic /iop0
@@ -69,10 +69,9 @@ c                                 initialize the grid parameters
 c                                 open output file 
       call psopen
 c                                 ask for options
-      write (*,1000) 
-      read (*,'(a)') yes
+      write (*,1000)
 
-      if (yes.eq.'y'.or.yes.eq.'Y') iop0 = 1
+      if (readyn()) iop0 = 1
 
 c                                 get user options and read
 c                                 rest of plot file, draw data
@@ -99,7 +98,11 @@ c psdplt - subroutine to plot gridded minimization sections
 
       integer lop(15), iop1, iop5, iop6, iop7, jop0
 
-      character yes*1, prompt*14
+      character prompt*14
+
+      logical readyn
+
+      external readyn
 
       integer  iop0 
       common / basic /iop0
@@ -119,31 +122,30 @@ c                                 get some options
 
       if (iop0.eq.1) then 
 c                                 restrict by assemblage
-         write (*,1150) 
-         read (*,1000) yes
+         write (*,1150)
 
-         if (yes.eq.'y'.or.yes.eq.'Y') then
+         if (readyn()) then
 c                               if icp < jbulk write warning:
-            if (icp.lt.jbulk) write (*,1400) 
-            write (*,1140) 
-            read (*,1000) yes
-            if (yes.eq.'y'.or.yes.eq.'Y') then
+            if (icp.lt.jbulk) write (*,1400)
+            write (*,1140)
+
+            if (readyn()) then
                iop5 = 1
                prompt='present in the'
                call rname (1,prompt)
             end if
 c                               restrict by phase presence
-            write (*,1120)  
-            read (*,1000) yes
-            if (yes.eq.'y'.or.yes.eq.'Y') then 
+            write (*,1120)
+
+            if (readyn()) then 
                iop6 = 1
                prompt=' absent in all'
                call rname (2,prompt)
             end if 
 c                               restrict by phase absence
             write (*,1130)
-            read (*,1000) yes
-            if (yes.eq.'y'.or.yes.eq.'Y') then 
+
+            if (readyn()) then 
                iop7 = 1
                prompt='present in all'
                call rname (3,prompt)
@@ -275,9 +277,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      character yes*1, text*(lchar)
+      character text*(lchar)
 
-      logical bad
+      logical bad, readyn
 
       integer k, iran(2,k3), jran(2,k3), i, hfill, nblen, maxvar, j, 
      *        ipoly, idr(k5), iop5, iop6, jop0, nctr(k3), minvar,
@@ -286,6 +288,8 @@ c----------------------------------------------------------------------
 
       double precision rline, x, y, x1, y1, x2, y2, x10, cctr(2,k3), 
      *                 y10, rfill, dy, dx, bctr(2,k3), cwidth, dfill
+
+      external readyn
 
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
@@ -432,9 +436,8 @@ c                                 variance > 7
                   if (hfill.eq.0.and.ntot.ne.0) then 
 c                                 write warning, ask fill style
                      write (*,1000) 
-                     read (*,'(a)') yes
-c                                
-                     if (yes.eq.'y'.or.yes.eq.'Y') then 
+
+                     if (readyn()) then 
                         hfill = 2
                      else 
                         hfill = 1
@@ -885,7 +888,9 @@ c psgrd1 - subprogram draw 1d gridded minimization diagrams.
 
       include 'perplex_parameters.h'
 
-      character yes*1, text*(lchar)
+      logical readyn
+
+      character text*(lchar)
 
       integer k, hfill, jop0,
      *        j, ipoly, idr(k5), iop5, iop6, jmin, jmax,
@@ -893,6 +898,8 @@ c psgrd1 - subprogram draw 1d gridded minimization diagrams.
 
       double precision rline, x, y, x1, y1, x2, y2, xl,
      *                 x10, rfill, dx
+
+      external readyn
 
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
@@ -972,10 +979,9 @@ c                                 for di-septa-variant use gray-scale
 
                if (hfill.eq.0.and.ntot.gt.0) then 
 c                                 write warning
-                     write (*,1000) 
-                     read (*,'(a)') yes
+                     write (*,1000)
 c                                 suppress > hexavariant fills
-                     if (yes.eq.'y'.or.yes.eq.'Y') then 
+                     if (readyn()) then 
                         hfill = 2
                      else 
                         hfill = 1
@@ -1036,13 +1042,17 @@ c psax1d - subroutine to output (sloppy) 1d axes.
 
       implicit none
 
+      include 'perplex_parameters.h'
+
       double precision x0,dx,ytic,ytic1,ytic2,y,x
 
       integer jop0,i,j
 
-      include 'perplex_parameters.h'
- 
-      character record*20, yes*1
+      logical readyn
+
+      character record*20
+
+      external readyn
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -1068,9 +1078,8 @@ c----------------------------------------------------------------------
 
       if (jop0.eq.1) then
 
-         write (*,1010) 
-         read (*,'(a)') yes
-         if (yes.ne.'y'.and.yes.ne.'Y') goto 10
+         write (*,1010)
+         if (.not.readyn()) goto 10
 
          write (*,1030) 'X', x0, dx
          read (*,*) x0, dx

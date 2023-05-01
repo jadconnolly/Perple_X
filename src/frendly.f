@@ -17,16 +17,17 @@ c------------------------------------------------------------------------
  
       include 'perplex_parameters.h'
  
-      logical nonlin
+      logical nonlin, readyn
 
-      character uname*8, y*1, rxny*1, opname*100
+      character uname*8, rxny*1, opname*100
 
       integer i, j, k, l, idiag, ier, iord
 
       double precision coef(0:10)
 
       double precision gcpd
-      external gcpd
+
+      external gcpd, readyn
 
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
@@ -71,9 +72,8 @@ c                                 harass the user for no reason
       if (uname.eq.' ') uname = ' Nimrod '
 
       write (*,1050) uname
-      read (*,'(a)') y
 
-      if (y.ne.'y'.and.y.ne.'Y') then
+      if (.not.readyn()) then
          write (*,1060) uname
          stop
       end if
@@ -113,15 +113,13 @@ c                                 select variables and set up plot file:
  
          else if (icopt.eq.2) then
 c                                 calculating properties at arbitrary conditions:
-            write (*,1180) 
-            read (*,'(a)') y
+            write (*,1180)
 
-            if (y.eq.'y'.or.y.eq.'Y') then
+            if (readyn()) then
 c                                 tabulated properties
-               write (*,1190)         
-               read (*,'(a)') y
+               write (*,1190)
 
-               if (y.eq.'y'.or.y.eq.'Y') then 
+               if (readyn()) then 
 c                                 non-linear 1d table
                   nonlin = .true.
                   call setplt (.true.,nonlin,coef,iord)
@@ -197,10 +195,9 @@ c                                 interactively entered conditions
                   call outphp (.false.)
 
                   write (*,1090)
-                  read (*,'(a)') y
 
-                  if (y.eq.'y'.or.y.eq.'Y') call change 
-c
+                  if (readyn()) call change 
+
                end do 
 
             end if 
@@ -373,15 +370,17 @@ c----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
  
-      character y*1,n4name*100,title*100,text*200
+      character n4name*100, title*100, text*200
 
       integer i,j,ier,ic,ix,iord 
 
-      logical table, nonlin
+      logical table, nonlin, readyn
 
       character*14 tags(27)
 
       double precision coef(0:10)
+
+      external readyn
 
       integer inc,jpot
       common/ cst101 /inc(l2),jpot
@@ -433,9 +432,10 @@ c                                 query for 1d table
          if (nonlin) then
             oned = .true.
          else
-            write (*,1110) 
-            read (*,'(a)') y
-            if (y.eq.'y'.or.y.eq.'Y') oned = .true.
+
+            write (*,1110)
+            if (readyn()) oned = .true.
+
          end if 
       end if 
 
@@ -590,9 +590,8 @@ c                                 third variable?
             if (table) then 
 
                write (*,1010) vname(iv(3))
-               read (*,'(a)') y
-c
-               if (y.eq.'y'.or.y.eq.'Y') then
+
+               if (readyn()) then
 c                                 setting jpot = 3 will cause plotting programs 
 c                                 to crash. 
                   jpot = 3
@@ -606,9 +605,8 @@ c                                 to crash.
             else 
 
                write (*,2160) vname(iv(3))
-               read (*,'(a)') y
 
-               if (y.eq.'y'.or.y.eq.'Y') then
+               if (readyn()) then
 
                   jpot = 3
 
@@ -672,10 +670,9 @@ c                                 increments or counters:
 c                                 set convergence criteria for univeq:
          call concrt
 c                                 plot file output?
-         write (*,1020) 
-         read (*,'(a)') y
+         write (*,1020)
 
-         if (y.eq.'y'.or.y.eq.'Y') then
+         if (readyn()) then
             io4 = 0
          else 
             io4 = 1
@@ -782,12 +779,14 @@ c-----------------------------------------------------------------------
       implicit none
  
       include 'perplex_parameters.h'
- 
-      character y*1
+
+      logical readyn
 
       integer ivi,ivd,ier,igo
 
       double precision div
+
+      external readyn
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
@@ -832,18 +831,19 @@ c         write (*,1030)
 c      end if         
  
 20    write (*,1040)
-      read (*,1000) y
-      if (y.eq.'y'.or.y.eq.'Y') then
+
+      if (readyn()) then
          call chptx
          goto 10
-      end if 
+      end if
+
       write (*,1020)
-      read (*,1000) y
-      if (y.ne.'y'.and.y.ne.'Y') return
-      call change 
+
+      if (.not.readyn()) return
+      call change
+
       goto 10
- 
-1000  format (a)
+
 1010  format (/,'Equilibrium is not in specified',
      *          ' coordinate frame.',/)
 1020  format (/,'Modify data and',
@@ -854,7 +854,6 @@ c      end if
 1170  format ('The ',a,'-',a,' loci of the univariant field'
      *        ,' follows:')
 1180  format ('(subject to the constraint ',a,'=',g12.6,')',/)
-
 
 99    end
  
@@ -1151,11 +1150,15 @@ c---------------------------------------------------------------------
  
       include 'perplex_parameters.h'
 
+      logical readyn
+
       integer i,j,ier,id,jdis,imurg,kv,ichk,h,k,kd,jd
  
       character y*1
 
       double precision vsum
+
+      external readyn
 
       integer ilam,jlam,idiso,lamin,idsin
       double precision tm,td
@@ -1199,9 +1202,8 @@ c---------------------------------------------------------------------
       common/ cst303 /eos(k10)
 c-----------------------------------------------------------------------
       write (*,1110)
-      read (*,1050) y
- 
-      if (y.eq.'y'.or.y.eq.'Y') then 
+
+      if (readyn()) then 
          
          if (iphct.gt.1.or.vnu(1).ne.1d0) then
             write (*,1120)
@@ -1460,9 +1462,8 @@ c                                 property loop
                   if (ichk.eq.0) exit
 c                                 write entry to permanant file:
                   write (*,1070) names(id)
-                  read (*,1050) y
-c
-                  if (y.eq.'y'.or.y.eq.'Y') then
+
+                  if (readyn()) then
 c                                 add in activity correction
                      thermo(1,k10) = thermo(1,id)
                      thermo(2,k10) = thermo(2,id)
@@ -1569,9 +1570,8 @@ c                                 end property loop
             if (iphct.eq.1) exit
 
             write (*,1150)
-            read (*,1050) y
 
-            if (y.ne.'y'.and.y.ne.'Y') exit 
+            if (.not.readyn()) exit 
 c                                end of phase loop
          end do 
  
@@ -1580,8 +1580,8 @@ c                                end of phase loop
       if (ifct.eq.0) return 
 
       write (*,1160)
-      read (*,1050) y
-      if (y.ne.'y'.and.y.ne.'Y') return 
+
+      if (.not.readyn()) return 
 
       call rfluid (1)
 c                                 for multispecies fluids set
@@ -1625,9 +1625,11 @@ c----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
 
+      logical readyn
+
       integer i, ier 
- 
-      character y*1
+
+      external readyn
 
       integer eos
       common/ cst303 /eos(k10)
@@ -1710,11 +1712,11 @@ c                                 normal polynomial vdp term:
          call outdat (n2,k10,0)
  
          write (*,1110)
-         read (*,'(a)') y
-         if (y.ne.'y'.and.y.ne.'Y') exit
+
+         if (.not.readyn()) exit
 
       end do 
- 
+
 1000  format (/,'This entry will be for a T = ',g13.6,'(K) P=',
      *        g13.6,'(bar)',/,'reference state (Units: J, bar, K).',/)
 1010  format ('Enter name for your entry, <8 characters, left',
@@ -1771,14 +1773,16 @@ c----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
  
-      character*1 uname*8, y, rxny,mnames(k16*k17)*8
+      character*1 uname*8, rxny, mnames(k16*k17)*8
  
       double precision vvv
 
-      logical eof, first, match
+      logical eof, first, match, readyn
 
       integer inames, jcmpn, i, j, k, l, ier,
      *        isct, jj, itic, jphct
+
+      external readyn
 
       integer idf
       double precision act
@@ -1902,9 +1906,8 @@ c                                 component pointers
       end if 
 c                               list database phases:
       write (*,1030)
-      read (*,'(a)') y
 
-      if (y.eq.'y'.or.y.eq.'Y') then 
+      if (readyn()) then 
 
          write (*,3000) (cmpnt(i),i=1,jcmpn)
 
@@ -2175,8 +2178,8 @@ c                                 check reaction stoichiometries
          end do 
  
          write (*,1070)
-         read (*,'(a)') y
-         if (y.ne.'y'.and.y.ne.'Y') goto 99
+
+         if (.not.readyn()) goto 99
          call stoich
          goto 55
  

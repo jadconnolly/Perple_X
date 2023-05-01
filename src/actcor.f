@@ -16,9 +16,13 @@ c-----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
 
+      logical eof, readyn
+
       integer i
-                                                         
-      character*8 blank8, name, y*1, test
+
+      character*8 blank8, name, test
+
+      external readyn
 
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
@@ -30,12 +34,6 @@ c-----------------------------------------------------------------------
       integer iam
       common/ cst4 /iam
 
-      double precision sel, cox
-      logical hscon, hsc, oxchg
-      common/ cxt45 /sel(k0),cox(k0),hscon,oxchg,hsc(k1)
-
-      logical eof
-           
       data blank8/' '/ 
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
@@ -57,10 +55,9 @@ c                                 mock pointers
 c                                 the no blurb
       write (*,1010) 
 c                                 allow user to enter names:
-      write (*,1030) 
-      read (*,1000) y
+      write (*,1030)
 
-      if (y.ne.'y'.and.y.ne.'Y') then 
+      if (.not.readyn()) then 
 c                             get the name:
 100      write (*,1020) 
          read (*,1000) test
@@ -95,8 +92,7 @@ c                             read and modify individual entries
             if (eof) exit
 
             write (*,1040) name
-            read (*,1000) y
-            if (y.eq.'y'.or.y.eq.'Y') call gotcha (name)   
+            if (readyn()) call gotcha (name)
 
          end do 
                      
@@ -122,11 +118,15 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
                                                          
-      character*8 blank8,name,y*1
+      character*8 blank8, name
 
       integer i
 
-      double precision xmole,xmix,act
+      double precision xmole, xmix, act
+
+      logical readyn
+
+      external readyn
 
       integer cl
       character cmpnt*5, dname*80
@@ -156,9 +156,8 @@ c----------------------------------------------------------------------
       data blank8/'        '/
 c----------------------------------------------------------------------
       write (*,1060) name
-      read (*,1000) y  
-                       
-      if (y.eq.'y'.or.y.eq.'Y') then 
+
+      if (readyn()) then 
 c 
          write (*,1070) name
          read (*,1000) blank8
@@ -167,20 +166,18 @@ c
          write (*,1040) (comp(i),i=1,icmpn) 
          write (*,1090)
 
-         read (*,1000) y    
-
-         if (y.eq.'y'.or.y.eq.'Y') then 
+         if (readyn()) then 
             write (*,1100) name,blank8
 
             read (*,*) xmole
-               write (*,1110) name
-               read (*,*) xmix
+            write (*,1110) name
+            read (*,*) xmix
 
-               act = xmole**xmix   
+            act = xmole**xmix   
 
          else   
-               write (*,1120) name
-               read (*,*) act
+            write (*,1120) name
+            read (*,*) act
          end if 
 
          write (*,1130) name,blank8,act 

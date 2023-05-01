@@ -18,7 +18,7 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical zbad, xref, swap
+      logical zbad, xref, swap, bndbad
 
       integer i, nvar, iter, iwork(m22), idif, idead,
      *        istate(m21), nclin, ntot
@@ -28,7 +28,7 @@ c-----------------------------------------------------------------------
      *                 clamda(m21),r(m19,m19),work(m23),
      *                 yt(m4),zsite(m10,m11), sum
 
-      external gsol2, gsol1
+      external gsol2, gsol1, zbad, bndbad
 
       integer nz
       double precision apz, zl, zu
@@ -140,21 +140,19 @@ c                                 reconstruct pa-array, this IS necessary.
 c                                 reject bad site populations, these may not
 c                                 be useful
       if (boundd(rids)) then
-         if (sum.gt.nopt(55)) then
-c           write (*,*) 'oink 1',sum,rids
+
+         if (bndbad()) then 
             rcount(3) = rcount(3) + 1
             return
-         else if (sum.gt.1d0) then 
-            pa(nstot(rids)) = 0d0
          end if
-      end if
-      
-      if (zbad(pa,rids,zsite,fname(rids),.false.,fname(rids))) then
-      
-c        write (*,*) 'oink 3',rids
-         rcount(3) = rcount(3) + 1
-         return
-      
+
+      else
+
+         if (zbad(pa,rids,zsite,fname(rids),.false.,fname(rids))) then
+            rcount(3) = rcount(3) + 1
+            return
+         end if
+
       end if
 
       rcount(2) = rcount(2) + 1
@@ -251,7 +249,7 @@ c-----------------------------------------------------------------------
       integer i, j, nvar, idif
 
       double precision ppp(*), gval, dgdp(*), psum, 
-     *                 gsol1, g, bsum, zsite(m10,m11)
+     *                 gsol1, g, zsite(m10,m11)
 
       external gsol1, zbad
 
@@ -316,7 +314,7 @@ c                                 level it
 
       if (lopt(57).and.outrpc) then
 c                                 try to eliminate bad results
-         if (psum.lt.one.or.psum.gt.1d0+zero.or.bsum.lt.zero) return
+         if (psum.lt.one.or.psum.gt.1d0+zero.or.psum.lt.zero) return
          if (zbad(pa,rids,zsite,'a',.false.,'a')) return
 c                                 save the composition
          call savrpc (g,nopt(37),saved,idif)
@@ -395,6 +393,8 @@ c-----------------------------------------------------------------------
       ntot = nstot(rids)
       ltot = lstot(rids)
       ttot = tstot(rids)
+
+      call chkpa (rids)
 
       idif = 0
 
@@ -984,15 +984,15 @@ c     if (lopt(28)) call endtim (9,.true.,'p2y inversion')
 
       if (idead.gt.0) then
 c                                 really bad inversion result
-         if (iwarn.lt.11) then
+         if (iwarn.lt.iopt(1)) then
 
             write (*,1010) fname(id),idead
 
             call prtptx
 
-            if (iwarn.eq.10) call warn (49,0d0,202,'P2YX')
-
             iwarn = iwarn + 1
+
+            if (iwarn.eq.iopt(1)) call warn (49,0d0,202,'P2YX')
 
          end if
 
@@ -1964,4 +1964,61 @@ c           write (*,*) char,' from ',alfa,'to',newa,' rids',rids
 c             write (*,*) 'uh oh?',sum
           end if
 c                                 end of badalf
-      end 
+      end
+
+      logical function bndbad ()
+c-----------------------------------------------------------------------
+c check bounded solution compositions are within error
+c-----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer i
+
+      double precision sum
+
+      double precision z, pa, p0a, x, w, y, wl, pp
+      common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
+     *              wl(m17,m18),pp(m4)
+c-----------------------------------------------------------------------
+      sum = 0d0
+      bndbad = .false.
+
+      do i = 1, nstot(rids)
+
+         if (pa(i).lt.0d0) then
+
+            if (pa(i).lt.-nopt(50)) then
+               bndbad = .true.
+               return
+            else
+               pa(i) = 0d0
+            end if
+
+         else if (pa(i).gt.1d0) then
+
+            if (pa(i).gt.nopt(55)) then
+               bndbad = .true.
+               return
+            else
+               pa(i) = 1d0
+            end if
+
+         end if
+
+         sum = sum + pa(i)
+
+      end do
+
+      if (sum.gt.nopt(56).and.sum.lt.nopt(55)) then
+
+         pa(1:nstot(rids)) = pa(1:nstot(rids))/sum
+
+      else 
+
+         bndbad = .true.
+
+      end if 
+
+      end

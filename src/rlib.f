@@ -312,11 +312,15 @@ c                                 HP Tait EoS, einstein thermal pressure
 c                                 destabilize the phase
             vdp = thermo(3,id)**2*p
 
-            if (iwarn.le.5.and.oldid.ne.id) then
+            if (iwarn.lt.iopt(1).and.oldid.ne.id) then
+
                call warn (60,t,1,names(id))
                iwarn = iwarn + 1
                oldid = id
-               if (iwarn.eq.5) call warn (49,t,60,'GCPD_HP_Tait_I')
+
+               if (iwarn.eq.iopt(1)) 
+     *                              call warn (49,t,60,'GCPD_HP_Tait_I')
+
             end if
 
           else if (v2.lt.0d0) then
@@ -325,11 +329,15 @@ c                                 v2 is small zero it and continue
              vdp = (thermo(16,id)*(v1**thermo(18,id)
      *             /thermo(20,id)-p+pr)+p-pr)*thermo(3,id)
 
-            if (iwarn.le.5.and.oldid.ne.id) then
+            if (iwarn.lt.iopt(1).and.oldid.ne.id) then
+
                call warn (60,t,2,names(id))
                iwarn = iwarn + 1
                oldid = id
-               if (iwarn.eq.5) call warn (49,t,60,'GCPD_HP_Tait_II')
+
+               if (iwarn.eq.iopt(1)) 
+     *                             call warn (49,t,60,'GCPD_HP_Tait_II')
+
             end if
 
           else
@@ -409,11 +417,15 @@ c                                 a ****wit has entered a ridiculous
 c                                 temperature
             if (kt.lt.0d0) then
 
-               if (iwarn.lt.5.and.id.ne.oldid) then
+               if (iwarn.lt.iopt(1).and.id.ne.oldid) then
+
                   call warn (46,t,id,names(id))
                   iwarn = iwarn + 1
                   oldid = id
-                  if (iwarn.eq.5) call warn (49,t,46,'GCPD_Murnaghan')
+
+                  if (iwarn.eq.iopt(1)) 
+     *                              call warn (49,t,46,'GCPD_Murnaghan')
+
                end if
 c                                 destabalize the phase
                gcpd = thermo(3,id)**2*p
@@ -466,11 +478,14 @@ c                                 a ****wit has entered a ridiculous
 c                                 temperature
          if (kt.lt.0d0.or.vt.lt.0d0) then
 
-            if (iwarn.lt.5.and.oldid.ne.id) then
+            if (iwarn.lt.iopt(1).and.oldid.ne.id) then
+
                call warn (46,t,id,names(id))
                iwarn = iwarn + 1
                oldid = id
-               if (iwarn.eq.5) call warn (49,t,46,'GCPD_BM3')
+
+               if (iwarn.eq.iopt(1)) call warn (49,t,46,'GCPD_BM3')
+
             end if
 c                                 destabilize the phase
             vdp = thermo(3,id)**2*p
@@ -2861,13 +2876,16 @@ c                                 if everything is ok, now get
 c                                 helmoltz energy:
       goto 10
 c                                 if we get here, failed to converge
-90    if (izap.lt.10.or.lopt(64)) then
+90    if (izap.lt.iopt(1)) then
+
          write (*,1000) t,p,names(id)
          izap = izap + 1
-         if (izap.eq.10) call warn (49,r,369,'GETLOC')
+
+         if (izap.eq.iopt(1)) call warn (49,r,369,'GETLOC')
+
       end if
 c                                 destabilize the phase:
-      gsixtr = 1d2*(0*dabs(thermo(1,id))+p)
+      gsixtr = 1d2*p
 
       return
 
@@ -2993,6 +3011,8 @@ c conditions based on p/t
 c----------------------------------------------------------------------
       implicit none
 
+      include 'perplex_parameters.h'
+
       integer iwarn
 
       double precision g, tf, psat2, rho
@@ -3001,9 +3021,6 @@ c----------------------------------------------------------------------
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
-
-      logical abort1
-      common/ cstabo /abort1
 
       integer nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
       common/ cst337 /nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
@@ -3039,13 +3056,14 @@ c                                 check on physical conditions
      *       (t.le.623.15.and.p.lt.psat2(t))) then
 c                                 warn
 
-            if (iwarn.lt.10) then
+            if (iwarn.lt.iopt(1)) then
+
                write (*,1000) t, p
-               if (ns.eq.1) write (*,'(/,a,/)') 
-     *                      'No result will be output.'
 
                iwarn = iwarn + 1
-               if (iwarn.eq.10) call warn (49,r,277,'GFUNC')
+
+               if (iwarn.eq.iopt(1)) call warn (49,r,277,'GFUNC')
+
             end if
 
             if (ns.eq.1) abort1 = .true.
@@ -3232,13 +3250,16 @@ c                                 da is actually diff(a,v) + p
 
       if (bad) then
 c                                 if we get here, failed to converge
-         if (izap.lt.10.or.lopt(64)) then
+         if (izap.lt.iopt(1)) then
+
             write (*,1000) t,p,names(id)
+
             izap = izap + 1
-            if (izap.eq.10) call warn (49,r,369,'GSTXLQ')
+            if (izap.eq.iopt(1)) call warn (49,r,369,'GSTXLQ')
+
          end if
 c                                 destabilize the phase.
-         gstxlq  = 1d2*(0*thermo(1,id)+p)
+         gstxlq  = 1d2*p
 
       else
 c                                 everything ok, final f:
@@ -3433,16 +3454,15 @@ c                                 allow bad result
 
       if (bad) then
 c                                 if we get here, failed to converge
-         if (izap.lt.10.or.lopt(64)) then
+         if (izap.le.iopt(1)) then
 
             msg = 'STXGJI/'//names(id)
 
-            call volwrn (ibad,msg)
+            call conwrn (ibad,msg)
 
             izap = izap + 1
 
-            if (izap.eq.10.and..not.lopt(64)) 
-     *                                      call warn (49,r,93,'STXGJI')
+            if (izap.eq.iopt(1)) call warn (49,r,93,'STXGJI')
 
          end if
 
@@ -3575,13 +3595,16 @@ c                                 initial guess for volume:
 
          if (v.le.0d0.or.v.gt.1d6.or.itic.gt.20) then
 
-            if (jerk.lt.10) then
+            if (jerk.lt.iopt(1)) then
+
                jerk = jerk + 1
                write (*,1000) t,p
-               if (jerk.eq.10) call warn (49,r,369,'VDPBM3')
+
+               if (jerk.eq.iopt(1)) call warn (49,r,369,'VDPBM3')
+
             end if
 
-            vdpbm3 = 1d12*p
+            vdpbm3 = 1d2*p
 
             return
 
@@ -4594,7 +4617,7 @@ c----------------------------------------------------------------------
 
       end
 
-      subroutine cmodel (im,idsol,first,found)
+      subroutine cmodel (im,ids,first,found)
 c---------------------------------------------------------------------
 c cmodel - checks to see if solution models contain valid endmembers.
 c modified to allow saturated phase/component endmembers, 10/25/05.
@@ -4607,7 +4630,7 @@ c---------------------------------------------------------------------
 
       character missin(m4)*8
 
-      integer imiss, im, idsol, i, j, h, ineg, ipos
+      integer imiss, im, ids, i, j, h, ineg, ipos
 
       character tname*10
       logical refine, lresub
@@ -4668,7 +4691,7 @@ c                              name requested in input from n1
 
            if (tname.eq.fname(i)) then
 c                              got a match, exit
-               idsol = i
+               ids = i
                im = im + 1
                ok = .true.
                found = ok
@@ -7203,48 +7226,6 @@ c                                 entropy calculation (done by snorm).
 
       end do
 c                                 -------------------------------------
-      if (depmod) then
-c                                 march, 2017: deleted y2p4z routine that converted
-c                                 z(y) expressions to z(p), i.e., by simply
-c                                 eliminating dependent endmembers.
-
-c                                 save y -> p array
-         ndep(im) = mdep
-
-         do i = 1, nstot(im)
-            y2pg(1:mdep,i,im) = y2p(i,1:mdep)
-         end do
-
-         do j = 1, mdep
-
-            y(1:mstot(im)) = 0d0
-
-            y(knsp(lstot(im)+j,im)) = 1d0
-
-            call y2p0 (im)
-c                                 check for invalid site fractions, this is only necessary
-c                                 for H&P models that assume equipartition (which is not
-c                                 implemented).
-            if (zbad(pa,im,zsite,tname,.true.,
-     *                     mname(iorig(knsp(lstot(im)+j,im))))) then
-
-               if (iam.lt.3.or.iam.eq.4.or.iam.eq.15)
-     *            call warn (59,y(1),i,
-     *            mname(iorig(knsp(lstot(im)+j,im)))
-     *            //' in solution model '//tname)
-
-               if (stck) call error (78,y(1),i,tname)
-
-            end if
-
-         end do
-
-      else
-
-         ndep(im) = 0
-
-      end if
-c                                 -------------------------------------
 c                                 relict equipartion warning:
       if (.not.stck.and..not.refine.and.iam.lt.3) then
 
@@ -7286,6 +7267,63 @@ c                                 non-equimolar restrictions:
      *        /'ce not anticipated for non-equimolar ordering: '//tname)
          if (ksmod(im).ne.688) call error (72,r,i,'non-equimolar order'/
      *               /'ing only allowed for 688 format solution models')
+
+      end if
+c                                 ----------------------------------------------
+c                                 by default assume simplicial models are bounded, this
+c                                 can be overridden (unbd) by the unbounded_composition solution 
+c                                 model keyword.
+      if ((.not.unbd.and.lstot(im).eq.nstot(im).and.
+     *     lstot(im).eq.mstot(im)).or.
+     *    (.not.unbd.and.lorder(im).and..not.equimo(im))) then
+
+          boundd(im) = .true.
+
+      else 
+
+          boundd(im) = .false.
+
+      end if
+c                                 -------------------------------------
+      if (depmod) then
+c                                 march, 2017: deleted y2p4z routine that converted
+c                                 z(y) expressions to z(p), i.e., by simply
+c                                 eliminating dependent endmembers.
+
+c                                 save y -> p array
+         ndep(im) = mdep
+
+         do i = 1, nstot(im)
+            y2pg(1:mdep,i,im) = y2p(i,1:mdep)
+         end do
+
+         do j = 1, mdep
+
+            y(1:mstot(im)) = 0d0
+
+            y(knsp(lstot(im)+j,im)) = 1d0
+
+            call y2p0 (im)
+c                                 check for invalid site fractions, this is only necessary
+c                                 for H&P models that assume equipartition (which is not
+c                                 implemented).
+            if (zbad(pa,im,zsite,tname,.true.,
+     *                     mname(iorig(knsp(lstot(im)+j,im))))) then
+
+               if (iam.lt.3.or.iam.eq.4.or.iam.eq.15)
+     *            call warn (59,y(1),i,
+     *            mname(iorig(knsp(lstot(im)+j,im)))
+     *            //' in solution model '//tname)
+
+               if (stck) call error (78,y(1),i,tname)
+
+            end if
+
+         end do
+
+      else
+
+         ndep(im) = 0
 
       end if
 c                                 ----------------------------------------------
@@ -7535,20 +7573,6 @@ c                                 BCC Fe-Cr Andersson and Sundman (32)
          end if
 
       end if
-c                                 by default assume simplicial models are bounded, this
-c                                 can be overridden (unbd) by the unbounded_composition solution 
-c                                 model keyword.
-      if ((.not.unbd.and.lstot(im).eq.nstot(im).and.
-     *     lstot(im).eq.mstot(im)).or.
-     *    (.not.unbd.and.lorder(im).and..not.equimo(im))) then
-
-          boundd(im) = .true.
-
-      else 
-
-          boundd(im) = .false.
-
-      end if
 c                                 make transformation matrices, p' is 
 c                                 the nstot-1 independent p variables.
 c                                 y2x
@@ -7602,6 +7626,8 @@ c                                 idependent species
          end do
 
       end do
+
+      call chkpa (id)
 c                                 convert the ordered species to 
 c                                 the stoichiometric equivalent 
 c                                 amounts of disordered species.
@@ -8257,12 +8283,12 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, id, jd, k, itic, ind(m14), nr
+      integer i, id, jd, k, itic, ind(m14), nr, iwarn
 
-      logical error, done, maxok, minok, usemax
+      logical error, done, maxok, minok, usemax, oscil 
 
       double precision g, pmax, pmin, dp, gord, dy(m14), gold, xdp,
-     *                    gmax, gmin, wt
+     *                    gmax, gmin, wt, pnew
 
       external gord
 
@@ -8282,7 +8308,11 @@ c----------------------------------------------------------------------
 
       double precision goodc, badc
       common/ cst20 /goodc(3),badc(3)
+
+      save iwarn
+      data iwarn/0/
 c----------------------------------------------------------------------
+      oscil = .false.
 c                                 number of reactants to form ordered species k
       nr = nrct(k,id)
 
@@ -8360,50 +8390,72 @@ c                                 set starting point
          call pincs (dp,dy,ind,jd,nr)
 c                                 iteration counter
          itic = 0
-         gold = 0
-         xdp = 0d0
+         gold = 1d99
+         xdp = 1d0
 c                                 newton raphson iteration
          do
 
             call gderi1 (k,id,dp,g)
 
-            call pcheck (pa(jd),pmin,pmax,dp,done)
+            pnew = pa(jd)
+
+            call pcheck (pnew,pmin,pmax,dp,done)
+
+            if (dabs(dp/xdp).gt.1d0.and.gold.lt.g) then
+               oscil = .true.
+            end if
 c                                 done means the search hit a limit
 c                                 or dp < tolerance.
             if (done.or.dabs((gold-g)/(1d0+dabs(g))).lt.nopt(50)) then
 
                goodc(1) = goodc(1) + 1d0
                goodc(2) = goodc(2) + dfloat(itic)
-c                                 use the last increment
-               call pincs (pa(jd)-p0a(jd),dy,ind,jd,nr)
 
                exit
 
-            else if (dp.eq.xdp) then 
+            else if (oscil) then
+c                                 oscillating, accept if within reduced
+c                                 tolerance, else flag as error
+               if (dabs(xdp).lt.nopt(40).or.
+     *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
 
-               write (*,*) 'wroink! oscillating?',g-gold,id,itic
+                  call spewrn (id,101,itic,iwarn,.false.,'SPECI1')
 
-            else
-c                                 apply the increment
-               call pincs (pa(jd)-p0a(jd),dy,ind,jd,nr)
-
-               if (itic.gt.iopt(21)) then
-c                                 failed to converge. exit
-c                 write (*,*) 'wroink2! failed, ',
-c    *                        'increase speciation_max_it?',g-gold,id
+               else
+c                                 oscillating but bad:
                   error = .true.
-                  badc(1) = badc(1) + 1d0
-                  goodc(2) = goodc(2) + dfloat(itic)
 
-                  exit
+                  call spewrn (id,102,itic,iwarn,.true.,'SPECI1')
 
                end if
 
-               xdp = dp
-               gold = g
-               itic = itic + 1
+               exit 
+
+            else if (itic.gt.iopt(21)) then
+
+               if (dabs(dp).lt.nopt(40).or.
+     *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
+c                                 accept bad result
+                  call spewrn (id,103,itic,iwarn,.false.,'SPECI1')
+
+               else
+
+                  error = .true.
+
+                  call spewrn (id,104,itic,iwarn,.true.,'SPECI1')
+
+               end if
+
+               exit
 
             end if
+c                                 apply the increment
+            pa(jd) = pnew
+            call pincs (pa(jd)-p0a(jd),dy,ind,jd,nr)
+
+            xdp = dp
+            gold = g
+            itic = itic + 1
 
          end do
 
@@ -9105,7 +9157,11 @@ c                                 ordered endmembers
       dg  = dg + enth(k)  - v(2)*ds
       d2g = d2g - v(2)*d2s
 c                                 dg becomes the newton raphson increment
-      dg = -dg/d2g
+      if (d2g.ne.0d0) then
+         dg = -dg/d2g
+      else
+         dg = 0d0
+      end if
 
       end
 
@@ -9340,7 +9396,7 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, j, im, id, idsol, ixct, gcind, irjct, infnd, ifnd
+      integer i, j, im, id, ids, ixct, gcind, irjct, infnd, ifnd
 
       logical first, chksol, wham, ok, found
 
@@ -9452,7 +9508,7 @@ c                                 istot is zero, if eof:
          if (istot.eq.0) exit
 c                                 -------------------------------------
 c                                 check the solution model:
-         call cmodel (im,idsol,first,found)
+         call cmodel (im,ids,first,found)
 
          if (jstot.eq.1.and.jsmod.eq.39.and.lopt(32)) then
 c                                  lagged aqueous speciaton with a pure water solvent.
@@ -10369,7 +10425,7 @@ c---------------------------------------------------------------------
       end do
 
       if (dabs(sum-1d0).gt.nopt(50)) then 
-         write (*,*) 'wowonka ',sum
+         write (*,*) 'please report: wowonka ',sum
       end if
 
       end
@@ -11672,10 +11728,6 @@ c-----------------------------------------------------------------------
       double precision q, q2, qr
       common/ cstaq /q(l9),q2(l9),qr(l9),jchg(l9),ichg,ion
 
-      double precision sel, cox
-      logical hscon, hsc, oxchg
-      common/ cxt45 /sel(k0),cox(k0),hscon,oxchg,hsc(k1)
-
       double precision r,tr,pr,ps,p,t,xco2,u1,u2
       common/ cst5   /p,t,xco2,u1,u2,tr,pr,r,ps
 
@@ -11780,14 +11832,14 @@ c                                 iterate on speciation
 c                                 back calculated bulk composition
       if (bad) then
 
-         if (badct.lt.11) then
+         if (badct.lt.iopt(1)) then
 
             badct = badct + 1
 
             call warn (99,0d0,0,'AQRXDO did not converge on solute '//
      *                          'speciation')
 
-            if (badct.eq.10) call warn (49,0d0,99,'AQRXDO')
+            if (badct.eq.iopt(1)) call warn (49,0d0,99,'AQRXDO')
 
          end if
 
@@ -14196,10 +14248,6 @@ c                                 adaptive coordinates
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
 
-      double precision sel, cox
-      logical hscon, hsc, oxchg
-      common/ cxt45 /sel(k0),cox(k0),hscon,oxchg,hsc(k1)
-
       double precision p,t,xco2,mmu,tr,pr,r,ps
       common/ cst5 /p,t,xco2,mmu(2),tr,pr,r,ps
 
@@ -14276,8 +14324,6 @@ c                                 solvent densities
       end if
 c                                 iterate on speciation
       call aqsolv (g0,gso,mo,tmu,is,gamm0,lnkw,bad)
-c                                 in new_solver.f needs to be debugged?
-c     call aqsol2 (g0,gso,mo,tmu,is,gamm0,lnkw,bad)
 
       if (bad) return
 c                                 back calculated bulk composition
@@ -14539,7 +14585,7 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, j, k, it, jt, iexp, iwarn
+      integer i, j, k, it, jt, iexp, iwarn, iwarn0
 
       logical bad, kill, switch
 
@@ -14578,8 +14624,8 @@ c-----------------------------------------------------------------------
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 
-      save iwarn
-      data iwarn /0/
+      save iwarn, iwarn0
+      data iwarn, iwarn0 /0,0/
 c----------------------------------------------------------------------
       if (epsln.lt.nopt(34).or.abort.or.yf(1).eq.0d0) then
 c                                  vapor, same as checking lnkw
@@ -14646,10 +14692,15 @@ c                                 normalize by RT
             if (kill) then
                dg = 0d0
             else if (dabs(dg/rt).gt.nopt(57)) then
+
+               call spewrn (0,106,0,iwarn,bad,'AQSOLV')
                bad = .true.
                return
+
             else
+
                dg = dexp(dg/rt)
+
             end if
 
             if (q(i).ne.0d0) then
@@ -14671,6 +14722,7 @@ c                                  initialize iteration loop
 
          if (c(ion).eq.0d0) then
 c                                 no hydrogen or no oxygen
+            call spewrn (0,105,0,iwarn,bad,'AQSOLV')
             bad = .true.
             return
 
@@ -14747,13 +14799,17 @@ c                                 check for convergence
 
             if (dix.lt.nopt(50)) then
 c                                 converged
-c              call aqsol2 (g0,gso,mo,mu,is,gamm0,lnkw,bad)
-
                return
 
             else if (it.gt.iopt(21)) then
 
-               if (xdix.gt.dix.and.jt.lt.10) then
+               if (dix.lt.nopt(40)) then
+c                                 low quality bail out
+                  call spewrn (0,103,it,iwarn0,bad,'AQSOLV')
+
+                  return
+
+               else if (xdix.gt.dix.and.jt.lt.10) then
 c                                 try again?
                   it = 0
                   jt = jt + 1
@@ -14763,8 +14819,6 @@ c                                 try again?
 c                                 diverging
                   kill = .true.
                   bad = kill
-
-c                 call aqsol2 (g0,gso,mo,mu,is,gamm0,lnkw,bad)
 
                   exit
 
@@ -14791,15 +14845,9 @@ c                                 switch to the backup ion
 
       end do
 c                                 failure is the only path here
-      if (kill.and.iwarn.lt.11) then
+      if (kill.and.iwarn.lt.iopt(1)) then
 
-         call warn (64,is,it,' ')
-
-         call prtptx
-
-         if (iwarn.eq.10) call warn (49,0d0,64,'AQSOLV')
-
-         iwarn = iwarn + 1
+         call spewrn (0,102,it,iwarn,bad,'AQSOLV')
 
       end if
 
@@ -14868,7 +14916,7 @@ c                                 dynamic
      *                  (cp2(i,id),i=1,jbulk)
       end if
 
-1000  format (i7,1x,i3,1x,i4,1x,a,20(g14.6,1x))
+1000  format (i7,1x,i4,1x,i4,1x,a,20(g14.6,1x))
 
       end
 
@@ -15262,11 +15310,12 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, k, id, itic
+      integer i, k, id, itic, iwarn
 
-      logical error, done
+      logical error, done, oscil
 
-      double precision g, qmax, qmin, q, q0, dqq, rqmax, rqmin, gold
+      double precision g, qmax, qmin, q, q0, dqq, rqmax, rqmin, gold, 
+     *                 xdq, qnew
 
       double precision omega, gex
       external omega, gex
@@ -15293,8 +15342,12 @@ c----------------------------------------------------------------------
 
       double precision goodc, badc
       common/ cst20 /goodc(3),badc(3)
+
+      save iwarn
+      data iwarn/0/
 c----------------------------------------------------------------------
       error = .false.
+      oscil = error
 c                                 rqmax the maximum amount of the
 c                                 ordered species that can be formed
 c                                 from the fully disordered species
@@ -15364,19 +15417,24 @@ c                                 limits.
 
             end if
          end if
-c                                 increment and check p
-         call pcheck (q,qmin,qmax,dqq,done)
 c                                 iteration counter to escape
 c                                 infinite loops
          itic = 0
 
          gold = g
+         xdq = dqq
 c                                 newton raphson iteration
          do
 
             call gpder1 (k,id,q-q0,dqq,g,.false.)
 
-            call pcheck (q,qmin,qmax,dqq,done)
+            qnew = q
+
+            call pcheck (qnew,qmin,qmax,dqq,done)
+
+            if (dabs(dqq/xdq).gt.1d0.and.gold.lt.g) then
+               oscil = .true.
+            end if
 c                                 done is just a flag to quit
             if (done.or.dabs((gold-g)/(1d0+dabs(g))).lt.nopt(50)) then
 
@@ -15386,22 +15444,47 @@ c                                 in principle the p's could be incremented
 c                                 here and g evaluated for the last update.
                return
 
-            else
+            else if (oscil) then
+c                                 oscillating, accept if within reduced
+c                                 tolerance, else flag as error
+               if (dabs(xdq).lt.nopt(40).or.
+     *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
 
-               gold = g
+                  call spewrn (id,101,itic,iwarn,.false.,'GPMLT1')
 
-            end if
+               else
+c                                 oscillating but bad:
+                  error = .true.
 
-            itic = itic + 1
+                  call spewrn (id,102,itic,iwarn,.true.,'GPMLT1')
 
-            if (itic.gt.iopt(21)) then
+               end if
+
+               exit
+
+            else if (itic.gt.iopt(21)) then
+
+               if (dabs(dqq).lt.nopt(40).or.
+     *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
+c                                 accept bad result
+                  call spewrn (id,103,itic,iwarn,.false.,'GPMLT1')
+
+               else
 c                                 fails to converge.
-               error = .true.
-               badc(1) = badc(1) + 1d0
-               goodc(2) = goodc(2) + dfloat(itic)
+                  error = .true.
+
+                  call spewrn (id,104,itic,iwarn,.true.,'GPMLT1')
+
+               end if
+
                exit
 
             end if
+
+            q = qnew
+            xdq = dqq
+            gold = g
+            itic = itic + 1
 
          end do
 
@@ -16100,7 +16183,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, j, k, l, i1, i2, id
+      integer i, j, k, l, i1, i2, id, jd
 
       logical minfxc
 
@@ -16145,6 +16228,8 @@ c                                 initialize
       dgnorm = dnu(l,id)
       pnorm  = 1d0/gnorm
       pnorm2 = 2d0*pnorm
+c                                 ordered species pointer in full model:
+      jd = lstot(id) + l
 c                                 the difficulty in this model is the
 c                                 non-equimolar speciation reaction, this
 c                                 causes the number of moles of the components
@@ -16314,8 +16399,8 @@ c                                 add the contibution from the last species:
 
       end do
 
-      g   = g   + enth(l)*pa(nstot(id))  - r*v(2)*s
-      dg  = dg  + enth(l)*dp(nstot(id))  - r*v(2)*ds
+      g   = g   + enth(l)*pa(jd) - r*v(2)*s
+      dg  = dg  + enth(l)*dp(jd) - r*v(2)*ds
 c                                 the normalized g derivative
       dng  = g * dgnorm + gnorm * dg
 c                                 the normalized g:
@@ -16326,10 +16411,14 @@ c                                 the normalized g:
          return
       end if
 c                                 and second derivative
-      d2g = gnorm * (d2g + enth(l)*d2p(nstot(id)) - r*v(2)*d2s)
+      d2g = gnorm * (d2g + enth(l)*d2p(jd) - r*v(2)*d2s)
      *       + 2d0 * dg * dgnorm
 c                                 dg becomes the newton-raphson increment:
-      dg = -dng/d2g
+      if (d2g.ne.0d0) then
+         dg = -dng/d2g
+      else
+         dg = 0d0
+      end if
 
       end
 
@@ -18355,10 +18444,6 @@ c----------------------------------------------------------------------
       integer eos
       common/ cst303 /eos(k10)
 
-      double precision sel, cox
-      logical hscon, hsc, oxchg
-      common/ cxt45 /sel(k0),cox(k0),hscon,oxchg,hsc(k1)
-
       integer ikp
       common/ cst61 /ikp(k1)
 
@@ -19383,9 +19468,6 @@ c----------------------------------------------------------------------
       integer ncol, nrow
       common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
 
-      integer idstab,nstab,istab
-      common/ cst34 /idstab(i11),nstab(i11),istab
-
       integer idsol,nrep,nph
       common/ cst38/idsol(k5,k3),nrep(k5,k3),nph(k3)
 
@@ -19502,8 +19584,8 @@ c                                 in the assemblage, count the replicate
             end if
 
             if (kount) then
-c                                  the phase as not yet been found in 
-c                                  the assemblage.
+c                                 the phase as not yet been found in 
+c                                 the assemblage.
                nph(i) = nph(i) + 1
                idsol(nph(i),i) = idasls(j,i)
                nrep(nph(i),i) = 1
@@ -19538,7 +19620,7 @@ c                                 next compare to the existing list
             if (kount) then
 
                istab = istab + 1
-               if (istab.gt.k10) call error (999,0d0,istab,'ISTAB ')
+               if (istab.gt.i11) call error (999,0d0,istab,'ISTAB ')
                nstab(istab) = nrep(k,i)
                idstab(istab) = idsol(k,i)
 
@@ -19546,6 +19628,14 @@ c                                 next compare to the existing list
 
          end do 
 
+      end do
+c                                 rearrange nstab/idstab into solution index
+c                                 arrays
+      jdstab(1:isoct) = 0
+
+      do i = 1, istab
+         if (idstab(i).lt.0) cycle
+         jdstab(idstab(i)) = nstab(i)
       end do
 c                                 close n8 for assemblage list (plopt(3), PSSECT)
       close (n8) 
@@ -21227,11 +21317,13 @@ c-----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
 
-      character yes*1, text*3, name*100
+      character text*3, name*100
 
       integer ier, jnd(12,2), i, j, ind1, ind2
 
-      logical err, finish, inter
+      logical err, finish, inter, readyn
+
+      external readyn
 
       character*100 prject,tfname
       common/ cst228 /prject,tfname
@@ -21394,9 +21486,7 @@ c                                 are not available, find/use last interim resul
      *      'result is from the exploratory stage, the result may be '//
      *      'inconsistent or unreadable.'
 
-         read (*,'(a)') yes
-
-         if (yes.ne.'y'.and.yes.ne.'Y') then 
+         if (.not.readyn()) then
             stop
          else if (refine.and.jnd(i,1).eq.0) then 
 c                                 try reading solutions without refine data
@@ -21417,9 +21507,8 @@ c                                 if here must be auto and an irf file exists
 
             write (*,'(a)') 'Do you want to plot/analyze interim '//
      *                        'results (Y/N)?'
-            read (*,'(a)') yes
 
-            if (yes.eq.'y'.or.yes.eq.'Y') then
+            if (readyn()) then
 c                                 use intermediate results
                write (*,'(/,a,/)') 'Choose from the following interim'//
      *                             ' results [default is the last]:'

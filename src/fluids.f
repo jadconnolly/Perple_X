@@ -289,7 +289,7 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical log, bad, fileio
+      logical log, bad, fileio, readyn
 
       character y*1, n4name*100, title*100, tags(33)*14
 
@@ -298,6 +298,8 @@ c-----------------------------------------------------------------------
       double precision nc, nh, no, ns, nn, nsi, tentoe, fo2, fs2, fh2,
      *                 ag, tot, totx, var(l2), f, prop(40), vdif,
      *                 vpar(nsp), xxs(nsp), xg(nsp)
+
+      external readyn
 
       double precision fhc
       common / cst11 /fhc(3)
@@ -373,9 +375,8 @@ c                                 of independent variable
          call setins (ifug)
 
          write (*,'(/,a)') 'Tabulate properties (y/n)?'
-         read (*,'(a)') y
 
-         if (y.eq.'y'.or.y.eq.'Y') then 
+         if (readyn()) then 
 c                                 tabulated properties
             if (ifug.le.3.or.ifug.eq.13..or.ifug.eq.14.or.
      *               ifug.eq.17.or.ifug.eq.25) then 
@@ -586,9 +587,8 @@ c                                 query for title
 
             write (*,'(/,a,a)') 'Output logarithmic values for ',
      *           'species fractions and fugacities (y/n)?'
-            read (*,'(a)') y
 
-            if (y.eq.'y'.or.y.eq.'Y') then 
+            if (readyn()) then 
                log = .true.
             else 
                log = .false.
@@ -1259,10 +1259,11 @@ c                                  output bulk properties and V:
          end if 
 
          write (*,'(/,a)') 'More calculations (y/n)?'
-         read (*,'(a)') y
-         if (y.ne.'y'.and.y.ne.'Y') exit
 
-      end do 
+         if (.not.readyn()) exit
+
+      end do
+
 1110  format (/,10x,'a(gph/dia) = ',g12.5,
      *        /,10x,'log[f(O2)] = ',g12.5,
      *        /,10x,'log[f(H2)] = ',g12.5,/)

@@ -313,11 +313,11 @@ c-----------------------------------------------------------------------
 
       integer i, j, idead, ier, it
 
-      logical pttrue(l2)
-
-      character y*1
+      logical pttrue(l2), readyn
 
       double precision errr(k5)
+
+      external readyn
 
       integer npt,jdv
       logical fulrnk
@@ -489,8 +489,8 @@ c                                 the bulk composition can be modified here,
 c                                 e.g., to add back previously fractionated
 c                                 phases.
                write (*,1060) 
-               read (*,1050) y
-               if (y.eq.'y'.or.y.eq.'Y') then 
+
+               if (readyn()) then 
                   write (*,1020) 
                   read (*,*) (dcomp(i), i = 1, jbulk)
                   do i = 1, jbulk
@@ -622,6 +622,7 @@ c-----------------------------------------------------------------------
       iasct = 0
       ibulk = 0
       it = 0
+      verbos = .true.
 
       if (iopt(36)+1.gt.l7) then
          call warn (92,nopt(1),iopt(36)+1,'TITRAT')
@@ -2068,8 +2069,6 @@ c----------------------------------------------------------------------
 
       data first/.true./
 c----------------------------------------------------------------------
-
-
       if (first) then 
 
          first = .false.
@@ -2099,10 +2098,12 @@ c                                 get phases to be fractionated
 
                else if (ksmod(ifr(ifrct)).eq.39.and.lopt(32).and.
      *                  iopt(22).eq.0) then
-c                                 fractionating an electrolytic fluid,
+c                                 fractionating an electrolytic fluid:
 c                                 override solid component depletion
-c                                 error trap
-                  iopt(22) = 1
+c                                 error trap in yclos2 to allow output,
+c                                 no examples where this does anything.
+                  lopt(71) = .false.
+
                   call warn (62,numb,ifrct,phase(ifrct))
 
                end if
@@ -2259,7 +2260,7 @@ c                                 fractionation effects:
          there(i) = .false.
       end do 
 
-      if (idead.eq.0.or.idead.eq.101) then
+      if (idead.eq.0) then
 c                                 error can only be non-zero for lagged speciation
          do i = 1, jbulk
             errr(i) = -cblk(i)
@@ -2375,17 +2376,19 @@ c                                 is present, remove from bulk
 c                                 mass fraction exceeds upper threshold
                         x = (mass(j) - nopt(32))/mass(j)
 
-                        do k = 1, jbulk 
-                           dcomp(k) = dcomp(k) + x*amt(j)*cp3(k,j)
-                        end do
-                        
                         if (verbos) then 
 c                                 write to console
                            write (*,1185) (vname(iv(k)),v(iv(k)),
      *                                                       k=1,ipot)
+                           write (*,1175) (cblk(k),k=1,jbulk)
                            write (*,1190) amt(j),gname(ifr(i)),
      *                                   (amt(j)*cp3(k,j),k=1,jbulk)
-                        end if 
+                        end if
+
+                        do k = 1, jbulk 
+                           dcomp(k) = dcomp(k) + x*amt(j)*cp3(k,j)
+                        end do
+
 c                                 write to file
                         if (output) write (n0+i,1200) 
      *                                       (v(jv(k)),k=1,ipot),amt(j),
@@ -2436,7 +2439,11 @@ c                                 write to file
 
       else 
 c                                 optimization failed
-         write (*,1030) (vname(jv(i)),v(jv(i)), i = 1, ipot)
+         if (idead.lt.100) then
+            write (*,1030) (vname(jv(i)),v(jv(i)), i = 1, ipot)
+         else 
+            write (*,1035) (vname(jv(i)),v(jv(i)), i = 1, ipot)
+         end if
 c                                 
          do i = 1, ifrct
 c                                 write bad_number to fractionation file
@@ -2486,11 +2493,14 @@ c                                 warn on complete depletion of a component
      *        'composition:',/)
 1010  format (4x,a,2x,g12.6)  
 1030  format (/,'optimization failed at:',//,5(1x,a8,'=',g12.6))
+1035  format (/,'optimization reported as failed due to EoS problem at:'
+     *       ,//,5(1x,a8,'=',g12.6))
+1175  format ('current molar bulk composition is:',/,15(1x,g12.6))
 1180  format (a,' is stable, but its mass fraction (',f5.3,') is below '
      *      ,'or at the upper fractionation threshold (',f5.3,').')
 1185  format (/,'At ',5(a,'=',g12.6,' '))
-1190  format ('fractionating ',g12.6,' moles of ',a,'; changes bulk by:'
-     *        ,/,15(1x,g12.6))
+1190  format ('fractionating ',g12.6,
+     *        ' moles of ',a,'; will change bulk by:',/,15(1x,g12.6))
 1200  format (21(1x,g12.6))
 1210  format (a,' is not stable.')
 

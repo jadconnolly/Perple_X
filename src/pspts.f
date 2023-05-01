@@ -10,14 +10,16 @@ c by the programs VERTEX and FRENDLY.
 c Please do not distribute any part of this source.
  
       PROGRAM PSPTS
-
+c----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
 
       integer ier
 
-      character*1 yes
+      logical readyn
+
+      external readyn
 
       character*100 prject,tfname
       common/ cst228 /prject,tfname
@@ -44,9 +46,7 @@ c                                 get input file
          if (ier.ne.0) then
        
             write (*,1010) tfname
-            read (*,'(a)') yes
-
-            if (yes.eq.'Y'.or.yes.eq.'y') cycle 
+            if (readyn()) cycle 
 
             stop
 

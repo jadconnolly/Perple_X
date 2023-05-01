@@ -9,9 +9,9 @@ c----------------------------------------------------------------------
 
       integer ier
 
-      logical ratio
+      logical ratio, readyn
  
-      character y*1
+      external readyn
 
       character*100 prject,tfname
       common/ cst228 /prject,tfname
@@ -48,8 +48,8 @@ c                                 get input file
          if (ier.eq.0) exit
        
          write (*,1010) tfname
-         read (*,'(a)') y
-         if (y.eq.'Y'.or.y.eq.'y') cycle 
+
+         if (readyn()) cycle 
 
          stop
 
@@ -60,10 +60,9 @@ c                                 choices
 c                                 jvar is the dimension of the table (1- or 2-d)
       if (jvar.eq.2) then
 c                                 for 2d case query for ratio plots
-         write (*,1020) 
-         read (*,'(a)') y
+         write (*,1020)
 
-         if (y.eq.'Y'.or.y.eq.'y') then
+         if (readyn()) then
 
             ratio = .true.
 c                                 get second table file name 
@@ -77,9 +76,8 @@ c                                 get second table file name
                if (ier.eq.0) exit
        
                write (*,1010) tfname
-               read (*,'(a)') y
 
-               if (y.eq.'Y'.or.y.eq.'y') cycle 
+               if (readyn()) cycle 
 
                stop
 
@@ -94,9 +92,7 @@ c                                 allow drafting options prompt
       iop0 = 0
 
       write (*,'(/,a)') 'Modify the default plot (y/n)?'
-      read (*,'(a)') y
-
-      if (y.eq.'y'.or.y.eq.'Y') iop0 = 1
+      if (readyn()) iop0 = 1
 
       if (jvar.eq.2) then 
 c                                 contour plotting
@@ -139,13 +135,13 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical ratio
-
-      character y*1
+      logical ratio, readyn
 
       integer i,j,jmn,imn,imx,jop0,ncon,jmx,iop1,jy,jx
 
       double precision xpmn,xpmx,cmin,cmax,dcon,ypmx,ypmn,z0min,z0max
+
+      external readyn
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -205,9 +201,8 @@ c                                 zt.
 c                                 modify axes option, data limits, etc
          write (*,'(a)') 
      *         'Contour the log10 of the dependent variable (y/n)?'
-         read (*,'(a)') y
 
-         if (y.eq.'y'.or.y.eq.'Y') then 
+         if (readyn()) then 
             do j = 1, iy
                do i = 1, ix
                   if (z(i,j).ne.0d0) z(i,j) = dlog10(dabs(z(i,j)))
@@ -216,9 +211,8 @@ c                                 modify axes option, data limits, etc
          end if 
 c                                 plot limits
          write (*,'(/,a)') 'Reset plot limits (y/n)?' 
-         read (*,'(a)') y
 
-         if (y.eq.'y'.or.y.eq.'Y') then 
+         if (readyn()) then 
 
             write (*,1070) vmx(2),vmn(2),vmx(1),vmn(1)
             read (*,*) ypmx,ypmn,xpmx,xpmn
@@ -262,10 +256,9 @@ c                                      set up contour intervals
          end do 
       end do 
 c                                      set up contour intervals
-      write (*,1020) zmin, zmax, z0min, z0max 
-      read (*,'(a)') y
+      write (*,1020) zmin, zmax, z0min, z0max
 
-      if (y.eq.'y'.or.y.eq.'Y') then
+      if (readyn()) then
 
          write (*,'(a)') 'Enter min, max and interval for contours:'
          read (*,*) cmin, cmax, dcon
@@ -298,11 +291,15 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      character yes*1,short*10
+      character short*10
 
       integer i,j,k,jop0,npts,iop1,i1,i0
 
       double precision x(l5),y(l5),rline,w,x0min,x0max,y0min,y0max
+
+      logical readyn
+
+      external readyn
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
@@ -327,31 +324,29 @@ c---------------------------------------------------------------------
 c----------------------------------------------------------------------
       if (iop0.eq.1) then 
 c                                 log transformations
-         write (*,1040) 
-         read (*,'(a)') yes
+         write (*,1040)
 
-         if (yes.eq.'y'.or.yes.eq.'Y') then
+         if (readyn()) then
 
             do i = 1, mvar 
 
                write (*,1050) dname(inv(i))
-               read (*,'(a)') yes
 
-               if (yes.eq.'y'.or.yes.eq.'Y') then
+               if (readyn()) then
 
                   read (dname(inv(i)),'(a10)') short
                   write (dname(inv(i)),'(a4,a10)') 'log_',short
 
                   do j = 1, iy
-                     
+
                      z(j,inv(i)) = dlog10(z(j,inv(i)))
-                    
+
                   end do 
-           
+
                end if 
 
             end do 
-     
+
          end if 
 
       end if 
@@ -400,10 +395,9 @@ c                                 find y-data limits
 
       if (iop0.eq.1) then 
 c                                 reset plot limits
-         write (*,1060) 
-         read (*,'(a)') yes
+         write (*,1060)
 
-         if (yes.eq.'y'.or.yes.eq.'Y') then
+         if (readyn()) then
 
              write (*,1070) 'lower limit',dname(inv(1)),xmin    
              call rdnumb (xmin,xmin,inv(1),inv(1),.true.)

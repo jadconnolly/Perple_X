@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.0.9, March 27, 2023.',
+     *     'Perple_X release 7.0.10, May 1, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -93,16 +93,14 @@ c----------------------------------------------------------------------
 
       integer ier, jer, i, loopx, loopy, ibeg, iend, ik1, ik21
 
-      logical output
+      logical output, readyn
 
       character*3 key*22, val, nval1*12, nval2*12,
      *            nval3*12,opname*100,strg*40,strg1*40
 
-      double precision r2
+      double precision r2, dnan
 
-      double precision dnan
-
-      external dnan
+      external dnan, readyn
 
       character*100 prject,tfname
       common/ cst228 /prject,tfname
@@ -208,6 +206,10 @@ c                                 solution composition zero and one
       zero = dsqrt(r2)
       r1 = 1d0 + zero
       one = 1d0 - zero
+c                                 equivalents in nopt:
+      nopt(40) = zero
+      nopt(41) = r1
+      nopt(42) = one
 c                                 -------------------------------------
 c                                 default option values:
 c                                 reserved for temporary use:
@@ -284,11 +286,15 @@ c                                 replicate_threshold (savdyn)
       nopt(35) = 1d-2
 c                                 rep_dynamic_threshold (savrpc)
       nopt(37) = 1d-3
+c                                 aq_solvent_solvus_tol (solv4)
+      nopt(38) = 0.5
 c                                 scatter_increment
       nopt(48) = 1d-2
 c                                 MINFRC_diff_increment
       nopt(49) = 1d-7
 c                                 -------------------------------------
+c                                 max_warn_limit
+      iopt(1)  = 5
 c                                 composition_phase
       iopt(2) = 0 
       valu(2) = 'mol'
@@ -324,19 +330,17 @@ c                                 optimization_max_it, max number of iterations
       iopt(20) = 40
 c                                 speciation_max_it - for speciation calculations
       iopt(21) = 100
-c                                 aq_bad_results 
-c                                       0 - err - treat as bad result (optimization error)
-c                                       1 - 101 - cease iteration at solute component saturation
-c                                       2 - 102
-c                                       3 - 103
-c                                      99 - ign - ignore 102/103 conditions and cease as in 101.
-      iopt(22) = 0
-      valu(5) = 'err'
-c                                 for infiltration/fractionation calculations set default to 101
-c     if (icopt.gt.6) then 
-c        iopt(22) = 1
-c        valu(5) = '101'
-c     end if 
+c                                 aq_bad_results:
+c                                 aq_error_ver100 - early exit on pure + impure solvent during iteration
+      lopt(70) = .false.
+c                                 aq_error_ver101 - early exit on undersaturated solute, set false to allow output
+      lopt(71) = .true.
+c                                 aq_error_ver102 - exit on pure + impure solvent with composition check
+      lopt(72) = .true.
+c                                 aq_error_ver103 - exit on extrapolation of HKF g-func
+      lopt(73) = .true.
+c                                 error_ver109 - exit on bad endmember EoS involved in a stable solution
+      lopt(79) = .true.
 c                                 solution_names 0 - model, 1 - abbreviation, 2 - full
       iopt(24) = 0
       valu(22) = 'mod'
@@ -505,8 +509,6 @@ c                                 order_check
       lopt(62) = .false.
 c                                 allow GFSM/disable saturated phase
       lopt(63) = .false.
-c                                 override counter limits for (some) warnings
-      lopt(64) = .false.
 c                                 fluid_shear_modulus
       lopt(65) = .true.
 c                                 compute_FD_increments for MINFRC
@@ -614,25 +616,37 @@ c                                 phase composition key
 
             if (val.eq.'T') lopt(34) = .true.
 
-         else if (key.eq.'aq_bad_results') then 
+         else if (key.eq.'aq_bad_results') then
 
-            if (val.eq.'err') then 
-c                                 abort on any hint of trouble
-               iopt(22) = 0
-            else if (val.eq.'101') then 
-c                                 continue on solute undersaturation (unwise)
-               iopt(22) = 1
-            else if (val.eq.'102') then 
-c                                 continue if pure solvent coexists with immiscible impure solvent
-               iopt(22) = 2
-            else if (val.eq.'103') then
-c                                 abort if pure solvent is stable
-               iopt(22) = 3
-            else if (val.eq.'ign') then 
-               iopt(22) = 99
+            if (iam.lt.3) then
+
+               write (*,'(/,a)') 'aq_bad_results is obsolete in 7.0.'
+     *                          //'10+ use aq_error_ver100-ver104 to'//
+     *                            ' control error handling.'
+               write (*,'(a)') 'Continue (Y/N)?'
+               if (.not.readyn()) call errpau
+
             end if
 
-            valu(5) = val
+         else if (key.eq.'aq_error_ver100') then
+c                                 abort during iteration
+            if (val.eq.'T') lopt(70) = .true.
+
+         else if (key.eq.'aq_error_ver101') then
+c                                 don't abort on undersaturtated solute
+            if (val.eq.'F') lopt(71) = .false.
+
+         else if (key.eq.'aq_error_ver102') then
+c                                 don't abort on coexisting pure and impure solvent
+            if (val.eq.'F') lopt(72) = .false.
+
+         else if (key.eq.'aq_error_ver103') then
+c                                  don't abort if HKF-gfunc is out of range
+            if (val.eq.'F') lopt(73) = .false.
+
+         else if (key.eq.'error_ver109') then
+c                                  don't abort if bad EoS phase is stable
+            if (val.eq.'F') lopt(79) = .false.
 
          else if (key.eq.'refine_endmembers') then 
 
@@ -748,12 +762,12 @@ c                                 bad number key
                read (strg,*) nopt(8)
             end if 
 
-         else if (key.eq.'volume_tolerance_exp') then 
+         else if (key.eq.'function_tolerance_exp') then 
 
             read (strg,*) nopt(10)
 
             if (nopt(10).lt.0.5d0.or.nopt(10).gt.0.9d0) then 
-               write (*,*) 'invalid value for volume_tolerance_exp (',
+               write (*,*) 'invalid value for function_tolerance_exp (',
      *                     nopt(10),') reset to 0.8'
                nopt(10) = 0.8d0
             end if 
@@ -767,7 +781,9 @@ c                                 bad number key
                read (strg,*) nopt(25)
             end if 
 
-         else if (key.eq.'speciation_factor') then 
+         else if (key.eq.'speciation_factor') then
+
+c               obsolete
 
          else if (key.eq.'replicate_threshold') then 
 
@@ -809,6 +825,7 @@ c                                 "vapor" threshold
          else if (key.eq.'aq_max_molality') then
 
 c             obsolete
+
          else if (key.eq.'Tisza_test') then
 
 c             to be implemented
@@ -820,6 +837,13 @@ c                                  allow for solvent immiscisibiliy
          else if (key.eq.'aq_solvent_solvus') then
 c                                  allow for solvent immiscisibiliy
             if (val.eq.'F') lopt(46) = .false.
+
+         else if (key.eq.'aq_solvent_solvus_tol') then
+c                                  molecular species fractions must differ
+c                                  by nopt(38) for impure/pure solvent 
+c                                  coexistence to be considered legitimate
+c                                  if aq_error_ver102.
+            read (strg,*) nopt(38)
 
          else if (key.eq.'interim_results') then
 c                                  output interim results (VERTEX/PSSECT/WERAMI)
@@ -858,9 +882,14 @@ c                                 allow re-refinement in VERTEX
 c                                 override interactive warnings with the bad choice.
             if (val.eq.'F') lopt(56) = .false.
 
-         else if (key.eq.'warn_no_limit') then
-c                                 override counter limits for (some) warnings
-            if (val.eq.'T') lopt(64) = .true.
+         else if (key.eq.'max_warn_limit') then
+c                                 set counter limit for (some) warnings
+            read (strg,*) iopt(1)
+
+         else if (key.eq.'warn_no_limits') then
+
+            write (*,'(/,a,/)') 'warn_no_limits has been replaced by '//
+     *                          'max_warn_limit'
 
          else if (key.eq.'fluid_shear_modulus') then
 c                                 compute shear modulus assuming textural eq
@@ -893,7 +922,6 @@ c                                 use cold starts for dynamic LP
             end if
 
             valu(39) = val
-
 
          else if (key.eq.'timing') then
 c                                 timing for VERTEX
@@ -1805,18 +1833,18 @@ c                                 generic subdivision parameters:
 c                                 generic thermo parameters:
          write (n,1012) nval1,nopt(12),nopt(20),lopt(8),lopt(4),nopt(5),
      *                  iopt(21),nopt(10),lopt(63),
-     *                  iopt(25),iopt(26),iopt(27),valu(5),
-     *                  lopt(32),lopt(44),lopt(36),lopt(46),nopt(34)
+     *                  iopt(25),iopt(26),iopt(27),
+     *                  lopt(32),lopt(44),lopt(36),lopt(46),
+     *                  nopt(38),nopt(34)
 c                                 for meemum add fd stuff
          if (iam.eq.2) write (n,1017) nopt(31),nopt(26),nopt(27)
 
          if (iam.eq.1.or.iam.eq.15) then 
 c                                 vertex output options, dependent potentials
-c                                 pause_on_error
-            write (n,1013) lopt(19),lopt(61)
-c                                 auto_exclude, warn_interactive, 
+            write (n,1013) lopt(61)
+c                                 auto_exclude, 
 c                                 output_iteration_details, output_iteration_g
-            write (n,1234) lopt(5),lopt(56),lopt(64),lopt(33),lopt(34)
+            write (n,1234) lopt(5),lopt(33),lopt(34)
 c                                 logarithmic_p, bad_number, interim_results
             if (iam.eq.1) write (n,1014) lopt(14),lopt(37),nopt(7),
      *                                   valu(34)
@@ -1831,8 +1859,8 @@ c                                 WERAMI input/output options
      *                  lopt(14),lopt(37),nopt(7),lopt(22),valu(2),
      *                  valu(21),valu(3),lopt(41),lopt(42),lopt(45),
      *                  valu(4),lopt(6),valu(22),lopt(51),lopt(21),
-     *                  lopt(24),
-     *                  valu(14),lopt(19),lopt(20),valu(34),lopt(48)
+     *                  lopt(24),valu(14),lopt(20),
+     *                  valu(34),lopt(48)
 c                                 WERAMI info file options
          write (n,1241) lopt(12)       
 c                                 WERAMI thermodynamic options
@@ -1844,15 +1872,15 @@ c                                 MEEMUM input/output options
          write (n,1231) lopt(25),iopt(32),l9,valu(26),valu(27),
      *                  lopt(14),lopt(37),nopt(7),lopt(22),valu(2),
      *                  valu(21),valu(3),lopt(6),valu(22),lopt(51),
-     *                  lopt(21),lopt(24),valu(14),lopt(19),
+     *                  lopt(21),lopt(24),valu(14),
      *                  lopt(20),lopt(61)
-c                                 auto_exclude, warn_interactive, etc
-         write (n,1234) lopt(5),lopt(56),lopt(64),lopt(33),lopt(34)
+c                                 auto_exclude, etc
+         write (n,1234) lopt(5),lopt(33),lopt(34)
 
       else if (iam.eq.5) then 
 c                                 FRENDLY input/output options
          write (n,1232) lopt(15),lopt(37),lopt(14),nopt(7),lopt(6),
-     *                  lopt(19),.false.
+     *                  .false.
 
       end if 
 c                                 seismic property options
@@ -1876,13 +1904,40 @@ c                                 info file options
      *                    'seismic_data_file       ',lopt(50),'[F] T;'//
      *                    ' echo seismic wavespeed options'
 
-      end if 
+      end if
+
+      write (n,1005) lopt(19), iopt(1), lopt(56), lopt(70), lopt(71),
+     *               lopt(72), lopt(73), lopt(31), lopt(79)
 
       write (n,1020) 
 
 1000  format (/,'Perple_X computational option settings for ',a,':',//,
      *      '    Keyword:               Value:     Permitted values ',
      *          '[default]:')
+
+1005  format (/,2x,'Error/warning control options:',//,
+c                                 lopt(19)
+     *        4x,'pause_on_error          ',l1,9x,'[T] F',/,
+c                                 iopt(1)
+     *        4x,'max_warn_limit          ',i3,7x,'[5]',/,
+c                                 lopt(56)
+     *        4x,'warn_interactive        ',l1,9x,'[T] F',/,
+c                                 lopt(70)
+     *        4x,'aq_error_ver100         ',l1,9x,
+     *           '[F] T, abort during iteration',/,
+c                                 lopt(71)
+     *        4x,'aq_error_ver101         ',l1,9x,
+     *           '[T] F, solute undersaturation abort',/,
+c                                 lopt(72)
+     *        4x,'aq_error_ver102         ',l1,9x,
+     *           '[T] F, pure + impure solvent abort',/,
+c                                 lopt(73)
+     *        4x,'aq_error_ver103         ',l1,9x,
+     *           '[T] F, out-of-range HKF g abort',/,
+c                                 lopt(31)
+     *        4x,'warning_ver637          ',l1,9x,'[T] F',/,
+c                                 lopt(79)
+     *        4x,'error_ver109            ',l1,9x,'[T] F')
 
 1010  format (/,2x,'Solution subdivision options:',//,
      *        4x,'initial_resolution:     ',f6.4,4x,
@@ -1916,22 +1971,20 @@ c                                 generic thermo options
      *        4x,'speciation_precision   ',g7.1E1,4x,
      *           '[1d-5] <1; absolute',/,
      *        4x,'speciation_max_it      ',i4,7x,'[100]',/,
-     *        4x,'volume_tolerance_exp    ',f3.1,7x,
-     8           '[0.8] sets x in tol = epsmch^x',/,
+     *        4x,'function_tolerance_exp ',f3.1,7x,
+     *           '[0.8] sets x in tol = epsmch^x',/,
      *        4x,'GFSM                    ',l1,9x,
      *           '[F] T GFSM/special_component toggle',/,
      *        4x,'hybrid_EoS_H2O          ',i1,9x,'[4] 0-2, 4-7',/,
      *        4x,'hybrid_EoS_CO2          ',i1,9x,'[4] 0-4, 7',/,
      *        4x,'hybrid_EoS_CH4          ',i1,9x,'[0] 0-1, 7',/,
-     *        4x,'aq_bad_results          ',a3,7x,'[err] 101 102 103',
-     *                                           ' ignore',/,
      *        4x,'aq_lagged_speciation    ',l1,9x,'[F] T',/,
      *        4x,'aq_ion_H+               ',l1,9x,'[T] F => use OH-',/,
      *        4x,'aq_oxide_components     ',l1,9x,'[F] T',/,
      *        4x,'aq_solvent_solvus       ',l1,9x,'[T] F',/,
+     *        4x,'aq_solvent_solvus_tol   ',f3.1,7x,'[0.5] 0-1',/,
      *        4x,'aq_vapor_epsilon        ',f3.1,7x,'[1.]')
 1013  format (/,2x,'Input/Output options:',//,
-     *        4x,'pause_on_error          ',l1,9x,'[T] F',/,
      *        4x,'timing                  ',l1,9x,'[T] F')
 1014  format (4x,'logarithmic_p           ',l1,9x,'[F] T',/,
      *        4x,'logarithmic_X           ',l1,9x,'[F] T',/,
@@ -2042,7 +2095,6 @@ c                                 thermo options for frendly
      *        4x,'output_species          ',l1,9x,'[T] F',/,
      *        4x,'output_species_props    ',l1,9x,'[F] T',/,
      *        4x,'seismic_output          ',a3,7x,'[some] none all',/,
-     *        4x,'pause_on_error          ',l1,9x,'[T] F',/,
      *        4x,'poisson_test            ',l1,9x,'[F] T',/,
      *        4x,'interim_results         ',a3,7x,'[auto] off manual',/,
      *        4x,'sample_on_grid          ',l1,9x,'[T] F')
@@ -2066,7 +2118,6 @@ c                                 thermo options for frendly
      *        4x,'species_output          ',l1,9x,'[T] F',/,
      *        4x,'endmember_Gs            ',l1,9x,'[F] T',/,
      *        4x,'seismic_output          ',a3,7x,'[some] none all',/,
-     *        4x,'pause_on_error          ',l1,9x,'[T] F',/,
      *        4x,'poisson_test            ',l1,9x,'[F] T',/,
      *        4x,'timing                  ',l1,9x,'[F] T')
 1232  format (/,2x,'Input/Output options:',//,
@@ -2075,7 +2126,6 @@ c                                 thermo options for frendly
      *        4x,'logarithmic_X           ',l1,9x,'[F] T',/,
      *        4x,'bad_number         ',f7.1,8x,'[NaN]',/,
      *        4x,'melt_is_fluid           ',l1,9x,'[T] F',/,
-     *        4x,'pause_on_error          ',l1,9x,'[T] F',/,
      *        4x,'Tisza_test              ',l1,9x,'[F] T')
 1233  format (/,2x,'Seismic wavespeed computational options:',//,
      *        4x,'seismic_data_file       ',l1,9x,'[F] T',/,
@@ -2090,8 +2140,6 @@ c                                 thermo options for frendly
      *        4x,'fluid_shear_modulus     ',l1,9x,'[T] F',/,
      *        4x,'phi_d                   ',f4.2,6x,'[0.36] 0->1')
 1234  format (4x,'auto_exclude            ',l1,9x,'[T] F',/,
-     *        4x,'warn_interactive        ',l1,9x,'[T] F',/,
-     *        4x,'warn_no_limit           ',l1,9x,'[F] T',/,
      *        4x,'output_iteration_detai  ',l1,9x,'[F] T',/,
      *        4x,'output_iteration_g      ',l1,9x,'[F] T')
 1240  format (/,2x,'Information file output options:',//,
@@ -3173,7 +3221,7 @@ c----------------------------------------------------------------------
       else if (ier.eq.59) then
          write (*,59) char
       else if (ier.eq.60) then
-         write (*,60) char
+         write (*,60) char, realv
          if (int.eq.1) then 
             write (*,601) char
          else 
@@ -3387,15 +3435,16 @@ c                                 generic warning, also 99
      *          'to numerical instability',/,
      *          'or because the phases of the system do not span ',
      *          'its bulk composition.',//,
-     *          4x,'In the 1st case (best solutions listed first):',/,
-     *          8x,'increase the optimization_precision keyword value',/
+     *          4x,'In the first case (best solutions listed first):',/,
+     *          8x,'double the first value of x/y_nodes',/,
+     *          8x,'increase optimization_precision by a factor of 10',/
      *         ,8x,'set intermediate_savrpc and intermediate_savrpc to',
      *             ' T',/,
      *          8x,'increase replicate_threshold',/,
      *          8x,'increase rep_dynamic_threshold'/,
      *          4x,'see: www.perplex.ch/perplex_options.html for ',
      *          'explanation.',//,
-     *          4x,'In the 2nd case: ',
+     *          4x,'In the 2nd case (rare): ',
      *          'change the bulk composition or add phases.',/)
 43    format (/,'**warning ver043** ',a,' is the base 10 log of the',
      *       ' activity, values > 0 imply',/
@@ -3419,8 +3468,8 @@ c                                 generic warning, also 99
 49    format (/,'**warning ver049** warning ',i3,' will not be repeated'
      *         ,' for future instances of this problem.',/,
      *          'currently in routine: ',a,//,
-     *          'To override the limit on the number of warnings set ',
-     *          'warn_no_limit to T',/)
+     *          'To see how often this warning occurs increase ',
+     *          'max_warn_limit',/)
 50    format (/,'**warning ver050** reformulating prismatic ',
      *          'solution: ',a,' because of missing endmembers. ',
      *        /,'(reformulation can be controlled explicitly ',
@@ -3469,8 +3518,8 @@ c                                 generic warning, also 99
      *       ' plotting program capable',/,'of handling NaNs, e.g., ',
      *       'MatLab or PYWERAMI.',//,'program/routine: ',a,/)
 62    format (/,'**warning ver062** ',a,' is an electrolytic fluid, th',
-     *        'e default value of ',/,'aq_bad_results has been changed',
-     *        ' from err to 101 to allow fractionation to completely',/,
+     *        'e default value of',/,'aq_error_ver101 has been changed',
+     *        'to F to allow fractionation to completely',/,
      *        'deplete solute components from the condensed phase asse',
      *        'mblage',/)
 63    format (/,'**warning ver063** wway, invariant point on an edge?',
@@ -4296,10 +4345,6 @@ c----------------------------------------------------------------------
       double precision atwt
       common/ cst45 /atwt(k0)
 
-      double precision sel, cox
-      logical hscon, hsc, oxchg
-      common/ cxt45 /sel(k0),cox(k0),hscon,oxchg,hsc(k1)
-
       integer ic
       common/ cst42 /ic(k0)
 
@@ -4783,10 +4828,6 @@ c----------------------------------------------------------------------
       double precision atwt
       common/ cst45 /atwt(k0)
 
-      double precision sel, cox
-      logical hscon, hsc, oxchg
-      common/ cxt45 /sel(k0),cox(k0),hscon,oxchg,hsc(k1)
-
       character*80 commnt
       common/delet/commnt
 
@@ -5250,9 +5291,13 @@ c------------------------------------------------------------------------
  
       include 'perplex_parameters.h'
  
-      character y*1,n1name*100
+      character n1name*100
 
       integer ierr
+
+      logical readyn
+
+      external readyn
 
       character*100 prject,tfname
       common/ cst228 /prject,tfname
@@ -5295,9 +5340,8 @@ c                                 BUILD
             if (ierr.ne.0) then
 c                                 name exists
                write (*,1050) n1name
-               read (*,'(a)') y
 
-               if (y.eq.'Y'.or.y.eq.'y') then 
+               if (readyn()) then 
 c                                 overwrite it
                   open (n1,file=n1name)
 
@@ -5318,8 +5362,8 @@ c                                 VERTEX, MEEMUM, UNSPLT
             if (ierr.ne.0) then
 c                                 name does not exist
                write (*,1080) n1name
-               read (*,'(a)') y
-               if (y.eq.'Y'.or.y.eq.'y') then 
+
+               if (readyn()) then 
 c                                 try again
                   cycle 
 
@@ -5497,9 +5541,13 @@ c-----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
  
-      character*100 name, y*1, ddata*14, text*140
+      character*100 name, ddata*14, text*140
 
       integer ierr, jam
+
+      logical readyn
+
+      external readyn
 
       data ddata/'hp02ver.dat   '/
 c-----------------------------------------------------------------------
@@ -5519,9 +5567,8 @@ c                                 system could not find the file
             if (jam.eq.0) call error (120,0d0,n2,name)
 c                                 if not vertex allow another try
             write (*,1010) name
-            read (*,'(a)') y
 
-            if (y.ne.'Y'.and.y.ne.'y') then
+            if (.not.readyn()) then
                write (*,1060)
                stop
             end if             
@@ -5609,11 +5656,15 @@ c----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
 
+      logical readyn
+
       integer i,j,jopt,ict,ier,jscan
  
-      character*5 pname, rname, y*1
+      character*5 pname, rname
 
       double precision sum, ssum
+
+      external readyn
 
       integer ictr, itrans
       double precision ctrans
@@ -5629,10 +5680,6 @@ c----------------------------------------------------------------------
       double precision atwt
       common/ cst45 /atwt(k0)
 
-      double precision sel, cox
-      logical hscon, hsc, oxchg
-      common/ cxt45 /sel(k0),cox(k0),hscon,oxchg,hsc(k1)
-
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
@@ -5645,8 +5692,8 @@ c                                 recombine components:
          write (*,1030)
          write (*,1040) (cmpnt(i), i = 1, icmpn)
          write (*,1050)
-         read (*,'(a)') y
-         if (y.ne.'Y'.and.y.ne.'y') exit
+
+         if (.not.readyn()) exit
 
          write (*,1060)
          read (*,'(a)') pname
@@ -5675,8 +5722,8 @@ c                                 ctransf, ask the user if the
 c                                 new component will be a special 
 c                                 component
                      write (*,1010) cmpnt(i),pname
-                     read (*,'(a)') y
-                     if (y.eq.'y'.or.y.eq.'Y') cycle
+
+                     if (readyn()) cycle
                      idspe(j) = 0 
 
                   end if 
@@ -5724,9 +5771,9 @@ c                                 get the component stoichiometries:
          write (*,1100) pname,(ctrans(icout(i),itrans),
      *                      cmpnt(icout(i)), i = 1, ict)
          write (*,1110)
-         read (*,'(a)') y
- 
-         if (y.eq.'y'.or.y.eq.'Y') then
+
+         if (readyn()) then
+
             sum = 0d0
             ssum = 0d0             
             do i = 1, ict
@@ -5819,10 +5866,6 @@ c----------------------------------------------------------------------
 
       double precision atwt
       common/ cst45 /atwt(k0)
-
-      double precision sel, cox
-      logical hscon, hsc, oxchg
-      common/ cxt45 /sel(k0),cox(k0),hscon,oxchg,hsc(k1)
 
       integer length,com
       character chars*1
@@ -7665,9 +7708,13 @@ c----------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      character*5 y*1, units*13, text*195, what*9, sym*1
+      character units*13, text*195, what*9, sym*1
 
       integer jcomp, ier, i, ids, kount
+
+      logical readyn
+
+      external readyn
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
@@ -7686,9 +7733,8 @@ c----------------------------------------------------------------
 c----------------------------------------------------------------------
 c                                choose components vs species
       write (*,1000) fname(ids)
-      read (*,'(a)') y
 
-      if (y.eq.'y'.or.y.eq.'Y') then 
+      if (readyn()) then 
          spec(jcomp) = .true.
          what = ' species'
       else
@@ -7921,8 +7967,8 @@ c                                show the user the composition:
       end if 
  
       write (*,1090)
-      read (*,'(a)') y
-      if (y.eq.'y'.or.y.eq.'Y') goto 10
+
+      if (readyn()) goto 10
 
       kds(jcomp) = ids
 
@@ -8000,11 +8046,74 @@ c----------------------------------------------------------------------
 
       end
 
-      subroutine volwrn (jd,eos)
+      subroutine spewrn (id,jd,it,iwarn,bad,routin)
+c----------------------------------------------------------------------
+c write warning messages when speciation fail to converge
+c   id - solution model
+c   jd - action on fail
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer id, jd, iwarn, it
+
+      logical bad
+
+      character routin*(*)
+
+      double precision goodc, badc
+      common/ cst20 /goodc(3),badc(3)
+
+      character fname*10, aname*6, lname*22
+      common/ csta7 /fname(h9),aname(h9),lname(h9)
+c----------------------------------------------------------------------
+      if (bad) then
+
+         badc(1) = badc(1) + 1d0
+         goodc(2) = goodc(2) + dfloat(it)
+
+         if (iwarn.lt.iopt(1)) then
+
+            if (id.gt.0) then
+               call conwrn (jd,routin//'/'//fname(id))
+            else
+               call conwrn (jd,routin)
+            end if
+
+            iwarn = iwarn + 1
+
+            if (iwarn.eq.iopt(1)) call warn (49,nopt(1),93,routin)
+
+          end if
+
+      else
+
+         goodc(1) = goodc(1) + 1d0
+         goodc(2) = goodc(2) + dfloat(it)
+
+         if (iwarn.lt.iopt(1)) then
+
+            if (id.gt.0) then
+               call conwrn (jd,routin//'/'//fname(id))
+            else
+               call conwrn (jd,routin)
+            end if
+
+            iwarn = iwarn + 1
+
+            if (iwarn.eq.iopt(1)) call warn (49,nopt(1),93,routin)
+
+         end if
+
+      end if
+
+      end
+
+      subroutine conwrn (jd,eos)
 c----------------------------------------------------------------------
 c write warning messages when numeric PVT EoS fail to converge
-c   jd indicates action on fail
-c       1 - uses CORK EoS
+c   jd - action on fail
 c----------------------------------------------------------------------
       implicit none
 
@@ -8017,18 +8126,40 @@ c----------------------------------------------------------------------
 
       character eos*(*)
 c----------------------------------------------------------------------
-      write (*,1000) eos, p, t
+      if (jd.lt.100) then
+c                                 volume EoS
+         write (*,1000) eos, p, t
 
-      if (jd.eq.1) then
-         write (*,1020)
-      else if (jd.eq.2) then
-         write (*,1030)
-      else if (jd.eq.3) then
-         write (*,1040)
-      else if (jd.eq.4) then
-         write (*,1050)
-      else if (jd.eq.5) then
-         write (*,1060)
+         if (jd.eq.1) then
+            write (*,1020)
+         else if (jd.eq.2) then
+            write (*,1030)
+         else if (jd.eq.3) then
+            write (*,1040)
+         else if (jd.eq.4) then
+            write (*,1050)
+         else if (jd.eq.5) then
+            write (*,1060)
+         end if
+
+      else 
+c                                 speciation calcs
+         write (*,2000) eos, p, t
+
+         if (jd.eq.101) then
+            write (*,2020)
+         else if (jd.eq.102) then
+            write (*,2030)
+         else if (jd.eq.103) then
+            write (*,2040)
+         else if (jd.eq.104) then
+            write (*,2050)
+         else if (jd.eq.105) then 
+            write (*,2060)
+         else if (jd.eq.106) then
+            write (*,2070)
+         end if
+
       end if
 
       write (*,1010)
@@ -8037,12 +8168,11 @@ c----------------------------------------------------------------------
      *        /,4x,'P(bar) = ',g12.6,/,4x,'T(K) = ',g12.6,/)
 1010  format (/'This warning can usually be ignored; when not, remedies'
      *       ,' include (best first):',/,
-     *        /,4x,'1 - set warn_no_limit to see how often and where ',
-     *             'the problem occurs',
-     *        /,4x,'2 - reduce convergence tolerance ',
-     *             '(volume_tolerance_exp option)',
-     *        /,4x,'3 - increase iteration limit ',
-     *             '(speciation_max_it)',/)
+     *        /,4x,'1 - increase max_warn_limit to see how often/where',
+     *             ' the problem occurs',
+     *        /,4x,'2 - increase convergence tolerance (function_toler',
+     *             'ance_exp)',
+     *        /,4x,'3 - increase iteration limit (speciation_max_it)',/)
 1020  format ('CORK PVT EoS will be used at this condition.')
 1030  format ('MRK PVT EoS will be used at this condition.')
 1040  format ('Fugacity will be set to P(bar)*1d12.')
@@ -8050,6 +8180,16 @@ c----------------------------------------------------------------------
      *        '100*P(bar).')
 1060  format ('Low quality result will be used.')
 
+2000  format (/,'**warning ver093** ',a,' did not converge at:',/,
+     *        /,4x,'P(bar) = ',g12.6,/,4x,'T(K) = ',g12.6,/)
+2020  format ('Oscillating, low quality result will be used.')
+2030  format ('Oscillating, result will be rejected.')
+2040  format ('Iteration limit exceeded, low quality result wil',
+     *        'l be used.')
+2050  format ('Iteration limit exceeded, result will be rejected.')
+2060  format ('Speciation stoichiometrically frustrated, result will ',
+     *        'be rejected')
+2070  format ('bad species Eos, result will be rejected')
       end
 
       subroutine lpwarn (idead,char)
@@ -8063,21 +8203,21 @@ c----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer idead, iwarn91, iwarn42, iwarn90, iwarn01, iwarn02, 
-     *        iwarn03, iwarn58
+     *        iwarn03, iwarn00, iwarn09, iwarn58
 
       character char*(*)
 
       double precision c
 
       save iwarn91, iwarn42, iwarn90, iwarn01, iwarn02, iwarn03, 
-     *     iwarn58
+     *     iwarn58, iwarn00, iwarn09
 
       data iwarn91, iwarn42, iwarn90, iwarn01, iwarn02, iwarn03, 
-     *     iwarn58/7*0/
+     *     iwarn00, iwarn09, iwarn58/9*0/
 c----------------------------------------------------------------------
 c                                             look for errors
       if (idead.eq.2.or.idead.gt.4.and.idead.lt.8.and.
-     *                      (lopt(64).or.iwarn91.lt.6)) then 
+     *                                 iwarn91.lt.iopt(1)) then 
 c                                             unbounded solution, or
 c                                             other programming error.
          call warn (91,c,idead,char)
@@ -8085,31 +8225,30 @@ c                                             other programming error.
          call prtptx
 
          iwarn91 = iwarn91 + 1
-         if (iwarn91.eq.5.and..not.lopt(64)) 
-     *                        call warn (49,c,91,'LPWARN')
 
-      else if (idead.eq.3.and.
-     *                      (lopt(64).or.iwarn42.lt.6)) then 
+         if (iwarn91.eq.iopt(1)) call warn (49,c,91,'LPWARN')
+
+      else if (idead.eq.3.and.iwarn42.lt.iopt(1)) then 
 c                                             no feasible solution
          call warn (42,c,idead,char)
 
          call prtptx
 
          iwarn42 = iwarn42 + 1
-         if (iwarn42.eq.6.and..not.lopt(64)) 
-     *                        call warn (49,c,42,'LPWARN')
 
-      else if (idead.eq.4.and.
-     *                      (lopt(64).or.iwarn90.lt.6)) then 
+         if (iwarn42.eq.iopt(1)) call warn (49,c,42,'LPWARN')
+
+      else if (idead.eq.4.and.iwarn90.lt.iopt(1)) then 
 c                                             iteration count exceeded,
 c                                             probable cause no feasible
 c                                             solution.
-         call warn (90,c,idead,char) 
-         iwarn90 = iwarn90 + 1
-         if (iwarn90.eq.5) call warn (49,c,90,'LPWARN')
+         call warn (90,c,idead,char)
 
-      else if ((lopt(64).or.iwarn58.lt.11)
-     *         .and.(idead.eq.58.or.idead.eq.59)) then 
+         iwarn90 = iwarn90 + 1
+
+         if (iwarn90.eq.iopt(1)) call warn (49,c,90,'LPWARN')
+
+      else if (iwarn58.lt.iopt(1).and.(idead.eq.58.or.idead.eq.59)) then 
 
          if (idead.eq.58) then 
             call warn (58,c,k21,char)
@@ -8121,43 +8260,70 @@ c                                             solution.
 
          iwarn58 = iwarn58 + 1
 
-         if (iwarn58.eq.10.and..not.lopt(64)) 
-     *                        call warn (49,c,58,'LPWARN')
+         if (iwarn58.eq.iopt(1)) 
+     *                        call warn (49,c,58,char)
+      else if (idead.eq.100.and.iwarn00.le.iopt(1)) then
+c                                 triggered by cautious abort in yclos2 
+c                                 in lptop0
+         call warn (100,c,idead,'pure and impure solvent coexist'
+     *                 //' To output result set aq_error_ver100 to F.')
+         call prtptx
 
-      else if (idead.eq.101.and.
-     *        (lopt(64).or.iwarn01.lt.10).and.lopt(32)) then
+         if (iwarn00.eq.iopt(1)) call warn (49,c,idead,char)
 
-          iwarn01 = iwarn01 + 1
-          call warn (100,c,101,'under-saturated solute-component.'
-     *              //' To output result set aq_bad_result to 102')
+         iwarn00 = iwarn00 + 1
 
-          if (iwarn01.eq.10.and..not.lopt(64)) 
-     *                        call warn (49,c,101,'LPWARN')
+      else if (idead.eq.101.and.iwarn01.le.iopt(1)) then
+c                                 triggered by undersaturated solute
+c                                 component abort in yclos2 after lpopt0
+         call warn (100,c,idead,'under-saturated solute-componen'
+     *                //'t. To output result set aq_error_ver101 to F.')
+         call prtptx
 
-      else if (idead.eq.102.and.
-     *        (lopt(64).or.iwarn02.lt.10).and.lopt(32)) then
+         if (iwarn01.eq.iopt(1)) call warn (49,c,101,char)
+
+         iwarn01 = iwarn01 + 1
+
+      else if (idead.eq.102.and.iwarn02.le.iopt(1)) then
+c                                 triggered by coexistence of pure and impure 
+c                                 solvent in avrger after lpopt0
+         call warn (100,c,102,'pure and impure solvent phases '//
+     *             'coexist within aq_solvent_solvus_tol. '//
+     *             'To output result set aq_error_ver102 to T.')
+
+         call prtptx
+
+         if (iwarn02.eq.iopt(1)) call warn (49,c,102,char)
 
          iwarn02 = iwarn02 + 1
-         call warn (100,c,102,'pure and impure solvent phases '//
-     *             'coexist within solvus_tolerance. '//
-     *             'To output result set aq_bad_result to 101')
+
+      else if (idead.eq.103.and.iwarn03.le.iopt(1)) then
+c                                 triggered by reopt/resub, aq_error_ver103
+         call warn (100,c,103,'HKF g-func out of range '//
+     *                           'for pure H2O solvent. '//
+     *             'To output result set aq_error_ver103 to F.')
 
          call prtptx
 
-          if (iwarn02.eq.10.and..not.lopt(64)) 
-     *                        call warn (49,c,102,'LPWARN')
-
-      else if (idead.eq.103.and.
-     *        (lopt(64).or.iwarn03.lt.10).and.lopt(32)) then
+         if (iwarn03.eq.iopt(1)) call warn (49,c,103,char)
 
          iwarn03 = iwarn03 + 1
-         call warn (100,c,103,'pure and impure solvent phases '//
-     *              'coexist. To output result set aq_bad_result.')
 
-         call prtptx
+      else if (idead.eq.109) then
+c                                 triggered by yclos2, error_ver109
+         if (iwarn09.le.iopt(1)) then
 
-          if (iwarn03.eq.10.and..not.lopt(64)) 
-     *                        call warn (49,c,103,'LPWARN')
+            call warn (100,c,109,'Valid otimization result includes '//
+     *                           'invalid phase/endmember. '//
+     *             'To output result set error_ver109 to F.')
+
+            call prtptx
+
+            if (iwarn09.eq.iopt(1)) call warn (49,c,109,'LPWARN')
+
+            iwarn09 = iwarn09 + 1
+
+         end if
 
       end if
 
@@ -8182,7 +8348,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       quit = .true.
 
-      if (iwarn.lt.9.or.lopt(64)) then
+      if (iwarn.lt.iopt(1)) then
 
          iwarn = iwarn + 1
 
@@ -8190,7 +8356,7 @@ c----------------------------------------------------------------------
 
          call prtptx
 
-         if (iwarn.eq.10) call warn (49,0d0,106,'MUWARN')
+         if (iwarn.eq.iopt(1)) call warn (49,0d0,106,'MUWARN')
 
       end if
 
@@ -8229,17 +8395,22 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       write (*,'(a,/)') 'Current conditions:'
 
-      do i = 2, icont
+      if (icopt.ne.12) then
+c                                 for 0-d infiltration (icopt = 10)
+c                                 icont doesn't indicate composiitonal
+c                                 variable.
+         do i = 2, icont
 
-         if (i.eq.2) then
-            tag = 'X(C1)   '
-         else
-            tag = 'X(C2)   '
-         end if
+            if (i.eq.2) then
+               tag = 'X(C1)   '
+            else
+               tag = 'X(C2)   '
+            end if
 
-         write (*,1000) tag,cx(i-1)
+            write (*,1000) tag,cx(i-1)
 
-      end do
+         end do
+      end if
 
       do i = 1, ipot
          write (*,1000) vname(iv(i)),v(iv(i))
@@ -8502,11 +8673,15 @@ c----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
 
-      character y*1, badnam(h9)*10
+      character badnam(h9)*10
 
       integer ibad2, ibad1, igood, i, j, ier
 
       character n10nam*100,n11nam*100,n8nam*100
+
+      logical readyn
+
+      external readyn
 
       character prject*100,tfname*100
       common/ cst228 /prject,tfname
@@ -8560,10 +8735,9 @@ c                                 changed to .and. 9/10/19
                if (iopt(6).eq.1) then 
 c                                 manual mode, allow reinitialization
 c                                 or suppression.
-                  write (*,1060) 
-                  read (*,'(a)') y
+                  write (*,1060)
 
-                  if (y.eq.'y'.or.y.eq.'Y') then
+                  if (readyn()) then
 
                      iopt(6) = 0
 
@@ -8589,9 +8763,8 @@ c                                 to use the data
                write (*,'(/,a,a,/,a)') 'Auto-refine data exists from a',
      *                  ' previous calculation with VERTEX.',
      *                   'Do you want MEEMUM to use this data (y/n)?'
-               read (*,'(a)') y
 
-               if (y.ne.'y'.and.y.ne.'Y') then
+               if (.not.readyn()) then
 
                   iopt(6) = 0
 
@@ -8809,15 +8982,22 @@ c                                 set auto-refine dependent parameters
       if (icopt.eq.5) then 
 c                                 gridded minimization
          if (oned) then 
-            jlow = grid(4,index)
+c                                 this should be only for non-path 
+c                                 dependent 1d calculations set resolution 
+c                                 to 2-d x_nodes autorefine value, regardless
+c                                 of stage (1d cost is low).
+            jlow = grid(1,2)
             loopx = 1
-         else 
+
+         else
+
             jlow = grid(2,index)
             loopx = grid(1,index) 
+
          end if
 
          jlev = grid(3,index) 
-          
+
       else if (icopt.gt.5) then 
 c                                 1d/2d phase fractionation
          jlow = grid(4,index)
@@ -13528,15 +13708,15 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      character y*1
+      logical readyn
 
+      external readyn
+c---------------------------------------------------------------------
       write (*,'(a)') 'Continue execution despite this warning (Y/N)?'
 
       if (lopt(56)) then
 c                                 read the choice
-         read (*,'(a)') y
-
-         if (y.ne.'y'.and.y.ne.'Y') then
+         if (.not.readyn()) then
 c                                 quit on warning
             stop
 
@@ -13560,3 +13740,20 @@ c                                 automatically continue
 
       end
 
+      logical function readyn()
+c----------------------------------------------------------------------
+c read yes/no answer, true if yes.
+c----------------------------------------------------------------------
+      implicit none
+
+      character y*1
+c--------------------------------------------
+      read (*,'(a)') y
+
+      if (y.ne.'y'.and.y.ne.'Y') then 
+         readyn = .false.
+      else
+         readyn = .true.
+      end if
+
+      end
