@@ -5770,7 +5770,7 @@ c----------------------------------------------------------------------
      *                 clamda(nctotl), featol(nctotl), grad(n), xnorm,
      *                 gradu(n), r(ldr,*), w(lenw), x(n), fdnorm, objf,
      *                 alfa, alfbnd, alfdx, alflim, alfmax, alfmin,
-     *                 alfsml, cond, condh, condhz, condt, ddot, obj,
+     *                 alfsml, cond, condh, condhz, condt, ddot,
      *                 cvnorm, dinky, drzmax, drzmin, dxnorm, errmax,
      *                 flmax, gdx, gfnorm, glf1, glf2, glnorm, gltest,
      *                 grdalf, gtest, gznorm, objalf, objsiz,

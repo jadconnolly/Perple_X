@@ -10,10 +10,9 @@ c----------------------------------------------------------------------
       integer i, ibeg, iend, siz, ier, iscan, iscnlt, jbeg(3), jend(3),
      *        nel, iel, ist, j, lun, d2v(13)
 
-      logical elchk, good, reject, bad, hsc
+      logical elchk, good, reject, bad
 
-      double precision nums(13),sel(50),stoich,elst(50),ost(50),ox(50), 
-     *                 otot
+      double precision nums(13),stoich,elst(50),ost(50),ox(50), otot
 
       character rec*(lchar), name8*8, elem(50)*2, elname*2, number*8,
      *          oxname(50)*5, text(14)*1, two*2
@@ -40,7 +39,7 @@ c                                 will be rejected.
 
       read (11,*,iostat=ier) reject 
 c                                 use HSC convention for g0, otherwise use gf.
-      read (11,*) hsc
+      read (11,*) hscon
 
       do
 c                                 oxygen must be last in list
@@ -349,7 +348,7 @@ c                                 scale omega, a1, a2, a4, c2
             if (d2v(i).lt.0) cycle
 
             if (j.eq.1) then 
-               if (HSC) nums(1) = nums(2) - 298.15*nums(3)
+               if (hscon) nums(1) = nums(2) - 298.15*nums(3)
             end if 
 
             call outthr (nums(j),e16st(i),3,ibeg)

@@ -21,7 +21,7 @@ C----------------------------------------------------------------
 
       parameter (nseg=100000,npts=250000,npcs=100000,mcon=50)
 
-      character kontor*80, yes*1
+      character kontor*80
     
       double precision cont(mcon),clinex(npts),
      *     cliney(npts),linex(npts),liney(npts),cline(2,npts),
@@ -29,6 +29,10 @@ C----------------------------------------------------------------
 
       integer ipieces(2,npcs),npiece(mcon),ifirst(mcon),
      *        next(nseg),ilast(mcon)
+
+      logical readyn 
+
+      external readyn
 
       integer ix,iy,mvar
       double precision z,zt 
@@ -54,12 +58,8 @@ c                                  contor interval
          cont(j) = cmin + (i-1) * dcon
       end do 
 
-      if (j.eq.0) then 
-         write (*,'(a)') 
-     *   'no data within your contour limits, press enter to quit'
-         read (*,'(a)') yes
-         stop
-      end if 
+      if (j.eq.0) call errdbg (
+     *   'no data within your contour limits, press enter to quit')
 
       ncon = j
       cmin = cont(1)
@@ -85,10 +85,10 @@ c                                 write title info
      *             npts,nseg,npcs,ipieces,npiece,
      *             ifirst,next,ilast)
 
-      write (*,1020) 
-      read (*,'(a)') yes
+      write (*,1020)
+
       iout = 0
-      if (yes.eq.'y'.or.yes.eq.'Y') iout = 1
+      if (readyn()) iout = 1
 
       if (iout.eq.1) open (69,file='contor.dat')
 

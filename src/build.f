@@ -31,15 +31,15 @@ c-----------------------------------------------------------------------
       character mnames(k16*k17)*8, n9name*100, dsol*100, opname*100,
      *          mname(k5)*5, oname(k5)*5, pname(k5)*5, cfname*100,
      *          uname(k0)*5, group*28, aname(i9)*6, amount*5, new*3, 
-     *          text*256, dtext*200, title*162, y*1, lname(i9)*22,
+     *          text*256, dtext*200, title*162, lname(i9)*22,
      *          sname(i9)*10, tn1*6, tn2*22, fname(i9)*10
 
       integer i, k, l, iind, im, idum, ivct, jcth, j, ier, idep, 
      *        gct(i9), gid(i9,i9), ict, idsol, inames
 
-      logical eof, good, oned, findph, first, feos, chksol
+      logical eof, good, oned, findph, first, feos, chksol, readyn
 
-      external chksol, findph
+      external chksol, findph, readyn
 
       character prject*100,tfname*100
       common/ cst228 /prject,tfname
@@ -245,10 +245,9 @@ c                                 a function of chemical potentials
 c                                  ================================
 c                                  ask if the user wants print output,
 c                                  graphical output is automatic. 
-      write (*,2000) 
-      read (*,'(a)') y
+      write (*,2000)
 
-      if (y.eq.'y'.or.y.eq.'Y') then 
+      if (readyn()) then 
          io3 = 0
       else 
          io3 = 1
@@ -293,14 +292,12 @@ c                                 get all made phases
       end do 
 c                                 Excluded phases:
       write (*,2080)
-      read (*,'(a)') y
  
-      if (y.eq.'Y'.or.y.eq.'y') then
+      if (readyn()) then
  
          write (*,2034)
-         read (*,'(a)') y
- 
-         if (y.ne.'y'.and.y.ne.'Y') then
+
+         if (.not.readyn()) then
 
             name = 'b'
 
@@ -339,9 +336,8 @@ c                                 Excluded phases:
             do i = 1, iphct
  
                write (*,1130) names(i)
-               read (*,'(a)') y
- 
-               if (y.eq.'Y'.or.y.eq.'y') then
+
+               if (readyn()) then
                   ixct = ixct + 1
                   if (ixct.gt.h8) then 
                      call warn (8,0d0,h8,'BUILD')
@@ -399,9 +395,8 @@ c                               got one, get the EoS
       end if 
 c                                read solution phases.
       write (*,2500)
-      read (*,'(a)') y
- 
-      if (y.eq.'y'.or.y.eq.'Y') then
+
+      if (readyn()) then
 c                                 get the file containing the solution models
          do
  
@@ -415,9 +410,8 @@ c                                 get the file containing the solution models
 c                                 system could not find the file
                write (*,3020) n9name
                write (*,7050)
-               read (*,'(a)') y
- 
-               if (y.ne.'Y'.and.y.ne.'y') goto 999
+
+               if (.not.readyn()) goto 999
                cycle
 c                                 try again
             end if
@@ -1007,11 +1001,13 @@ c----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
 
-      character*1 y
+      logical readyn
 
       integer num, ind, jnd
 
-      double precision value 
+      double precision value
+
+      external readyn
 
       integer imaf,idaf
       common/ cst33 /imaf(i6),idaf(i6)
@@ -1060,12 +1056,10 @@ c                                 imaf = 3, warn on activity > 1.
 
       end if 
 
-      if (numbad) then 
-         read (*,'(a)') y
-         if (y.ne.'y'.and.y.ne.'Y') numbad = .false.
-      end if  
+      if (numbad.and..not.readyn()) numbad = .false.
 
       end 
+
 
       subroutine chknam (igood,jcmpn,iflu,good,char5,qname,uname)
 c----------------------------------------------------------------------
@@ -1156,13 +1150,13 @@ c---------------------------------------------------------------------------
 
       integer i, j, jcmpn, ivct, igood, ier, jsat(h5), ima, jspec, jc(2)
 
-      logical satflu, mobflu, good, findph, eof, quit, feos
+      logical satflu, mobflu, good, findph, eof, quit, feos, readyn
 
       character mname(*)*5, qname(k0)*5, char5*5, uname(*)*5,
-     *          y*1, oname(*)*5, nname(k5)*5, char6*6, 
+     *          oname(*)*5, nname(k5)*5, char6*6, 
      *          pname(*)*5, fugact(3)*8
 
-      external findph
+      external findph, readyn
 
       integer ic
       common/ cst42 /ic(k0)
@@ -1206,7 +1200,6 @@ c---------------------------------------------------------------------------
       common/ cst36 /exname(h8),afname(2)
 
       data fugact/'chem_pot','fugacity','activity'/
-
 c---------------------------------------------------------------------------
       jcmpn = icmpn
       satflu = .false.
@@ -1222,10 +1215,9 @@ c                                 Component stuff first:
 
       if (lopt(7).and.icopt.ne.9) then 
 c                                 components of saturated phase:
-         write (*,2030) 
-         read (*,'(a)') y
+         write (*,2030)
 
-         if (y.eq.'y'.or.y.eq.'Y') then
+         if (readyn()) then
 c                                   write prompt
             write (*,2031) 
             write (*,'(12(1x,a))') (uname(idspe(i)), i = 1, ispec)
@@ -1274,9 +1266,8 @@ c                                 number of used special components
       if (icopt.ne.9) then 
 c                                 saturated components
          write (*,2110)
-         read (*,'(a)') y
  
-         if (y.eq.'Y'.or.y.eq.'y') then
+         if (readyn()) then
 
             call warn (15,nopt(1),i,'BUILD')
  
@@ -1301,9 +1292,9 @@ c                                 check if it's a saturated phase component:
 
                      if (ifct.gt.0) then 
                         call warn (7,nopt(1),i,'BUILD')
-                        write (*,1000) 
-                        read (*,'(a)') y
-                        if (y.eq.'y'.or.y.eq.'Y') then
+                        write (*,1000)
+
+                        if (readyn()) then
                            satflu = .true.
                            write (*,1070)
                         else 
@@ -1340,9 +1331,8 @@ c                                 blank input
          end if
 c                                 mobile components:
          write (*,2040)
-         read (*,'(a)') y
- 
-         if (y.eq.'y'.or.y.eq.'Y') then
+
+         if (readyn()) then
          
             do 
 c                                 write prompt
@@ -1364,9 +1354,10 @@ c                                 or a saturated component:
 
                   if (ifct.gt.0.or.satflu) then  
                      call warn (5,nopt(1),i,'BUILD')
+
                      write (*,1000) 
-                     read (*,'(a)') y
-                     if (y.eq.'y'.or.y.eq.'Y') then
+
+                     if (readyn()) then
                         mobflu = .true.
                         write (*,1070)
                      else 
@@ -1536,9 +1527,10 @@ c                                 mobile or a saturated component:
                if (good) then 
  
                   call warn (5,0d0,i,'BUILD')
-                  write (*,1000) 
-                  read (*,'(a)') y
-                  if (y.eq.'y'.or.y.eq.'Y') then
+
+                  write (*,1000)
+
+                  if (readyn()) then
                      write (*,1070)
                   else 
                      write (*,1080) 
@@ -1710,12 +1702,14 @@ c---------------------------------------------------------------------------
       integer i, j, ivct, ier, iind, idep, iord, kvct, jc, icth,
      *        jcth, loopx, loopy, ind, ix, jst, jvct
 
-      logical oned
+      logical oned, readyn
 
-      character y*1, dtext*(*), amount*5, stext*11, nc(3)*2, 
+      character dtext*(*), amount*5, stext*11, nc(3)*2, 
      *          opname*(*), pname(*)*5, cfname*100
 
       double precision c(0:4)
+
+      external readyn
 
       integer ifct,idfl
       common/ cst208 /ifct,idfl
@@ -1777,9 +1771,7 @@ c                                 fractionation from a file
             write (*,1090)
          end if 
 
-         read (*,'(a)') y
-
-         if (y.eq.'y'.or.y.eq.'Y') then
+         if (readyn()) then
 
             write (*,1100) (vname(iv(i)),i=1,ivct)
             write (*,'(/)')
@@ -1847,11 +1839,9 @@ c                                 phase diagram calculations:
             if (icopt.ne.3.and.icopt.ne.10.and.icopt.ne.6) then 
 
                write (*,1050) vname(1),vname(2)
-               if (icopt.eq.4) write (*,1160) 
+               if (icopt.eq.4) write (*,1160)
 
-               read (*,'(a)') y
-
-               if (y.eq.'Y'.or.y.eq.'y') then
+               if (readyn()) then
 
                   do 
                      write (*,1060) vname(1),vname(2),vname(2),vname(1)
@@ -2134,10 +2124,11 @@ c                                11 - frac2d - with fileio (oned false)
 c                                 =========================
 c                                 Compositional constraints, only
 c                                 for constrained minimization
-         if (isat.ne.0) then 
+         if (isat.ne.0) then
+
             write (*,1450)
-            read (*,'(a)') y 
-            if (y.ne.'y'.and.y.ne.'Y') then 
+
+            if (.not.readyn()) then 
                jcth = icp
             else
                write (*,1460)
@@ -2151,9 +2142,10 @@ c                                 for constrained minimization
             jcth = icp
 
             do i = icp + 1, icth
+
                write (*,1430) pname(i)
-               read (*,'(a)') y
-               if (y.eq.'Y'.or.y.eq.'y') then
+
+               if (readyn()) then
                   jcth = jcth + 1
                else 
                   exit
@@ -2166,12 +2158,14 @@ c                                 for constrained minimization
 c                                ask if weight amounts, otherwise
 c                                use molar amounts.
             if (icopt.ne.12) then
+
                write (*,1420) 
-               read (*,'(a)') y
-               if (y.eq.'Y'.or.y.eq.'y') then 
+
+               if (readyn()) then 
                   iwt = 1
                   amount = 'mass '
                end if
+
             end if 
 
             write (*,1380)

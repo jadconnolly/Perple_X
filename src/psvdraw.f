@@ -15,9 +15,11 @@ c Please do not distribute any part of this source.
 
       include 'perplex_parameters.h'
 
-      character yes*1
+      logical readyn
 
-      integer ier 
+      integer ier
+
+      external readyn
 
       integer  iop0 
       common / basic /iop0
@@ -51,9 +53,8 @@ c                                 get input file
          if (ier.ne.0) then
        
             write (*,1010) tfname
-            read (*,'(a)') yes
 
-            if (yes.eq.'Y'.or.yes.eq.'y') cycle 
+            if (readyn()) cycle 
 
             stop
 
@@ -73,9 +74,8 @@ c                                 open output file
       call psopen
   
       if (icopt.ne.0) then 
-         write (*,1020) 
-         read (*,'(a)') yes
-         if (yes.eq.'y'.or.yes.eq.'Y') iop0 = 1
+         write (*,1020)
+         if (readyn()) iop0 = 1
       end if 
   
       if (icopt.eq.1) then
@@ -143,9 +143,13 @@ c----------------------------------------------------------------------
       integer i,lop(15),iop2,iop3,iop5,iop6,iop7,iop4c,iop4p,jop0,
      *        iend,iop1,jop4,iop4
  
-      character yes*1, prompt*14
+      character prompt*14
 
       double precision fac2,fac3
+
+      logical readyn
+
+      external readyn
 
       integer  iop0 
       common / basic /iop0
@@ -182,10 +186,9 @@ c                                 set up transformations
 
       if (iop0.eq.0) goto 30
 c                                 phase field restrictions by variance 
-      write (*,1160)       
-      read (*,'(a)') yes       
+      write (*,1160)
 c                                 variance restrictions for projections
-      if (yes.eq.'y'.or.yes.eq.'Y') then
+      if (readyn()) then
 c                                 get type of variance restriction (later called jop4)
          write (*,1090)
 c                                 get choice
@@ -202,46 +205,43 @@ c                                 get choice
 
          if (iop4.eq.1.and.jop4.gt.2) then
 c                                 allow suppression of pseudounivariant curves
-            write (*,1170) 
-            read (*,'(a)') yes 
+            write (*,1170)
 c                                 general restriction on pseudounivariant curves
-            if (yes.eq.'y'.or.yes.eq.'Y') iop4c = 2
+            if (readyn()) iop4c = 2
          end if 
 
          if (iop4.eq.1.and.jop4.gt.1) then
 
-            write (*,1180) 
-            read (*,'(a)') yes 
+            write (*,1180)
 c                                 general restriction on pseudoinvariant points
-            if (yes.eq.'y'.or.yes.eq.'Y') iop4p = 1
+            if (readyn()) iop4p = 1
          end if 
       end if  
 c                                 restrict by assemblage
-      write (*,1150) 
-      read (*,'(a)') yes
+      write (*,1150)
 
-      if (yes.eq.'y'.or.yes.eq.'Y') then
+      if (readyn()) then
 c                               if saturated components write warning:
          if (isat.ne.0) write (*,1400) 
-         write (*,1140) 
-         read (*,'(a)') yes
-         if (yes.eq.'y'.or.yes.eq.'Y') then
+         write (*,1140)
+
+         if (readyn()) then
             iop5 = 1
             prompt='present in the'
             call rname (1,prompt)
          end if
 c                               restrict by phase presence
-         write (*,1120)  
-         read (*,'(a)') yes
-         if (yes.eq.'y'.or.yes.eq.'Y') then 
+         write (*,1120)
+
+         if (readyn()) then 
             iop6 = 1
             prompt=' absent in all'
             call rname (2,prompt)
          end if 
 c                               restrict by phase absence
          write (*,1130)
-         read (*,'(a)') yes
-         if (yes.eq.'y'.or.yes.eq.'Y') then 
+
+         if (readyn()) then 
             iop7 = 1
             prompt='present in all'
             call rname (3,prompt)
@@ -252,28 +252,25 @@ c                                       suppress/modify labels
       write (*,1225)
       write (*,1230)
 c                                       modify eq labeling
-      read (*,'(a)') yes
-
-      if (yes.eq.'y'.or.yes.eq.'Y') then  
+      if (readyn()) then  
 
             if (icopt.eq.1) then 
 c                                       suppress curve labels?
                write (*,1220) 
             else  
                write (*,1215) 
-            end if 
-            read (*,'(a)') yes
-            if (yes.eq.'y'.or.yes.eq.'Y') iop2 = iabs(iop2-1)
+            end if
+
+            if (readyn()) iop2 = iabs(iop2-1)
  
             if (iop2.eq.0) then
 c                                       curve label modifications
                write (*,1070)
-               read (*,'(a)') yes
- 
-               if (yes.eq.'y'.or.yes.eq.'Y') then
+
+               if (readyn()) then
+
                   write (*,1080)
-                  read (*,'(a)') yes
-                  if (yes.eq.'y'.or.yes.eq.'Y') lop(15) = 1 
+                  if (readyn()) lop(15) = 1 
 
 10                write (*,1030)
                   read (*,*) fac2
@@ -294,9 +291,9 @@ c                                      suppress ip point labels
                write (*,1190)
             else
                write (*,1195)
-            end if 
-            read (*,'(a)') yes
-            if (yes.eq.'y'.or.yes.eq.'Y') iop3 = iabs(iop3-1)
+            end if
+
+            if (readyn()) iop3 = iabs(iop3-1)
 
       end if     
 c                                 draw univariant curves
@@ -362,7 +359,7 @@ c pschem - subroutine to output ternary chemographies.
 
       include 'perplex_parameters.h'
  
-      character title*162, record*72, yes*1,xname(k5)*8
+      character title*162, record*72, xname(k5)*8
  
       double precision x3(3),y3(3),xx(j9),yy(j9),style,x1,y1,y,dyt,yt,xt
  
@@ -370,7 +367,9 @@ c pschem - subroutine to output ternary chemographies.
 
       integer icp,istct,ipoint,ifct,ipot,jas,jd
 
-      logical vline, tlbl
+      logical vline, tlbl, readyn
+
+      external readyn
 
       save x3,y3,dyt,yt,xt,iperm 
 
@@ -433,35 +432,27 @@ c                                 variable line thickness
 c                                 label phases
       tlbl = .true.
 c                                 modify default plot?
-      write (*,1010) 
-      read (*,'(a)') yes
+      write (*,1010)
 
-      if (yes.eq.'y'.or.yes.eq.'Y') then
+      if (readyn()) then
 c                                 draw tie lines?
          write (*,1060)
-         read (*,'(a)') yes
 
-         if (yes.eq.'y'.or.yes.eq.'Y') then
+         if (readyn()) then
 
             iop1 = 1
 c                                 suppress homogeneous fields fill
             write (*,1030)
-            read (*,'(a)') yes
-
-            if (yes.eq.'y'.or.yes.eq.'Y') fill = .false. 
+            if (readyn()) fill = .false. 
 c                                 use one line thickness
             write (*,1070)
-            read (*,'(a)') yes
-
-            if (yes.eq.'y'.or.yes.eq.'Y') vline = .false.
+            if (readyn()) vline = .false.
 
          end if 
 
 c                                 suppress phase labels?
          write (*,1080)
-         read (*,'(a)') yes
-
-         if (yes.eq.'y'.or.yes.eq.'Y') tlbl = .false.
+         if (readyn()) tlbl = .false.
 
       end if 
 
@@ -1171,14 +1162,18 @@ c psmixd - subroutine to draw binary mixed variable diagrams
       include 'perplex_parameters.h'
 
       integer icp,ipoint,ifct,isat,ipot,i,ird,ivar
-  
-      character*8 title*162, string*(lchar), y*1, tname(5),xname(k5)
-  
+
+      character*8 title*162, string*(lchar), tname(5),xname(k5)
+
       integer idf(3),jphi(k1),igo,jop0,iop1,iop2,iop3,jb,
      *        jplus,jminus,isum,idif,j,i1,id1,it,i2,id2,jt,itot,
      *        i00,imis,itoc,j1,iend
 
       double precision v(l2),rx,ry,t0,tlast,t1,rline,ttext
+
+      logical readyn
+
+      external readyn
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -1271,25 +1266,25 @@ c                              get some other options
       rx = dcx/4d0/xfac
       ry = dcy/4d0
 
-      if  (iop0.eq.1) then 
+      if  (iop0.eq.1) then
+
          write (*,2050)
-         read (*,'(a)') y
-         if (y.eq.'y'.or.y.eq.'Y') iop2 = 1
+         if (readyn()) iop2 = 1
 
          write (*,2030)
-         read (*,'(a)') y
-         if (y.eq.'y'.or.y.eq.'Y') then
+
+         if (readyn()) then
             iop1 = 0
          else 
             write (*,2040)
-            read (*,'(a)') y
-            if (y.eq.'y'.or.y.eq.'Y') iop1 = 2
-         end if 
+            if (readyn()) iop1 = 2
+         end if
+
          if (isoct.gt.0) then
             write (*,2060)
-            read (*,'(a)') y
-            if (y.eq.'y'.or.y.eq.'Y') iop3 = 1
-         end if 
+            if (readyn()) iop3 = 1
+         end if
+
       end if 
 
       t0 = vmn(2)

@@ -364,7 +364,11 @@ c psaxes - subroutine to output (sloppy) axes.
 
       integer jop0, i, nchar, ic(2), nblen
 
-      character*8 record*64, yes*1, nums(2)*12
+      character record*64, nums(2)*12
+
+      logical readyn
+
+      external readyn
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -405,9 +409,8 @@ c----------------------------------------------------------------------
       if (jop0.eq.1) then
 
          write (*,'(/,a)') 'Modify default axes numbering (y/n)?'
-         read (*,'(a)') yes
 
-         if (yes.eq.'y'.or.yes.eq.'Y') then
+         if (readyn()) then
             write (*,1030) 'X', x0, dx
             read (*,*) x0, dx
             write (*,1030) 'Y', y0, dy
@@ -496,9 +499,11 @@ c psaxop - subroutine to make graphics transformation and get some options
 
       include 'perplex_parameters.h'
 
-      character yes*1
+      integer jop0, iop1, jcopt
 
-      integer jop0,iop1
+      logical readyn
+
+      external readyn
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -512,8 +517,6 @@ c psaxop - subroutine to make graphics transformation and get some options
 
       integer  iop0 
       common / basic /iop0
-
-      integer jcopt
 c----------------------------------------------------------------------
 
       jop0 = 0
@@ -526,19 +529,17 @@ c                                     numeration.
 
       else if (iop0.eq.1) then
 
-         write (*,1090) 
-         read (*,1030) yes
-         if (yes.eq.'y'.or.yes.eq.'Y') jop0 = 1
+         write (*,1090)
+         if (readyn()) jop0 = 1
 
       end if 
 
       if (jop0.eq.1.and.jcopt.ne.3) then
 
-         write (*,1070) 
-         read (*,1030) yes
+         write (*,1070)
          iop1 = 0
- 
-         if (yes.eq.'y'.or.yes.eq.'Y') then
+
+         if (readyn()) then
             write (*,1040) vnm(1),vmn(1),vmx(1)
             read (*,*) vmn(1),vmx(1)
             write (*,1040) vnm(2),vmn(2),vmx(2)
@@ -642,23 +643,26 @@ c----------------------------------------------------------------------
 
 
       subroutine getfil (fname,lun,ier)
-
+c----------------------------------------------------------------------         
       implicit none
 
       include 'perplex_parameters.h'
 
-      character*100 fname, yes*1
+      character*100 fname
 
       integer ier, lun
+
+      logical readyn
+
+      external readyn
 c----------------------------------------------------------------------         
       open (lun,iostat=ier,file=fname,status='old')
 
       if (ier.ne.0) then
        
          write (*,1010) fname
-         read (*,'(a)') yes
 
-         if (yes.eq.'Y'.or.yes.eq.'y') return
+         if (readyn()) return
 
          stop
 
@@ -679,13 +683,15 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical ratio, warn1, eof
+      logical ratio, warn1, eof, readyn
 
       integer i, j, dvar, dvar1, ier, lun, inc(l3)
 
-      character tag*5, y
+      character tag*5
 
       double precision row(i11)
+
+      external readyn
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -757,10 +763,9 @@ c                                 read data
          if (mvar.gt.1) then
 c                                 get dependent variable choice, single 
 c                                 variable or ratio
-            write (*,1030) 
-            read (*,'(a)') y
+            write (*,1030)
 
-            if (y.eq.'Y'.or.y.eq.'y') then
+            if (readyn()) then
 
                ratio = .true.
 

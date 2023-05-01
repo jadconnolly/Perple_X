@@ -166,13 +166,15 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical node, change
+      logical node, change, readyn
 
       integer i, j, nxy(2), dim
 
       double precision tmin(2), tmax(2), dx(2)
 
-      character n6name*100, n5name*100, yes*1, tag*9
+      character n6name*100, n5name*100, tag*9
+
+      external readyn
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -205,15 +207,13 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       node = .false. 
       dim = 2
-c     call begtim (1)
 c                                 select the property
       call chsprp
 c                                 set up coordinates etc
 c                                 allow restricted plot limits
       write(*,1040)
-      read (*,'(a)') yes 
 
-      if (yes.eq.'y'.or.yes.eq.'Y') then 
+      if (readyn()) then 
 
          change = .false.
 
@@ -287,15 +287,15 @@ c                                 or exploratory
 c                                 get grid spacing
             call rdnumb (nopt(1),0d0,j,1,.false.)
             
-            if (j.eq.1) then 
+            if (j.eq.1.or..not.lopt(56)) then 
 
                write (*,'(/)')
 
             else
 
                write (*,1010)
-               read (*,'(a)') yes
-               if (yes.ne.'y'.and.yes.ne.'Y') goto 10 
+
+               if (.not.readyn()) goto 10 
 
             end if
 
@@ -347,10 +347,6 @@ c                                 round off tests:
          end do
  
       end do 
-
-c     call endtim (1,.true.,'tot')
-c     call endtim (2,.true.,'stx')
-c     call endtim (3,.true.,'plg')
 c                                 wrap up the calculation
       call finprp (dim,n5name,n6name,node) 
 
@@ -358,11 +354,13 @@ c                                 wrap up the calculation
      *       'PLT, sample_on_grid uses the',/,'highest resolution pos',
      *       'sible (',i4,'x',i4,'), if this is excessive set ',/,
      *       'sample_on_grid to false and restart WERAMI',/)
-1010  format (/,'**warning ver538** use of high level grids may genera',
-     *       'te noise due to data interpolation',/,'onto unpopulated ',
-     *       'nodes. If higher resolution is required, best practice is'
-     *       ,' to increase',/,'the auto-refine stage resolution of the'
-     *       ,' lowest level grid (2nd values of x/y_nodes).',
+1010  format (/,'**warning ver538** use of multi-level grids may gener',
+     *       'ate noise due to data',/,'interpolation onto unpopulated',
+     *       ' nodes. If exceptional resolution is required set',/,
+     *       'grid_levels to 1 1 and change the 2nd value of x/y_nodes',
+     *       'to obtain the desired resolution.',//,
+     *       'To disable [all] interactive warnings set warn_interact',
+     *       'ive to F.',
      *       //,'Continue (y/n)?')
 1040  format (/,'Change default variable range (y/n)?')
 1060  format (/,'Current limits on ',a,' are: ',g14.7,'->',g14.7,/,
@@ -777,7 +775,9 @@ c----------------------------------------------------------------------
 
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
-      save / cst59 /
+
+      character fname*10, aname*6, lname*22
+      common/ csta7 /fname(h9),aname(h9),lname(h9)
 
       save warned, pi
       data warned/.false./
@@ -808,19 +808,25 @@ c                                 duplicate assignment because ias is in common
       jtri(1) = jloc
       wt(1) = 1d0
       linc = 2**(jlev - 1)
-
-      if (icog(jd).eq.iloc.and.jcog(jd).eq.jloc.and.ongrid) then 
 c                                 landed right on a node with data 
-          return
-       end if 
+      if (icog(jd).eq.iloc.and.jcog(jd).eq.jloc.and.ongrid) return
 c                                 exit if interpolation is off
       if (iopt(4).eq.0) return
 c                                 check for solvus
       if (solvs3(iam,np)) then 
 c                                 a solvus, turn interpolation off, warn and return
-         if (.not.warned.and.lopt(31)) then 
+         if (.not.warned.and.lopt(31)) then
+ 
             warned = .true.
+
             write (*,1000)
+
+            do i = 1, isoct
+               if (jdstab(i).gt.1) write (*,'(4x,a)') fname(i)
+            end do
+
+            write (*,1010)
+
          end if
 
          if (lopt(31)) return
@@ -1085,13 +1091,12 @@ c                                 not on a line:
 
       end if
 
-1000  format (/,'**warning ver637** Immiscibility occurs in one or ',
-     *          'more phases. Interpolation will ',/,
-     *          'be turned off at all affected nodes. ',
-     *          'override this feature at the risk of ',
-     *          'computing',/,'inconsistent properties ',
-     *          'by setting the option warning_ver637 to F',
-     *          ' and restarting WERAMI.',/)
+1000  format (/,'**warning ver637** Stable immiscibility is predicted ',
+     *          'by the following solution models:',/)
+1010  format (/,'Interpolation will be turned off at all affected node',
+     *          's. To override this',/,'behavior at the risk of compu',
+     *          'ting inconsistent properties set warning_ver637 to F ',
+     *        /,'and restart WERAMI.',/)
 
       end 
 
@@ -1403,6 +1408,26 @@ c                                 in general
 
 1000  format ('Missing data at ',a,'=',g12.5,', ',a,'=',g12.5,
      *        ' assigned ',g12.5,' to all properties')
+
+      end
+
+      logical function bdnum (num) 
+c----------------------------------------------------------------------
+c test if num eq bad_number with check to avoid NaN fp error
+c----------------------------------------------------------------------
+      implicit none
+
+      double precision num
+
+      include 'perplex_parameters.h'
+c----------------------------------------------------------------------
+      bdnum = .false.
+
+      if (isnan(nopt(7))) then 
+         if (isnan(num)) bdnum = .true.
+      else
+         if (num.eq.nopt(7)) bdnum = .true.
+      end if
 
       end 
 
@@ -2026,14 +2051,16 @@ c-------------------------------------------------------------------
 
       include 'perplex_parameters.h' 
 
-      character cprop*6, y*1
+      character cprop*6
 
-      logical max
+      logical max, readyn
 
       integer choice, index, ksol(k5), isol, i, j, icx, 
      *        jsol, ier, phase, mode
 
       double precision cmin(k5) ,cmax(k5), tcomp, gtcomp
+
+      external readyn
 
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
@@ -2196,9 +2223,8 @@ c                                 the extremal variable
                write (*,1007) 
                call mkcomp (2+k5,phase)
                write (*,1025)
-               read (*,'(a)') y
 
-               if (y.eq.'y'.or.y.eq.'Y') then 
+               if (readyn()) then 
                   max = .true.
                else 
                   max = .false.
@@ -2428,13 +2454,15 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical node, ok
+      logical node, ok, readyn
 
       integer i, j, icurve, ivi, ivd, iord, ipts, jpts, ier, k(2), dim
 
       double precision coef(0:10), dxy(2), xyp(2,2), s, d
 
-      character*100 n5name, n6name, yes*1, text*320
+      character*100 n5name, n6name, text*320
+
+      external readyn
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -2459,10 +2487,9 @@ c----------------------------------------------------------------------
 c                                 set up path information
       icurve = 0 
 c                                 ask if non-linear path
-10    write (*,1200) 
-      read (*,'(a)') yes
+10    write (*,1200)
 
-      if (yes.eq.'y'.or.yes.eq.'Y') then 
+      if (readyn()) then 
 
          icurve = 1
 c                                 select independent variable:
@@ -2489,9 +2516,8 @@ c                                 select independent variable:
          write (*,1340) text
 c                                 ask if ok.
          write (*,1320)
-         read (*,'(a)') yes 
 
-         if (yes.eq.'y'.or.yes.eq.'Y') goto 10
+         if (readyn()) goto 10
 c                                 it's ok.
          dxy(ivi) = vmx(ivi)-vmn(ivi)
          dxy(ivd) = vmx(ivd)-vmn(ivd)
@@ -3004,9 +3030,6 @@ c----------------------------------------------------------------
      *               kop(i11),kcx(i11),k2c(i11),iprop,
      *               first,kfl(i11),tname
 
-      integer idstab,nstab,istab
-      common/ cst34 /idstab(i11),nstab(i11),istab
-
       integer idsol,nrep,nph
       common/ cst38/idsol(k5,k3),nrep(k5,k3),nph(k3)
 
@@ -3219,11 +3242,12 @@ c----------------------------------------------------------------
 
       character*8 ynm, n6name*100, rec*1
 
-      logical node
+      logical node, bdnum
 
       integer i, j, k, ipt, dim, ier
 
-      double precision ymx,ymn,xl(i11),yl(i11),x(3),dx,dy(i11),xmx,xmn
+      double precision ymx,ymn,xl(i11),yl(i11),x(3),dx,dy(i11),xmx,xmn,
+     *                 mzero
 
       character vnm*8
       common/ cxt18a /vnm(l3) 
@@ -3248,6 +3272,8 @@ c----------------------------------------------------------------
       common/ cst77 /prop(i11),prmx(i11),prmn(i11),
      *               kop(i11),kcx(i11),k2c(i11),iprop,
      *               first,kfl(i11),tname
+
+      external bdnum
 c----------------------------------------------------------------------
       if (dim.eq.1) then 
 
@@ -3274,7 +3300,7 @@ c                                 ind ne 1.
          end do 
 c                                 read the data to get the range  
          do           
-                  
+
             read (n5,*,iostat=ier) (x(i),i=1,ivar), (prop(i),i=1,iprop)
 
             ipt = ipt + 1
@@ -3289,6 +3315,8 @@ c                                 read the data to get the range
             if (ier.ne.0) exit 
 
             do i = 1, iprop
+c                                 don't count bad_number value modes
+               if (bdnum(prop(i))) cycle
 
                if (x(ind).gt.xmx) xmx = x(ind)
                if (x(ind).lt.xmn) xmn = x(ind)
@@ -3305,10 +3333,16 @@ c                                 cumulative mode
                      end if 
 
                   else 
+c                                 check for NaN badnumber value
+                     if (bdnum(prop(i-1))) then
+                        mzero = 0d0
+                     else
+                        mzero = prop(i-1)
+                     end if 
 
-                     if (prop(i)-prop(i-1).gt.dy(i)) then
-                        dy(i) = prop(i)-prop(i-1)
-                        yl(i) = (prop(i)+prop(i-1))/2d0 
+                     if (prop(i)-mzero.gt.dy(i)) then
+                        dy(i) = prop(i) - mzero
+                        yl(i) = (prop(i) + mzero)/2d0 
                         xl(i) = x(ind)
                      end if
  
@@ -3429,15 +3463,8 @@ c----------------------------------------------------------------
      *               kop(i11),kcx(i11),k2c(i11),iprop,
      *               first,kfl(i11),tname
 
-      integer idstab,nstab,istab
-      common/ cst34 /idstab(i11),nstab(i11),istab
-
       double precision atwt
       common/ cst45 /atwt(k0)
-
-      double precision sel, cox
-      logical hscon, hsc, oxchg
-      common/ cxt45 /sel(k0),cox(k0),hscon,oxchg,hsc(k1)
 
       save cprp
 c----------------------------------------------------------------------
@@ -3798,13 +3825,15 @@ c----------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical phluid
+      logical phluid, readyn
 
       integer i, j, icx, kprop, ier, lop, komp, mprop
 
       parameter (kprop=40)
 
-      character propty(kprop)*60, y*1, pname*10
+      character propty(kprop)*60, pname*10
+
+      external readyn
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
@@ -3829,9 +3858,6 @@ c----------------------------------------------------------------
       common/ cst77 /prop(i11),prmx(i11),prmn(i11),
      *               kop(i11),kcx(i11),k2c(i11),iprop,
      *               first,kfl(i11),tname
-
-      integer idstab,nstab,istab
-      common/ cst34 /idstab(i11),nstab(i11),istab
 
       integer hcp,idv
       common/ cst52  /hcp,idv(k7) 
@@ -3899,11 +3925,10 @@ c                                 doing a second run, with an
 c                                 existing solvus criterion, ask
 c                                 whether to change.
             write (*,1030)
-            read (*,'(a)') y
-            if (y.ne.'y'.and.y.ne.'Y') stol(i) = .false.
-    
+            if (.not.readyn()) stol(i) = .false.
+
          end if
- 
+
       end do 
 c                                 property counter
       iprop = 0
@@ -3964,8 +3989,8 @@ c                                 get phase name
 c                                 the phase isn't fluid, ask if fluid should be 
 c                                 included in relative modes:
                 write (*,1120) 
-                read (*,'(a)') y
-                if (y.eq.'y'.or.y.eq.'Y') lflu = .true.
+
+                if (readyn()) lflu = .true.
 
              end if 
 c                                 write blurb about units
@@ -3993,8 +4018,8 @@ c                                 eject if no fluid phase
             else if (lopt(32).and.lopt(25)) then 
 c                                  ask which result is to be output
                write (*,1160)
-               read (*,'(a)') y
-               if (y.eq.'y'.or.y.eq.'Y') kfl(1) = .true.
+
+               if (readyn()) kfl(1) = .true.
 
             else if (.not.lopt(25)) then 
 c                                 eject if no aqueous species
@@ -4020,9 +4045,8 @@ c                                eject if other props already chosen:
             end if 
 c                                 all modes
              write (*,1070)
-             read (*,'(a)') y
 
-             if (y.eq.'y'.or.y.eq.'Y') then
+             if (readyn()) then
 c                                 warn about fancy_cumulative_modes
                 if (lopt(45)) then 
                    write (*,1170)
@@ -4041,8 +4065,8 @@ c                                 ask if fluid should be included:
              if (gflu) then 
 
                 write (*,1120) 
-                read (*,'(a)') y
-                if (y.eq.'y'.or.y.eq.'Y') lflu = .true.
+
+                if (readyn()) lflu = .true.
 
              end if 
 c                                 double loop necessary because solution 
@@ -4090,8 +4114,8 @@ c                                 ask if fluids included
             if (gflu.and.lop.eq.6) then 
 
                write (*,1120) 
-               read (*,'(a)') y
-               if (y.eq.'y'.or.y.eq.'Y') lflu = .true. 
+
+               if (readyn()) lflu = .true. 
 
             end if 
 
@@ -4138,11 +4162,12 @@ c                                 get phase index
 
             end if 
 
-            if (gflu) then 
+            if (gflu) then
+
                write (*,1120) 
-               read (*,'(a)') y
-               if (y.eq.'y'.or.y.eq.'Y') lflu = .true. 
-            end if         
+               if (readyn()) lflu = .true.
+
+            end if
 
             if (lop.eq.36) then 
 
@@ -4181,16 +4206,14 @@ c                                 save property choice
                
             if (icx.eq.0) then   
 c                                 ask if bulk or phase property
-               write (*,1110) 
-               read (*,'(a)') y
+               write (*,1110)
 
-               if (y.ne.'y'.and.y.ne.'Y') then 
+               if (.not.readyn()) then 
 c                                 it's a bulk property, ask if fluid
 c                                 should be included:
                   if (gflu) then 
-                     write (*,1120) 
-                     read (*,'(a)') y
-                     if (y.eq.'y'.or.y.eq.'Y') lflu = .true. 
+                     write (*,1120)
+                     if (readyn()) lflu = .true. 
                   end if 
 
                else 

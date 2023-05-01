@@ -7,11 +7,14 @@
        
       integer itic(40),i,icod,j,ier
 
-      character*1 yes
+      character yes*1
+
+      logical readyn
+
+      external readyn
 
       character*100 prject,tfname
       common/ cst228 /prject,tfname
-
 c----------------------------------------------------------------------
 c                                 version info
       call vrsion (6)
@@ -31,9 +34,7 @@ c                                 get input file
          if (ier.ne.0) then
        
             write (*,1010) tfname
-            read (*,'(a)') yes
-
-            if (yes.eq.'Y'.or.yes.eq.'y') cycle 
+            if (readyn()) cycle 
 
             stop
 
