@@ -156,11 +156,20 @@ c                                 reoptimize with refinement
 c                                 final processing, .false. indicates dynamic
                call rebulk (abort,.false.)
 
-               if (abort) then
+               if (abort.or.abort1) then
+
+                  if (abort) then 
 c                                 abort is set for bad lagged speciation 
 c                                 solutions in avrger when pure and impure 
 c                                 phases with same solvent composition coexist
-                  idead = 102
+                     idead = 102
+
+                  else
+c                                 gaqlagd couldn't speciate a previously 
+c                                 speciated composition
+                     idead = 104
+
+                  end if
 
                   call lpwarn (idead,'LPOPT0')
 
@@ -249,6 +258,7 @@ c                                 iteration from static arrays
 c                                 resub can set idead 103 for out-of-bounds
 c                                 HKF-gfunc
       if (idead.gt.0) then
+         call lpwarn (idead,'REOPT')
          return
       end if
 c                                  initialization
@@ -609,7 +619,8 @@ c                                 whether the solvent is pure by calculation.
 
             gg = gsol1 (ids,.true.)
 
-            if (lopt(32).and.ksmod(ids).eq.39.and.nstot(ids).eq.1) then
+            if (lopt(32).and.ksmod(ids).eq.39.and.nstot(ids).eq.1.and.
+     *          abort1) then
 c                                 HKF g-func out-of-range error, only tested
 c                                 for pure H2O solvent
                idead = 103
@@ -974,6 +985,7 @@ c                                  x-coordinates for the final solution
       common/ cxt26 /refine,lresub,tname
 c-----------------------------------------------------------------------
       abort = .false.
+      abort1 = .false.
 c                                first check if solution endmembers are
 c                                among the stable compounds:
       do i = 1, ntot
@@ -1053,8 +1065,17 @@ c                                 impure solvent, get speciation
 c                                 ximp, xb, sum, and msol are dummies
                   call gaqlgd (ximp,xb,sum,msol,i,bad,.true.)
 
-                  if (bad) then
-                     call errdbg ('shouldnt happen, please report')
+                  if (bad.and.lopt(74)) then
+c                                 how/why this happens isn't clear to 
+c                                 me, since the present aqlgd calculation
+c                                 should be identical to one used to generate
+c                                 the point? at least for pure water, for 
+c                                 more complex solvents it's conceivable the
+c                                 composition was generated with a different
+c                                 set of chemical potentials
+                     abort1 = .true.
+                     return
+
                   end if
 
                end if
@@ -1089,6 +1110,7 @@ c                                  check pure and impure solvent coexist
      *                      caq(i,na1).ne.0d0.and.caq(kk,na1).eq.0d0) 
      *                                                              then 
 c                                  pure solvent and impure solvent coexist
+c                                  signals error ver102
                             abort = .true.
                             return
 
@@ -2464,28 +2486,19 @@ c                                 get mu's for lagged speciation
 
       else
 c                                 test is only set T for aqueous fluid
-         if (test) abort = .true.
+         if (test.and.lopt(71)) then
+            abort = .true.
+         else 
+            abort = .false.
+         end if
 
          call getmus (iter,iter-1,is,solvnt,abort)
 c                                 getmus sets abort T only if aqueous fluid
+c                                 and lopt(71) and a solute component is 
+c                                 undersaturated
          if (abort) then
-c                                 undersaturated solute component
-            if (lopt(71)) then
 c                                 report as error, no output
                idead = 101
-
-            else
-c                                 use the last mu's for output purposes
-               if (.not.mus) then
-                  call muwarn (quit,iter)
-                  mu(1:icp) = xmu(1:icp)
-               else
-                  quit = .true.
-               end if
-
-            end if
-
-            return
 
          else if (.not.mus) then
 
@@ -3045,13 +3058,6 @@ c                                 a component is present only in the solvent
 c                                 iteration will become unstable
                abort = .true.
 
-               write (*,*) 'disolved_non-solvent_component (GETMUS)'
-               write (*,*) 'Please report this case! Continue (Y/N)?'
-c                                 this code is useful, delete call errdbg
-               if (.not.readyn()) 
-     *            call errdbg ('disolved_non-solvent_component')
-c                                 otherwise delete this test and eliminate
-c                                 aq_error_ver101 test!
                write (n13,'(i4,1x,4(g14.6,1x),a)') 1000+solc(j), 
      *                                             x, y, t, p,
      *                                'disolved_non-solvent_component'

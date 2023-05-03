@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.0.10, May 1, 2023.',
+     *     'Perple_X release 7.0.10, May 3, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -339,8 +339,12 @@ c                                 aq_error_ver102 - exit on pure + impure solven
       lopt(72) = .true.
 c                                 aq_error_ver103 - exit on extrapolation of HKF g-func
       lopt(73) = .true.
+c                                 aq_error_ver104 - exit on failed respeciation in avrger
+      lopt(74) = .true.
 c                                 error_ver109 - exit on bad endmember EoS involved in a stable solution
       lopt(79) = .true.
+c                                 do_not_reset_options
+      lopt(80) = .false.
 c                                 solution_names 0 - model, 1 - abbreviation, 2 - full
       iopt(24) = 0
       valu(22) = 'mod'
@@ -644,9 +648,18 @@ c                                 don't abort on coexisting pure and impure solv
 c                                  don't abort if HKF-gfunc is out of range
             if (val.eq.'F') lopt(73) = .false.
 
+         else if (key.eq.'aq_error_ver104') then
+c                                  don't abort on failed respeciation
+            if (val.eq.'F') lopt(74) = .false.
+
          else if (key.eq.'error_ver109') then
 c                                  don't abort if bad EoS phase is stable
             if (val.eq.'F') lopt(79) = .false.
+
+         else if (key.eq.'do_not_reset_options') then
+c                                  prevent automatic option resets, i.e., use 
+c                                  options as set.
+            if (val.eq.'T') lopt(80) = .true.
 
          else if (key.eq.'refine_endmembers') then 
 
@@ -1907,9 +1920,10 @@ c                                 info file options
       end if
 
       write (n,1005) lopt(19), iopt(1), lopt(56), lopt(70), lopt(71),
-     *               lopt(72), lopt(73), lopt(31), lopt(79)
+     *               lopt(72), lopt(73), lopt(74), lopt(31), lopt(79),
+     *               lopt(80)
 
-      write (n,1020) 
+      write (n,1020)
 
 1000  format (/,'Perple_X computational option settings for ',a,':',//,
      *      '    Keyword:               Value:     Permitted values ',
@@ -1934,10 +1948,16 @@ c                                 lopt(72)
 c                                 lopt(73)
      *        4x,'aq_error_ver103         ',l1,9x,
      *           '[T] F, out-of-range HKF g abort',/,
+c                                 lopt(74)
+     *        4x,'aq_error_ver104         ',l1,9x,
+     *           '[T] F, abort on failed respeciation',/,
 c                                 lopt(31)
      *        4x,'warning_ver637          ',l1,9x,'[T] F',/,
 c                                 lopt(79)
-     *        4x,'error_ver109            ',l1,9x,'[T] F')
+     *        4x,'error_ver109            ',l1,9x,'[T] F',/,
+c                                 lopt(80)
+     *        4x,'do_not_reset_options    ',l1,9x,
+     *           '[F] T, prevents automatic resets')
 
 1010  format (/,2x,'Solution subdivision options:',//,
      *        4x,'initial_resolution:     ',f6.4,4x,
@@ -3519,9 +3539,10 @@ c                                 generic warning, also 99
      *       'MatLab or PYWERAMI.',//,'program/routine: ',a,/)
 62    format (/,'**warning ver062** ',a,' is an electrolytic fluid, th',
      *        'e default value of',/,'aq_error_ver101 has been changed',
-     *        'to F to allow fractionation to completely',/,
+     *        ' to F to allow fractionation to completely',/,
      *        'deplete solute components from the condensed phase asse',
-     *        'mblage',/)
+     *        'mblage.',/,'To prevent automatic option changes set do_',
+     *        'not_reset_options to T',/)
 63    format (/,'**warning ver063** wway, invariant point on an edge?',
      *        /)
 64    format (/,'**warning ver064** AQSOLV failed to converge on ionic',
@@ -8203,17 +8224,17 @@ c----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer idead, iwarn91, iwarn42, iwarn90, iwarn01, iwarn02, 
-     *        iwarn03, iwarn00, iwarn09, iwarn58
+     *        iwarn03, iwarn00, iwarn09, iwarn58, iwarn04
 
       character char*(*)
 
       double precision c
 
       save iwarn91, iwarn42, iwarn90, iwarn01, iwarn02, iwarn03, 
-     *     iwarn58, iwarn00, iwarn09
+     *     iwarn58, iwarn00, iwarn09, iwarn04
 
       data iwarn91, iwarn42, iwarn90, iwarn01, iwarn02, iwarn03, 
-     *     iwarn00, iwarn09, iwarn58/9*0/
+     *     iwarn00, iwarn09, iwarn58, iwarn04/10*0/
 c----------------------------------------------------------------------
 c                                             look for errors
       if (idead.eq.2.or.idead.gt.4.and.idead.lt.8.and.
@@ -8289,7 +8310,7 @@ c                                 triggered by coexistence of pure and impure
 c                                 solvent in avrger after lpopt0
          call warn (100,c,102,'pure and impure solvent phases '//
      *             'coexist within aq_solvent_solvus_tol. '//
-     *             'To output result set aq_error_ver102 to T.')
+     *             'To output result set aq_error_ver102 to F.')
 
          call prtptx
 
@@ -8308,6 +8329,18 @@ c                                 triggered by reopt/resub, aq_error_ver103
          if (iwarn03.eq.iopt(1)) call warn (49,c,103,char)
 
          iwarn03 = iwarn03 + 1
+
+      else if (idead.eq.104.and.iwarn04.le.iopt(1)) then
+c                                 triggered by reopt/resub, aq_error_ver103
+         call warn (100,c,104,'failed to recalculate speciation.'//
+     *           'Probable cause undersaturated solute component'//
+     *           'To output result set aq_error_ver104 to F.')
+
+         call prtptx
+
+         if (iwarn04.eq.iopt(1)) call warn (49,c,104,char)
+
+         iwarn04 = iwarn04 + 1
 
       else if (idead.eq.109) then
 c                                 triggered by yclos2, error_ver109
