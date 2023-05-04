@@ -569,7 +569,8 @@
            1         213
            1         214
            1         215
-           0         216
+           1         216
+           0         217
            0        1759
            0        1760
            0        1762
@@ -585,8 +586,6 @@
            0        1772
            0        1773
            0        1774
-           0        1775
-           0        1776
            1         225
            1         226
            1         227
@@ -594,19 +593,19 @@
            1         229
            1         230
            0         231
-           0        1778
+           0        1776
            1         232
            1         233
            0         234
+           0        1778
+           0        1779
            0        1780
-           0        1781
-           0        1782
            1         236
            1         237
            1         238
            0         239
-           0        1784
-           0        1785
+           0        1782
+           0        1783
            0         241
            0        1743
            0         242
@@ -629,9 +628,9 @@
            1         253
            1         254
            1         255
-           0         256
+           1         256
+           0         257
            0        1761
-           1         257
            1         258
            1         259
            1         260
@@ -639,7 +638,7 @@
            1         262
            1         263
            0         264
-           0        1777
+           0        1775
            1         265
            1         266
            1         267
@@ -647,34 +646,36 @@
            1         269
            1         270
            0         271
-           0        1779
+           0        1777
            1         272
            1         273
            1         274
            0         275
-           0        1783
+           0        1781
            1         276
            1         277
            1         278
            0         279
-           0        1786
+           0        1784
            0         280
+           0        1786
+           0        1785
            0        1788
-           0        1787
+           0        1789
            0        1790
            0        1791
            0        1792
-           0        1793
            0        1794
+           0        1795
            0        1796
-           0        1797
-           0        1798
            1         246
            0         247
+           0        1798
+           0        1799
            0        1800
            0        1801
-           0        1802
            0        1803
+           0        1804
            0        1805
            0        1806
            0        1807
@@ -690,7 +691,6 @@
            0        1817
            0        1818
            0        1819
-           1         257
            1         258
            1         259
            1         260
@@ -721,18 +721,18 @@
            0        1830
            0        1831
            0         281
-           0        1789
+           0        1787
            0         282
-           0        1791
+           0        1789
            0         283
-           0        1795
+           0        1793
            1         284
            0         285
-           0        1799
+           0        1797
            1         286
            1         287
            0         288
-           0        1804
+           0        1802
            1         289
            1         290
            1         291
@@ -4024,3 +4024,262 @@
            6           1           7
            2           3           6          10           9           8
         -124
+
+ 245 compound counter
+   1 fo      
+   2 fa      
+   3 lrn     
+   4 mont    
+   5 chum    
+   6 chdr    
+   7 mwd     
+   8 fwd     
+   9 mrw     
+  10 frw     
+  11 mpv     
+  12 fpv     
+  13 apv     
+  14 cpv     
+  15 mak     
+  16 fak     
+  17 maj     
+  18 py      
+  19 alm     
+  20 gr      
+  21 andr    
+  22 osma    
+  23 osmm    
+  24 osfa    
+  25 vsv     
+  26 and     
+  27 ky      
+  28 sill    
+  29 smul    
+  30 amul    
+  31 tpz     
+  32 mst     
+  33 fst     
+  34 mctd    
+  35 fctd    
+  36 merw    
+  37 zo      
+  38 cz      
+  39 ep      
+  40 fep     
+  41 law     
+  42 mpm     
+  43 fpm     
+  44 jgd     
+  45 geh     
+  46 ak      
+  47 rnk     
+  48 crd     
+  49 hcrd    
+  50 fcrd    
+  51 phA     
+  52 sph     
+  53 cstn    
+  54 en      
+  55 pren    
+  56 cen     
+  57 hen     
+  58 fs      
+  59 mgts    
+  60 di      
+  61 hed     
+  62 jd      
+  63 acm     
+  64 cats    
+  65 caes    
+  66 wo      
+  67 pswo    
+  68 wal     
+  69 tr      
+  70 ftr     
+  71 ts      
+  72 parg    
+  73 gl      
+  74 fgl     
+  75 rieb    
+  76 anth    
+  77 fanth   
+  78 cumm    
+  79 grun    
+  80 ged     
+  81 spr4    
+  82 spr5    
+  83 fspr    
+  84 mcar    
+  85 fcar    
+  86 deer    
+  87 mu      
+  88 cel     
+  89 fcel    
+  90 pa      
+  91 ma      
+  92 phl     
+  93 ann     
+  94 east    
+  95 naph    
+  96 clin    
+  97 ames    
+  98 afchl   
+  99 daph    
+ 100 sud     
+ 101 fsud    
+ 102 prl     
+ 103 ta      
+ 104 fta     
+ 105 tats    
+ 106 minn    
+ 107 minm    
+ 108 kao     
+ 109 pre     
+ 110 fpre    
+ 111 chr     
+ 112 liz     
+ 113 glt     
+ 114 fstp    
+ 115 mstp    
+ 116 atg     
+ 117 ab      
+ 118 abh     
+ 119 san     
+ 120 an      
+ 121 kcm     
+ 122 wa      
+ 123 hol     
+ 124 q       
+ 125 trd     
+ 126 crst    
+ 127 coe     
+ 128 stv     
+ 129 ne      
+ 130 cg      
+ 131 cgh     
+ 132 kls     
+ 133 lc      
+ 134 wrk     
+ 135 lmt     
+ 136 heu     
+ 137 stlb    
+ 138 anl     
+ 139 lime    
+ 140 per     
+ 141 fper    
+ 142 cor     
+ 143 mcor    
+ 144 hem     
+ 145 hem_nol 
+ 146 sp      
+ 147 herc    
+ 148 mt      
+ 149 mft     
+ 150 usp     
+ 151 br      
+ 152 dsp     
+ 153 gth     
+ 154 iron    
+ 155 H2O     
+ 156 H2      
+ 157 perL    
+ 158 limL    
+ 159 corL    
+ 160 qL      
+ 161 h2oL    
+ 162 foL     
+ 163 faL     
+ 164 woL     
+ 165 enL     
+ 166 diL     
+ 167 silL    
+ 168 anL     
+ 169 kspL    
+ 170 abL     
+ 171 neL     
+ 172 lcL     
+ 173 musp    
+ 174 fbr     
+ 175 fchum   
+ 176 fphA    
+ 177 fatg    
+ 178 atgts   
+ 179 acm_dqf 
+ 180 mrb     
+ 181 ts_dqf  
+ 182 parg_dqf
+ 183 gl_dqf  
+ 184 cumm_dqf
+ 185 grun_dqf
+ 186 ogl_dqf 
+ 187 fanth_dq
+ 188 omrb_dqf
+ 189 mpa     
+ 190 ged_dqf 
+ 191 tbit    
+ 192 fbit    
+ 193 ocar    
+ 194 ma_dqf  
+ 195 kho     
+ 196 dilm    
+ 197 dhem    
+ 198 mots    
+ 199 f3clin  
+ 200 kho1    
+ 201 sil8L   
+ 202 fo8L    
+ 203 fa8L    
+ 204 q8L     
+ 205 fmu     
+ 206 ma1_dqf 
+ 207 ctdo    
+ 208 msto    
+ 209 mstt    
+ 210 mots1   
+ 211 tbi     
+ 212 fbi     
+ 213 ospr    
+ 214 cfs     
+ 215 cess    
+ 216 cenjh   
+ 217 oen     
+ 218 odi     
+ 219 qjL     
+ 220 dijL    
+ 221 jdjL    
+ 222 ctjL    
+ 223 fojL    
+ 224 fajL    
+ 225 foTL    
+ 226 faTL    
+ 227 mrbG    
+ 228 kprg    
+ 229 tts     
+ 230 cfsg    
+ 231 mfpv    
+ 232 mcpv    
+ 233 cmpv    
+ 234 cfpv    
+ 235 capv    
+ 236 fcor    
+ 237 hmgts   
+ 238 cessh   
+ 239 mcbuf   
+ 240 kjdh    
+ 241 foHL    
+ 242 faHL    
+ 243 qHL     
+ 244 jdL     
+ 245 kjL     
+
+  10 solution model counter
+   1  688   11 cAmph(G)  
+   2  688    8 Augite(G) 
+   3  688    9 melt(G)   
+   4  688    3 Ep(HP11)  
+   5    7    4 Gt(W)     
+   6  688    6 Opx(W)    
+   7  688    6 Bi(W)     
+   8    2    3 Fsp(C1)   
+   9    2    4 Sp(WPC)   
+  10    6    3 Ilm(WPH)  

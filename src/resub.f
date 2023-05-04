@@ -208,12 +208,12 @@ c-----------------------------------------------------------------------
       integer liw, lw, iter, idead, jstart, opt, i, j,
      *        idead1, jter, iprint, lpprob, xphct
 
-      logical quit
+      logical quit, switch 
 
       parameter (liw=2*k21+3,lw=2*(k5+1)**2+7*k21+5*k5)
 
       double precision ax(k5), clamda(k21+k5), w(lw), tot(k5), gtot,
-     *                 ogtot, bl(k21+k5), bu(k21+k5), d2g(3), tol
+     *                 ogtot, bl(k21+k5), bu(k21+k5), d2g(3), tol, curve
 
       integer is(k21+k5), iw(liw)
 
@@ -244,6 +244,7 @@ c-----------------------------------------------------------------------
 c                                 the pseudocompounds to be refined
 c                                 are identified in jdv(1..npt)
       quit = .false.
+      switch = .false.
       opt = npt
       idead1 = 0
       d2g(1) = ogtot
@@ -304,8 +305,6 @@ c                                  set constraint states
 c                                 iter is incremented before the operations,
 c                                 i.e., on the nth iteration, iter is n+1
          iter = iter + 1
-c                                 set quit flag
-         if (iter.gt.iopt(20)) quit = .true.
 c                                 cold 0/warm 1 start
          if (iopt(38).eq.2) then
             jstart = 1
@@ -328,10 +327,13 @@ c                                  and bounds
      *               clamda,iw,liw,w,lw,idead,jstart,tol,lpprob)
 
          if (lopt(61)) call endtim (14,.false.,'dynamic optimization ')
+c                                 set quit flag, the idead = 3 case 
+c                                 resets quit to .false.
+         if (iter.gt.iopt(20)) quit = .true.
 
          if (idead.gt.0) then
 
-            if (idead.ne.3.or.quit) then 
+            if (idead.ne.3.or.idead.eq.3.and.idead1.ne.0) then 
 
                call lpwarn (idead,'REOPT')
                exit 
@@ -347,7 +349,7 @@ c                                  just in case:
 
                if (is(i).eq.1) cycle
 
-               do j = 1, icp 
+               do j = 1, icp
                   tot(j) = tot(j) - x(i)*cp2(j,i)
                end do
 
@@ -363,9 +365,9 @@ c                                  just in case:
 
                else if (dabs(tot(i)).gt.zero) then 
 
-c                  write (*,'(/,a,/)') '**warning ver333** '//
-c     *                   'You''ve got to ask yourself one '//
-c     *                   'question: Do I feel lucky? Well, do ya, punk?'
+                  write (*,'(/,a,/)') '**warning ver333** '//
+     *                   'You''ve got to ask yourself one '//
+     *                   'question: Do I feel lucky? Well, do ya, punk?'
 
                   idead1 = 3
 
@@ -375,24 +377,25 @@ c     *                   'question: Do I feel lucky? Well, do ya, punk?'
 
             if (idead1.eq.1) then
 c                                 let's blow this joint
-c              write (*,'(/,a,/)') 'bad result on idead = 3, let''s '//
-c    *                'blow this joint, the mass balance errors are:'
-c              write (*,'(4(g14.6,2x))') (tot(i),i=1,icp)
-               idead = 3
+               write (*,'(/,a,/)') 'bad result on idead = 3, let''s '//
+     *                'blow this joint, the mass balance errors are:'
+               write (*,'(4(g14.6,2x))') (tot(i),i=1,icp)
 
                call lpwarn (idead,'REOPT/MASS BALANCE')
 
                exit
 
-c           else if (idead.eq.3) then
-
-c              write (*,'(/,a,/)') '**warning ver333** '//
-c    *                   'You''ve got to ask yourself one '//
-c    *                   'question: Do I feel lucky? Well, do ya, punk?'
+            else if (idead1.eq.3) then
+c                                 do another iteration
+               if (quit)  quit = .false.
 
             end if
 
             idead = 0
+
+         else
+
+            idead1 = 0
 
          end if
 
@@ -401,27 +404,6 @@ c    *                   'question: Do I feel lucky? Well, do ya, punk?'
          else
             ogtot = gtot
          end if
-
-c        if (iter.le.3) then 
-c           d2g(iter) = gtot
-c        else
-c           d2g(1) = d2g(2)
-c           d2g(2) = d2g(3)
-c           d2g(3) = gtot
-c        end if
-
-c        if (iter.ge.3) then 
-c           curve = d2g(3) + d2g(1) - 2d0*d2g(2)
-c           write (*,'(g12.6,1x,i2,1x,g12.6)') curve, iter,gtot-ogtot
-c           write (*,'(g12.6,1x,i2,1x,g12.6)') curve/dabs(gtot), iter,
-c    *                                         (gtot-ogtot)/dabs(gtot)
-
-c           if (dabs(curve/gtot).eq.0d0.or.
-c    *          dabs((gtot-ogtot)/gtot).eq.0d0) then
-c              quit = .true.
-c           end if
-
-c        end if
 c                                 idead is zero coming into yclos2:
 c                                 analyze solution, get refinement points
          call yclos2 (clamda,x,is,iter,opt,idead,quit)
@@ -458,30 +440,7 @@ c                                  save the old count
 
       end do
 
-c     if (count.gt.8000) then
-
-c     write (*,*) ' '
-c     write (*,*) 'function calls ',count
-c     write (*,*) 'iterations ',rcount(1)
-c     if (rcount(1).gt.0) 
-c    *   write (*,*) 'function calls/iteration ',count/rcount(1)
-c     write (*,*) 'good : bad ',rcount(2), rcount(3), 
-c    *                          rcount(2) + rcount(3)
-c     if (rcount(1).gt.0)  
-c    *   write (*,*) 'iter/opt ', rcount(1)/(rcount(2) + rcount(3))
-c     write (*,*) ' '
-
-c     call prtptx
-
-c     end if
-
-c     rcount = 0
-
-      
-c     count = 0
-c     write (*,*) count
-
-c     write (*,*) 'end of reopt'
+      if (iter.gt.iopt(20).and.idead.eq.0) call lpwarn (108,'REOPT')
 
       end
 

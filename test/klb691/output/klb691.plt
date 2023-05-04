@@ -2244,20 +2244,21 @@
            1         967
            0         968
            0        1954
-           1         969
+           0        1955
+           0        1956
            1         970
            1         971
            0         972
-           0        1956
-           0        1957
            0        1958
+           0        1959
+           0        1960
            1         974
            0         975
-           0        1960
-           0        1961
            0        1962
            0        1963
+           0        1964
            0        1965
+           0        1967
            1         978
            1         979
            1         980
@@ -2289,21 +2290,21 @@
            0        1953
            1        1006
            1        1007
-           0        1008
-           0        1955
-           1        1009
+           1        1008
+           0        1009
+           0        1957
            1        1010
            1        1011
            1        1012
            0        1013
-           0        1959
+           0        1961
            1        1014
            0        1015
-           0        1960
+           0        1962
            0        1016
-           0        1964
-           0        1017
            0        1966
+           0        1017
+           0        1968
            1        1018
            1        1019
            1        1020
@@ -2332,13 +2333,12 @@
            1        1003
            1        1004
            0        1005
-           0        1967
-           0        1968
            0        1969
-           1        1007
-           0        1008
+           0        1970
            0        1971
-           0        1972
+           1        1007
+           1        1008
+           0        1009
            0        1973
            1        1010
            1        1011
@@ -2382,7 +2382,7 @@
            1        1044
            1        1045
            0        1046
-           0        1970
+           0        1972
            1        1047
            1        1048
            0        1049
@@ -3714,3 +3714,169 @@
            7           0           7
            1           2           3           4           5           7
            7
+
+ 155 compound counter
+   1 fo      
+   2 fa      
+   3 lrn     
+   4 mont    
+   5 mwd     
+   6 fwd     
+   7 mrw     
+   8 frw     
+   9 mpv     
+  10 fpv     
+  11 apv     
+  12 npv     
+  13 cpv     
+  14 mak     
+  15 fak     
+  16 maj     
+  17 nagt    
+  18 py      
+  19 alm     
+  20 gr      
+  21 andr    
+  22 ski     
+  23 knor    
+  24 uv      
+  25 and     
+  26 ky      
+  27 sill    
+  28 smul    
+  29 amul    
+  30 merw    
+  31 geh     
+  32 ak      
+  33 rnk     
+  34 crd     
+  35 fcrd    
+  36 cstn    
+  37 en      
+  38 pren    
+  39 cen     
+  40 hen     
+  41 hfs     
+  42 fs      
+  43 mgts    
+  44 di      
+  45 hed     
+  46 jd      
+  47 acm     
+  48 kos     
+  49 cats    
+  50 caes    
+  51 wo      
+  52 pswo    
+  53 wal     
+  54 spr4    
+  55 spr5    
+  56 fspr    
+  57 ab      
+  58 abh     
+  59 an      
+  60 q       
+  61 trd     
+  62 crst    
+  63 coe     
+  64 stv     
+  65 ne      
+  66 cg      
+  67 cgh     
+  68 macf    
+  69 mscf    
+  70 fscf    
+  71 nacf    
+  72 cacf    
+  73 manal   
+  74 nanal   
+  75 msnal   
+  76 fsnal   
+  77 canal   
+  78 lime    
+  79 per     
+  80 fper    
+  81 wu      
+  82 cor     
+  83 mcor    
+  84 hem     
+  85 hem_nol 
+  86 esk     
+  87 sp      
+  88 herc    
+  89 mt      
+  90 mft     
+  91 picr    
+  92 iron    
+  93 O2      
+  94 perL    
+  95 limL    
+  96 corL    
+  97 eskL    
+  98 hemL    
+  99 qL      
+ 100 foL     
+ 101 faL     
+ 102 woL     
+ 103 enL     
+ 104 diL     
+ 105 silL    
+ 106 anL     
+ 107 abL     
+ 108 neL     
+ 109 acm_dqf 
+ 110 kho     
+ 111 dhem    
+ 112 mots    
+ 113 kho1    
+ 114 sil8L   
+ 115 fo8L    
+ 116 fa8L    
+ 117 q8L     
+ 118 mots1   
+ 119 ospr    
+ 120 cfs     
+ 121 crdi    
+ 122 cess    
+ 123 cenjh   
+ 124 cren    
+ 125 oen     
+ 126 odi     
+ 127 qjL     
+ 128 dijL    
+ 129 jdjL    
+ 130 ctjL    
+ 131 fojL    
+ 132 fajL    
+ 133 hmjL    
+ 134 ekjL    
+ 135 foTL    
+ 136 faTL    
+ 137 cfsg    
+ 138 nacfb   
+ 139 mfpv    
+ 140 mcpv    
+ 141 mnpv    
+ 142 cmpv    
+ 143 cfpv    
+ 144 capv    
+ 145 cnpv    
+ 146 fcor    
+ 147 hmgts   
+ 148 cessh   
+ 149 crdih   
+ 150 foHL    
+ 151 faHL    
+ 152 qHL     
+ 153 jdL     
+ 154 hmL     
+ 155 ekL     
+
+   7 solution model counter
+   1  688    8 Cpx(JH)   
+   2    2    8 Melt(JH)  
+   3    2    2 O(JH)     
+   4    2    4 Sp(JH)    
+   5    2    2 Pl(JH)    
+   6    7    5 Grt(JH)   
+   7    8    7 Opx(JH)   

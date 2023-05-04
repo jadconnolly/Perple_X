@@ -8391,7 +8391,7 @@ c                                 set starting point
 c                                 iteration counter
          itic = 0
          gold = 1d99
-         xdp = 1d0
+         xdp = 1d99
 c                                 newton raphson iteration
          do
 
@@ -8410,6 +8410,9 @@ c                                 or dp < tolerance.
 
                goodc(1) = goodc(1) + 1d0
                goodc(2) = goodc(2) + dfloat(itic)
+c                                  apply the increment
+               pa(jd) = pnew
+               call pincs (pa(jd)-p0a(jd),dy,ind,jd,nr)
 
                exit
 
@@ -8420,9 +8423,11 @@ c                                 tolerance, else flag as error
      *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
 
                   call spewrn (id,101,itic,iwarn,.false.,'SPECI1')
+c                                  don't apply the increment
+                  g = gold
 
                else
-c                                 oscillating but bad:
+c                                 oscillating and bad:
                   error = .true.
 
                   call spewrn (id,102,itic,iwarn,.true.,'SPECI1')
@@ -8437,6 +8442,9 @@ c                                 oscillating but bad:
      *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
 c                                 accept bad result
                   call spewrn (id,103,itic,iwarn,.false.,'SPECI1')
+c                                 apply the increment
+                  pa(jd) = pnew
+                  call pincs (pa(jd)-p0a(jd),dy,ind,jd,nr)
 
                else
 
@@ -8496,9 +8504,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical error, minfx
+      logical error, minfx, oscil
 
-      integer i,k,id,lord,itic
+      integer i, k, id, lord, itic, iwarn
 
       double precision g,dp(j3),tdp,gold,xtdp,scp(k5),scptot
 
@@ -8517,6 +8525,9 @@ c----------------------------------------------------------------------
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
+
+      save iwarn
+      data iwarn/0/
 c---------------------------------------------------------------------
       if (idegen.gt.1000.and.nord(id).gt.1.and.icase(id).ne.0) then
 c                                 compositional degeneracy can have the consequence
@@ -8533,6 +8544,7 @@ c                                 for non-elemental components:
                end if
             end do
          end do
+
       end if
 c                                 get initial p values
       if (refine) then 
@@ -8554,14 +8566,6 @@ c                                 species are necessary to describe the ordering
          do i = 1, nord(id)
             if (.not.pin(i)) cycle
             call speci1 (g,id,i)
-
-
-c           call opeci1 (oldg,id,i)
-
-c           if (dabs(oldg-g).gt.1d-6) then 
-c              write (*,*) 'oink',id,i,oldg-g,oldg,g
-c           end if 
-
             exit
          end do
 
@@ -8586,9 +8590,10 @@ c                                 for non-elemental components:
 c                                 check if an odered species contains the
 c                                 degenerate component:
          itic = 0
-         gold = 0d0
-         xtdp = 0d0
+         gold = 1d99
+         xtdp = 1d99
          minfx = .false.
+         oscil = .false.
 
          do
 
@@ -8643,29 +8648,50 @@ c                                  just continue, minfx set T by pinc.
 
             end do
 
+            if (dabs(tdp/xtdp).gt.1d0.and.gold.lt.g) then
+               oscil = .true.
+            end if
+
             if ((tdp.lt.nopt(50).or.
      *          dabs((gold-g)/(1d0+dabs(g))).lt.nopt(50))
      *         .and.itic.gt.1) then
-
+c                                 all clear to go
                goodc(1) = goodc(1) + 1d0
                goodc(2) = goodc(2) + dfloat(itic)
                exit
 
-            else if (itic.gt.5.and.gold.lt.g) then
+            else if (oscil) then 
+c                                 oscillating
+               if (dabs(xtdp).lt.nopt(40).or.
+     *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
+c                                 acceptable 
+                  call spewrn (id,101,itic,iwarn,.false.,'SPECI2')
+c                                 in principle should revert to gold
+               else
+c                                  switch to minfx
+                  call spewrn (id,102,itic,iwarn,.true.,'SPECI1')
 
-               minfx = .true.
+                  minfx = .true.
+
+               end if
+
                exit
 
             else if (itic.gt.iopt(21)) then 
 
-c              write (*,*) 'div2 ',gold-g,id,itic,g,tdp,tdp-xtdp
-               minfx = .true. 
-               exit
+               if (dabs(xtdp).lt.nopt(40).or.
+     *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
+c                                 accept bad result
+                  call spewrn (id,103,itic,iwarn,.false.,'SPECI2')
 
-            else if (itic.gt.5.and.tdp.eq.xtdp) then 
+               else
 
-               minfx = .true. 
-c              write (*,*) 'wroink67 ',dp(1:lord),id,g
+                  minfx = .true.
+
+                  call spewrn (id,104,itic,iwarn,.true.,'SPECI2')
+
+               end if
+
                exit
 
             end if
@@ -15315,7 +15341,7 @@ c----------------------------------------------------------------------
       logical error, done, oscil
 
       double precision g, qmax, qmin, q, q0, dqq, rqmax, rqmin, gold, 
-     *                 xdq, qnew
+     *                 xdq, qold
 
       double precision omega, gex
       external omega, gex
@@ -15428,9 +15454,9 @@ c                                 newton raphson iteration
 
             call gpder1 (k,id,q-q0,dqq,g,.false.)
 
-            qnew = q
+            qold = q
 
-            call pcheck (qnew,qmin,qmax,dqq,done)
+            call pcheck (q,qmin,qmax,dqq,done)
 
             if (dabs(dqq/xdq).gt.1d0.and.gold.lt.g) then
                oscil = .true.
@@ -15440,9 +15466,8 @@ c                                 done is just a flag to quit
 
                goodc(1) = goodc(1) + 1d0
                goodc(2) = goodc(2) + dfloat(itic)
-c                                 in principle the p's could be incremented
-c                                 here and g evaluated for the last update.
-               return
+
+               exit
 
             else if (oscil) then
 c                                 oscillating, accept if within reduced
@@ -15451,6 +15476,9 @@ c                                 tolerance, else flag as error
      *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
 
                   call spewrn (id,101,itic,iwarn,.false.,'GPMLT1')
+c                                 reset to previous solution (qold,gold)
+                  q = qold
+                  call gpder1 (k,id,q-q0,dqq,g,.false.)
 
                else
 c                                 oscillating but bad:
@@ -15481,7 +15509,6 @@ c                                 fails to converge.
 
             end if
 
-            q = qnew
             xdq = dqq
             gold = g
             itic = itic + 1
@@ -15586,9 +15613,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer k, id, itic, lord
+      integer k, id, itic, lord, iwarn
 
-      logical error, minfx
+      logical error, minfx, oscil
 
       double precision g, dqmax(j3), dqmin(j3), dqq(j3), ddq(j3), gold,
      *                 tdp, xtdp
@@ -15618,6 +15645,9 @@ c----------------------------------------------------------------------
 
       double precision goodc, badc
       common/ cst20 /goodc(3),badc(3)
+
+      save iwarn
+      data iwarn/0/
 c----------------------------------------------------------------------
       error = .false.
       minfx = .false.
@@ -15652,9 +15682,10 @@ c                                 set each to 0.9*qmax as in speci2
       if (lord.gt.0) then
 
          itic = 0
-         gold = 0d0
-         xtdp = 0d0
+         gold = 1d99
+         xtdp = 1d99
          minfx = .false.
+         oscil = .false.
 
          do
 
@@ -15684,6 +15715,10 @@ c                                 increment q's
                tdp = tdp + dabs(ddq(k))
 
             end do
+
+            if (dabs(tdp/xtdp).gt.1d0.and.gold.lt.g) then
+               oscil = .true.
+            end if
 c                                 check for convergence
             if ((tdp.lt.nopt(50).or.
      *          dabs((gold-g)/(1d0+dabs(g))).lt.nopt(50))
@@ -15693,21 +15728,38 @@ c                                 check for convergence
                goodc(2) = goodc(2) + dfloat(itic)
                exit
 
-            else if (itic.gt.25.and.gold.lt.g) then
+            else if (oscil) then 
+c                                 oscillating
+               if (dabs(xtdp).lt.nopt(40).or.
+     *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
+c                                 acceptable 
+                  call spewrn (id,101,itic,iwarn,.false.,'SPECI2')
+c                                 in principle should revert to gold
+               else
+c                                  switch to minfx
+                  call spewrn (id,102,itic,iwarn,.true.,'SPECI1')
 
-               minfx = .true.
+                  minfx = .true.
+
+               end if
+
                exit
 
             else if (itic.gt.iopt(21)) then 
 
-c              write (*,*) 'div2 ',gold-g,id,itic,g,tdp,tdp-xtdp
-               minfx = .true. 
-               exit
+               if (dabs(xtdp).lt.nopt(40).or.
+     *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
+c                                 accept bad result
+                  call spewrn (id,103,itic,iwarn,.false.,'SPECI2')
 
-            else if (itic.gt.5.and.tdp.eq.xtdp) then 
+               else
 
-               minfx = .true. 
-c              write (*,*) 'wroink67 ',dp(1:lord),id,g
+                  minfx = .true.
+
+                  call spewrn (id,104,itic,iwarn,.true.,'SPECI2')
+
+               end if
+
                exit
 
             end if

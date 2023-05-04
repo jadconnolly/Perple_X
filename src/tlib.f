@@ -31,7 +31,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.0.10, May 3, 2023.',
+     *     'Perple_X release 7.0.10, May 4, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -1991,7 +1991,7 @@ c                                 generic thermo options
      *        4x,'speciation_precision   ',g7.1E1,4x,
      *           '[1d-5] <1; absolute',/,
      *        4x,'speciation_max_it      ',i4,7x,'[100]',/,
-     *        4x,'function_tolerance_exp ',f3.1,7x,
+     *        4x,'function_tolerance_exp  ',f3.1,7x,
      *           '[0.8] sets x in tol = epsmch^x',/,
      *        4x,'GFSM                    ',l1,9x,
      *           '[F] T GFSM/special_component toggle',/,
@@ -8224,17 +8224,17 @@ c----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer idead, iwarn91, iwarn42, iwarn90, iwarn01, iwarn02, 
-     *        iwarn03, iwarn00, iwarn09, iwarn58, iwarn04
+     *        iwarn03, iwarn00, iwarn09, iwarn58, iwarn04, iwarn08
 
       character char*(*)
 
       double precision c
 
       save iwarn91, iwarn42, iwarn90, iwarn01, iwarn02, iwarn03, 
-     *     iwarn58, iwarn00, iwarn09, iwarn04
+     *     iwarn58, iwarn00, iwarn09, iwarn04, iwarn08
 
       data iwarn91, iwarn42, iwarn90, iwarn01, iwarn02, iwarn03, 
-     *     iwarn00, iwarn09, iwarn58, iwarn04/10*0/
+     *     iwarn00, iwarn09, iwarn58, iwarn04, iwarn08/11*0/
 c----------------------------------------------------------------------
 c                                             look for errors
       if (idead.eq.2.or.idead.gt.4.and.idead.lt.8.and.
@@ -8342,13 +8342,29 @@ c                                 triggered by reopt/resub, aq_error_ver103
 
          iwarn04 = iwarn04 + 1
 
+      else if (idead.eq.108) then
+c                                 triggered by yclos2, error_ver109
+         if (iwarn08.le.iopt(1)) then
+
+            call warn (100,c,108,'Did not converge to optimization_pr'//
+     *                           'ecision within optimizaton_max it. '//
+     *                         'The low quality result will be output.')
+
+            call prtptx
+
+            if (iwarn08.eq.iopt(1)) call warn (49,c,108,'LPWARN')
+
+            iwarn08 = iwarn08 + 1
+
+         end if
+
       else if (idead.eq.109) then
 c                                 triggered by yclos2, error_ver109
          if (iwarn09.le.iopt(1)) then
 
             call warn (100,c,109,'Valid otimization result includes '//
-     *                           'invalid phase/endmember. '//
-     *             'To output result set error_ver109 to F.')
+     *                                 'an invalid phase/endmember. '//
+     *                        'To output result set error_ver109 to F.')
 
             call prtptx
 
