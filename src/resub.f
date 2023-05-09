@@ -208,12 +208,12 @@ c-----------------------------------------------------------------------
       integer liw, lw, iter, idead, jstart, opt, i, j,
      *        idead1, jter, iprint, lpprob, xphct
 
-      logical quit, switch 
+      logical quit
 
       parameter (liw=2*k21+3,lw=2*(k5+1)**2+7*k21+5*k5)
 
       double precision ax(k5), clamda(k21+k5), w(lw), tot(k5), gtot,
-     *                 ogtot, bl(k21+k5), bu(k21+k5), d2g(3), tol, curve
+     *                 ogtot, bl(k21+k5), bu(k21+k5), tol
 
       integer is(k21+k5), iw(liw)
 
@@ -244,10 +244,8 @@ c-----------------------------------------------------------------------
 c                                 the pseudocompounds to be refined
 c                                 are identified in jdv(1..npt)
       quit = .false.
-      switch = .false.
       opt = npt
       idead1 = 0
-      d2g(1) = ogtot
 
       jphct = jpoint
 c                                 global composition coordinate counter
@@ -2782,7 +2780,7 @@ c                                 each iteration:
 
             end if
 
-            call chkpa (jds)
+c           call chkpa (jds)
 c                                 save endmember fractions
             pa3(i,1:nstot(jds)) = pa(1:nstot(jds))
 c                                 get and save the composition

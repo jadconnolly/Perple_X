@@ -1056,7 +1056,9 @@ c                                 imaf = 3, warn on activity > 1.
 
       end if 
 
-      if (numbad.and..not.readyn()) numbad = .false.
+      if (numbad) then
+         if (.not.readyn()) numbad = .false.
+      end if
 
       end 
 

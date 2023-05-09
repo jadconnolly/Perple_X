@@ -394,7 +394,7 @@ c-----------------------------------------------------------------------
       ltot = lstot(rids)
       ttot = tstot(rids)
 
-      call chkpa (rids)
+c     call chkpa (rids)
 
       idif = 0
 

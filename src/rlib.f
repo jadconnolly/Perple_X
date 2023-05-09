@@ -7627,7 +7627,7 @@ c                                 idependent species
 
       end do
 
-      call chkpa (id)
+c     call chkpa (id)
 c                                 convert the ordered species to 
 c                                 the stoichiometric equivalent 
 c                                 amounts of disordered species.
