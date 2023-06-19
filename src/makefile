@@ -77,8 +77,8 @@ vertex: vertex.o $(LIBRARY)
 werami: werami.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
-pssect: psect.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) psect.o $(LIBRARY) -o $@$(EXT)
+pssect: psect.o cont_lib.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) psect.o cont_lib.o $(LIBRARY) -o $@$(EXT)
 
 pstable: pstable.o $(LIBRARY_PS)
 	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
