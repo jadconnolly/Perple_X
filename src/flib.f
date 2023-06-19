@@ -101,9 +101,6 @@ c---------------------------------------------------------------------
 
       external readyn
 
-      character vname*8, xname*8
-      common / csta2 /xname(k5),vname(l2)
-
       double precision buf
       common/ cst112 /buf(5)
 
@@ -526,9 +523,6 @@ c-----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer jfug, i
-
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
 
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)

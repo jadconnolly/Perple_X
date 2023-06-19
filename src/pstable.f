@@ -13,9 +13,6 @@ c----------------------------------------------------------------------
  
       external readyn
 
-      character*100 prject,tfname
-      common/ cst228 /prject,tfname
-
       integer ix,iy,mvar
       double precision z
       common/ dim   /z(nx,ny),ix,iy,mvar
@@ -23,9 +20,6 @@ c----------------------------------------------------------------------
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
-
-      integer  iop0 
-      common / basic /iop0
 c----------------------------------------------------------------------
 c                                 version info
       call vrsion (6)
@@ -148,10 +142,7 @@ c---------------------------------------------------------------------
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
       character vnm*8
-      common/ cxt18a /vnm(l3)  
-
-      integer  iop0 
-      common / basic /iop0
+      common/ cxt18a /vnm(l3)
 
       integer ix,iy,mvar
       double precision z,zt 
@@ -309,10 +300,7 @@ c---------------------------------------------------------------------
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
       character vnm*8
-      common/ cxt18a /vnm(l3)  
-
-      integer  iop0 
-      common / basic /iop0
+      common/ cxt18a /vnm(l3)
 
       integer ix,iy,mvar
       double precision z

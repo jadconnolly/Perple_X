@@ -1,77 +1,183 @@
-      subroutine psytic (x0, y0, dy, tic, tic1, tic2)
+      subroutine psytic (x0, y0, dy, tic, tic1, tic2, ltern)
 
       implicit none
 
       include 'perplex_parameters.h'
 
-      double precision x0, y0, dy, tic, tic1, tic2, y, dy2
+      double precision x0, y0, dy, tic, tic1, tic2, x, y, xc, yc, dy2,
+     *                 dxt, dyt, dxc, dyc
 
       integer i
+
+      logical ltern
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
 
 c psytic - subroutine to draw y-axis ticks.
 
-      y = y0 
+c                                   once, this seemed like a good idea
+      if (ltern) then
+         x = x0
+         y = y0
+         xc = x0+tic
+         yc = y0-tic
+         if (tic.lt.0) then
+            xc = x0
+            yc = y0+tic
+         endif
+         call trneq (x,y)
+         call trneq (xc,yc)
+         dxc = xc-x
+         dyc = yc-y
+      endif
+      dxt = tic
+      dyt = 0d0
 
-      call psmove (x0,y0)
+      yc = y0
+      x = x0
+      y = y0
+
+      if (ltern) call trneq(x,y)
+      call psmove (x,y)
 
       if (.not.half.and..not.tenth) then 
 
-         do while (y.lt.ymax) 
-            call psrlin (tic,0d0,1d0,width)
-            call psrmov (-tic,dy)
-            y = y + dy 
+         do while (yc.lt.ymax) 
+            call psrlin (dxt,dyt,1d0,width)
+            if (ltern .and. yc.gt.ymin) then
+               call psmove (x,y)
+               call psrlin (dxc,dyc,1d0,width)
+            endif
+            yc = yc + dy 
+            x = x0
+            y = yc
+            if (ltern) then
+               if (tic.lt.0) x = x - y
+               call trneq (x,y)
+            endif
+            call psmove (x,y)
          end do 
 
       else if (.not.tenth) then
 
          dy2 = dy / 2d0
 
-         do while (y.lt.ymax) 
+         do while (abs(yc-ymax) .gt. dy2)
 
-            call psrlin (tic,0d0,1d0,width)
-            call psrmov (-tic,dy2)
+            call psrlin (dxt,dyt,1d0,width)
+            if (ltern .and. yc.gt.ymin) then
+               call psmove (x,y)
+               call psrlin (dxc,dyc,1d0,width)
+            endif
+            yc = yc + dy2
+            if (abs(yc-ymax) .lt. dy2) exit
+            x = x0
+            y = yc
+            if (ltern) then
+               if (tic.lt.0) x = x - y
+               call trneq (x,y)
+            endif
+            call psmove (x,y)
+            call psrlin (tic1/tic*dxt, tic1/tic*dyt, 1d0, width)
+            if (ltern) then
+               call psmove (x,y)
+               call psrlin (tic1/tic*dxc,tic1/tic*dyc,1d0,width)
+            endif
             y = y + dy2
-            if (y.ge.ymax) exit 
-            call psrlin (tic1, 0d0, 1d0, width)
-            call psrmov (-tic1,dy2)
-            y = y + dy2
+            x = x0
+            y = yc
+            if (ltern) then
+               if (tic.lt.0) x = x - y
+               call trneq (x,y)
+            endif
+            call psmove (x,y)
          end do 
 
-         if (y0-dy2.gt.ymin)
-     *      call psline (x0,y0-dy2,x0+tic1,y0-dy2,1d0,width)
+         if (y0-dy2.gt.ymin) then
+            x = x0
+            y = y0-dy2
+            xc = x0+tic1
+            yc = y0-dy2
+            if (ltern) then
+               if (tic.lt.0) then
+                  x = x - y
+                  xc = xc - yc
+               endif
+               call trneq (x,y)
+               call trneq (xc,yc)
+            endif
+            call psline (x,y,xc,yc,1d0,width)
+         endif
 
       else
 
          dy2 = dy / 10d0
 
-         do while (y.lt.ymax)
+         do while (yc.lt.ymax)
+            call psrlin (dxt, dyt, 1d0, width)
+            if (ltern .and. yc.gt.ymin) then
+               call psmove (x,y)
+               call psrlin (dxc,dyc,1d0,width)
+            endif
 
-            call psrlin (tic, 0d0, 1d0, width)
-            call psrmov (-tic, dy2)
-
-            y = y + dy2
+            yc = yc + dy2
+            x = x0
+            y = yc
+            if (ltern) then
+               if (tic.lt.0) x = x - y
+               call trneq (x,y)
+            endif
+            call psmove (x,y)
 
             do i = 1, 4
-               if (y.ge.ymax) exit
-               call psrlin (tic2, 0d0, 1d0, width)
-               call psrmov (-tic2, dy2)
-               y = y + dy2
+               if (yc.ge.ymax) exit
+               call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+               if (ltern) then
+                  call psmove (x,y)
+                  call psrlin (tic2/tic*dxc,tic2/tic*dyc,1d0,width)
+               endif
+               yc = yc + dy2
+               x = x0
+               y = yc
+               if (ltern) then
+                  if (tic.lt.0) x = x - y
+                  call trneq (x,y)
+               endif
+               call psmove (x,y)
             end do 
 
-            if (y.ge.ymax) exit 
+            if (yc.ge.ymax) exit 
 
-            call psrlin (tic1, 0d0, 1d0, width)
-            call psrmov (-tic1, dy2)
-            y = y + dy2
+            call psrlin (tic1/tic*dxt, tic1/tic*dyt, 1d0, width)
+            if (ltern) then
+               call psmove (x,y)
+               call psrlin (tic1/tic*dxc,tic1/tic*dyc,1d0,width)
+            endif
+            yc = yc + dy2
+            x = x0
+            y = yc
+            if (ltern) then
+               if (tic.lt.0) x = x - y
+               call trneq (x,y)
+            endif
+            call psmove (x,y)
 
             do i = 1, 4
-               if (y.ge.ymax) exit 
-               call psrlin (tic2, 0d0, 1d0, width)
-               call psrmov (-tic2, dy2)
-               y = y + dy2
+               if (yc.ge.ymax) exit 
+               call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+               if (ltern) then
+                  call psmove (x,y)
+                  call psrlin (tic2/tic*dxc,tic2/tic*dyc,1d0,width)
+               endif
+               yc = yc + dy2
+               x = x0
+               y = yc
+               if (ltern) then
+                  if (tic.lt.0) x = x - y
+                  call trneq (x,y)
+               endif
+               call psmove(x,y)
             end do 
 
          end do 
@@ -79,27 +185,64 @@ c psytic - subroutine to draw y-axis ticks.
          if (y0-dy2.lt.ymin) return
 
          y = y0 - dy2
-         call psmove (x0,y)
+         x = x0
+         if (ltern) then
+            if (tic.lt.0) x = x - y
+            call trneq (x,y)
+         endif
+         call psmove (x,y)
+
+         yc = y0 - dy2
 
          do i = 1, 4
-            if (y.le.ymin) return
-            call psrlin (tic2, 0d0, 1d0, width)
-            call psrmov (-tic2, -dy2)
-            y = y - dy2
+            if (yc.le.ymin) return
+            call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+            if (ltern) then
+               call psmove (x,y)
+               call psrlin (tic2/tic*dxc,tic2/tic*dyc,1d0,width)
+            endif
+            yc = yc - dy2
+            x = x0
+            y = yc
+            if (ltern) then
+               if (tic.lt.0) x = x - y
+               call trneq (x,y)
+            endif
+            call psmove(x,y)
          end do 
 
-         if (y.le.ymin) return
+         if (yc.le.ymin) return
 
-         call psrlin (tic1, 0d0, 1d0, width)
-         call psrmov (-tic1, -dy2)
+         call psrlin (tic1/tic*dxt, tic1/tic*dyt, 1d0, width)
+         if (ltern) then
+            call psmove (x,y)
+            call psrlin (tic1/tic*dxc,tic1/tic*dyc,1d0,width)
+         endif
 
-         y = y - dy2 
+         yc = yc - dy2
+         x = x0
+         y = yc
+         if (ltern) then
+            if (tic.lt.0) x = x - y
+            call trneq (x,y)
+         endif
+         call psmove (x,y)
 
          do i = 1, 4
-            if (y.le.ymin) exit
-            call psrlin (tic2, 0d0, 1d0, width)
-            call psrmov (-tic2, -dy2)
-            y = y - dy2
+            if (yc.le.ymin) exit
+            call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+            if (ltern) then
+               call psmove (x,y)
+               call psrlin (tic2/tic*dxc,tic2/tic*dyc,1d0,width)
+            endif
+            yc = yc - dy2
+            x = x0
+            y = yc
+            if (ltern) then
+               if (tic.lt.0) x = x - y
+               call trneq (x,y)
+            endif
+            call psmove (x,y)
          end do 
 
       end if 
@@ -107,76 +250,159 @@ c psytic - subroutine to draw y-axis ticks.
       end
 
 c------------------------------------------------------------------
-      subroutine psxtic (y0, x0, dx, tic, tic1, tic2)
+      subroutine psxtic (y0, x0, dx, tic, tic1, tic2, ltern)
 
       implicit none 
 
       include 'perplex_parameters.h'
 
-      double precision x0, y0, dx, tic, tic1, tic2, x, dx2
+      double precision x0, y0, dx, tic, tic1, tic2, x, y, xc, yc, dx2,
+     *                 dxt, dyt, dxc, dyc
 
       integer i
+
+      logical ltern
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
 
 c psxtic - subroutine to draw x-axis ticks.
 
+      if (ltern) then
+         x = x0
+         y = y0
+         call trneq (x,y)
+         xc = x0
+         yc = tic
+         call trneq (xc,yc)
+         dxt = xc-x
+         dyt = yc-y
+         xc = x0-tic
+         yc = tic
+         call trneq (xc,yc)
+         dxc = xc-x
+         dyc = yc-y
+      else
+         dxt = 0d0
+         dyt = tic
+      endif
+
+      xc = x0
       x = x0 
-      call psmove (x0,y0)
+      y = y0
+      if (ltern) call trneq (x,y)
+      call psmove (x,y)
 
       if (.not.half.and..not.tenth) then 
 
-         do while (x.lt.xmax) 
-            call psrlin (0d0, tic, 1d0, width)
-            call psrmov (dx, -tic)
-            x = x + dx 
+         do while (xc.lt.xmax) 
+            call psrlin (dxt, dyt, 1d0, width)
+            if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
+               call psmove (x,y)
+               call psrlin (dxc, dyt, 1d0, width)
+            endif
+            xc = xc + dx 
+            x = xc
+            y = y0
+            if (ltern) call trneq (x,y)
+            call psmove (x,y)
          end do 
 
       else if (.not.tenth) then
 
          dx2 = dx / 2d0
 
-         do while (x.lt.xmax) 
-            call psrlin (0d0, tic, 1d0, width)
-            call psrmov (dx2, -tic)
-            x = x + dx2
-            if (x.ge.xmax) exit
-            call psrlin (0d0, tic1, 1d0, width)
-            call psrmov (dx2, -tic1)
-            x = x + dx2
+         do while (abs(xc-xmax) .gt. dx2)
+            call psrlin (dxt, dyt, 1d0, width)
+            if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
+               call psmove (x,y)
+               call psrlin (dxc, dyt, 1d0, width)
+            endif
+            xc = xc + dx2
+            if (abs(xc-xmax).lt.dx2) exit
+            x = xc
+            y = y0
+            if (ltern) call trneq (x,y)
+            call psmove (x,y)
+            call psrlin (dxt, dyt, 1d0, width)
+            if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
+               call psmove (x,y)
+               call psrlin (dxc, dyc, 1d0, width)
+            endif
+            xc = xc + dx2
+            x = xc
+            y = y0
+            if (ltern) call trneq (x,y)
+            call psmove (x,y)
          end do 
 
-         if (x0-dx2.gt.xmin)
-     *      call psline (x0-dx2, y0, x0-dx2, y0+tic1, 1d0, width)
+         if (x0-dx2.gt.xmin) then
+            x = x0-dx2
+            y = y0
+            xc = x0-dx2
+            yc = y0+tic1
+            if (ltern) then
+               call trneq (x,y)
+               call trneq (xc,yc)
+            endif
+            call psline (x, y, xc, yc, 1d0, width)
+         endif
 
       else
 
          dx2 = dx / 10d0
 
-         do while (x.le.xmax) 
+         do while (xc.le.xmax) 
 
-            call psrlin (0d0, tic, 1d0, width)
-            call psrmov (dx2, -tic)
-            x = x + dx2
+            call psrlin (dxt, dyt, 1d0, width)
+            if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
+               call psmove (x,y)
+               call psrlin (dxc, dyc, 1d0, width)
+            endif
+            xc = xc + dx2
+            x = xc
+            y = y0
+            if (ltern) call trneq (x,y)
+            call psmove (x,y)
 
             do i = 1, 4
-               if (x.ge.xmax) exit
-               call psrlin (0d0, tic2, 1d0, width)
-               call psrmov (dx2, -tic2)
-               x = x + dx2
+               if (xc.ge.xmax) exit
+               call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+               if (ltern) then
+                  call psmove (x,y)
+                  call psrlin (tic2/tic*dxc, tic2/tic*dyt, 1d0, width)
+               endif
+               xc = xc + dx2
+               x = xc
+               y = y0
+               if (ltern) call trneq (x,y)
+               call psmove (x,y)
             end do 
 
-            if (x.ge.xmax) exit 
-            call psrlin (0d0, tic1, 1d0, width)
-            call psrmov (dx2, -tic1)
-            x = x + dx2
+            if (xc.ge.xmax) exit
+            call psrlin (tic1/tic*dxt, tic1/tic*dyt, 1d0, width)
+            if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
+               call psmove (x,y)
+               call psrlin (tic1/tic*dxc, tic1/tic*dyt, 1d0, width)
+            endif
+            xc = xc + dx2
+            x = xc
+            y = y0
+            if (ltern) call trneq (x,y)
+            call psmove (x,y)
 
             do i = 1, 4
-               if (x.ge.xmax) exit
-               call psrlin (0d0, tic2, 1d0, width)
-               call psrmov (dx2, -tic2)
-               x = x + dx2
+               if (xc.ge.xmax) exit
+               call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+               if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
+                  call psmove (x,y)
+                  call psrlin (tic2/tic*dxc, tic2/tic*dyt, 1d0, width)
+               endif
+               xc = xc + dx2
+               x = xc
+               y = y0
+               if (ltern) call trneq (x,y)
+               call psmove (x,y)
             end do 
 
          end do 
@@ -184,33 +410,56 @@ c psxtic - subroutine to draw x-axis ticks.
          if (x0-dx2.lt.xmin) return
 
          x = x0 - dx2
+         y = y0
+         if (ltern) call trneq (x,y)
+         call psmove (x, y)
 
-         call psmove (x, y0)
-
+         xc = x0 - dx2
          do i = 1, 4
-            if (x.le.xmin) return
-            call psrlin (0d0, tic2, 1d0, width)
-            call psrmov (-dx2, -tic2)
-            x = x - dx2
+            if (xc.le.xmin) return
+            call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+            if (ltern) then
+               call psmove (x,y)
+               call psrlin (tic2/tic*dxc, tic2/tic*dyt, 1d0, width)
+            endif
+            xc = xc - dx2
+            x = xc
+            y = y0
+            if (ltern) call trneq (x,y)
+            call psmove (x,y)
          end do
 
-         if (x.le.xmin) return
-         call psrlin (0d0, tic1, 1d0, width)
-         call psrmov (dx2, -tic1) 
-         x = x - dx2 
+         if (xc.le.xmin) return
+         call psrlin (tic1/tic*dxt, tic1/tic*dyt, 1d0, width)
+         if (ltern) then
+            call psmove (x,y)
+            call psrlin (tic1/tic*dxc, tic1/tic*dyt, 1d0, width)
+         endif
+         xc = xc - dx2
+         x = xc
+         y = y0
+         if (ltern) call trneq (x,y)
+         call psmove (x,y)
 
          do i = 1, 4
-            if (x.le.xmin) exit
-            call psrlin (0d0, tic2, 1d0, width)
-            call psrmov (-dx2, -tic2)
-            x = x - dx2
+            if (xc.le.xmin) exit
+            call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+            if (ltern) then
+               call psmove (x,y)
+               call psrlin (tic2/tic*dxc, tic2/tic*dyt, 1d0, width)
+            endif
+            xc = xc - dx2
+            x = xc
+            y = y0
+            if (ltern) call trneq (x,y)
+            call psmove (x,y)
          end do 
 
       end if 
 
       end
  
-      subroutine psylbl (y0, dy, tmin)
+      subroutine psylbl (y0, dy, tmin, ltern)
  
 c psylbl - subroutine to put on y-axis labels.
 
@@ -218,13 +467,15 @@ c psylbl - subroutine to put on y-axis labels.
 
       include 'perplex_parameters.h'
 
-      double precision y0,dy,tmin,x,y,xdc,ydc
+      double precision y0,dy,tmin,x,y,xdc,ydc,yc,xg,yg
 
       integer i,iy1
  
       character*12 numbs(40)
  
       integer ic(40)
+
+      logical ltern
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
@@ -235,14 +486,26 @@ c psylbl - subroutine to put on y-axis labels.
  
       call psnum (y0,ymax,dy,ic,iy1,numbs)
  
-      y = y0
+      yc = y0
  
       do i = 1, iy1
          x = xmin - (dfloat(ic(i)+1) * xdc) 
          if (x.lt.tmin) tmin = x
-         call pstext (x, y + ydc, numbs(i), ic(i))
-         if (lgrid) call psline (xmin, y, xmax, y, 10d0, 0d0)
-         y = y + dy
+         y = yc + ydc
+         if (ltern) call trneq (x,y)
+         call pstext (x, y, numbs(i), ic(i))
+         if (lgrid) then
+            x = xmin
+            y = yc + ydc
+            xg = xmax
+            yg = y
+            if (ltern) then
+               call trneq (x,y)
+               call trneq (xg,yg)
+            endif
+            call psline (x, y, xg, yg, 10d0, 0d0)
+         endif
+         yc = yc + dy
       end do 
  
       end
@@ -312,7 +575,7 @@ c                                 GH, 12/23/21
  
       end
  
-      subroutine psxlbl (x0, dx)
+      subroutine psxlbl (x0, dx, ltern)
  
 c psxlbl - subroutine to put on x-axis labels.
 
@@ -322,30 +585,43 @@ c psxlbl - subroutine to put on x-axis labels.
 
       integer ic(40),i,ix1
 
-      double precision x0, dx, x, xdc, y, t
+      double precision x0, dx, x, xdc, y, t, xc, ylv, xl, yl
  
       character*12 numbs(40)
+
+      logical ltern
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
 
-      y = ymin - 1.4d0*nscale*dcy
- 
-      x = x0
+      ylv = ymin - 1.4d0*nscale*dcy
  
       xdc = dcx*nscale/1.75d0
  
       call psnum (x0,xmax,dx,ic,ix1,numbs)
  
+      xc = x0
       do i = 1, ix1
 
-         if (x.ne.xmin) then 
-            t = x - dfloat(ic(i)) * xdc 
+         if (xc.ne.xmin) then
+            t = xc - dfloat(ic(i)) * xdc
+            y = ylv
+            if (ltern) call trneq (t,y)
             call pstext (t, y, numbs(i), ic(i))
-            if (lgrid) call psline (x, ymin, x, ymax, 10d0, 0d0)
+            if (lgrid) then
+               x = xc
+               y = ymin
+               xl = xc
+               yl = ymax
+               if (ltern) then
+                  call trneq (x,y)
+                  call trneq (xl,yl)
+               endif
+               call psline (x, y, xl, yl, 10d0, 0d0)
+            endif
          end if 
 
-         x = x + dx
+         xc = xc + dx
 
       end do 
  
@@ -384,9 +660,6 @@ c psaxes - subroutine to output (sloppy) axes.
       double precision vmax,vmin,dv
       common/ cst9 /vmax(l2),vmin(l2),dv(l2)
 
-      character vname*8, xname*8
-      common/ csta2 /xname(k5),vname(l2)
-
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
 c----------------------------------------------------------------------
@@ -421,19 +694,19 @@ c----------------------------------------------------------------------
 c                                       draw axes box
       call psrect (xmin,xmax,ymin,ymax,1d0,width,0)
 c                                       draw left vertical axis tics
-      call psytic (xmin, y0, dy, xtic, xtic1, xtic2)
+      call psytic (xmin, y0, dy, xtic, xtic1, xtic2, .false.)
 c                                       draw right vertical axis
-      call psytic (xmax, y0, dy, -xtic, -xtic1, -xtic2)
+      call psytic (xmax, y0, dy, -xtic, -xtic1, -xtic2, .false.)
 c                                       draw bottom horizontal axis
-      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2)
+      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2, .false.)
 c                                       draw top horizontal axis
-      call psxtic (ymax, x0, dx, -ytic, -ytic1, -ytic2)
+      call psxtic (ymax, x0, dx, -ytic, -ytic1, -ytic2, .false.)
  
       call pssctr (ifont,nscale,nscale,0d0)
 c                                       numeric axis labels:
-      call psylbl (y0, dy, tmin) 
+      call psylbl (y0, dy, tmin, .false.) 
  
-      call psxlbl (x0, dx)
+      call psxlbl (x0, dx, .false.)
 c                                     x-axis name
       call pssctr (ifont,nscale,nscale,0d0)  
 
@@ -490,6 +763,154 @@ c                                       modfied GH, 12/23/21
      *          'Enter the new values:')
 
       end
+c----------------------------------------------------------------------
+      subroutine psaxet (jop0, typ, vcon)
+ 
+c psaxet - subroutine to output (sloppy) ternary diagram axes.
+
+      implicit none
+
+      double precision x0,y0,dx,dy,xtic,ytic,xtic1,ytic1,
+     *                 xtic2,ytic2,tmin,x,y,xv(4),yv(4),yc,vcon
+
+      integer jop0, i, j, nblen
+
+      character typ*(*)
+
+      logical readyn
+
+      external readyn
+
+      include 'perplex_parameters.h'
+ 
+      character*8 record*32
+
+      integer jlow,jlev,loopx,loopy,jinc
+      common/ cst312 /jlow,jlev,loopx,loopy,jinc
+
+      integer jvar
+      double precision var,dvr,vmn,vmx
+      common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
+
+      integer ipot,jv,iv1,iv2,iv3,iv4,iv5
+      common / cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
+
+      character vnm*8
+      common/ cxt18a /vnm(l3)   
+
+      double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+      common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+c----------------------------------------------------------------------
+      x0 = xmin
+      dx = xlen / 5d0
+      y0 = ymin
+      dy = ylen / 5d0
+
+      xtic  = xlen/45d0/xfac
+      xtic1 = xtic*.67d0
+      xtic2 = xtic1*.67d0
+ 
+      ytic  = ylen/45d0
+      ytic1 = ytic*.67d0
+      ytic2 = ytic1*.67d0 
+
+      if (jop0.eq.1) then
+
+         write (*,'(/,a)') 'Modify default axes numbering (y/n)?'
+
+         if (readyn()) then
+            write (*,1030) 'ternary axis horiz. axis', x0, dx
+            read (*,*) x0, dx
+            write (*,1030) 'ternary axis vert. axis', y0, dy
+            read (*,*) y0, dy
+         end if 
+
+      end if 
+c                                       draw axes triangle
+      xv(1) = xmin
+      yv(1) = 0.
+      xv(2) = xmax
+      yv(2) = 0.
+      xv(3) = (xmax+xmin)/2
+      yv(3) = sqrt(3d0)/2d0*(xmax-xmin)
+      call pspygn (xv, yv, 3, 1d0, width, 0)
+c                                       draw left vertical axis tics
+      call psytic (xmin, y0, dy, xtic, xtic1, xtic2, .true.)
+c                                       draw right vertical axis
+      call psytic (xmax, y0, dy, -xtic, -xtic1, -xtic2, .true.)
+c                                       draw bottom horizontal axis
+      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2, .true.)
+ 
+      call pssctr (ifont,nscale,nscale,0d0)
+c                                       numeric axis labels:
+      call psylbl (y0, dy, tmin, .true.) 
+ 
+      call psxlbl (x0, dx, .true.)
+c                                     x-axis name
+      call pssctr (ifont,nscale,nscale,0d0)  
+
+      x = xmin + 0.5d0 * xlen - 2d0*dcx*nscale
+      y = ymin - 4d0*dcy*nscale
+      call trneq (x,y)
+
+      call pstext (x,y,vnm(1),0)
+c                                       y-axis name
+      call pssctr (ifont,nscale,nscale,60d0)
+
+      x = tmin - 3.33d0*dcx*nscale
+      y = ymin + 0.5d0 * ylen - 2.5d0*dcy*nscale
+      call trneq (x,y)
+ 
+      call pstext (x,y,vnm(2),0)
+c                                       sectioning constraints
+      if (jvar.gt.2) then
+
+         call pssctr (ifont,nscale,nscale,0d0)
+         yc = ymax + 1.2d1*dcy*nscale
+
+         write (record,1000) vnm(3),vmn(3)
+         write (record(nblen(record)+2:),'(a,g11.5)') '-',vmx(3)
+         call deblnk (record)
+         call pstext (xmin,yc,record,nblen(record))
+
+         do i = 4, jvar
+            yc = yc - 2.4*dcy*nscale
+            write (record,1000) vnm(i),vmn(i)
+            call deblnk (record)
+            call pstext (xmin,yc,record,nblen(record))
+         end do 
+c                                       grid details
+         yc = yc - 2.4*dcy*nscale
+         write (record,'(3(i4,1x,a,1x))') loopx,'x',loopy,'grid,',jlev,
+     *      'levels'
+         call deblnk (record)
+         call pstext (xmin,yc,record,nblen(record))
+ 
+      end if
+c                                       contour levels & units (if any)
+      if (vcon.gt.0d0) then
+         i = index(vnm(3),'(')
+         j = index(vnm(3),')')
+         if (i.gt.0 .and. j.gt.0) then
+            write (record,1010) vcon,vnm(3)(i+1:j-1),typ(1:nblen(typ)),
+     *         'contours'
+         else
+            write (record,1010) vcon,typ(1:nblen(typ)),'contours'
+         endif
+         call deblnk (record)
+            
+         yc = yc - 2.4*2*dcy*nscale
+         call pstext (xmin,yc,record,nblen(record))
+      endif
+ 
+1000  format (a,'=',g11.5)
+1010  format (f6.1,3(1x,a))
+1030  format (/,'Enter the starting value and interval for',
+     *          ' major tick marks on',/,'the ',a,'-axis (',
+     *          ' current values are:',2(1x,g9.3),')',/, 
+     *          'Enter the new values:')
+
+      end
 
       subroutine psaxop (jcopt,jop0,iop1)
 c----------------------------------------------------------------------
@@ -514,9 +935,6 @@ c psaxop - subroutine to make graphics transformation and get some options
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
-
-      integer  iop0 
-      common / basic /iop0
 c----------------------------------------------------------------------
 
       jop0 = 0
@@ -1039,6 +1457,10 @@ c                                 plot_aspect_ratio - (x_axis_length/y-axis_leng
 c                                 replicate_label - minimum separation before writing
 c                                 a replicate label
       rlabel = 0.025d0
+c                                 t contour interval
+      tcont = 50d0
+c                                 p contour interval
+      pcont = 1000d0
 c                                 -------------------------------------
 c                                 look for file
       opname = 'perplex_plot_option.dat'
@@ -1139,6 +1561,12 @@ c                                 perplex_pdf, do nothing
 c                                 perplex_pdf, do nothing
          else if (key.eq.'plot_output_type') then 
 c                                 perplex_pdf, do nothing
+         else if (key.eq.'contour_t_interval') then
+c                                 temperature contour interval
+            read (strg,*) tcont
+         else if (key.eq.'contour_p_interval') then
+c                                 pressure contour interval
+            read (strg,*) pcont
          else if (key.ne.'|') then 
 
             write (*,1110) key
@@ -1156,8 +1584,8 @@ c                                 --------------------------------------
 c                                 output 
       write (*,1000) 
 
-      write (*,1010) nscale, bbox, fill, label, plopt(3), rlabel, 
-     *               ascale, font, lgrid, half, width, dsx, 
+      write (*,1010) nscale, bbox, tcont, pcont, fill, label, plopt(3),
+     *               rlabel, ascale, font, lgrid, half, width, dsx, 
      *               dsy, dtx, dty, drot, xfac, spline, tenth, 
      *               cscale
 
@@ -1172,6 +1600,8 @@ c                                 -------------------------------------
      *        28x,i4,6x,'[0] y-min (pts)',/,
      *        28x,i4,6x,'[800] x-length (pts)',/,
      *        28x,i4,6x,'[800] y-length (pts)',/,
+     *        4x,'contour_t_interval     ',f7.2,4x,'>0 [50.0]',/,
+     *        4x,'contour_p_interval     ',f7.2,4x,'>0 [1000.0]',/,
      *        4x,'field_fill             ',l1,10x,'[T] F',/,
      *        4x,'field_label            ',l1,10x,'[T] F',/,
      *        4x,'numeric_field_label    ',l1,10x,'[F] T, if T ',
@@ -1677,16 +2107,12 @@ c                                 add error bars if requested
 
       end
 
-      integer function nblen(str)
-c--------------------------------------------------------------- 
-c george's function for psgrid, 
-c replicates a function already in perple_x
-c nblen - function to return nonblank length of a string
-      character str*(*)
-      integer i
 
-      do i=len(str),1,-1
-         if (str(i:i) .ne. ' ') exit
-      end do
-      nblen = i
+      subroutine trneq(x,y)
+c--------------------------------------------------------------- 
+c     translate coordinate (x,y) to equilateral coordinates
+      double precision x,y
+
+      x = x + 0.5d0 * y
+      y = y * 0.866025d0
       end

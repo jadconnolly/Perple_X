@@ -1617,7 +1617,7 @@ c                                 ref stuff
 
       subroutine incdep (ind)
 c-----------------------------------------------------------------------
-c either indep or incdp0 are called whenever any primary potential
+c either incdep or incdp0 are called whenever any primary potential
 c variables are changed to reevaluate secondary variables. this
 c cumbersome structure is necessitated by the fact that computational
 c variables were mapped directly to the thermodynamic variables in
@@ -4791,7 +4791,13 @@ c                                 create arrays of convenience, where j = 1, jst
 c                                 set kill flag:
 c                                 don't reset ikp if it has been set for
 c                                 another model.
-                  if (iend(i).ne.0.and.ikp(h).eq.0) ikp(h) = -1
+                  if (iend(i).ne.0.and.ikp(h).eq.0) then 
+                     if (icopt.ne.2) then
+                        ikp(h) = -1
+                     else
+                        write (*,1010) names(h),tname,names(h), tname
+                     end if
+                  end if
 
                   if (eos(h).eq.15.or.eos(h).eq.16) then
 
@@ -4870,6 +4876,10 @@ c                                missing endmember warnings:
 
 1000  format (/,'**warning ver114** the following endmembers',
      *          ' are missing for ',a,//,4(8(2x,a)))
+1010  format (/,'**warning ver115** endmember ',a,' is flagged in sol',
+     *       'ution model ',a,/,'flagging is disabled for solidus/liq',
+     *       'uidus calculations.',/,a,'will be treated as a normal e',
+     *       'ndmember of ',a)
 
       end
 
@@ -5726,7 +5736,10 @@ c                                 which case id is a dummy. smo the total
 c                                 species molality it is necessary for 
 c                                 renormalization.
             call gaqlgd (gg,rcp,rsum,rsmo,id,bad,.false.)
-
+c                                 gaqlgd can set bad if
+c                                 1) fails to converge
+c                                 2) gfunc out of range for water solvent
+c                                 3) epsilon < vapor value for impure solvent
             if (.not.bad) rkwak = .false.
 
          end if
@@ -9433,9 +9446,6 @@ c-----------------------------------------------------------------------
 
       external chksol
 
-      character prject*100,tfname*100
-      common/ cst228 /prject,tfname
-
       integer ipoint,kphct,imyn
       common/ cst60 /ipoint,kphct,imyn
 
@@ -10455,6 +10465,85 @@ c---------------------------------------------------------------------
       end if
 
       end
+
+      subroutine initlq
+c--------------------------------------------------------------------
+c decode george's phase list which are stored by input1 in the space
+c delimited text string meltph
+c---------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      logical sol
+
+      integer i, k, itis
+
+      integer ipot,jv,iv1,iv2,iv3,iv4,iv5
+      common/ cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
+c---------------------------------------------------------------------
+      nliq = 0
+      sol = .false.
+c                                 decode meltph
+      do 
+
+         k = index(meltph,' ') - 1
+         if (k.eq.0) exit
+c                                 check against known entities
+         call matchj (meltph(1:k),itis)
+
+         if (itis.ne.0) then 
+c                                 itis ~0 count the phase
+            nliq = nliq + 1
+            liqlst(nliq) = itis
+
+         else
+c                                 itis = 0 may indicate solidus/liquidus flag
+            if (meltph(1:k) .eq. 'solidus') then
+               sol = .true.
+            else if (meltph(1:k) .eq. 'liquidus') then
+               sol = .false.
+            else
+               write (*,*) '**',meltph(1:k),' not recognized.'
+            end if
+
+         end if
+c                                 blank the string and get the next
+         meltph(1:k) = ' '
+
+         call getstg(meltph)
+
+      end do
+
+      if (nliq.eq.0) call errdbg ('**No liquids, no liquidus/solidus'//
+     *                            'no plot: simple!')
+c                               force closed composition
+      lopt(1) = .true.
+c                               force linear_model on
+      iopt(18) = 1
+c                               save <cr> character
+      cr = char(13)
+c                               set george's opts variable
+      if (sol) then
+         whatlq = 'solidus'
+         opts = 1
+      else
+         whatlq = 'liquidus'
+         opts = 0
+      end if
+c                               extract units for search from 
+c                               independent variable name
+      i = index (vname(iv1),'(')
+      k = index (vname(iv1),')')
+      if (i.gt.0.and.k.gt.i) then
+         unitlq = vname(iv1)(i+1:k-1)
+      else
+         unitlq = '(?)'
+      end if
+c                               increment opts if pressure search
+      if (iv1.eq.1) opts = opts + 2
+
+      end 
 
       subroutine initlp 
 c--------------------------------------------------------------------
@@ -12345,9 +12434,6 @@ c-----------------------------------------------------------------------
 
       character name*100
 
-      character prject*100, tfname*100
-      common/ cst228 /prject,tfname
-
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
@@ -12605,9 +12691,6 @@ c-----------------------------------------------------------------------
       integer iasmbl
       common/ cst27  /iasmbl(j9)
 
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
-
       character cname*5
       common/ csta4  /cname(k5)
 
@@ -12733,7 +12816,7 @@ c                          excluded phases
       end if
 c                          solution models
       if (isoct.ne.0) then 
-         write (n3,1140)
+         write (n3,1130)
          write (n3,'(6(1x,a,1x))') (fname(i), i = 1, isoct)
       end if
 
@@ -14202,7 +14285,7 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, j, id
+      integer i, j, id, iwarn
 
       logical bad, recalc, lmus, feos
 
@@ -14279,14 +14362,13 @@ c                                 adaptive coordinates
 
       integer ids,isct,icp1,isat,io2
       common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
-      logical abort
-      common/ cstabo /abort
 c                                 solution model names
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
-      save lmu, lmus
+      save lmu, lmus, iwarn
+
+      data iwarn/0/
 c----------------------------------------------------------------------
       if ((.not.mus .and..not.recalc).or.
      *    (.not.lmus.and.recalc)) then
@@ -14337,9 +14419,19 @@ c                                 the absent component
 
          call slvnt3 (gso,.false.,feos,id)
 
-         if (epsln.lt.nopt(34).or.abort) then
+         if (epsln.lt.nopt(34).or.abort1) then
 c                                 eos is predicting vapor phase
 c                                 solvent densities
+            if (.not.abort1.and.iwarn.lt.iopt(1)) then
+
+               iwarn = iwarn + 1
+
+               call conwrn (301,' ')
+
+               if (iwarn.eq.iopt(1)) call warn (49,p,93,'GAQLGD')
+
+            end if
+
             bad = .true.
             return
 
@@ -14644,16 +14736,13 @@ c-----------------------------------------------------------------------
       double precision yf,g,v
       common/ cstcoh /yf(nsp),g(nsp),v(nsp)
 
-      logical abort
-      common/ cstabo /abort
-
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 
       save iwarn, iwarn0
       data iwarn, iwarn0 /0,0/
 c----------------------------------------------------------------------
-      if (epsln.lt.nopt(34).or.abort.or.yf(1).eq.0d0) then
+      if (epsln.lt.nopt(34).or.abort1.or.yf(1).eq.0d0) then
 c                                  vapor, same as checking lnkw
          bad = .true.
          return
@@ -16893,6 +16982,8 @@ c----------------------------------------------------------------------
 
          call readnm (i,index,com,ier,name)
          if (ier.ne.0) goto 90
+c                                 eliminate flagging for liqdus calculations
+         if (icopt.eq.2) cycle
 
          index = match (idim,ier,name)
          if (ier.ne.0) goto 90
@@ -19474,6 +19565,11 @@ c                                 potentials
 
          end if
 
+         if (icopt.eq.2) then 
+            read (n5,*,iostat=ier) tliq(ibulk)
+            if (ier.ne.0) goto 99
+         end if
+
       end do
 
 99    ibulk = ibulk - 1
@@ -19500,9 +19596,6 @@ c----------------------------------------------------------------------
 
       integer iam
       common/ cst4 /iam
-
-      character*100 prject,tfname
-      common/ cst228 /prject,tfname
 
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
@@ -19548,14 +19641,23 @@ c                                 top of plot file
       read (n4,*,iostat=ier) loopx, loopy, jinc
 c                                 check if the file was generated by unsplt
 c                                 if so set unsplt flag for sample_on_grid
+      jlev = grid(3,2)
+
       if (jinc.eq.-1) then
 
          jinc = 1
-         jlev = grid(3,2)
          lopt(47) = .true.
 
       else
+c                                 intermediate results may be for a low 
+c                                 level grid, get the grid from jinc
          lopt(47) = .false.
+
+         do i = 1, jlev
+           if (jinc.eq.2**(jlev-i)) exit
+         end do
+
+         jlev = i
 
       end if
 
@@ -19691,11 +19793,13 @@ c                                 arrays
       end do
 c                                 close n8 for assemblage list (plopt(3), PSSECT)
       close (n8) 
-c                                 make the "null" assemblage
-      iap(k2) = k3
-      iavar(1,k3) = 0
-      iavar(2,k3) = 0 
-      iavar(3,k3) = 0 
+c                                 make the "null" assemblages
+      do i = 0, 1
+         iap(k2-i) = k3-i
+         iavar(1,k3-i) = 0
+         iavar(2,k3-i) = 0 
+         iavar(3,k3-i) = 0
+      end do
 
       if (icopt.eq.7.and.fileio) then 
 c                                 if coodinates from a file, read
@@ -21377,9 +21481,6 @@ c-----------------------------------------------------------------------
 
       external readyn
 
-      character*100 prject,tfname
-      common/ cst228 /prject,tfname
-
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
@@ -21640,9 +21741,6 @@ c-----------------------------------------------------------------------
       integer ier
 
       logical err
-
-      character*100 prject,tfname
-      common/ cst228 /prject,tfname
 
       integer iam
       common/ cst4 /iam

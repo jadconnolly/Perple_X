@@ -315,9 +315,6 @@ c-------------------------------------------------------------------
       integer ipoint,kphct,imyn
       common/ cst60 /ipoint,kphct,imyn
 
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
-
       integer idcf,icfct
       common/ cst96 /idcf(k5,j9),icfct
 
@@ -415,9 +412,6 @@ c-----------------------------------------------------------------------
 
       integer ipoint,kphct,imyn
       common/ cst60 /ipoint,kphct,imyn
-
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
 
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
@@ -603,9 +597,6 @@ c-----------------------------------------------------------------------
 
       double precision delt,dtol,utol,ptol
       common/ cst87 /delt(l2),dtol,utol,ptol
-
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
 
       character cname*5
       common/ csta4  /cname(k5) 
@@ -2266,9 +2257,6 @@ c-----------------------------------------------------------------------
 
       integer i
 
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
-
       character cname*5
       common/ csta4  /cname(k5) 
 
@@ -2516,9 +2504,6 @@ c-----------------------------------------------------------------------
       integer iind,idep
       double precision c0,c1,c2,c3,c4,c5
       common/ cst316 /c0,c1,c2,c3,c4,c5,iind,idep
-
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
 
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
@@ -2797,9 +2782,6 @@ c----------------------------------------------------------------------
 
       common/ cst81 /icp2
 
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
-
       integer ipid,ipct
       common/ cst29 /ipid(k2,k8),ipct
  
@@ -2811,9 +2793,6 @@ c----------------------------------------------------------------------
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
-
-
-
 
       integer ivarrx,ivarip,isudo,ivar
       common/ cst62 /ivarrx(k2),ivarip(k2),isudo,ivar
@@ -2895,9 +2874,6 @@ c-----------------------------------------------------------------------
       character rxnstr*(kd2)
       common/ cst104 /rxnstr(k2)
 
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
- 
       double precision vip
       common/ cst28 /vip(l2,k2)
 
@@ -3632,9 +3608,6 @@ c----------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5 /v(l2),tr,pr,r,ps
-
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
 
       integer ipvt,idv,iophi,idphi,iiphi,iflg1
       double precision a,b
@@ -5891,8 +5864,9 @@ c---------------------------------------------------------------------
       double precision cp
       common/ cst12 /cp(k5,k10)
 
+      integer is
       double precision a,b,c
-      common/ cst313 /a(k5,k1),b(k5),c(k1)
+      common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp  

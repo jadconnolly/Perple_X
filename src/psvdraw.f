@@ -21,12 +21,6 @@ c Please do not distribute any part of this source.
 
       external readyn
 
-      integer  iop0 
-      common / basic /iop0
-
-      character*100 prject,tfname
-      common/ cst228 /prject,tfname
-
       integer iphct
       common/ ln4 /iphct
 
@@ -150,9 +144,6 @@ c----------------------------------------------------------------------
       logical readyn
 
       external readyn
-
-      integer  iop0 
-      common / basic /iop0
 
       integer iphct
       common/ ln4 /iphct
@@ -359,7 +350,7 @@ c pschem - subroutine to output ternary chemographies.
 
       include 'perplex_parameters.h'
  
-      character title*162, record*72, xname(k5)*8
+      character title*162, record*72
  
       double precision x3(3),y3(3),xx(j9),yy(j9),style,x1,y1,y,dyt,yt,xt
  
@@ -1163,7 +1154,7 @@ c psmixd - subroutine to draw binary mixed variable diagrams
 
       integer icp,ipoint,ifct,isat,ipot,i,ird,ivar
 
-      character*8 title*162, string*(lchar), tname(5),xname(k5)
+      character*8 title*162, string*(lchar), tname(5)
 
       integer idf(3),jphi(k1),igo,jop0,iop1,iop2,iop3,jb,
      *        jplus,jminus,isum,idif,j,i1,id1,it,i2,id2,jt,itot,
@@ -1198,9 +1189,6 @@ c psmixd - subroutine to draw binary mixed variable diagrams
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
-
-      integer  iop0 
-      common / basic /iop0
 
       integer iphct
       common/ ln4 /iphct

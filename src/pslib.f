@@ -224,11 +224,12 @@ c psopts - subroutine to output points.
       double precision xscale,yscale,xmn,ymn
       common/ scales /xscale,yscale,xmn,ymn,nps
  
-      write (nps,*) '%I ',npts
+      write (nps,1000) '%I',npts
       write (nps,1010) ( int((x(i) - xmn) * xscale),
      *                   int((y(i) - ymn) * yscale),
      *                   i = 1, npts)
  
+1000  format (a,1x,i5)
 1010  format (10(i7,1x))
  
       end
@@ -362,7 +363,8 @@ c psotrn - subroutine to output transformation matrix.
 c----------------------------------------------------------------
       subroutine psoclr
  
-c psoclr - subroutine to output color choice.
+c psoclr - subroutine to output default color choice (black foreground,
+c          white background).
  
       implicit none
 
@@ -377,69 +379,57 @@ c psoclr - subroutine to output color choice.
  
       end
 c----------------------------------------------------------------
-      subroutine psored
- 
-c psoclr - subroutine to output red color.
- 
-      implicit none
-
-      integer nps
-      double precision xscale,yscale,xmn,ymn
-      common/ scales /xscale,yscale,xmn,ymn,nps
- 
-      write (nps,1000)
- 
-1000  format ('%I cfg Red',/,'1 0 0 SetCFg',/,'%I cbg Red',/,
-     *        '1 0 0 SetCBg')
- 
-      end
-
       subroutine psocfg (ifg,ibg)
  
 c psoclr - subroutine to output color fore/back-ground.
  
       implicit none
 
-      integer nps, j, ifg, ibg
+      integer nps, i, j, ifg, ibg, nblen
+      external nblen
 
-      real col(0:12,3)
+      real col(3,0:12)
+
+      character cnm(0:12)*11
 
       double precision xscale,yscale,xmn,ymn
       common/ scales /xscale,yscale,xmn,ymn,nps
 
-      save col
+      save col, cnm
 
-      data col/
+      data ((col(i,j),i=1,3),cnm(j),j=0,12)/
 c                                 0 - black 
-     *          0., 0., 0.,
+     *          0., 0., 0., 'black',
 c                                 1 - white 
-     *          1., 1., 1.,
+     *          1., 1., 1., 'white',
 c                                 2 - red 
-     *          1., 0., 0.,
+     *          1., 0., 0., 'red',
 c                                 3 - green
-     *          0., 1., 0.,
+     *          0., 1., 0., 'green',
 c                                 4 - blue
-     *          0., 0., 1.,
+     *          0., 0., 1., 'blue',
 c                                 5 - purple
-     *          0., 1., 1.,
+     *          0., 1., 1., 'purple',
 c                                 6 - yellow
-     *          1., 1., 0.,
+     *          1., 1., 0., 'yellow',
 c                                 7 - brown
-     *          1., 0., 1.,
+     *          1., 0., 1., 'brown',
 c                                 8 - orange
-     *          1., .5, 0.,
+     *          1., .5, 0., 'orange',
 c                                 9 - dark blue
-     *          0., 0., .5,
+     *          0., 0., .5, 'dark blue',
 c                                 10 - dark red
-     *          .5, .0, .0,
+     *          .5, .0, .0, 'dark red',
 c                                 11 - dark green
-     *          0., .5, 0.,
+     *          0., .5, 0., 'dark green',
 c                                 12 - dark yellow
-     *          0.5, 0.5, 0./
+     *          0.5, 0.5, 0., 'dark yellow'/
  
-      write (nps,1000) (col(ifg,j),j=1,3),(col(ibg,j),j=1,3)
+      write (nps,1000)
+     *   cnm(ifg)(1:nblen(cnm(ifg))), (col(j,ifg),j=1,3),
+     *   cnm(ibg)(1:nblen(cnm(ibg))), (col(j,ibg),j=1,3)
  
-1000  format ('%I cfg Red',/,3(F3.1,1x),'SetCFg',/,'%I cbg Red',/,
+1000  format ('%I cfg ',a,/,3(F3.1,1x),'SetCFg',/,'%I cbg ',a,/,
      *        3(F3.1,1x),' SetCBg')
  
       end
@@ -607,8 +597,7 @@ c psopen - subroutine to open LUN nps, write prologue
 
       implicit none
 
-      character*100 prject,tfname
-      common/ cst228 /prject,tfname
+      include 'perplex_parameters.h'
 
       integer nps
       double precision xscale, yscale, xmn, ymn
@@ -916,12 +905,195 @@ c psrecb - subroutine to output a red rectangle for bad results in PSSECT
       write (nps,1030)
  
       call psolin (rline,width)
-      call psored
+      call psocfg (2,2)
       call psofil (1)
       call psotrn
       call psopts (x,y,4)
  
       write (nps,1020) 4
+ 
+1020  format (i5,' Poly',/,'End',/)
+1030  format (/,'Begin %I Poly')
+
+      end
+c----------------------------------------------------------------
+      subroutine pshexb (x1,y1,s,blr,clr,rline,width)
+ 
+c pstrib - subroutine to output parts/all of a colored hexagon for bad results
+c          in PSSECT.
+c     clr is color code as used by psocfg
+c     blr is 3 bit code:
+c     x x 1 - point on right side of grid
+c     x 1 x - point on left side of grid
+c     1 x x - point on bottom of grid
+c     combinations zero, one or two out of three are possible,
+c     except for 1 1 1 (= 7).
+c
+c               g            g = (1/2,sqrt(3)/2)
+c              ...      
+c             .....     
+c            .......
+c           .........
+c          e.........f       e = (1/4,sqrt(3)/4)  f = (3/4,sqrt(3)/4)
+c         ............. 
+c        .......d.......     d = (1/2,1/4)
+c       .................
+c      ...................
+c     a.........b.........c  a = (0,0)  b = (1/2,0)  c = (1,0)
+
+
+      implicit none
+
+      double precision x1,y1,s,so2,so4,ss34,s3o4,rline,width,x(6),y(6)
+
+      integer blr, clr, n
+
+      integer nps
+      double precision xscale,yscale,xmn,ymn
+      common/ scales /xscale,yscale,xmn,ymn,nps
+
+      so2 = 0.5d0 * s
+      so4 = 0.25d0 * s
+      s3o4 = 0.75d0 * s
+      ss34 = 0.4330127d0 * s
+
+      if (blr.eq.0) then
+c                                   somewhere in the middle
+         x(1) = x1 + so2
+         y(1) = y1 - so4
+         x(2) = x1 + so2
+         y(2) = y1 + so4
+         x(3) = x1
+         y(3) = y1 + s3o4
+         x(4) = x1 - so2
+         y(4) = y1 + so4
+         x(5) = x1 - so2
+         y(5) = y1 - so4
+         x(6) = x1
+         y(6) = y1 - s3o4
+         n = 6
+      else if (blr.eq.1) then
+c                                   right edge
+         x(1) = x1 - so4
+         y(1) = y1 + ss34
+         x(2) = x1 - so2
+         y(2) = y1 + so4
+         x(3) = x1 - so2
+         y(3) = y1 - so4
+         x(4) = x1
+         y(4) = y1 - s3o4
+         x(5) = x1 + so4
+         y(5) = y1 - ss34
+         n = 5
+      else if (blr.eq.2) then
+c                                   left edge
+         x(1) = x1 + so4
+         y(1) = y1 + ss34
+         x(2) = x1 + so2
+         y(2) = y1 + so4
+         x(3) = x1 + so2
+         y(3) = y1 - so4
+         x(4) = x1
+         y(4) = y1 - s3o4
+         x(5) = x1 - so4
+         y(5) = y1 - ss34
+         n = 5
+      else if (blr.eq.4) then
+c                                   bottom edge
+         x(1) = x1 - so2
+         y(1) = y1
+         x(2) = x1 - so2
+         y(2) = y1 + so4
+         x(3) = x1
+         y(3) = y1 + s3o4
+         x(4) = x1 + so2
+         y(4) = y1 + so4
+         x(5) = x1 + so2
+         y(5) = y1
+         n = 5
+      else if (blr.eq.3) then
+c                                   top apex 
+         x(1) = x1
+         y(1) = y1
+         x(2) = x1 - so4
+         y(2) = y1 - ss34
+         x(3) = x1
+         y(3) = y1 - s3o4
+         x(4) = x1 + so4
+         y(4) = y1 - ss34
+         n = 4
+      else if (blr.eq.5) then
+c                                   right apex 
+         x(1) = x1
+         y(1) = y1
+         x(2) = x1 - so4
+         y(2) = y1 + ss34
+         x(3) = x1 - so2
+         y(3) = y1 + so4
+         x(4) = x1 - so2
+         y(4) = y1
+         n = 4
+      else if (blr.eq.6) then
+c                                   left apex 
+         x(1) = x1
+         y(1) = y1
+         x(2) = x1 + so2
+         y(2) = y1
+         x(3) = x1 + so2
+         y(3) = y1 + so4
+         x(4) = x1 + so4
+         y(4) = y1 + ss34
+         n = 4
+      else
+         print*,'**PSHEXB: Bad code',blr
+         return
+      end if
+ 
+      write (nps,1030)
+ 
+      call psolin (rline,width)
+      call psocfg (clr,clr)
+      call psofil (1)
+      call psotrn
+      call psopts (x,y,n)
+ 
+      write (nps,1020) n
+ 
+1020  format (i5,' Poly',/,'End',/)
+1030  format (/,'Begin %I Poly')
+
+      end
+c----------------------------------------------------------------
+      subroutine pstrib (x1,y1,s,clr,rline,width)
+ 
+c pstrib - subroutine to output a colored triangle for bad results in PSSECT
+
+      implicit none
+
+      integer clr
+
+      double precision x1,y1,s,rline,width,x(3),y(3)
+
+      integer nps
+      double precision xscale,yscale,xmn,ymn
+      common/ scales /xscale,yscale,xmn,ymn,nps
+ 
+      x(1) = x1
+      x(2) = x1+s
+      x(3) = x1+0.5d0*s
+      y(1) = y1
+      y(2) = y1
+      y(3) = y1+s*0.8660254d0
+
+      write (nps,1030)
+ 
+      call psolin (rline,width)
+      call psocfg (clr,clr)
+      call psofil (1)
+      call psotrn
+      call psopts (x,y,3)
+ 
+      write (nps,1020) 3
  
 1020  format (i5,' Poly',/,'End',/)
 1030  format (/,'Begin %I Poly')

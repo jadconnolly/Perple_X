@@ -145,8 +145,10 @@ c----------------------------------------------------------------------
 !     parameter(memory=42000000,k31=2,k32=10,k1=1800000)
 !                                  static
       parameter(k18=k1*k31,k24=k1*k32,k13=k1)
-!                                  dynamic
-      parameter(k21=(memory-(2*k31+k32+2)*k1)/(1+k32))
+!                                  dynamic, for lt 6.9.0
+!     parameter(k21=(memory-(2*k31+k32+2)*k1)/(1+k32))
+!                                  for ge 6.9.0
+      parameter(k21=100000)
       parameter(k20=k18,k25=k21*k32)
 c----------------------------------------------------------------------
       parameter (k0=25,k2=100000,k3=2000,k4=32,k5=14)
@@ -492,8 +494,9 @@ c                                 plot program internal options
       logical spline, half, tenth, lgrid, fill, label
       integer ifont, bbox
       double precision xfac, cscale, nscale, ascale, rlabel, width, 
-     *                 tcont
-      common/ ops /xfac,cscale,nscale,ascale,rlabel,width,tcont,bbox(4),
+     *                 tcont, pcont
+      common/ ops /xfac,cscale,nscale,ascale,rlabel,width,tcont,pcont,
+     *             bbox(4),
      *             ifont,spline,half,tenth,lgrid,fill,label
 c                                 solptr(i) points to the position of 
 c                                 solution model i in the input list
@@ -540,8 +543,8 @@ c                                 nlpsol blocks
 c                                 ----------------------------------------
 c                                 global assemblage data, k2 <= l7^2, replace k2 w/ l7?
 c                                 bulk assemblage counter dependent arrays
-      double precision amu
-      common/ cst48 /amu(k8,k2)
+      double precision amu, tliq
+      common/ cst48 /amu(k8,k2), tliq(k2)
 
       integer icog,jcog
       common/ cxt17 /icog(k2),jcog(k2)
@@ -578,3 +581,22 @@ c                                 bulk assemblage counter dependent arrays
 
       logical abort1
       common/ cstabo /abort1
+c                                 attempt to move the static
+c                                 LP workspace into common
+      integer iwbig, liwbig, lwbig
+      parameter (liwbig = 2*k1 + 3, lwbig = 2*(k5+1)**2 + 7*k1 + 5*k5)
+      double precision wbig
+      common/ cstbng /wbig(lwbig), iwbig(liwbig)
+
+      character*8 xname, vname
+      common/ csta2 /xname(k5),vname(l2)
+
+      integer liqlst, nliq, opts
+      character meltph*240, whatlq*8, unitlq*8, cr*1
+      common/ cst88 / liqlst(h9), nliq, opts, whatlq, unitlq, cr, meltph
+
+      integer  iop0 
+      common / basic /iop0
+
+      character prject*100,tfname*100
+      common/ cst228 /prject,tfname

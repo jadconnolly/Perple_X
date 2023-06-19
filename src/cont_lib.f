@@ -27,7 +27,7 @@ C----------------------------------------------------------------
      *     cliney(npts),linex(npts),liney(npts),cline(2,npts),
      *     segs(4,nseg)
 
-      integer ipieces(2,npcs),npiece(mcon),ifirst(mcon),
+      integer ipiecs(2,npcs),npiece(mcon),ifirst(mcon),
      *        next(nseg),ilast(mcon)
 
       logical readyn 
@@ -82,7 +82,7 @@ c                                 write title info
 
       call contra (xmin,xmax,ymin,
      *             ymax,ncon,cont,clinex,cliney,cline,segs,
-     *             npts,nseg,npcs,ipieces,npiece,
+     *             npts,nseg,npcs,ipiecs,npiece,
      *             ifirst,next,ilast)
 
       write (*,1020)
@@ -123,12 +123,12 @@ c                                 write title info
          np = npiece(k)
          if (np.gt.0) then 
             do i = 1, np
-               ipts = ipieces(2,ipiece)
+               ipts = ipiecs(2,ipiece)
                if (iout.eq.1) write (69,*) 'segment: ',i
                 
                if (ipts.ne.0) then 
                   do j = 1, ipts
-                     istart = ipieces(1,ipiece)
+                     istart = ipiecs(1,ipiece)
                      linex(j) = clinex(istart+j-1)
                      liney(j) = cliney(istart+j-1)
                      if (iout.eq.1) write (69,*) liney(j),linex(j)
@@ -149,18 +149,18 @@ c                                 write title info
 
       subroutine contra (xmin,xmax,ymin,ymax,ncon,cont,
      *                   clinex,cliney,cline,segs,npts,
-     *                   nseg,npcs,ipieces,npiece,ifirst,next,
+     *                   nseg,npcs,ipiecs,npiece,ifirst,next,
      *                   ilast)
 c----------------------------------------------------------------------
-c          cp      value to be contoured in a square array
+c          zt     value to be contoured in a square array
 c          ny     no of values in y direction
 c          nx     no of values in x direction
 c          xmin,xmax min and max values in x
 c          ymin,ymax min and max value sin y
-c          ncon    no of contopur levels.
+c          ncon    no of contour levels.
 c          cont    array containing contour levels.
 c          clinex,cliney x,y pairs of points on contour segments.
-c          ipieces array of pointers for contour segments.
+c          ipiecs array of pointers for contour segments.
 c                  1,n start of coordinates in clinex cliney for
 c                  current segment.
 c                  2,n no of x,y pairs in current segment.
@@ -183,7 +183,7 @@ c------------------------------------------------------------------------
      *                 xmin,xmax,dy2,dx2,xf,xn,yn,tol,yf,x1,x2,y2,y1,
      *                 xpc,ypc
 
-      integer ipieces(2,npcs),npiece(ncon),ifirst(ncon),next(nseg),icf,
+      integer ipiecs(2,npcs),npiece(ncon),ifirst(ncon),next(nseg),icf,
      *        ilast(ncon),i,j,k,nextg,numcon,iconlt,inow,ipiece,iseg,ic,
      *        lines,isegn,isego,icl,icf1
 
@@ -191,7 +191,7 @@ c------------------------------------------------------------------------
       double precision z,zt 
       common/ dim   /z(nx,ny),ix,iy,mvar
       common/ dim1  /zt(nx,ny)
-
+c------------------------------------------------------------------------
 
       dx = (xmax - xmin) / float(ix -1)
       dy = (ymax - ymin) / float(iy -1)
@@ -262,6 +262,7 @@ c                                            fourth triangle, (i,j+1),(i+1,j+1)
       tol = 1d-10
       inow = 0
       ipiece = 1
+
       do 220 k = 1,ncon
       npiece(k) = 0
         if (ilast(k) .eq. 0) go to 220
@@ -281,6 +282,7 @@ c                                            fourth triangle, (i,j+1),(i+1,j+1)
         isegn = next(iseg)
         lines = lines + 1
         if (iseg .eq. ilast(k)) go to 170
+
         do 160 i = 1, 1000000
 c          if (isegn .eq. ilast(k)) go to 170
           x1 = segs(1,isegn)
@@ -336,7 +338,7 @@ c          if (isegn .eq. ilast(k)) go to 170
 
       if (ipiece.gt.npcs) call error (1,xn,npcs,'NPCS, CONTRA')
 
-      ipieces(1,ipiece) = inow + 1
+      ipiecs(1,ipiece) = inow + 1
 
         if (lines .eq. 1) then
           do i = 1,ic
@@ -349,9 +351,12 @@ c          if (isegn .eq. ilast(k)) go to 170
             clinex(inow) = xpc
             cliney(inow) = ypc
           end do 
+
           else
+
             icf1 = icf + 1
             icl = ic +1
+
             do i = icf1,ic
               inow = inow + 1
 
@@ -362,7 +367,8 @@ c          if (isegn .eq. ilast(k)) go to 170
               ypc = cline(2,icl)
               clinex(inow) = xpc
               cliney(inow) = ypc
-            end do 
+            end do
+
             do i = 1,icf
               inow = inow + 1
 
@@ -374,7 +380,7 @@ c          if (isegn .eq. ilast(k)) go to 170
               cliney(inow) = ypc
              end do 
           end if
-        ipieces(2,ipiece) = ic 
+        ipiecs(2,ipiece) = ic 
           ipiece = ipiece + 1
           if(isego .ne. ilast(k)) go to 145
   220 continue

@@ -381,9 +381,6 @@ c----------------------------------------------------------------------
   
       common/ cst41a /n2name
 
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
-
       integer cl
       character cmpnt*5, dname*80
       common/ csta5 /cl(k0),cmpnt(k0),dname

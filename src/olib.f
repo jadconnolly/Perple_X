@@ -58,10 +58,7 @@ c----------------------------------------------------------------------
       common/ cst330 /mu(k8),mus
 
       integer hcp,idv
-      common/ cst52  /hcp,idv(k7) 
-
-      character*8 vname,xname
-      common/ csta2  /xname(k5),vname(l2)
+      common/ cst52  /hcp,idv(k7)
 
       character pname*14
       common/ cxt21a /pname(k5)
@@ -933,7 +930,7 @@ c                                 logarithmic_x option
       nodata = .false. 
 
       if (iam.ne.2) then 
-c                                 WERAMI: 
+c                                 WERAMI, PSSECT: 
          ias = iap(igrd(itri(1),jtri(1)))
 c                                 load the assemblage phase composition
 c                                 starting coordinates
@@ -941,7 +938,7 @@ c                                 starting coordinates
             lco(i) = icox(igrd(itri(i),jtri(i)))
          end do 
 c                                 no data test
-         if (ias.eq.k3) then 
+         if (ias.ge.k3-1) then 
             nodata = .true.
             goto 99 
          end if
@@ -1085,7 +1082,7 @@ c                                 a compound:
             end if
 
             if (iam.ne.2) then 
-c                                 WERAMI compund:
+c                                 WERAMI, PSSECT compund:
                props(16,i) = 0d0 
 
                do l = 1, ijpt
@@ -1112,6 +1109,82 @@ c                                 compute aggregate properties:
 99    if (lopt(14)) p = dlog10(p)
 
       if (lopt(37)) xco2 = dlog10(xco2)
+
+      end
+
+      subroutine getlvl (klev)
+c----------------------------------------------------------------------
+c choose grid level for data sampling when sample_on_grid = T.
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      logical readyn
+
+      character tag*9
+
+      integer j, mx, my, klev
+
+      double precision r
+
+      external readyn
+
+      integer jlow,jlev,loopx,loopy,jinc
+      common/ cst312 /jlow,jlev,loopx,loopy,jinc
+
+      integer iam
+      common/ cst4 /iam
+c----------------------------------------------------------------------
+10    if (iam.eq.3) then
+c                                 WERAMI
+         write (*,'(/,a,/)') 'Select the grid resolution (to use an '
+     *                     //'arbitrary grid set sample_on_grid to F):'
+
+         tag = '[default]'
+
+         do j = 1, jlev
+
+            mx = loopx * 2**(j-1) + 1
+            my = loopy * 2**(j-1) + 1
+
+            write (*,'(4x,i1,a,2(i4,a),a)') j,' - ',nx,' x ',ny,
+     *                                     ' nodes ',tag
+
+            tag = ' '
+
+         end do
+
+      else
+c                                 PSSECT (liquidus)
+         write (*,1000) jlev
+
+      end if
+c                                 get grid level
+      call rdnum1 (r,r,r,r,klev,1,jlev,1,.false.)
+
+      if (klev.eq.1.or..not.lopt(56)) then 
+
+         write (*,'(/)')
+
+      else
+
+         write (*,1010)
+
+         if (.not.readyn()) goto 10 
+
+      end if
+
+1000  format (/,'Specify highest grid level to be sampled for const',
+     *       'ructing isotherms/isobars, 1[default]-',i1,':')
+1010  format (/,'**warning ver538** use of multi-level grids may gener',
+     *       'ate noise due to data',/,'interpolation onto unpopulated',
+     *       ' nodes. If exceptional resolution is required set',/,
+     *       'grid_levels to 1 1 and change the 2nd value of x/y_nodes',
+     *       'to obtain the desired resolution.',//,
+     *       'To disable [all] interactive warnings set warn_interact',
+     *       'ive to F.',
+     *       //,'Continue (y/n)?')
 
       end
 
@@ -1608,9 +1681,9 @@ c                                 pointer copy for lagged aq calculations in gso
 c                                 make name and composition, 
 c                                 redundant for frendly
       call getnam (pname(jd),id)
-c                                 if WERAMI recover composition
+c                                 if WERAMI, PSSECT recover composition
 c                                 logical arg is irrelevant
-      if (iam.eq.3) call getcmp (jd,id)
+      if (iam.eq.3.or.iam.eq.7) call getcmp (jd,id)
 c                                 component counter for frendly is different
 c                                 than for all other programs
       if (iam.ne.5) then 
@@ -2170,8 +2243,8 @@ c                                 expansivity
 
       end if
 
-      if (ppois.and.iwarn2.lt.iopt(1).and.pname(jd).ne.wname2.
-     *                                               and.pois) then 
+      if (ppois.and.iwarn2.lt.iopt(1).and.pname(jd).ne.wname2
+     *    .and.pois.and.iam.ne.7) then 
 
          iwarn2 = iwarn2 + 1
          wname2 = pname(jd)
@@ -3199,9 +3272,9 @@ c                                 total mass
 c                                 HS limiting moduli
       do i = 1, 6
          hsb(i,1) = 1d99
-         hsb(i,2) = 0d0         
+         hsb(i,2) = 0d0
          hsb(i,3) = 1d99
-         hsb(i,4) = 0d0 
+         hsb(i,4) = 0d0
       end do     
 
       do i = 1, icomp
@@ -3336,5 +3409,808 @@ c                                 convert molality to mole fraction (xx)
 
       end 
 
+       subroutine triang (itri,jtri,ijpt,wt)
+c----------------------------------------------------------------------
+c routine to extract interpolation points for an x-y point (set by readxy). 
+c the algorithm seeks points over an interval of jinc(1), jnterp 
+c should be read from perplex_option.dat but is currently set here to 1. 
 
+c This whole process could be done 
+c much more efficiently (and better) if the grid points were mapped 
+c to a triangular mesh. 
+
+c    returns:
+c              ijpt       - number of good interpolation points
+c              itri, jtri - nodal cordinates of the (3) interpolation 
+c                           points
+c              wt         - weights of interpolation points
+
+c Jan 11, 2013 - modified to forbid extrpolation (i.e., an interpolation
+c point with negative weight. JADC.
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      double precision x, y, wt(3), px(3), py(3), div, dst(4), x0, x1, 
+     *                 dist
+
+      integer jloc, iloc, j, i, k, l, jmax, np, jd, j0, linc,
+     *        itri(4), jtri(4), ijpt, jam, kinc, jmin, getqud,
+     *        imin, imax, ktri(4), ltri(4), ibest, quad(2), pi(4,4)
+
+      logical rinsid, isok, warned, left, solvs3, ongrid, jok, onalin
+
+      external getqud, isok, rinsid, solvs3, jok, dist
+
+      integer jvar
+      double precision var,dvr,vmn,vmx
+      common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
+
+      integer jlow,jlev,loopx,loopy,jinc
+      common/ cst312 /jlow,jlev,loopx,loopy,jinc
+
+      logical oned
+      common/ cst82 /oned
+
+      integer iam
+      common/ cst4 /iam
+
+      double precision units, r13, r23, r43, r59, zero, one, r1
+      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
+
+      character fname*10, aname*6, lname*22
+      common/ csta7 /fname(h9),aname(h9),lname(h9)
+
+      save warned, pi
+      data warned/.false./
+      data pi/1, 2, 3, 4, 1, 2, 4, 3, 1, 3, 4, 2, 2, 3, 4, 1/
+c----------------------------------------------------------------------
+      x = var(1)
+      y = var(2)
+
+      if (iam.ne.7) then
+c                                 werami input is in variable coordinates
+c                                 get nodal coordinate   
+         call xy2ij (iloc,jloc,left,ongrid)
+
+      else 
+c                                 pssect, input is in nodal coordinates
+         iloc = itri(1)
+         jloc = jtri(1)
+         ongrid = .true.
+
+      end if
+c                                 identify the assemblage    
+      jd = igrd(iloc,jloc)
+c                                 the iap(jd) check works if k2 is inconsistent
+c                                 between vertex and werami. the question is then
+c                                 whether there's any point in checking jd?           
+      if (jd.ge.k2-1.or.iap(jd).eq.0) then
+c                                 no data at point, set ijpt = 0 and return
+         ijpt = 0 
+         return
+      end if 
+c                                 duplicate assignment because ias is in common
+c                                 na und? removed duplication 6/23
+      ias = iap(jd)
+      np = iavar(1,ias)
+      ijpt = 1
+      itri(1) = iloc
+      jtri(1) = jloc
+      wt(1) = 1d0
+      linc = 2**(jlev - 1)
+c                                 landed right on a node with data 
+      if (icog(jd).eq.iloc.and.jcog(jd).eq.jloc.and.ongrid) return
+c                                 exit if interpolation is off
+      if (iopt(4).eq.0) return
+c                                 check for solvus
+      if (solvs3(ias,np)) then 
+c                                 a solvus, turn interpolation off, warn and return
+         if (.not.warned.and.lopt(31)) then
  
+            warned = .true.
+
+            write (*,1000)
+
+            do i = 1, isoct
+               if (jdstab(i).gt.1) write (*,'(4x,a)') fname(i)
+            end do
+
+            write (*,1010)
+
+         end if
+
+         if (lopt(31)) return
+
+      end if 
+
+      ijpt = 0
+c                                 interpolation for 1d grids                             
+      if (oned) then 
+c                                 set jloc to the real node
+         j0 = jloc
+         jloc = jcog(jd)
+c                                 this is gonna move j even if no interpolation 
+c                                 is possible, but we don't care, right?
+         jtri(1) = jloc
+c                                 find a real point with the same assemblage to 
+c                                 the left
+         jmin = 0
+
+         do j = jloc - 1, jloc - iopt(4)*linc, -1
+
+            if (j.lt.1) exit 
+
+            if (iap(igrd(1,j)).eq.ias) then 
+c                                 is the point real?
+               if (jcog(igrd(1,j)).ne.j) cycle
+
+               jmin = j
+c                                  found the assemblage
+               exit
+
+            else 
+c                                  ran into a new assemblage
+               exit
+
+            end if
+         end do             
+c                                  find a real point to the right
+         jmax = 0 
+
+         do j = jloc + 1, jloc + iopt(4)*linc, 1
+
+            if (j.gt.loopy) exit
+
+            if (iap(igrd(1,j)).eq.ias) then 
+c                                 is the point real?
+               if (jcog(igrd(1,j)).ne.j) cycle
+
+               jmax = j
+c                                 found the assemblage
+               exit
+
+            else 
+c                                 ran into a new assemblage
+               exit
+
+            end if
+
+         end do   
+
+         ijpt = 2
+         itri(ijpt) = 1
+c                                 check cases, here only interpolation is 
+c                                 allowed. 
+         if (j0.eq.jloc) then
+
+            if (left.and.jmin.gt.0) then
+               jtri(ijpt) = jmin
+            else if ((.not.left).and.jmax.gt.0) then 
+               jtri(ijpt) = jmax
+            else 
+               ijpt = 1
+            end if 
+
+         else if (j0.gt.jloc) then 
+
+            if (jmax.ne.0) then 
+               jtri(ijpt) = jmax
+            else 
+               ijpt = 1
+            end if 
+
+         else 
+
+            if (jmin.ne.0) then 
+               jtri(ijpt) = jmin
+            else 
+               ijpt = 1
+            end if
+
+         end if 
+
+         if (ijpt.eq.1) return
+c                                 compute weights of the interpolation points   
+         x1 = vmn(1) + dfloat(jtri(2)/jinc-1)*dvr(1) 
+         x0 = vmn(1) + dfloat(jtri(1)/jinc-1)*dvr(1)    
+   
+         wt(1) = (x1-x)/(x1-x0)
+         wt(2) = 1d0 - wt(1)
+
+         if (wt(2).le.zero) ijpt = 1
+
+         return
+
+      end if
+c                                 2d search:
+
+c                                 make a spiral-like search outward
+c                                 from the node to find interpolation
+c                                 points
+      kinc = 0
+c                                 the multiplier on jinc (the increment
+c                                 for the lowest level grid) controls
+c                                 the search area.
+      do while (kinc.le.iopt(4)*linc)
+
+         jmin = jloc - kinc
+         jmax = jloc + kinc 
+
+         do j = jmin, jmax, 1
+c                                 skip out of bounds points
+            if (j.lt.1.or.j.gt.loopy) cycle
+
+            imin = iloc - kinc
+            imax = iloc + kinc
+
+            do i = imin, imax, 1
+c                                 skip out of bounds points           
+               if (i.lt.1.or.i.gt.loopx) cycle
+c                                 skip interior points (this is sloppy)
+               if (j.ne.jmin.and.j.ne.jmax) then
+                  if (i.ne.imin.and.i.ne.imax) cycle
+               else if (i.ne.imin.and.i.ne.imax) then 
+                   if (j.ne.jmin.and.j.ne.jmax) cycle
+               end if 
+c                                 is the point the same assemblage?
+               if (iap(igrd(i,j)).ne.ias) cycle
+c                                 pointer to reference node
+               jam = igrd(i,j)
+c                                 if so, is the point real?
+               if (icog(jam).ne.i.or.jcog(jam).ne.j) cycle 
+c                                 if here the point is valid, now
+c                                 check if it's geometrically feasible
+               if (ijpt.lt.2) then 
+c                                 always take the two points
+                  ijpt = ijpt + 1
+                  itri(ijpt) = i
+                  jtri(ijpt) = j
+                  quad(ijpt) = getqud(itri(ijpt),jtri(ijpt),iloc,jloc)
+
+               else if (ijpt.eq.2) then 
+
+                  itri(3) = i
+                  jtri(3) = j      
+c                                 check if on line of previous
+c                                 points
+                  if (isok(itri,jtri).and.rinsid(itri,x,jtri,y,dst(1))) 
+     *               then
+c                                 the point is bounded
+                        ijpt = 3
+
+                  else if (quad(1).ne.0.and.quad(1).eq.quad(2)) then 
+
+                     j0 = getqud(itri(3),jtri(3),iloc,jloc)
+
+                     if (j0.ne.0.and.j0.ne.quad(1)) then
+c                                 swap the 2nd interpolation point if it's
+c                                 in a different quadrant than the first:
+                        itri(2) = i
+                        jtri(2) = j
+                        quad(1) = 0
+
+                     end if
+
+                  end if
+
+                  if (ijpt.eq.2) then
+c                                 reset the 3rd point for isok
+                     itri(3) = 0
+                     jtri(3) = 0
+
+                  end if
+
+               else if (ijpt.eq.3) then
+c                                 four permutations are possible
+c                                 check all 
+                  itri(4) = i
+                  jtri(4) = j
+                  ibest = 1
+     
+                  do k = 2, 4
+
+                     do l = 1, 3
+                        ktri(l) = itri(pi(l,k))
+                        ltri(l) = jtri(pi(l,k))
+                     end do 
+
+                     if (isok(ktri,ltri).and.
+     *                   rinsid(ktri,x,ltri,y,dst(k))) then
+
+                        if (dst(ibest).gt.dst(k)) ibest = k
+
+                     end if
+
+                  end do    
+
+                  if (ibest.ne.1) then 
+c                                 load the best choice
+                     do k = 1, 3
+                        itri(k) = itri(pi(k,ibest))
+                        jtri(k) = jtri(pi(k,ibest))
+                     end do 
+                  end if 
+
+               end if 
+            end do 
+         end do 
+
+         kinc = kinc + 1
+
+      end do
+
+      if (ijpt.eq.1) return
+
+      do j = 1, ijpt
+         px(j) = vmn(1) + (itri(j)-1)/jinc*dvr(1)
+         py(j) = vmn(2) + (jtri(j)-1)/jinc*dvr(2)
+      end do
+
+      if (ijpt.eq.3) then 
+c                                 2d iterpolation coefficients
+         div = px(2)*py(3)-px(1)*py(3)-px(2)*py(1)+
+     *         px(3)*py(1)-px(3)*py(2)+px(1)*py(2)
+c                                 z[1] coef
+         wt(1) = (y*(px(3)-px(2))+px(2)*py(3)-
+     *            px(3)*py(2)+x*(py(2)-py(3)))/div
+c                                 z[2] coef
+         wt(2) = (px(3)*py(1)-px(1)*py(3)+
+     *            y*(px(1)-px(3))-x*(py(1)-py(3)))/div
+c                                 z[3] coef
+         wt(3) = (x*(py(1)-py(2))+px(1)*py(2)-px(2)*py(1)
+     *           +y*(px(2)-px(1)))/div
+
+         jmin = 0
+
+         do j = 1, ijpt
+            if (wt(j).lt.zero) cycle 
+            jmin = jmin + 1
+            itri(jmin) = itri(j)
+            jtri(jmin) = jtri(j)
+            wt(jmin) = wt(j)
+         end do 
+
+         ijpt = jmin 
+
+      else if (ijpt.eq.2) then
+c                                 check that the original point is
+c                                 on a line between the iterpolation points:
+         call linchk (px(1),py(1),px(2),py(2),x,y,wt,onalin)
+c                                 not on a line:
+         if (.not.onalin) ijpt = 1
+
+      end if
+
+1000  format (/,'**warning ver637** Stable immiscibility is predicted ',
+     *          'by the following solution models:',/)
+1010  format (/,'Interpolation will be turned off at all affected node',
+     *          's. To override this',/,'behavior at the risk of compu',
+     *          'ting inconsistent properties set warning_ver637 to F ',
+     *        /,'and restart WERAMI.',/)
+
+      end 
+
+      logical function rinsid (itri,xp,jtri,yp,dst)
+c----------------------------------------------------------------------
+c function to determine if triangle i1-j1 ... i3-j3 bounds point xp - yp
+c     returns true if internal or on an edge
+c     returns false if outside or on a vertex.
+c algorithm after jimscott@blackpawn.com
+c                                 JADC 1/2005
+c----------------------------------------------------------------------
+
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      logical rsmsid
+
+      double precision xp, yp, x(3), y(3), dst, dist
+
+      integer itri(4), jtri(4), j
+
+      integer jvar
+      double precision var,dvr,vmn,vmx
+      common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
+c----------------------------------------------------------------------
+c                                convert nodal coordinates to real
+c                                cordinates
+      dst = 0d0
+
+      do j = 1, 3
+         x(j) = vmn(1) + (itri(j)-1)*dvr(1)
+         y(j) = vmn(2) + (jtri(j)-1)*dvr(2)
+         dst = dst + dist(x(j),y(j),itri(j),jtri(j))
+      end do 
+c                                1->2 join
+      if (rsmsid(x(2)-x(1),y(2)-y(1),x(3)-x(1),
+     *           y(3)-y(1),xp-x(1),yp-y(1)).and.
+c                                1->3 join
+     *    rsmsid(x(3)-x(1),y(3)-y(1),x(2)-x(1),
+     *           y(2)-y(1),xp-x(1),yp-y(1)).and.
+c                                2->3 join
+     *    rsmsid(x(3)-x(2),y(3)-y(2),x(1)-x(2),
+     *           y(1)-y(2),xp-x(2),yp-y(2))) then
+
+          rinsid = .true.
+
+      else 
+
+          rinsid = .false.
+
+      end if 
+
+      end 
+
+      logical function rsmsid (x1,y1,x2,y2,x3,y3)
+c----------------------------------------------------------------------
+c function to determine if points (x1,y1) (x2,y2) are on the same side
+c (or colinear with) the line (0,0)-(x3,y3) (if so true).
+c----------------------------------------------------------------------
+      implicit none
+
+      double precision x1,y1,x2,y2,x3,y3
+c----------------------------------------------------------------------
+c                                 test the cross product, if 0 a point
+c                                 is on the line.
+      if ((x1*y3 - y1*x3)*(x1*y2 - y1*x2).ge.0) then
+         rsmsid = .true.
+      else
+         rsmsid = .false.
+      end if 
+
+      end
+
+      subroutine linchk (x1,y1,x2,y2,x3,y3,wt,onalin)
+c----------------------------------------------------------------------
+c function to determine if point (x3,y3) is on the line (x1,y1)-(x2,y2)
+c if so true.
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      logical onalin
+
+      double precision x1,y1,x2,y2,x3,y3,wt(*)
+
+      double precision units, r13, r23, r43, r59, zero, one, r1
+      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
+c----------------------------------------------------------------------
+      onalin = .true.
+
+      if (dabs(x1-x2).lt.zero) then
+c                                 the line is vertical
+         if (dabs(x3-x1).gt.zero) then
+
+            onalin = .false.
+
+         else
+
+            wt(1) = 1d0 - (y1-y3)/(y1-y2)
+
+         end if
+
+      else 
+c                                 zero or finite slope
+         if ( dabs(y3 - ((y1-y2)*x3 + x1*y2-x2*y1)/(x1-x2)).gt.zero)
+     *                                                             then
+           onalin = .false.
+
+         else
+
+            wt(1) = 1d0 - (x1-x3)/(x1-x2)
+
+         end if
+
+      end if
+
+      if (wt(1).lt.-zero.or.wt(1).gt.r1) then 
+         wt(1) = 1d0
+         onalin = .false.
+      else 
+         wt(2) = 1d0 - wt(1)
+      end if
+
+      end 
+
+      double precision function dist (x,y,i,j)
+c----------------------------------------------------------------------
+c get distance from nodal point i,j to coordinate x-y      
+
+      implicit none
+ 
+      include 'perplex_parameters.h'
+
+      integer i, j
+
+      double precision dely, delx, x, y
+
+      integer jvar
+      double precision var,dvr,vmn,vmx
+      common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
+c-----------------------------------------------------------------------
+c                                 find normalized distance 
+      delx = (x - vmn(1))/dvr(1) - (i - 1)
+      dely = (y - vmn(2))/dvr(2) - (j - 1)
+      dist = sqrt (delx**2 + dely**2)
+
+      end   
+
+      subroutine xy2ij (iloc,jloc,left,ongrid)
+c----------------------------------------------------------------------
+c given the current x-y coordinates (loaded in var), return the nodal
+c coordinates
+c----------------------------------------------------------------------
+      implicit none
+
+      integer jloc, iloc
+
+      logical left, ongrid
+
+      logical oned
+      common/ cst82 /oned
+
+
+      if (oned) then 
+c                                 get the nodal coordinate and find if the
+c                                 real coordinate lies to the left or right 
+c                                 of the nodal coordinate.                             
+         call amiin1 (jloc,left,ongrid)
+         iloc = 1
+
+      else
+c                                 could get fancy and record up/left here
+         call amiin2 (iloc,jloc,ongrid) 
+
+      end if 
+
+      end 
+
+      integer function getqud (itri,jtri,iloc,jloc)
+c----------------------------------------------------------------------
+c locate quadrant of vertex itri-jtri relative to iloc, jloc
+
+      implicit none 
+
+      integer itri, jtri, iloc, jloc
+c----------------------------------------------------------------------
+      if (itri.eq.iloc.or.jtri.eq.jloc) then
+         getqud = 0
+      else if (jtri.lt.jloc) then
+         if (itri.lt.iloc) then
+            getqud = 1
+         else
+            getqud = 2
+         end if
+      else
+         if (itri.lt.iloc) then
+            getqud = 3
+         else
+            getqud = 4
+         end if
+      end if 
+
+      end
+
+      logical function solvs3 (iam,np)
+c-----------------------------------------------------------------------
+c function to check if an assemblage contains immiscible phases from 
+c phase id's.
+c-----------------------------------------------------------------------
+      implicit none
+ 
+      include 'perplex_parameters.h'
+
+      integer i, j, np, iam
+c-----------------------------------------------------------------------
+      solvs3 = .false.
+
+      if (nopt(8).lt.1d0) then  
+
+         do i = 1, np-1
+            do j = i+1, np
+               if (idasls(i,iam).eq.idasls(j,iam)) then
+                  solvs3 = .true.
+                  return
+               end if 
+            end do 
+         end do 
+
+      end if 
+
+      end
+
+      logical function jok (itri,jtri)
+c----------------------------------------------------------------------
+c check if 3rd vertex lies on a line between 1 and 2
+
+      implicit none 
+
+      integer itri(*), jtri(*)
+      double precision m, b, di
+c----------------------------------------------------------------------
+
+      jok = .false.
+
+      if (itri(1).eq.itri(2).and.itri(1).eq.itri(3)) then 
+         if ((jtri(1)-jtri(3))*(jtri(2)-jtri(3)).lt.0) then
+            jok = .true.
+         end if 
+      else if (jtri(1).eq.jtri(2).and.jtri(1).eq.jtri(3)) then 
+         if ((itri(1)-itri(3))*(itri(2)-itri(3)).lt.0) then
+            jok = .true.
+         end if
+      else if ((jtri(1)-jtri(3))*(jtri(2)-jtri(3)).lt.0) then 
+c                          if the points are not on the same
+c                          row, then they may all be on a 
+c                          diagonal
+         di = itri(1) - itri(2)
+         m = (-jtri(2)+jtri(1))/di
+         b = -(jtri(1)*itri(2)-itri(1)*jtri(2))/di
+
+         di = m*itri(3)+b
+
+         if (dabs(jtri(3)-di).lt.1d-3) then
+            jok = .true.
+         end if
+
+      end if
+
+      end 
+
+      logical function isok (itri,jtri)
+c----------------------------------------------------------------------
+c check if vertices itri-jtri define a triangle
+
+      implicit none 
+
+      integer itri(*), jtri(*)
+      double precision m, b, di
+c----------------------------------------------------------------------
+      if (itri(1).eq.itri(2).and.itri(1).eq.itri(3).or.
+     *    jtri(1).eq.jtri(2).and.jtri(1).eq.jtri(3)) then 
+
+         isok = .false.
+
+      else if (itri(1).ne.itri(2)) then 
+c                          if the points are not on the same
+c                          row, then they may all be on a 
+c                          diagonal
+         di = itri(1) - itri(2)
+         m = (-jtri(2)+jtri(1))/di
+         b = -(jtri(1)*itri(2)-itri(1)*jtri(2))/di + 1d-3
+         if (jtri(3).eq.int(m*itri(3)+b)) then
+            isok = .false.
+         else
+            isok = .true.
+         end if 
+
+      else
+
+         isok = .true.         
+
+      end if 
+
+      end 
+
+
+
+      subroutine amiin1 (j,left,ongrid)
+c----------------------------------------------------------------------
+c amiin1 - identifies the grid point associated with coordinate x and
+c          indicates if x is left of the nodal coordinate.        
+c----------------------------------------------------------------------
+      implicit none
+ 
+      include 'perplex_parameters.h'
+
+      integer j
+
+      logical left, ongrid
+
+      double precision res
+
+      integer jvar
+      double precision var,dvr,vmn,vmx
+      common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
+c----------------------------------------------------------------------
+c                                 find node associated with condition
+      res = var(1)-vmn(1)
+      j = int(res/dvr(1))
+      res = res - j*dvr(1)
+      ongrid = .true.
+c                                 modified for negative dvr possibility
+c                                 nov 12, 2017. JADC
+      if (dvr(1).gt.0d0) then
+c                                 positive number line
+         if (res.lt.-1d-3) then
+            left = .true.
+            ongrid = .false.
+         else if (res.gt.1d-3) then 
+            left = .false.
+            ongrid = .false.
+         end if 
+
+         if (res.gt.0.5d0*dvr(1)) then
+            j = j + 1
+            left = .true.
+         end if
+
+      else
+c                                 negative number line 
+         if (res.lt.-1d-3) then
+            left = .false.
+            ongrid = .false.
+         else if (res.gt.1d-3) then 
+            left = .true.
+            ongrid = .false.
+         end if 
+
+         if (res.lt.0.5d0*dvr(1)) then
+            j = j + 1
+            left = .true.
+         end if
+
+      end if 
+
+      j = j + 1
+
+      end
+
+      subroutine amiin2 (i,j,ongrid)
+c----------------------------------------------------------------------
+c amiin - identifies the grid point associated with coordinate x-y 
+c         and the sector of the x-y coordinate relative the nodal point        
+c----------------------------------------------------------------------
+      implicit none
+ 
+      include 'perplex_parameters.h'
+
+      integer i, j
+
+      logical ongrid
+
+      double precision res
+
+      integer jvar
+      double precision var,dvr,vmn,vmx
+      common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
+
+      integer jlow,jlev,loopx,loopy,jinc
+      common/ cst312 /jlow,jlev,loopx,loopy,jinc
+c----------------------------------------------------------------------
+c                                 find node associated with condition
+      res = (var(1)-vmn(1))/dvr(1) 
+      i = int(res)
+      res = res-dfloat(i)
+
+      if (dabs(res).gt.1d-3.and.dabs(res).lt.0.999d0) then 
+         ongrid = .false.
+      else
+         ongrid = .true.
+      end if 
+
+      if (res.gt.0.5d0) then 
+         i = (i+1)*jinc + 1
+      else 
+         i = i*jinc + 1
+      end if 
+
+      res = (var(2)-vmn(2))/dvr(2)
+      j = int(res)
+      res = res-dfloat(j)
+
+      if (dabs(res).gt.1d-3.and.dabs(res).lt.0.999d0) then 
+         ongrid = .false.
+      end if
+
+      if (res.gt.0.5d0) then 
+         j = (j+1)*jinc + 1
+      else 
+         j = j*jinc + 1
+      end if 
+
+      end 
