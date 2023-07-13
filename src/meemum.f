@@ -62,15 +62,15 @@ c                                 iam is a flag indicating the Perple_X program
 c                                 initialization, read files etc.
       call iniprp
 
-      write (*,1000)
+      bulk = .false.
 
-      if (readyn()) then 
+      if (icont.eq.1) then 
+c                                 prompt for bulk composition if compostional variables
+c                                 are not explicit
+         write (*,1000)
 c                                 bulk is true, user enters composition and p-t conditions
-         bulk = .true.
 
-      else 
-c                                 else user enters only p-t and composition read from input file.
-         bulk = .false.
+         if (readyn())  bulk = .true.
 
       end if
 c                                 iwt is set by input, it is only used below to determine
@@ -114,7 +114,7 @@ c                                 convert mass to molar
          else if (icont.gt.1) then 
 c                                 files set up for bulk compositional variables
             do i = 2, icont
-               write (*,1010) i
+               write (*,1010) i-1
                read (*,*) cx(i-1)
             end do
 

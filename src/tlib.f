@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.0, Jun 19, 2023.',
+     *     'Perple_X release 7.1.1, Jul 13, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -3578,7 +3578,7 @@ c                                 generic warning, also 99
 41    format (/,'**warning ver040** ',a,' occurs ',i1,' times in an as',
      *       'semblage, properties will be',/,'reported for its last i',
      *       'nstance. To avoid this problem do not use multi-property',
-     *       /,'choices to extract the properties of this solution.',/)
+     *       /,'choices to extract the properties of this solution.')
 42    format (/,'**warning ver042** an optimization failed due ',
      *          'to numerical instability',/,
      *          'or because the phases of the system do not span ',
@@ -3593,7 +3593,7 @@ c                                 generic warning, also 99
      *          4x,'see: www.perplex.ch/perplex_options.html for ',
      *          'explanation.',//,
      *          4x,'In the 2nd case (rare): ',
-     *          'change the bulk composition or add phases.',/)
+     *          'change the bulk composition or add phases.')
 43    format (/,'**warning ver043** ',a,' is the base 10 log of the',
      *       ' activity, values > 0 imply',/
      *       'supersaturation with respect to the reference species.',/,
@@ -3713,9 +3713,9 @@ c                                 generic warning, also 99
      *        'composition at all physical',/,'conditions and the prob',
      *        'lem can only be remedied by increasing the range of',/,
      *        'compositions spanned by the possible phases of the ',
-     *        'system.',/)
+     *        'system.')
 91    format (/,'**warning ver091** optimization failed. Change ',
-     *        'minimnization method',/)
+     *        'minimnization method.')
 92    format (/,'**warning ver092** you have requested ',i4,
      *        ' grid points. Current',/,'dimensioning is for ',
      *        i4,' points. To obtain the requested resolution',/,
@@ -8567,7 +8567,7 @@ c----------------------------------------------------------------------
       double precision dblk,cx
       common/ cst314 /dblk(3,k5),cx(2),icont
 c----------------------------------------------------------------------
-      write (*,'(a,/)') 'Current conditions:'
+      write (*,'(/,a,/)') 'Current conditions:'
 
       if (icopt.ne.12) then
 c                                 for 0-d infiltration (icopt = 10)

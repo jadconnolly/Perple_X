@@ -1145,10 +1145,10 @@ c                                 WERAMI
 
          do j = 1, jlev
 
-            mx = loopx * 2**(j-1) + 1
-            my = loopy * 2**(j-1) + 1
+            mx = (loopx - 1) / 2**(jlev-j) + 1
+            my = (loopy - 1) / 2**(jlev-j) + 1
 
-            write (*,'(4x,i1,a,2(i4,a),a)') j,' - ',nx,' x ',ny,
+            write (*,'(4x,i1,a,2(i4,a),a)') j,' - ',mx,' x ',my,
      *                                     ' nodes ',tag
 
             tag = ' '

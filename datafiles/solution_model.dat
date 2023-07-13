@@ -473,8 +473,6 @@ z(Si,T1) = 1/2 - 1/2 an
 
 [Si2O8]                             | formula suffix, enter "none" for no suffix.
 
-reach_increment 3
-
 end_of_model
                       ---------------------------------------------------------
 begin_model
@@ -3711,6 +3709,110 @@ end_van_laar_sizes
 end_of_model
                               --------------------------------------------------------
 begin_model
+                                     Leonya's melt model
+Melt(A)
+abbreviation Melt
+full_name    liquid
+
+688                                | model type: 688 format standard model
+
+1                                  | number of polytopes
+1                                  | number of simplices
+3                                  | number of vertices (endmembers) on each simplex
+
+abL
+h2oL
+hltL
+
+0   1   .1 0                      | range and resolution of X(ab)
+0   1   .1 0                      | range and resolution of X(h2o)
+
+begin_excess_function
+
+ |W(abL h2oL)              -1.5d3           -0.3 * P_bar
+
+W(abL abL h2oL)    -1.5d3   -0.3 * P_bar  |Wabw*xab^2*xw 
+W(abL hltL h2oL)   -3d3     -0.6 * P_bar  |2*Wabw*xab*xhlt*xw 
+W(abL h2oL h2oL)   -1.5d3   -0.3 * P_bar  |Wabw*xab*xw^2 
+W(abL hltL hltL)  75340.63                |d*xab*xhlt^2
+W(hltL hltL h2oL)  -3560.6                |e*xhlt^2*xw 
+W(hltL hltL)      75340.63                |d*xhlt^2 
+W(hltL h2oL)       -3560.6                |e*xhlt*xw
+
+
+end_excess_function
+
+2                           | Configurational entropy: quadratic water, linear salt
+
+V
+2 1 1                        | water-vacancy site
+z(H,V)     = 1 h2oL
+z(V,V)     = 1 abL + 1 hltL
+
+M
+3 0 0                        | temkin melt site
+z(ab,M)     = 1 abL
+z(hlt,M)    = 1 hltL
+z(H,V)      = 1 h2oL
+
+none                        | formula suffix, enter "none" for no suffix. 
+
+begin_flagged_endmembers
+                                    | endmembers listed in this section are not associated with the
+                                    | solution on output and are identified by endmember name. This
+                                    | may be useful for testing purposes for systems in which the 
+                                    | the endmember compositions are not expected to be stabLe, i.e., 
+                                    | the stability of pure h2oL would alert the user to unexpected 
+                                    | behaviour. if/when endmember compositions of the solution are 
+                                    | expected, those endmembers should be removed from the list of
+                                    | flagged endmembers. 
+h2oL
+hltL
+end_flagged_endmembers
+
+begin_dqf_corrections
+dqf(hltL)  =  14072.2  + 13.85077 * T_K  -0.830043 * P_bar
+end_dqf_corrections
+
+
+end_of_model
+                              --------------------------------------------------------
+begin_model
+
+Melt(B)
+abbreviation Melt
+full_name    liquid
+
+2                                     model type: simplicial composition space.
+
+2                                     number of endmembers
+
+abL  h2oL
+
+0 0 0                                | endmember flags.
+
+0   1   .1 0                      | range and resolution of X(ab)
+
+begin_excess_function
+
+
+W(abL h2oL)              -1.5d3           -0.3 * P_bar
+
+
+end_excess_function
+
+2                           | Configurational entropy: two non-temkin sites (Water, Melt)
+
+2 1                         | water-vacancy site
+z(H)     = 1 h2oL
+
+2 0                         | melt species site, treating ksp and abl as separate species
+n(ab)    = 1 abL
+n(w)     = 1 h2oL
+
+end_of_model
+                              --------------------------------------------------------
+begin_model
                                       Melt, White et al., JMG 32:261-286, 2014.
 
                                       JADC 4/14
@@ -3760,13 +3862,13 @@ kspL     q8L      h2oL
 
 0 0 0 0 0 0 0 0 0                   | endmember flags.
 
-2d-3  .1   .1 1                      | range and resolution of X(fo),  1 => asymmetric subdivision
-2d-3  .1   .1 1                      | range and resolution of X(fa),  1 => asymmetric subdivision
-0    0.4   .1 0                      | range and resolution of X(ab),  0 => cartesian subdivision
-2d-3  .1   .1 1                      | range and resolution of X(sil), 1 => asymmetric subdivision
-2d-3  .2   .1 1                      | range and resolution of X(an),  1 => asymmetric subdivision
-0     .5   .1 0                      | range and resolution of X(ksp), 0 => cartesian subdivision
-0    0.6   .1 0                      | range and resolution of X(q),   0 => cartesian subdivision
+0      1   .1 0                      | range and resolution of X(fo),  1 => asymmetric subdivision
+0      1   .1 0                      | range and resolution of X(fa),  1 => asymmetric subdivision
+0      1   .1 0                      | range and resolution of X(ab),  0 => cartesian subdivision
+0      1   .1 0                      | range and resolution of X(sil), 1 => asymmetric subdivision
+0      1   .1 0                      | range and resolution of X(an),  1 => asymmetric subdivision
+0      1   .1 0                      | range and resolution of X(ksp), 0 => cartesian subdivision
+0      1   .1 0                      | range and resolution of X(q),   0 => cartesian subdivision
 
 begin_excess_function
 
@@ -8105,31 +8207,31 @@ full_name    liquid
 
 2                          | model type: macroscopic
 3                          | 3 species
-SIO2     AL2O3    CAO      | endmember names
+SiO2     Al2O3    CaO      | endmember names
   0  0  0                  | endmember flags
 0  1   .1 0                | cartesian
 0  1   .1 0
 
 begin_excess_function
-w(SIO2 AL2O3 AL2O3 AL2O3)  63617.2     -23.7400  0  term 1
-w(SIO2 SIO2 AL2O3 AL2O3)  0.164266d7 -763.870  0  term 2
-w(SIO2 SIO2 SIO2 AL2O3)   -106635.      28.1300  0  term 3
-w(SIO2 CAO CAO CAO)       -898693.      240.770  0  term 4
-w(SIO2 SIO2 CAO CAO)      -350208.     -48.6200  0  term 5
-w(SIO2 SIO2 SIO2 CAO)     -14081.8     -35.4900  0  term 6
-w(AL2O3 CAO CAO CAO)      -455634.      2.47000  0  term 7
-w(AL2O3 AL2O3 CAO CAO)    -725166.      255.390  0  term 8
-w(AL2O3 AL2O3 AL2O3 CAO)  -240215.      26.7000  0  term 9
-w(SIO2 SIO2 AL2O3 CAO)    -.284791d7  1046.35  0  term 10
-w(SIO2 AL2O3 AL2O3 CAO)   -.214904d7  641.840  0  term 11
-w(SIO2 AL2O3 CAO CAO)       209109.     -313.360  0  term 12
+w(SiO2 Al2O3 Al2O3 Al2O3)  63617.2     -23.7400  0  term 1
+w(SiO2 SiO2 Al2O3 Al2O3)  0.164266d7 -763.870  0  term 2
+w(SiO2 SiO2 SiO2 Al2O3)   -106635.      28.1300  0  term 3
+w(SiO2 CaO CaO CaO)       -898693.      240.770  0  term 4
+w(SiO2 SiO2 CaO CaO)      -350208.     -48.6200  0  term 5
+w(SiO2 SiO2 SiO2 CaO)     -14081.8     -35.4900  0  term 6
+w(Al2O3 CaO CaO CaO)      -455634.      2.47000  0  term 7
+w(Al2O3 Al2O3 CaO CaO)    -725166.      255.390  0  term 8
+w(Al2O3 Al2O3 Al2O3 CaO)  -240215.      26.7000  0  term 9
+w(SiO2 SiO2 Al2O3 CaO)    -.284791d7  1046.35  0  term 10
+w(SiO2 Al2O3 Al2O3 CaO)   -.214904d7  641.840  0  term 11
+w(SiO2 Al2O3 CaO CaO)       209109.     -313.360  0  term 12
 end_excess_function
 
 1                                     1 site molecular entropy model
 
 3 1                                   3 species, site multiplicity 1
-z(SIO2) = 1 SIO2
-z(AL2O3) = 1 AL2O3
+z(SiO2) = 1 SiO2
+z(Al2O3) = 1 Al2O3
 
 end_of_model
                       --------------------------------------------------------
@@ -11931,7 +12033,7 @@ abbreviation F
 full_name    fluid
 
 39                          | model type: Generic Hybrid EoS
-11
+12
 CO2
 CH4
 H2S
@@ -11942,10 +12044,11 @@ N2
 NH3
 HF
 C2H6
+HCl
 H2O
 
 
-0 0 0 0 0 0 0 0 0 0 0      | endmember flags
+0 0 0 0 0 0 0 0 0 0 0 0      | endmember flags
 
 0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
 0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
@@ -11957,6 +12060,8 @@ H2O
 0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
 0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
 0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
+0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
+
 
 ideal                      | the fluid is non-ideal, this tag means only no excess function
 
@@ -17091,5 +17196,86 @@ begin_flagged_endmembers
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                        Ternary feldspar “4TR” model
+                        Holland, TJB, Green, ECR & Powell, R (2021)
+ 
+                        * Thermocalc input:
+ 
+                            % ternary feldspar, “4TR” model, with plagioclase-friendly 
+                            %         parameterisation.
+                            %
+                            % Holland, TJB, Green, ECR & Powell, R (2021). A thermodynamic model
+                            % for feldspars in KAlSi3O8-NaAlSi3O8-CaAl2Si2O8 for mineral 
+                            % equilibrium calculations. Journal of Metamorphic Geology, 1-14.
+                            % Published online as DOI 10.1111/jmg.12639
+                            % 
+                            % E-m   Formula        Mixing sites
+                            %                      A                   TB*            
+                            %                      Na    Ca    K       Al    Si      
+                            % ab    NaAlSi3O8      1     0     0       1     3       
+                            % san   KAlSi3O8       0     0     1       1     3       
+                            % an    CaAl2Si2O8     0     1     0       2     2     
+                            % *use 1/4 entropy of mixing from TB-sites  
+ 
+                              asf
+                                W(ab,an)   14.6 -0.00935 -0.04
+                                W(ab,san)  24.1 -0.00957  0.338
+                                W(an,san)  48.5    0     -0.13
+                                
+                                ab   0.674    0  0
+                                an   0.550    0  0
+                                san  1.000    0  0
+                                
+                            % --------------------------------------------------
+                      
+                        * originally entered by Bob Myhill, 2023/07/08
+                        * swapped abh for ab? converted to 688 format, JADC, 13/7/23
+ 
+Fsp(HGP21)                    | solution name.
+abbreviation Fsp
+full_name    ternary-feldspar
+ 
+688                                | model type: 688 format standard model
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+3                                  | number of vertices on each simplex
+abh                                | endmembers on the vertices
+an
+san
+
+0. 1   .1   0                      | range and resolution for albite, imod = 0 -> cartesian subdivision
+0. 1   .1   0                      | range and resolution for anorthite, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+w(abh an)          14600   -9.35  -0.04
+w(abh san)         24100   -9.57  0.338
+w(an  san)         48500   0      -0.13
+end_excess_function
+ 
+2                                   | number of sites in configurational entropy model
+
+M                                   | site name
+3 1 1                               | number of species, effective multiplicity, true multiplicity
+z(Na,M)  = 1 abh
+z(Ca,M)  = 1 an
+z(K,M)   = 1 san
+
+T                                   | site name
+2 1 4                               | number of species, effective multiplicity, true multiplicity
+z(Al,T) = 0.25 abh + 0.25 san + 0.5 an
+z(Si,T) = 0.75 abh + 0.75 san + 0.5 an
+
+[O8]                                | formula suffix, enter "none" for no suffix.
+
+begin_van_laar_sizes
+alpha(abh)      0.674
+alpha(an)      0.555
+alpha(san)     1
+end_van_laar_sizes
+ 
 end_of_model
                       --------------------------------------------------------

@@ -52,7 +52,7 @@ FARCH= -m64
 FFLAGS = -O3 $(FARCH)
 #FLINK = -static-libgfortran -m64 -lgfortran -lgcc -lm
 # make static linking 02/2023 by LX
-FLINK = -static-libgfortran -$(FARCH) -lgfortran -lgcc -lm
+FLINK = -static-libgfortran $(FARCH) -lgfortran -lgcc -lm
 
 #-Wstrict-overflow -Wstringop-overflow=2 removed for 690
 # WFM Added 2007Sep05, PAPPEL 2010SEPT08: for 6.6.0

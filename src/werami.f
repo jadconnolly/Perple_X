@@ -1337,6 +1337,8 @@ c                                tell the user
          do i = 1, isol 
             write (*,1050) (pcomp(j,jdsol(i)), j = 1, icomp)
          end do 
+
+         call prtptx
 c                                choose action
          write (*,1001) 
          call rdnumb (nopt(8),nopt(8),choice,1,.false.)
