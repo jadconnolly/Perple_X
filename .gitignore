@@ -3,8 +3,6 @@
 src/*.o
 src/*.so
 src/*.mod
-*.dat
-*.prn
 *data.txt
 .vscode/ 
 src/actcor 
@@ -21,3 +19,12 @@ src/pssect
 src/pt2curv 
 src/vertex 
 src/werami
+test/**/*.arf
+test/**/*.blk
+test/**/*.plt
+test/**/*.prn
+test/**/*.pts
+test/**/*.ps
+test/**/*.tim
+test/**/*.tof
+test/**/*auto_refine.txt
