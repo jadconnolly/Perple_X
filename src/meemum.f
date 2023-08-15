@@ -61,6 +61,7 @@ c----------------------------------------------------------------------
       common/ libVars /getInput, meemumInit, sWarn
 
       getInput = .true.
+      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 2

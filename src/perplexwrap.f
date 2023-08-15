@@ -140,7 +140,7 @@
                 
                 prject = fileName
                 !print*, prject
-            !                                    initialization, read files etc. 
+            !                  initialization, read files etc. 
                 call iniprp
                 
                
