@@ -3220,7 +3220,12 @@ c---------------------------------------------------------------------
       integer grid
       double precision rid 
       common/ cst327 /grid(6,2),rid(5,2)
+
+      logical :: getInput, meemumInit, sWarn
+                
+      common/ libVars /getInput, meemumInit, sWarn
 c----------------------------------------------------------------------
+      if (.not.sWarn) then
       if (ier.eq.1) then 
          write (*,1) 
       else if (ier.eq.2) then 
@@ -3437,6 +3442,7 @@ c                                 generic warning, also 99
          write (*,228) char, realv, int, char
       else
          write (*,999) ier, char, realv, int
+      end if
       end if
 
 1     format (/,'**warning ver001** the amount of a saturated phase is'
