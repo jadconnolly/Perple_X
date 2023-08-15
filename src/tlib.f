@@ -186,6 +186,8 @@ c----------------------------------------------------------------------
      *        maxact, mxfree, maxnz
       common/ ngg010 /itmax1, itmax2, kchk, kcycle, lcrash, lprob, 
      *                maxact, mxfree, maxnz
+
+     
 c----------------------------------------------------------------------
 c                                 periodic fractions
       r13 = 1d0/3d0
@@ -8879,6 +8881,10 @@ c                                 solution model names
 
       integer iam
       common/ cst4 /iam
+
+      logical :: getInput, meemumInit, sWarn
+                
+      common/ libVars /getInput, meemumInit, sWarn
 c-----------------------------------------------------------------------
       refine = .false.
 c                                 only use autorefine if solutions
@@ -8934,7 +8940,7 @@ c                                 second cycle of automated mode
 
                write (n8,*) refine
 
-            else if (ier.eq.0.and.iam.eq.2.and.iopt(6).ne.0) then 
+            else if (ier.eq.0.and.iam.eq.2.and.iopt(6).ne.0.and.getInput) then 
 c                                 MEEMUM, ask the user if he wants
 c                                 to use the data 
                write (*,'(/,a,a,/,a)') 'Auto-refine data exists from a',
