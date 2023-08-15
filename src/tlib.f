@@ -5453,11 +5453,14 @@ c------------------------------------------------------------------------
 
       integer jx, jy, lev, xn, yn
       common/ cst58 /jx, jy, lev, xn, yn
+
+      logical :: getInput, meemumInit, sWarn
+      common/ libVars /getInput, meemumInit, sWarn
 c-----------------------------------------------------------------------
       do 
 c                                 get the root for all output files
 c                                 except if unsplt-local
-         if (iam.ne.14) then 
+         if (iam.ne.14 .and. getInput) then 
 
             if (iam.eq.4) then 
 c                                 BUILD
