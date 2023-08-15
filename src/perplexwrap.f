@@ -350,7 +350,7 @@
 
                 implicit none
 
-                include 'perplex_parameters.h'
+                
                 
                 integer, intent(in) :: nameLength
                 character (len=nameLength), intent(in) :: fileName
