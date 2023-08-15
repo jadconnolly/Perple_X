@@ -56,6 +56,11 @@ c----------------------------------------------------------------------
 
       integer iam
       common/ cst4 /iam
+
+      logical :: getInput, meemumInit, sWarn      
+      common/ libVars /getInput, meemumInit, sWarn
+
+      getInput = .true.
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 2

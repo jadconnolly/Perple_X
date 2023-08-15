@@ -35,6 +35,12 @@ c----------------------------------------------------------------------
       double precision rcps, a0
       common/ comps /rcps(2*k5,m13),a0(m13,2),icps(2*k5,m13),jcx(m13),
      *               jcx1(m13),kds(m13),stol(i11),savg(i11),spec(m13)
+
+      logical :: getInput, meemumInit, sWarn      
+      common/ libVars /getInput, meemumInit, sWarn
+
+      getInput = .true.
+      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 3

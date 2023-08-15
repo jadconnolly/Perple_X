@@ -143,6 +143,13 @@ c-----------------------------------------------------------------------
       common/ cst19 /idspe(2),ispec
 
       data dsol/'solution_model.dat'/
+
+      logical :: getInput, meemumInit, sWarn
+                
+      common/ libVars /getInput, meemumInit, sWarn
+      
+      getInput = .true.
+      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 4

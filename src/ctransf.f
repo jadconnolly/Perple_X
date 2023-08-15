@@ -34,6 +34,14 @@ c----------------------------------------------------------------------
 
       integer icomp,istct,iphct,icp
       common/ cst6 /icomp,istct,iphct,icp
+
+
+      logical :: getInput, meemumInit, sWarn      
+      common/ libVars /getInput, meemumInit, sWarn
+
+      getInput = .true.
+      sWarn = .false.
+      
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 6

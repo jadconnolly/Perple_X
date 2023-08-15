@@ -100,6 +100,11 @@ c                                    iam = 11 - fluids
 c                                    iam = 13 - unsplt (global)
 c                                    iam = 14 - unsplt (local)
 c                                    iam = 15 - convex
+      logical :: getInput, meemumInit, sWarn      
+      common/ libVars /getInput, meemumInit, sWarn
+
+      getInput = .true.
+      sWarn = .false.
       iam = 15
 c                                 version info
       call vrsion (6)
