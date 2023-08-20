@@ -1672,7 +1672,17 @@ c----------------------------------------------------------------------
 
       save iwarn1, iwarn2, iwarn3, wname1, wname2, wname3
       data iwarn1, iwarn2, iwarn3, wname1, wname2, wname3 /3*0,3*' '/
+
+      logical :: getInput, meemumInit, sWarn
+                
+      common/ libVars /getInput, meemumInit, sWarn
 c----------------------------------------------------------------------
+      
+      if (sWarn) then
+         iwarn1 = iopt(1) + 1
+         iwarn2 = iopt(1) + 1
+         iwarn3 = iopt(1) + 1
+      end if
       sick(jd) = .false.
       pois     = .false.
       lshear   = .false.
