@@ -343,7 +343,7 @@
 
             end subroutine minimizePoint
 
-            subroutine pseudosection(fileName, nameLength,grid,gridToAssem,assemToPhase,purePhases,solPhases,xMin,xMax,yMin,yMax,xInc,yInc,xVar,yVar)
+            subroutine pseudosection(fileName, nameLength,grid,gridToAssem,assemToPhase,purePhases,solPhases,numPhases,xMin,xMax,yMin,yMax,xInc,yInc,xVar,yVar)
                 !This is a sort of clone of the pssect program, it will read the output given from vertex
                 !And provide the information needed to plot a pseudosection
                 !This includes variable ranges, variable names, and the pseudosection grid (In all its complexities)
@@ -354,12 +354,13 @@
                 
                 integer, intent(in) :: nameLength
                 character (len=nameLength), intent(in) :: fileName
-
+                
                 integer, dimension(l7,l7), intent(out) :: grid !Corresponds to igrd
                 integer, dimension(k2), intent(out) :: gridToAssem !Corresponds to iap
                 integer, dimension(k5,k3), intent(out) :: assemToPhase !Corresponds to idasls
                 character (len=8), dimension(k1), intent(out) :: purePhases !Corresponds to names
                 character (len=6), dimension(h9), intent(out) :: solPhases !Corresponds to aname
+                integer,dimension(k3),intent(out) :: numPhases
                 double precision, intent(out) :: xMin,xMax,yMin,yMax,xInc,yInc
                 character (len = 8), intent(out) :: xVar, yVar
 
@@ -462,7 +463,7 @@
         !   !                                 option "plot_extra_data" = T
         !         if (plopt(4)) call psdat
           
-        !         call psclos
+                ! call psclos
            
                 close (n5)
                 close (n4)
@@ -471,7 +472,7 @@
                 assemToPhase = idasls
                 purePhases = names
                 solPhases = aname
-
+                numPhases = iavar(3,1:k3)
                 xVar = vnm(1)
                 yVar = vnm(2)
                 xMin = vmn(1)
