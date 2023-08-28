@@ -326,6 +326,16 @@
                         phaseProps = props
                         phaseComps = pcomp
                         sysProps = psys
+
+                        !reset values in case of another system call
+                        mu = mu*0.0
+                        props = props*0.0
+                        psys = psys*0.0
+                        pcomp = pcomp*0.0
+                        do i = 1,k5
+                            pname(i) = "              "
+                        end do
+
             
                     end if 
             
@@ -364,6 +374,8 @@
                 double precision, intent(out) :: xMin,xMax,yMin,yMax,xInc,yInc
                 character (len = 8), intent(out) :: xVar, yVar
 
+                integer :: i
+                
                 integer jop0
           
                 logical first, err
@@ -482,7 +494,19 @@
                 xInc = dvr(1)*jInc
                 yInc = dvr(2)*jInc
                
-                
+                !Reset values in case of another function call
+                !Only matters for arrays of indeterminate number of useful values
+                igrd = igrd*0
+                iap = iap*0
+                idasls = idasls*0
+                iavar = iavar*0
+                do i = 1, k1
+                    names(i) = "        "
+                end do
+
+                do i =1,h9
+                    aname(i) = "      "
+                end do
         
 
             end subroutine pseudosection
