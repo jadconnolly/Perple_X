@@ -1017,6 +1017,7 @@ c                                 solvent molar weight
                   end do
 c                                 total molality
                   caq(i,na2) = 1d0/msol
+c                                 solvent molar mass
                   caq(i,na3) = msol
 
                else
@@ -3273,6 +3274,78 @@ c                                 failed
 
       end
 
+
+      subroutine chkblk (idead)
+c-----------------------------------------------------------------------
+c chkblk - checks that the bulk composition generated for (pseudo-)ternary 
+c gridded minimization for degeneracy and bounds, if out of bounds the
+c optimization will be counted as a bad result.
+c------------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer idead, k
+
+      integer iam
+      common/ cst4 /iam
+
+      integer hcp,idv
+      common/ cst52  /hcp,idv(k7)
+
+      integer icomp,istct,iphct,icp
+      common/ cst6  /icomp,istct,iphct,icp
+
+      integer is
+      double precision a,b,c
+      common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
+
+      double precision units, r13, r23, r43, r59, zero, one, r1
+      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
+c------------------------------------------------------------------------
+      idead = 0
+c                                 bounds test
+      do k = 1, hcp
+
+         if (b(k).gt.0d0) then 
+
+            cycle
+
+         else if (dabs(b(k)).lt.zero) then
+
+            b(k) = 0d0
+
+         else 
+
+            idead = 2
+c                                 allow negative compositions in meemum
+            if (iam.eq.1) return
+
+         end if
+
+      end do
+
+      idegen = 0
+      jdegen = 0
+c                                 degeneracy test
+      do k = 1, icp
+
+         if (b(k).eq.0d0) then 
+
+            idegen = idegen + 1
+            idg(idegen) = k
+
+         else 
+
+            jdegen = jdegen + 1
+            jdg(jdegen) = k
+
+         end if
+
+      end do
+
+      end
+
       subroutine meemum (bad)
 c----------------------------------------------------------------------
       implicit none
@@ -3323,6 +3396,9 @@ c                                 is necessary for reasons of stupidity (lpopt0)
       end do
 c                                 set dependent variables
       call incdp0
+c                                 check for degeneracy and out of bounds 
+c                                 compositions (idead ~0, but nothing is done).
+      call chkblk (idead)
 c                                 lpopt does the minimization and outputs
 c                                 the results to the print file.
       if (lopt(28)) call begtim(30)

@@ -6621,7 +6621,7 @@ end_excess_function
 z(Na) = 0 + 1 abh
 z(Ca) = 0 + 1 an
 
-2 2.                       | 2 species on T-site, 2. sites per formula (al-avoidance model)
+2 2                        | 2 species on T-site, 2 sites per formula (al-avoidance model)
 z(Al) = 1/2 + 1/2 an
 
 reach_increment 3
@@ -6680,11 +6680,10 @@ end_excess_function
 2 1                        | 2 species on O-site, 1 site per formula unit.
 z(Na) = 1 ab
 
-reach_increment 3
-
 end_of_model
                       --------------------------------------------------------
 begin_model
+                           | 
 
 San                        | Waldbaum and Thompson 1968.
 abbreviation San
@@ -8394,7 +8393,7 @@ end_excess_function
 1                            | 1 site entropy model
 3 1                          | 3 species, site multiplicity of 1
 z(Ca) = 1 an
-z(K)  = 1 san            | van laar volumes follow:
+z(K)  = 1 san
 
 
 begin_van_laar_sizes
@@ -17201,9 +17200,19 @@ end_of_model
 begin_model
                         Ternary feldspar “4TR” model
                         Holland, TJB, Green, ECR & Powell, R (2021)
- 
+
+                        * entered by Bob Myhill, 2023/07/08
+
+                        * swapped abh for ab? converted to 688 format, JADC, 13/7/23
+
+                        * reverted to ab, though how this is compatible with san is
+                          beyond me. JADC, 30/8/23
+
+                        * if this is the "plagioclase parameterization" then is there
+                          supposed to be another model for alkali fsp?
+
                         * Thermocalc input:
- 
+
                             % ternary feldspar, “4TR” model, with plagioclase-friendly 
                             %         parameterisation.
                             %
@@ -17228,22 +17237,18 @@ begin_model
                                 ab   0.674    0  0
                                 an   0.550    0  0
                                 san  1.000    0  0
-                                
-                            % --------------------------------------------------
-                      
-                        * originally entered by Bob Myhill, 2023/07/08
-                        * swapped abh for ab? converted to 688 format, JADC, 13/7/23
- 
-Fsp(HGP21)                    | solution name.
+                      ---------------------------------------------------------   
+
+Fsp(HGP21)                         | solution name.
 abbreviation Fsp
 full_name    ternary-feldspar
- 
+
 688                                | model type: 688 format standard model
- 
+
 1                                  | number of polytopes
 1                                  | number of simplices
 3                                  | number of vertices on each simplex
-abh                                | endmembers on the vertices
+ab                                 | endmembers on the vertices
 an
 san
 
@@ -17251,31 +17256,31 @@ san
 0. 1   .1   0                      | range and resolution for anorthite, imod = 0 -> cartesian subdivision
 
 begin_excess_function
-w(abh an)          14600   -9.35  -0.04
-w(abh san)         24100   -9.57  0.338
-w(an  san)         48500   0      -0.13
+w(ab an)          14600   -9.35 * T_K - 0.04  * P_bar
+w(ab san)         24100   -9.57 * T_K + 0.338 * P_bar
+w(an san)         48500   -0.13 * P_bar
 end_excess_function
- 
+
 2                                   | number of sites in configurational entropy model
 
 M                                   | site name
 3 1 1                               | number of species, effective multiplicity, true multiplicity
-z(Na,M)  = 1 abh
+z(Na,M)  = 1 ab
 z(Ca,M)  = 1 an
 z(K,M)   = 1 san
 
 T                                   | site name
 2 1 4                               | number of species, effective multiplicity, true multiplicity
-z(Al,T) = 0.25 abh + 0.25 san + 0.5 an
-z(Si,T) = 0.75 abh + 0.75 san + 0.5 an
+z(Al,T) = 0.25 ab + 0.25 san + 0.5 an
+z(Si,T) = 0.75 ab + 0.75 san + 0.5 an
 
 [O8]                                | formula suffix, enter "none" for no suffix.
 
 begin_van_laar_sizes
-alpha(abh)      0.674
+alpha(ab)      0.674
 alpha(an)      0.555
 alpha(san)     1
 end_van_laar_sizes
- 
+
 end_of_model
                       --------------------------------------------------------

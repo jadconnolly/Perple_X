@@ -103,52 +103,19 @@ c----------------------------------------------------------------------
 !                                    k13 = imax(k1,k21)/k33.
 !                                 The memory allocated for compositions is then 
 !                                    memory = (1 + k31 + k32)*(k1 + k21) + imax(k1,k21)/k33
-!                                 or if k1 is taken as the independent variable 
-!                                    k21 = ((memory (-k31 - k32 - 1)*k1) - imax(k1,k21)/ k33) / (1 + k31 + k32).
-!                                 Experience indicates that for most problems k1>k21, and that k21 approaches
-!                                 k1 for complex (10-d) solutions with the default values of resolution_factor (2)
-!                                 reach_increment (0). For larger resolution_factor or reach_increment the required
-!                                 value for k21 may excede k1, whereas for problems with simple (low-dimension) 
-!                                 solutions k21 may be << k1. The compromise adopted here is to equate k21 and k1
-!                                 in which case 
-!                                    k1 = memory / (2 * k31 + 2 * k32 + 2 + 1 / k33)
+!                                 Experience indicates that for most problems k1>k21 and setting k33 = 1
+!                                    k21 = (memory - (k31 + k32 + 2)*k1) / (1 + k31 + k32)
 !                                 The value of memory is dependent on the other parameters set here as well as 
 !                                 system/compiler limitations, which typically limit image size to 2 Gb. For the
 !                                 present parameter choices, memory was found by trial and error (i.e., by varying 
 !                                 increasing the value of memory until the compiler or system complained about 
 !                                 image size) to be 0.78 Gb.
-
-!                                 The program kays.f writes out the parameters k1,k21,k20,k18,k24,k25,k13 computed
-!                                 by the above logic. 
-
-!                                 uncomment this line to specify k1 independently of k21 (assumes k1>k21)
-!     parameter (memory=78000000,k31=4,k32=10,k33=1,k1=4000000)
-!                                 the next two lines make k1 = k21, comment these if the line above is uncommented.
-!     parameter (memory=78000000,k31=4,k32=10,k33=1)
-!     parameter (k1 = memory/(2*k31+2*k32+2+1/k33))
-!                                 set k13 = k21/k33 if k21 > k1
-!     parameter (k13=k1/k33)
-!     parameter (k21=((memory-(k31+k32+1)*k1)-k13)/(1+k31+k32))
-!     parameter (k18=k1*k31, k20=k21*k31, k24=k1*k32, k25=k21*k32)
-!                                 laggit version static: 
-!                                    k18 = k1 * k31
-!                                    k24 = k1 * k32
-!                                 laggit version dynamic: 
-!                                    k20 = k18 (static and dynamic generate comparable simplicial coordinates)
-!                                    k25 = k21 * k32
-!                                  then 
-!                                    memory = k1 + k21 + k18 + k20 + k24 + k25 + k1;
-!                                  and solving for k21 
-!                                    k21 = (memory - k1*(2*k31 + k32 + 2))/(k32+1)
-! DEBUG691
-      parameter(memory=70000000,k31=2,k32=10,k1=3000000)
-!     parameter(memory=42000000,k31=2,k32=10,k1=1800000)
-!                                  static
-      parameter(k18=k1*k31,k24=k1*k32,k13=k1)
-!                                  dynamic, for lt 6.9.0
-!     parameter(k21=(memory-(2*k31+k32+2)*k1)/(1+k32))
-!                                  for ge 6.9.0
-      parameter(k21=100000)
+      parameter(memory = 70000000, k31 = 2, k32 = 10, k1 = 3000000)
+!                                  static composition array dimensions:
+      parameter(k18 = k1*k31, k24 = k1*k32, k13 = k1)
+!                                  solve for k21 as above:
+      parameter(k21 = (memory - (k31 + k32 + 2)*k1) / (1 + k31 + k32))
+!                                  dynamic composition array dimensions:
       parameter(k20=k18,k25=k21*k32)
 c----------------------------------------------------------------------
       parameter (k0=25,k2=100000,k3=2000,k4=32,k5=14)

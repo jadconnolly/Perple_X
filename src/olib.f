@@ -123,7 +123,7 @@ c                                 print standard potentials
          write (lu,1120) (vname(jv(i)),v(jv(i)), i = 3, ipot)
 
          do i = 2, icont
-            write (lu,1121) i, cx(i-1)
+            write (lu,1121) i-1, cx(i-1)
          end do
 
       else 
@@ -249,8 +249,8 @@ c                                 solvent species
 c                                 mole fraction
                             ysp(ns+m,i) = caq(i,j)
                         else 
-c                                 molality             
-                            ysp(ns+m,i) = caq(i,j)/caq(i,na3)
+c                                 molality 
+                            ysp(ns+m,i) = caq(i,j)*caq(i,na2)
                         end if   
 
                      else if (j.le.nsa) then 
@@ -272,7 +272,7 @@ c                                 special properties
                          else if (j.eq.na2) then 
                             spnams(ns+m,id) = 'tot_mola'
                          else if (j.eq.na3) then
-                            spnams(ns+m,id) = 'solv_mas'
+                            spnams(ns+m,id) = 'solv_kfw'
                          else if (j.eq.na3+1) then
                             spnams(ns+m,id) = 'err_lgKw'
                          else if (j.eq.na3+2) then
@@ -3102,7 +3102,9 @@ c                                 only of fluid.
 c                                 fluid absent properties:
          root = psys1(4)/psys1(10)
 
-         if (root.gt.0d0) then 
+         if (isnan(root)) then
+            bsick = .true.
+         else if (root.gt.0d0) then 
 c                                 sound velocity
             psys1(6) = dsqrt(root) * units
 
@@ -3116,14 +3118,17 @@ c                                 sound velocity P derivative
             else 
                psys1(22) = nopt(7)
                psys1(25) = nopt(7) 
-            end if 
+            end if
+
          end if
 
          if (shear.and.solid) then 
 
             root = psys1(5)/psys1(10)
 
-            if (root.gt.0d0) then 
+            if (isnan(root)) then
+               bsick = .true.
+            else if (root.gt.0d0) then 
 c                                 s-wave velocity
                psys1(8) = dsqrt(root) * units
 
@@ -3138,11 +3143,14 @@ c                                 P-derivative
                   psys1(24) = nopt(7)
                   psys1(27) = nopt(7) 
                end if 
+
             end if 
 
             root = (psys1(4)+r43*psys1(5))/psys1(10)
 
-            if (root.gt.0d0) then 
+            if (isnan(root)) then
+               bsick = .true.
+            else if (root.gt.0d0) then 
 c                                 p-wave velocity
                psys1(7) = dsqrt(root)*units
 
@@ -3160,7 +3168,8 @@ c                                 p-wave velocity P derivative
                else 
                   psys1(23) = nopt(7)
                   psys1(26) = nopt(7) 
-               end if 
+               end if
+
             end if 
 c                                 vp/vs
             if (psys1(8).gt.0d0) then 

@@ -3821,7 +3821,7 @@ c----------------------------------------------------------------
 
       integer i
 
-      character spec(7)*14
+      character spec(9)*14
 
       integer inv
       character dname*14, title*162
@@ -3854,10 +3854,10 @@ c----------------------------------------------------------------
 
       save spec 
       data spec/'pH-pH_0','pH','error_pH','permittivity','I,m',
-     *          'ref_chg','tot_solute_m'/
+     *          'ref_chg','tot_solute_m','tot_molality','solvent_kgfw'/
 c----------------------------------------------------------------------
-      if (icomp+ns+aqct+7.gt.i11)
-     *                           call error (1,rt,icomp+ns+aqct+7,'i11')
+      if (icomp+ns+aqct+9.gt.i11)
+     *                           call error (1,rt,icomp+ns+aqct+9,'i11')
 c                                 bulk composition, wt% or mol 
       do i = 1, icomp 
 
@@ -3927,7 +3927,7 @@ c                                 molality
 
       end do 
 c                                 special variables
-      do i = 1, 7 
+      do i = 1, 9 
          iprop = iprop + 1
          dname(iprop) = spec(i)
       end do 
@@ -4014,7 +4014,7 @@ c                                 mole fraction
                prop(k) = caq(jd,i)
             else 
 c                                 molality
-               prop(k) = caq(jd,i)/caq(jd,na3)
+               prop(k) = caq(jd,i)*caq(jd,na2)
             end if  
 
          end do
@@ -4047,6 +4047,10 @@ c                                 ref_chg
          prop(k+6) = caq(jd,nat-1)
 c                                 total solute molality
          prop(k+7) = caq(jd,nat-2)
+c                                 total molality
+         prop(k+8) = caq(jd,na2)
+c                                 solvent molar mass, kg/mol-solvent-species
+         prop(k+9) = caq(jd,na3)
 
       else 
 c                                 averaging multiple phases:
@@ -4094,7 +4098,7 @@ c                                 mole fraction
                   prop(k) = prop(k) + x * caq(ld,i)
                else 
 c                                 molality
-                  prop(k) = prop(k) + x * caq(ld,i)/caq(ld,na3)
+                  prop(k) = prop(k) + x * caq(ld,i)*caq(ld,na2)
                end if
 
             end do
