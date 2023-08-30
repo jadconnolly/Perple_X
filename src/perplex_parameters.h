@@ -110,7 +110,7 @@ c----------------------------------------------------------------------
 !                                 present parameter choices, memory was found by trial and error (i.e., by varying 
 !                                 increasing the value of memory until the compiler or system complained about 
 !                                 image size) to be 0.78 Gb.
-      parameter(memory = 70000000, k31 = 2, k32 = 10, k1 = 3000000)
+      parameter(memory = 62500000, k31 = 2, k32 = 10, k1 = 2500000)
 !                                  static composition array dimensions:
       parameter(k18 = k1*k31, k24 = k1*k32, k13 = k1)
 !                                  solve for k21 as above:
