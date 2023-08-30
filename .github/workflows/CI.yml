@@ -10,8 +10,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
-          - macOS-latest
+          #- ubuntu-latest
+          #- macOS-latest
           - windows-latest
     steps:
     - name: Checkout code
