@@ -689,11 +689,9 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-
-
       character*100 n6name, n5name
 
-      integer i,j,k,l,m,idead,two(2),lun,iox,itop(lay),icp1,
+      integer i,j,k,l,m,idead,two(2),lun,iox,itop(lay),
      *        layer(maxbox),ibot,minus
 
       double precision gblk(maxbox,k5),cdcomp(k5,lay),vox(k5),rho,zbox,
@@ -713,6 +711,9 @@ c-----------------------------------------------------------------------
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
+
+      integer ids,isct,icp1,isat,io2
+      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
@@ -773,6 +774,9 @@ c-----------------------------------------------------------------------
       double precision dblk,cx
       common/ cst314 /dblk(3,k5),cx(2),icont
 
+      integer jfct,jmct,jprct,jmuct
+      common/ cst307 /jfct,jmct,jprct,jmuct
+
       logical first
 
       save first, vox, iox
@@ -782,6 +786,9 @@ c-----------------------------------------------------------------------
 c                                 initialization
       iasct = 0
       ibulk = 0
+
+      if (jmct.gt.0) call errdbg 
+     *               ('Frac2d not set up for mobile components')
 
       if (flsh) then 
 c                                 the y coordinate increases downward in frac2d
@@ -877,7 +884,7 @@ c                                 check resolution dependent dimensions
 
             layer(ncol) = i
 
-            do k = 1, icp 
+            do k = 1, icp1
                gblk(ncol,k) = iblk(i,k)
             end do
 
@@ -894,7 +901,6 @@ c                                 set up stuff for tab file output, this is the 
 c                                 than WERAMI that writes tab files.
       two(1) = loopx
 c                                 number of variables in table
-      icp1 = icp+1 
       iprop = 2*icp1
       
       do j = 1, icp
@@ -902,7 +908,7 @@ c                                 number of variables in table
          write (dname(j+icp1),'(a14)') cname(j)//'_{cum}'
       end do
 
-      do j = 1, icp
+      do j = 1, icp1
          cmass(j) = 0d0
          cfmass(j) = 0d0 
          imass(j) = 0d0
@@ -970,7 +976,7 @@ c                                 array into the local array and get the total
 c                                 number of moles (ctotal)
             ctotal = 0d0
 c                                 get total moles to compute mole fractions             
-            do i = 1, icp+1
+            do i = 1, icp1
                dcomp(i) = 0d0
                cblk(i) = gblk(k,i)
                if (cblk(i).lt.zero) cblk(i) = 0d0

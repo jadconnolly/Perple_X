@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.2, Aug 30, 2023.',
+     *     'Perple_X release 7.1.3, Sep 14, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -200,6 +200,8 @@ c                                 loop to find machine precision (mainly
 c                                 for nag)
       r1 = 1d-12
       r2 = 0d0
+
+c     write (*,*) k1, k21
 
       do
          if (1d0+r1.eq.1d0) exit
@@ -9728,12 +9730,10 @@ c                             t = 2, and xco2 = 3, respectively.
       read (n1,*,err=998) (iv(i), i = 1, 5)
 c                             check variable ranges are consistent,
 c                             variable iv(1), UNLESS:
-c                             normal calculations w/o limits
-      if (icopt.ne.0.and.icopt.ne.4.and.icopt.ne.12.and.
-c                             fractionation calculations
-     *    icopt.ne.7.and.icopt.le.9.
-c                              MEEMUM
-     *    and.iam.ne.2) then
+c                             normal calculations w/o limits,
+c                             fractionation calculations, or
+c                             MEEMUM
+      if (icopt.ne.0.and.icopt.ne.4.and.icopt.le.6.and.iam.ne.2) then
 
          if (iv(1).eq.3.and.ifct.eq.0) call error (110,r,i,'I')
 
@@ -9741,7 +9741,7 @@ c                              MEEMUM
 
             if (icopt.ne.7.and.iv(2).ne.3) call error (111,r,i,'I')
 
-         end if 
+         end if
 
          if (vmin(iv(1)).ge.vmax(iv(1)).and.icopt.lt.5) then 
 
@@ -9758,7 +9758,7 @@ c                              MEEMUM
 
       end if
 c                             variable iv(2):
-      if (iam.ne.2.and.(icopt.eq.1.or.
+      if (iam.ne.2.and.icopt.le.6.and.(icopt.eq.1.or.
      *                  (icopt.eq.5.and.icont.eq.1.and..not.oned))) then
 
          if (iv(2).eq.3.and.ifct.eq.0) call error (110,r,i,'INPUT1')
@@ -10132,6 +10132,9 @@ c-----------------------------------------------------------------------
 
       character*100 cfname
       common/ cst227 /cfname
+
+      integer ids,isct,icp1,isat,io2
+      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c-----------------------------------------------------------------------
 c                                 look for input data from a file 
 c                                 of type aux
@@ -10150,6 +10153,7 @@ c                                 can only be pressure and temperature
       ipot = 1
 
       jbulk = icp
+      kbulk = icp
 c                                 true => flush model, ~true => subducting column
       read (n8,*) dynam
 c                                 this is just a trick to avoid changing the variable 
@@ -10270,6 +10274,8 @@ c                                 end of data indicated by zero
      *                               'increase lay in common cst66')
 
          read (n8,*) (iblk(ilay,i),i=1,icp)
+c                                 initialize charge deficit to zero
+         iblk(ilay,icp1) = 0d0
 
          irep(ilay) = idint(zlayer/vz(1)) 
 

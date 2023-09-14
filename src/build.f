@@ -722,7 +722,7 @@ c                                 output variable choices and values:
      *  'indices of 1st & 2nd independent & sectioning variables'
       else
          write (n1,1310) (iv(i), i = 1, l2),
-     *  'independent variables indices'
+     *  'independent variable indices'
       end if 
 
       if (liqdus) then
@@ -1996,6 +1996,7 @@ c                                  1-d "gridded min" from a file, only allow p-t
       else if (icopt.eq.9.or.icopt.eq.11) then
 c                                  2-d fractionation, only allow p and t
          ivct = 2
+         jvct = 1
          icont = 0 
 c                                  choose the primary variable (IV(1)):
          call getxvr (ivct,jvct,icont,jc,oned,
@@ -2539,7 +2540,7 @@ c                                 normal variable, swap positions
             iv(1) = iv(jc)
             iv(jc) = ix
 c                                 read limits
-            call redvar (1,1)
+            if (icopt.ne.9.and.icopt.ne.11) call redvar (1,1)
 
          end if
 

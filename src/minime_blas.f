@@ -592,9 +592,11 @@ c                                 save the normalized g
       g2(idif) = g/rsum
 c                                 renormalize the bulk to a mole of solvent
 c                                 it's no longer clear to me why this is desireable.
-      c2tot(idif) = rsum/rsmo
-c                                 if it quacks like a duck...
-      quack(idif) = rkwak
+      if (rsmo.ne.0d0) then 
+         c2tot(idif) = rsum/rsmo
+      else 
+         call errdbg ('rsmo = 0 in savkwk')
+      end if
 c                                 save the endmember fractions
       zco(icoz(idif)+1:icoz(idif)+ltot) = pa(1:ltot)
 

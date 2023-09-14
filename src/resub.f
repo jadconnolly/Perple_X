@@ -1022,10 +1022,10 @@ c                                 solvent molar mass
 
                else
 c                                 impure solvent, get speciation
-c                                 ximp, xb, sum, and msol are dummies
-                  call gaqlgd (ximp,xb,sum,msol,i,bad,.true.)
+c                                 ximp is a dummy
+                  call gaqlgd (ximp,i,.true.)
 
-                  if (bad.and.lopt(74)) then
+                  if (rkwak.and.lopt(74)) then
 c                                 how/why this happens isn't clear to 
 c                                 me, since the present aqlgd calculation
 c                                 should be identical to one used to generate
