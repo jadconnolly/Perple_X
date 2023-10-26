@@ -12588,19 +12588,19 @@ end_excess_function
 z(m1,ca) =   1 cc + 1 odo + 1 oank
 z(m1,mg) =   1 mag
 
-3 0.25                                 |3 species on m2a, mult. = 1/4
+3 0.25                                |3 species on m2a, mult. = 1/4
 z(m2a,ca) =  1 cc
 z(m2a,mg) =  1 mag + 1 odo
 
-3 0.25                                 |3 species on m2b, mult. = 1/4
+3 0.25                                |3 species on m2b, mult. = 1/4
 z(m2b,ca) =  1 cc
 z(m2b,mg) =  1 mag + 1 odo + 1 oank
 
 begin_van_laar_sizes
-alpha(cc)     0.25 0.000929*T
+alpha(cc)     0.25 + 0.000929*T
 alpha(mag)    1
 alpha(odo)    0.95
-alpha(sid)    0.01 0.000666*T
+alpha(sid)    0.01 + 0.000666*T
 alpha(oank)   0.929
 end_van_laar_sizes
 
@@ -12705,7 +12705,7 @@ full_name    gas
 
 2
 
-7                                     number of endmembers
+9                                     number of endmembers
 
                                     | ENDMEMBER NAMES:
 SiO2
@@ -12714,32 +12714,32 @@ Si
 O2
 O
 MgO
-| Mg commented out so entropy model can be read without changing parameter m11
+Mg
 FeO
-| Fe
+Fe
 
 0 0 0 0 0 0 0 0 0                   | endmember flags.
 
-0    1    .1 0                      | range and resolution of X(SiO2), 0 => cartesian subdivision/1 => asymmetric subdivision
+0     1   .1 0                      | range and resolution of X(SiO2), 0 => cartesian subdivision/1 => asymmetric subdivision
 0    .5   .1 0                      | range and resolution of X(SiO)
 0    .5   .1 0                      | range and resolution of X(Si)
 0    .5   .1 0                      | range and resolution of X(O2)
 0    .5   .1 0                      | range and resolution of X(O)
 0    .5   .1 0                      | range and resolution of X(MgO)
-| 0    .5   .1 0                      | range and resolution of X(Mg)
-|0    .5   .1 0                      | range and resolution of X(FeO)
+0    .5   .1 0                      | range and resolution of X(Mg)
+0    .5   .1 0                      | range and resolution of X(FeO)
 
 ideal
 
   1                                 | molecular configurational entropy model
-7 1                                 | 6 species, multiplicity 1
+9 1                                 | 6 species, multiplicity 1
 
 z(SiO2)  = 1 SiO2
 z(SiO)   = 1 SiO
 z(O2)   = 1 O2
 z(O)   = 1 O
-| z(Mg)  = 1 Mg
-| z(Fe)  = 1 Fe
+z(Mg)  = 1 Mg
+z(Fe)  = 1 Fe
 z(FeO) = 1 FeO
 z(MgO) = 1 MgO
 
@@ -14192,9 +14192,9 @@ begin_model
                                       Mutliplicity    44       4         8
                                                      ______________________
 
-                                      1 atg          Mg      Mg       SiSi
-                            Species:  2 fatg         Fe      Fe       SiSi
-                                      3 atgts        Mg      Al       AlSi
+                                      1 atg           Mg      Mg       SiSi
+                            Species:  2 fatg          Fe      Fe       SiSi
+                                      3 atgts         Mg      Al       AlSi
                                                       ______________________
 
 
@@ -14231,6 +14231,166 @@ z(t2,al) = 1/2 atgts
 
 z(m2,mg) = 1 atg
 z(fe,m2) = 1 fatg
+
+reach_increment 0
+
+end_of_model
+
+                      --------------------------------------------------------
+begin_model
+                             Full ferri-tschermak solid solution model for antigorite from 
+                             Eberhard et al. 2023, JPet, doi.org/10.1093/petrology/egad069
+
+                             All endmembers reformulated to match antigorite stoichiometry of 17(M0)-31(M1)-17(T0)-17(T1).
+                             DQF terms adjusted to match experiments and natural samples
+
+                             NOTE: the names of the new atigorite endmembers in Eberhard et al (2023)
+                             have been changed to prevent conflicts with the earlier solution models. 
+
+                             Converted to 688 format, JADC, 9/27/2023
+
+                             Eliminated useless ordered oatg endmember, JADC 10/1/2023
+
+                                                      M1      M0      T1
+                                                     ___________________
+
+                                      Mutliplicity    17      31      17
+                                                     ___________________
+
+                                      1 atg           Mg      Mg      Si
+                            Species:  2 atgFe2        Fe      Fe      Si
+                                      3 atgAl         Al      Mg      Al
+                                      4 atgFe3        Fe3+    Mg      Al
+                                                      ____________________
+
+                             This model requires the following make definition in the thermodynamic data file:
+
+                             atgFe2 = 1 atg - 16 ta + 16 fta
+                                  DQF(J/mol) = -350e3
+                             atgAl  = 1 atg - 17 ta + 17 tats
+                                  DQF(J/mol) = -450e3
+                             atgFe3 = 1 atg - 17 ta + 17 tats - 8.5 gr + 8.5 andr
+                                  DQF(J/mol) = -127e3 -3.4 * P_bar
+
+                             NB! the Atg(LE) and Liz(LE) models require the
+                             following make definition for ferri-clinochlore in Chl(W)
+
+                             f3clin = 1 clin - 1/2 gr + 1/2 andr
+                                  DQF(J/mol) = 40d3
+
+                             to use Atg(LE) with Chl(W) comment or modify the entry for f3clin 
+                             associated with the Chl(W) parameterization.
+
+Atg(LE)                            | solution name
+abbreviation Atg
+full_name    serpentine
+
+688                                | model type: 688 format
+
+1                                  | number of polytopes
+1                                  | number of simplices
+4                                  | number of vertices on each simplex
+
+atg  atgFe2  atgAl  atgFe3         | endmembers on the vertices
+
+0  1  .1  0                        | range and resolution for atg,    imod = 0 -> cartesian subdivision
+0  1  .1  0                        | range and resolution for atgFe2, imod = 0 -> cartesian subdivision
+0  1  .1  0                        | range and resolution for atgAl,  imod = 0 -> cartesian subdivision
+
+ideal
+
+3                                  | 3 site (M0, M1, T1) configurational entropy model
+
+M0                                 | site name
+2 31 31                            | number of species, effective multiplicity, true multiplicity
+z(Mg,M1)  = 1 atg + 1 atgFe3 + 1 atgAl
+z(Fe,M1)  = 1 atgFe2
+
+M1                                 | site name
+4 17 17                            | number of species, effective multiplicity, true multiplicity
+
+z(Mg,M1)  = 1 atg
+z(Fe,M1)  = 1 atgFe2
+z(Al,M1)  = 1 atgAl
+z(Fe3,M1) = 1 atgFe3
+
+T1                                 | site name
+2 17 17                            | number of species, effective multiplicity, true multiplicity
+
+z(Al,T1) = 1 atgAl + 1 atgFe3
+z(Si,T1) = 1 atg + 1 atgFe2
+
+[O85(OH)62]                        | formula suffix, enter "none" for no suffix.
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                             Full ferri-tschermak solid solution model for lizardite from
+                             Eberhard et al. 2023, JPet, doi.org/10.1093/petrology/egad069
+
+                             All endmembers reformulated to match stoichiometry of 1(M0)-2(M1)-1(T1).
+                             DQF terms adjusted to match experiments and natural samples
+
+                             Eliminated useless ordered oliz endmember, JADC, 10/1/2023
+
+                                                      M1      M0      T1
+                                                     _____________________
+
+                                      Mutliplicity    1       2       1
+                                                     _____________________
+
+                                      1 liz           Mg      Mg      Si
+                            Species:  2 fliz          Fe      Fe      Si
+                                      3 lizts         Al      Mg      Al
+                                      4 f3liz         Fe3+    Mg      Al
+                                                      ____________________
+
+                             This model requires the following make definition in the thermodynamic data:
+
+                             fliz = 1 liz - 1 ta + 1 fta, DQF(J/mol) = -21e3
+                             lizts = 1 liz - 1 ta + 1 tats, DQF = -37e3 +0.1 * P_bar
+                             f3liz = 1 liz - 1 ta + 1 tats - 0.5 gr + 0.5 andr, DQF = -18e3 -0.1 * P_bar
+
+
+                             NB! the Atg(LE) and Liz(LE) models require the
+                             following make definition for ferri-clinochlore in Chl(W)
+
+                             f3clin = 1 clin - 1/2 gr + 1/2 andr
+                                  DQF(J/mol) = 40d3
+
+                             to use Liz(LE) with Chl(W) comment or modify the entry for f3clin 
+                             associated with Chl(W) the parameterization.
+
+Liz(LE)                    | solution name
+abbreviation Liz
+full_name    serpentine
+
+2                             | model type: simplicial composition space
+4                             | number of endmembers
+liz  fliz  lizts  f3liz       | endmember names, this order implies:
+0 0 0 0 0                     | endmember flags, indicate if the endmember is part of the solution.
+
+0  1  .1  0                   | range and resolution for liz, imod = 0 -> cartesian subdivision
+0  1  .1  0                   | range and resolution for fliz, imod = 0 -> cartesian subdivision
+0  1  .1  0                   | range and resolution for lizts, imod = 0 -> cartesian subdivision
+
+ideal
+
+3                          | 3 site (M0, M1, T1) configurational entropy model
+
+4 1.                       | 4 species on M1, 1 sites per formula unit.
+
+z(m1,mg) = 1 liz
+z(m1,fe) = 1 fliz
+z(m1,al) = 1 lizts
+
+2 1.                       | 2 species on T1, 1 sites per formula unit.
+
+z(t1,al) = 1 lizts + 1 f3liz
+
+2 2.                       | 2 species on M0, 1 site per formula unit.
+
+z(m2,mg) = 1 liz + 1 lizts + 1 f3liz
 
 reach_increment 0
 

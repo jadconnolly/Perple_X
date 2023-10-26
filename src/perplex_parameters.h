@@ -567,3 +567,8 @@ c                                 LP workspace into common
 
       character prject*100,tfname*100
       common/ cst228 /prject,tfname
+
+      integer mphase, pids
+      double precision pblk, eblk, pmode, emode
+      common/ cst67 /pblk(k5,k5), eblk(k5,k5), pmode(k5), emode(k5),
+     *               pids(k5), mphase

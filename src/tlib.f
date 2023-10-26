@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.3, Sep 14, 2023.',
+     *     'Perple_X release 7.1.4, Oct 26, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -7661,9 +7661,10 @@ c---------------------------------------------------------------------
       logical oned
       common/ cst82 /oned
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       integer iind, idep
       double precision c0,c1,c2,c3,c4,c5
@@ -9217,9 +9218,10 @@ c-----------------------------------------------------------------------
 
       integer idum, nstrg, i, j, k, ierr, icmpn, jcont, kct
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       character*100 cfname
       common/ cst227 /cfname
@@ -9937,7 +9939,7 @@ c                                 closed composition
 c                                 modify cblk here to change the 
 c                                 composition before minimization.
       ctotal = 0d0 
-c                                 get total moles to compute mole fractions             
+c                                 get total moles to compute mole fractions 
       do i = 1, hcp
          ctotal = ctotal + cblk(i)
       end do
@@ -10015,18 +10017,18 @@ c----------------------------------------------------------------------
       do i = 1, isoct
          if (unnown.eq.fname(i)) then
              itis = i
-             goto 99
+             return
          end if
       end do
 
       do i = 1, iphct
          if (unnown.eq.names(i)) then
             itis = -i
-            goto 99
+            return
          end if
       end do 
 
-99    end
+      end
 
       subroutine maktit 
 c-----------------------------------------------------------------------
@@ -10126,9 +10128,10 @@ c-----------------------------------------------------------------------
       common/ cst23  /a(k8,k8),b(k8),ipvt(k8),idv(k8),iophi,idphi,
      *                iiphi,iflg1
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       character*100 cfname
       common/ cst227 /cfname
@@ -10164,9 +10167,16 @@ c                                 true => basal mass flux
 c                                 true => anneal the column
       read (n8,*) anneal
 c                                 true => don't output console info on the fractionated phase
-      read (n8,*) short
+      read (n8,*) verbos
+c                                 true => in frac2d, don't pass fluid through overlying nodes
+      read (n8,*) siphon
 c                                 true => p-t field from file/internal function
       read (n8,*) pzfunc
+c                                 true => dump final column compositions to my_project_***.cmp 
+c                                      => *** z0 coodinate in km
+      read (n8,*) colcmp
+c                                 true => initialize column compositions from my_project_***.cmp
+      read (n8,*) usecmp
 c                                 Perple_X assumes upward directed depth, but to 
 c                                 make the input intuitive, the input is specified
 c                                 in downward coordinates, hence the sign changes 
@@ -10358,9 +10368,10 @@ c----------------------------------------------------------------------
       double precision vn
       common/ cst31 /vn(k2,k7),irct,ird
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
@@ -10518,9 +10529,10 @@ c----------------------------------------------------------------------
       integer iam
       common/ cst4 /iam
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 c------------------------------------------------------------------------
 c                                 generate a file name and
 c                                 open the file on n5

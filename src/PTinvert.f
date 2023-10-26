@@ -2,7 +2,7 @@ c Please do not distribute any part of this source.
  
 c Copyright (c) 1987-2020 by James A. D. Connolly, Institute for Mineralogy
 c & Petrography, Swiss Federal Insitute of Technology, CH-8092 Zurich,
-c SWITZERLAND. All rights reserved. 
+c SWITZERLAND. All rights reserved.
 
       program meemm
 c----------------------------------------------------------------------

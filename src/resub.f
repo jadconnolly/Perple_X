@@ -3401,28 +3401,28 @@ c                                 compositions (idead ~0, but nothing is done).
       call chkblk (idead)
 c                                 lpopt does the minimization and outputs
 c                                 the results to the print file.
-      if (lopt(28)) call begtim(30)
+c     if (lopt(28)) call begtim(30)
 
       call lpopt0 (idead)
 
-      if (lopt(28)) then 
+c     if (lopt(28)) then 
 
-         call endtim (30,.true.,'Total Opt ') 
+c        call endtim (30,.true.,'Total Opt ') 
 
-         cum = 0d0 
+c        cum = 0d0 
 
-         do i = 1, 29
+c        do i = 1, 29
 
-            cum = cum + times(i)
+c           cum = cum + times(i)
 
-         end do
+c        end do
 
-         write (*,'(/,a,2x,g14.7,//,a)') 'sum of timed intervals ',cum,
-     *                                 '----------------------------'
-         write (666,'(/,a,2x,g14.7,//,a)') 'sum of timed intervals ',cum
-     *                                ,'----------------------------'
+c        write (*,'(/,a,2x,g14.7,//,a)') 'sum of timed intervals ',cum,
+c    *                                 '----------------------------'
+c        write (666,'(/,a,2x,g14.7,//,a)') 'sum of timed intervals ',cum
+c    *                                ,'----------------------------'
 
-      end if 
+c     end if 
 
       if (idead.eq.0) then
 c                                 compute derivative properties

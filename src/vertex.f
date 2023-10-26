@@ -336,9 +336,10 @@ c-----------------------------------------------------------------------
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       double precision dcomp
       common/ frct2 /dcomp(k5)
@@ -581,9 +582,10 @@ c-----------------------------------------------------------------------
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
 
-      logical fileio, flsh, anneal, verbos
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       double precision dcomp
       common/ frct2 /dcomp(k5)
@@ -689,14 +691,18 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      character*100 n6name, n5name
+      logical readyn
+
+      character n6name*100, n5name*100, tmp*8
 
       integer i,j,k,l,m,idead,two(2),lun,iox,itop(lay),
-     *        layer(maxbox),ibot,minus
+     *        layer(maxbox),ibot,minus, ier
 
       double precision gblk(maxbox,k5),cdcomp(k5,lay),vox(k5),rho,zbox,
      *                 tot,lcomp(k5,lay),cmass(k5),cfmass(k5),area,
-     *                 imass(k5),errr(k5),icerr(k5),ccerr(k5)
+     *                 imass(k5),errr(k5),icerr(k5),ccerr(k5),cccomp(k5)
+
+      external readyn
 
       double precision atwt
       common/ cst45 /atwt(k0)
@@ -740,9 +746,10 @@ c-----------------------------------------------------------------------
       common/ cst66 /abc0(0:mord,mpol),vz(6),iblk(lay,k5),ilay,
      *               irep(lay),npoly,ord,pzfunc
 
-      logical fileio, flsh, anneal, verbos
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       integer inv
       character dname*14, title*162
@@ -893,6 +900,74 @@ c                                 check resolution dependent dimensions
          end do
 
       end do
+
+      if (colcmp) then
+
+         write (*,'(a)') 'Read column compositions from file (y/n)?'
+
+         if (readyn()) then
+            
+            do
+
+               write (*,'(a)') 
+     *               'Enter file name (e.g., my_project_90.cmp):'
+               read (*,*) tfname
+
+               open (n8,file=tfname,iostat=ier,status='old')
+
+               if (ier.eq.0) then 
+
+                  exit
+
+               else 
+
+                  write (*,'(a,/,a)') 
+     *           'File does not exist or is locked by another process.',
+     *           'Try again (y/n)?'
+
+                 if (readyn()) then 
+                    cycle
+                 else
+                    write (*,'(a)') 
+     *              'Coninuing with initialization from *.aux file'
+                    exit
+                 end if
+
+               end if
+
+            end do
+
+            if (ier.eq.0) then 
+c                                 good to go
+               if (anneal) then
+                  write (*,'(/,a)')
+     *            'anneal is inconsistent with colcmp, turn off'//
+     *            ' anneal (y/n)?'
+                  if (readyn()) anneal = .false.
+               end if
+
+               read (n8,'(g12.6,a)') x
+
+               if (x.gt.vmn(1)) then 
+                  write (*,'(/,a,f6.0,/,a,f6.0,/,a)') 
+     *            'column compositions were computed at z0 = ',x,
+     *            '> current (*.aux file) coordinate is ',vz(4),
+     *            'continue without correcting the aux file (y/n)?'
+               
+                  if (.not.readyn()) call errdbg ('quitting')
+               end if
+
+               do k = 1, ncol
+                  read (n8,*) i, (gblk(k,j),j=1,icp)
+               end do
+
+               close (n8)
+
+            end if
+
+         end if
+
+      end if
 c                                 organize the coordinate frame and thermodynamic variables
       call getvar
 c                                 initialize coordinate frame and sectioning variables
@@ -1080,13 +1155,14 @@ c                                 loopx is the number of steps along the subduct
 c                                 path:
       do j = 1, loopx
 c                                 initialize column mass for conservation test
-         do i = 1, icp
+         do i = 1, icp1
             cmass(i) = 0d0
             icerr(i) = 0d0
+            cccomp(i) = 0d0
          end do 
 c                                 initialize avg layer comp
          do l = 1, ilay
-            do m = 1, icp
+            do m = 1, icp1
                lcomp(m,l) = 0d0
             end do
          end do
@@ -1111,7 +1187,7 @@ c                                 array into the local array and get the total
 c                                 number of moles (ctotal)
             ctotal = 0d0
 c                                 get total moles to compute mole fractions
-            do i = 1, icp+1
+            do i = 1, icp1
                dcomp(i) = 0d0
                cblk(i) = gblk(k,i)
 c                                 apply the zero_bulk filter only to the working 
@@ -1156,7 +1232,7 @@ c                                 assemblage at each point in our column
 c                                 and could do mass transfer, etc etc 
 c                                 here we'll simply fractionate the fluid 
 c                                 phase
-            if (iox.ne.0) dcomp(icp+1) = dcomp(iox)
+            if (iox.ne.0) dcomp(icp1) = dcomp(iox)
 
             do i = 1, icp 
 c                                 subtract the fluid from the current composition
@@ -1165,32 +1241,57 @@ c                                 by not applying the zero_bulk threshold to the
 c                                 global array near zero components may accumulate
 c                                 to become significant
                if (gblk(k,i).lt.0d0) gblk(k,i) = 0d0
-c                                 and add it to the overlying composition
-               if (k.lt.ncol) gblk(k+1,i) = gblk(k+1,i) + dcomp(i)
+
+               if (.not.siphon) then 
+c                                 add the fluid to the overlying node
+                  if (k.lt.ncol) gblk(k+1,i) = gblk(k+1,i) + dcomp(i)
+               end if
+
 c                                 oxygen deficit and cumulative change
                if (iox.ne.0d0) dcomp(icp1) = dcomp(icp1) 
      *                                     - vox(i)*dcomp(i)
 c                                 average layer comp
                lcomp(i,layer(k)) = lcomp(i,layer(k)) + gblk(k,i)/
      *                             dfloat(irep(layer(k)))
+               if (.not.siphon) then
 c                                 save layer specific results
-               do l = 1, ilay
+                  do l = 1, ilay
 c                                 cumulative change
-                  if (k.eq.itop(l)) cdcomp(i,l) = cdcomp(i,l) + dcomp(i)
-               end do
+                     if (k.eq.itop(l)) cdcomp(i,l) =
+     *                                 cdcomp(i,l) + dcomp(i)
+                  end do
 
-            end do
-
-            do l = 1, ilay
-c                                 cumulative change
-               if (k.eq.itop(l)) then 
-                  cdcomp(icp1,l) = cdcomp(icp1,l) + dcomp(icp1)
-                  write (lun + l,'(200(g13.6,1x))') 
-     *                                       x,(dcomp(i),i=1,icp1),
-     *                                      (cdcomp(i,l),i=1,icp1)
+               else
+c                                 siphoning, add all fluid to
+c                                 cccomp, cdcomp
+                  cccomp(i) = cccomp(i) + dcomp(i)
+                  cdcomp(i,ilay) = cdcomp(i,ilay) + dcomp(i)
                end if
 
             end do
+
+            if (.not.siphon) then
+
+               do l = 1, ilay
+c                                 cumulative change
+                  if (k.eq.itop(l)) then 
+                     cdcomp(icp1,l) = cdcomp(icp1,l) + dcomp(icp1)
+                     write (lun + l,'(200(g13.6,1x))') 
+     *                                         x,(dcomp(i),i=1,icp1),
+     *                                         (cdcomp(i,l),i=1,icp1)
+                  end if
+
+               end do
+
+            else
+
+               cccomp(icp1) = cccomp(icp1) + dcomp(icp1)
+               cdcomp(icp1,ilay) = cdcomp(icp1,ilay) + dcomp(icp1)
+               write (lun + ilay,'(200(g13.6,1x))') 
+     *                                         x,(cccomp(i),i=1,icp1),
+     *                                         (cdcomp(i,ilay),i=1,icp1)
+
+            end if
 
             do i = 1, icp
 c                                 mass being lost from the column
@@ -1206,10 +1307,9 @@ c                                 instantaneous column mass
 c                                 end of the k index loop
          end do
 
-            do i = 1, icp
-               ccerr(i) = ccerr(i) + icerr(i)
-               if (k.eq.ncol) cfmass(i) = cfmass(i) + dcomp(i)
-            end do 
+         do i = 1, icp
+            ccerr(i) = ccerr(i) + icerr(i)
+         end do 
 
          if (flsh) then 
             write (*,'(/,a,f9.0)') 'Average Layer Compositions at '
@@ -1236,7 +1336,11 @@ c                                 conservation tests:
          write (*,'(2x,12(f10.5,1x))') (ccerr(i),i=1,icp)
 
          write (*,'(/,a)') 'Cumulative molar mass-loss by fractionation'
-         write (*,'(2x,12(f10.5,1x))') (cfmass(i),i=1,icp)
+         if (.not.siphon) then
+            write (*,'(2x,12(f10.5,1x))') (cfmass(i),i=1,icp)
+         else
+            write (*,'(2x,12(f10.5,1x))') (cdcomp(i,ilay),i=1,icp)
+         end if
 
          if (flsh) then 
 
@@ -1291,6 +1395,24 @@ c                                 end of j index loop
       end do
 
       if (outprt) call outgrd (loopx,ncol,1,n4,0)
+
+      if (colcmp) then 
+c                                 dump column compositions
+         write (tmp,'(''_'',i3,''.cmp'')') idint(x/1000)
+         call unblnk (tmp)
+         call mertxt (tfname,prject,tmp,0)
+
+         open (n8,file=tfname)
+
+         write (n8,'(g12.6,a)') x,' <- final Z0 coordinate'
+
+         do k = 1, ncol
+            write (n8,'(i4,1x,15(g12.6,1x))') k, (gblk(k,j),j=1,icp)
+         end do
+
+         close (n8)
+
+      end if
 
       write (*,'(/,a)') 'NOTE: use nodal coordinates for layer'//
      *                    ' boundaries in PSSECT and WERAMI.'
@@ -2679,7 +2801,7 @@ c                               init progress info
       dinc = 1d2/real(loopx/kinc + 1)
       tot = 0d0
 
-      if (lopt(28)) call begtim (11)
+c     if (lopt(28)) call begtim (11)
 c                               do all points on lowest level
       do i = 1, loopx, kinc
          do j = 1, loopy, kinc
@@ -2694,7 +2816,7 @@ c                               flush stdout for paralyzer
 
       end do
 
-      if (lopt(28)) call endtim (11,.true.,'low level grid')
+c     if (lopt(28)) call endtim (11,.true.,'low level grid')
 c                               output interim plt file
       if (iopt(34).ne.0) call outgrd (loopx,loopy,kinc,1000,1)
 c                               get hot points
@@ -2745,7 +2867,7 @@ c
 c                               flush stdout for paralyzer
          flush (6)
 
-         if (lopt(28)) call begtim (12)
+c        if (lopt(28)) call begtim (12)
 c                              compute assemblages at refinement
 c                              points
          do h = 1, ihot
@@ -2866,7 +2988,7 @@ c                                fill hot cells
 
          write (*,1080) ktic,(loopx/kinc+1)*(loopy/kinc+1)
 
-         if (lopt(28)) call endtim (12,.true.,'nth level grid')
+c        if (lopt(28)) call endtim (12,.true.,'nth level grid')
 
          if (khot.eq.0.or.k.eq.jlev) exit 
 c                             now switch new and old hot list
@@ -3420,8 +3542,9 @@ c                               in the fractionation list
                      end if
 
                   end do
-
-                  if (quit) exit 
+c                                phase j is in the list so its 
+c                                file is alread open, cycle 
+                  if (quit) cycle
 c                                else open a new file
                   ifrct = ifrct + 1
 

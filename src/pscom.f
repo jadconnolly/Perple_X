@@ -250,8 +250,118 @@ c                                   once, this seemed like a good idea
       end
 
 c------------------------------------------------------------------
-      subroutine psxtic (y0, x0, dx, tic, tic1, tic2, ltern)
+      subroutine psxtic (y0, x0, dx, tic, tic1, tic2)
 
+      implicit none 
+
+      include 'perplex_parameters.h'
+
+      double precision x0, y0, dx, tic, tic1, tic2, x, dx2
+
+      integer i
+
+      double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+      common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+
+c psxtic - subroutine to draw x-axis ticks.
+
+      x = x0 
+      call psmove (x0,y0)
+
+      if (.not.half.and..not.tenth) then 
+
+         do while (x.lt.xmax) 
+            call psrlin (0d0, tic, 1d0, width)
+            call psrmov (dx, -tic)
+            x = x + dx 
+         end do 
+
+      else if (.not.tenth) then
+
+         dx2 = dx / 2d0
+
+         do while (x.lt.xmax) 
+            call psrlin (0d0, tic, 1d0, width)
+            call psrmov (dx2, -tic)
+            x = x + dx2
+            if (x.ge.xmax) exit
+            call psrlin (0d0, tic1, 1d0, width)
+            call psrmov (dx2, -tic1)
+            x = x + dx2
+         end do 
+
+         if (x0-dx2.gt.xmin)
+     *      call psline (x0-dx2, y0, x0-dx2, y0+tic1, 1d0, width)
+
+      else
+
+         dx2 = dx / 10d0
+
+         do while (x.le.xmax) 
+
+            call psrlin (0d0, tic, 1d0, width)
+            call psrmov (dx2, -tic)
+            x = x + dx2
+
+            do i = 1, 4
+               if (x.ge.xmax) exit
+               call psrlin (0d0, tic2, 1d0, width)
+               call psrmov (dx2, -tic2)
+               x = x + dx2
+            end do 
+
+            if (x.ge.xmax) exit 
+            call psrlin (0d0, tic1, 1d0, width)
+            call psrmov (dx2, -tic1)
+            x = x + dx2
+
+            do i = 1, 4
+               if (x.ge.xmax) exit
+               call psrlin (0d0, tic2, 1d0, width)
+               call psrmov (dx2, -tic2)
+               x = x + dx2
+            end do 
+
+         end do 
+
+         if (x0-dx2.lt.xmin) return
+
+         x = x0 - dx2
+
+         call psmove (x, y0)
+
+         do i = 1, 4
+            if (x.le.xmin) return
+            call psrlin (0d0, tic2, 1d0, width)
+            call psrmov (-dx2, -tic2)
+            x = x - dx2
+         end do
+
+         if (x.le.xmin) return
+         call psrlin (0d0, tic1, 1d0, width)
+         call psrmov (dx2, -tic1) 
+         x = x - dx2 
+
+         do i = 1, 4
+            if (x.le.xmin) exit
+            call psrlin (0d0, tic2, 1d0, width)
+            call psrmov (-dx2, -tic2)
+            x = x - dx2
+         end do 
+
+      end if 
+
+      end
+
+
+c------------------------------------------------------------------
+      subroutine psxtig (y0, x0, dx, tic, tic1, tic2, ltern)
+c
+c this is george's version of psxtic, it goes into an infinite
+c loop for 1d calculations (dx = 0), here a quick fix has been
+c made by restoring psxtic so that psxtig is only called if
+c ltern true.
+c
       implicit none 
 
       include 'perplex_parameters.h'
@@ -698,9 +808,9 @@ c                                       draw left vertical axis tics
 c                                       draw right vertical axis
       call psytic (xmax, y0, dy, -xtic, -xtic1, -xtic2, .false.)
 c                                       draw bottom horizontal axis
-      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2, .false.)
+      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2)
 c                                       draw top horizontal axis
-      call psxtic (ymax, x0, dx, -ytic, -ytic1, -ytic2, .false.)
+      call psxtic (ymax, x0, dx, -ytic, -ytic1, -ytic2)
  
       call pssctr (ifont,nscale,nscale,0d0)
 c                                       numeric axis labels:
@@ -839,7 +949,7 @@ c                                       draw left vertical axis tics
 c                                       draw right vertical axis
       call psytic (xmax, y0, dy, -xtic, -xtic1, -xtic2, .true.)
 c                                       draw bottom horizontal axis
-      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2, .true.)
+      call psxtig (ymin, x0, dx, ytic, ytic1, ytic2, .true.)
  
       call pssctr (ifont,nscale,nscale,0d0)
 c                                       numeric axis labels:

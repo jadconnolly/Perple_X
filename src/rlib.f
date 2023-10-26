@@ -19345,9 +19345,9 @@ c---------------------------------------------------------------------
       double precision dblk,cx
       common/ cst314 /dblk(3,k5),cx(2),icont
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon
 
       integer iam
       common/ cst4 /iam
@@ -19614,9 +19614,10 @@ c----------------------------------------------------------------------
       character*100 cfname
       common/ cst227 /cfname
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       integer idsol,nrep,nph
       common/ cst38/idsol(k5,k3),nrep(k5,k3),nph(k3)

@@ -2045,6 +2045,7 @@ c          solution or compound name.
 c   itis = 0 if compound, = ikp if solution, and =-1 if invalid
 c   icpd = the id of the compound if itis = 0
 
+c----------------------------------------------------------------
       implicit none
  
       character*10 unnown

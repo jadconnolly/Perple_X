@@ -2318,7 +2318,7 @@ c----------------------------------------------------------------------
 c                                 draw axes box
 10    call psrect (xmin,xmax,ymin,ymin+4d0*dcy,1d0,width,0)
 c                                 draw bottom horizontal axis
-      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2, .false.)
+      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2)
  
       call pssctr (ifont, nscale, nscale, 0d0)
 c                                  numeric axis labels:
