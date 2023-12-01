@@ -190,9 +190,6 @@ c---------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 
-      integer make
-      common / cst335 /make(k10)
-
       integer eos
       common/ cst303 /eos(k10)
 
@@ -647,7 +644,7 @@ c----------------------------------------------------------------------
 
       end
 
-      subroutine loadit (id,make,nchk)
+      subroutine loadit (id,lmake,nchk)
 c---------------------------------------------------------------------
 c loadit loads descriptive data for phases and species (name,comp,
 c and therm) into the appropriate arrays (names,comps,thermo,vf,
@@ -662,7 +659,7 @@ c---------------------------------------------------------------------
 
       integer id,i,j,k
 
-      logical make, nchk
+      logical lmake, nchk
 
       double precision gzero
       external gzero
@@ -858,7 +855,7 @@ c                               and just mobile components
          vnumu(i,id) = comp(ic(i+jprct))
       end do
 
-      if (make) return
+      if (lmake) return
 c                               if aqueous solute species store name and
 c                               compositional data in special arrays (in
 c                               principle may need vnumu as well).
@@ -2063,9 +2060,10 @@ c                                 locate end of keyword
                   if (ibeg.ge.com) exit
 
                   jend = iscan (ibeg,com,'=') - 1
-                  if (jend.ge.com) exit
+                  if (jend.ge.com .or. ibeg.gt.jend) exit
 c                                 write keyword
                   write (key,'(22a)',iostat=ier) chars(ibeg:jend)
+                  if (key(1:1).eq.'|') exit
                   if (ier.ne.0) call error (23,wg(1,1),ier,key)
 c                                 locate data
                   ibeg = iscnlt (jend+2,com,' ')
@@ -3689,7 +3687,7 @@ c                                 scan for blanks:
 
       end
 
-      subroutine sattst (ifer,make,good)
+      subroutine sattst (ifer,lmake,good)
 c----------------------------------------------------------------------
 c sorts phases into the appropriate saturated phase list called by
 c input2. returns good if data is valid
@@ -3700,7 +3698,7 @@ c----------------------------------------------------------------------
 
       integer j,ifer,idc
 
-      logical good, make
+      logical good, lmake
 
       character name*8
       common/ csta6 /name
@@ -3763,7 +3761,7 @@ c                               the saturated component idc:
                if (iphct.gt.k1) call error (72,1d0,k1,
      *                            'SATTST increase parameter k1')
                ids(j,isct(j)) = iphct
-               call loadit (iphct,make,.true.)
+               call loadit (iphct,lmake,.true.)
 c                                set ltemp1 if a GFSM endmember
                if (ieos.gt.100.and.ieos.lt.200) ltemp1 = .true.
                good = .true.
@@ -3795,13 +3793,7 @@ c-----------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 
-      integer mknum, mkind, meos
-      double precision mkcoef, mdqf
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
 
-      integer make
-      common / cst335 /make(k10)
 c-----------------------------------------------------------------------
 
       jd = make(id)
@@ -5628,7 +5620,7 @@ c-----------------------------------------------------------------------
 
       integer id
 
-      logical order, bad
+      logical order
 
       double precision gg
 
@@ -6448,9 +6440,6 @@ c                                 excess energy variables
       integer jterm, jord, extyp, rko, jsub
       common/ cxt2i /jterm(h9),jord(h9),extyp(h9),rko(m1,h9),
      *               jsub(m2,m1,h9)
-
-      double precision wgl, wkl, vlar
-      common/ cxt2r /wgl(m3,m1,h9),wkl(m16,m17,m18,h9),vlar(m3,m4,h9)
 c                                 working arrays
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
@@ -6718,9 +6707,6 @@ c                                 excess energy variables
       common/ cxt2i /jterm(h9),jord(h9),extyp(h9),rko(m1,h9),
      *               jsub(m2,m1,h9)
 
-      double precision wgl, wkl, vlar
-      common/ cxt2r /wgl(m3,m1,h9),wkl(m16,m17,m18,h9),vlar(m3,m4,h9)
-
       double precision dppp,d2gx,sdzdp
       common/ cxt28 /dppp(j3,j3,m1,h9),d2gx(j3,j3),sdzdp(j3,m11,m10,h9)
 
@@ -6800,6 +6786,7 @@ c                                 initialize autorefine arrays
       stable(im) = .false.
       limit(im) = .false.
       lorch(im) = modres
+      mcflag(im) = .false.
 c                                 initialize compositional distances
       do i = 1, icp
          dcp(i,im) = 0d0
@@ -7933,7 +7920,7 @@ c                                 order cases are considered here:
                i2 = jsub(2,i,id)
                i3 = jsub(3,i,id)
 
-               g = g + w(i) * pa(i1) * pa(i2) * pa(i2)
+               g = g + w(i) * pa(i1) * pa(i2) * pa(i3)
 
                do k = 1, norder
 
@@ -7945,7 +7932,8 @@ c                                 order cases are considered here:
      *                                   + pa(i2)*pa(i3)*dydy(i1,k,id) )
 
                   do l = k, norder
-
+c                                 the inner terms can probably be replaced
+c                                 by dppp()...
                      d2g(l,k) = d2g(l,k) + w(i) * (
      *                            pa(i1)*(dydy(i2,l,id)*dydy(i3,k,id) +
      *                                    dydy(i2,k,id)*dydy(i3,l,id))
@@ -9123,7 +9111,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i,k,i1,i2,id
+      integer i, k, i1, i2, i3, id
 
       double precision g,dg,d2g,t,s,ds,d2s
 c                                 working arrays
@@ -9151,20 +9139,51 @@ c                                 initialize, d2gx has been set in setw
       g = 0d0
 
       dg = g
-      d2g = d2gx(k,k)
+      d2g = 0d0
 
       if (lexces(id)) then
 
          do i = 1, jterm(id)
-c                                 assuming regular terms
-           i1 = jsub(1,i,id)
-           i2 = jsub(2,i,id)
 
-           g = g + w(i) * pa(i1) * pa(i2)
-           dg = dg + w(i) * (pa(i1)*dydy(i2,k,id)
-     *                     + pa(i2)*dydy(i1,k,id))
+            if (rko(i,id).eq.2) then
+c                                regular models
+               i1 = jsub(1,i,id)
+               i2 = jsub(2,i,id)
+
+               g = g + w(i) * pa(i1) * pa(i2)
+
+               dg = dg + w(i) * (pa(i1)*dydy(i2,k,id)
+     *                         + pa(i2)*dydy(i1,k,id))
+
+               d2g = d2gx(k,k)
+
+            else if (rko(i,id).eq.3) then
+c                                3rd order subregular
+               i1 = jsub(1,i,id)
+               i2 = jsub(2,i,id)
+               i3 = jsub(3,i,id)
+
+               g = g + w(i) * pa(i1) * pa(i2) * pa(i3)
+
+               dg = dg + w(i) * (
+     *                           pa(i1)*pa(i2)*dydy(i3,k,id)
+     *                         + pa(i1)*pa(i3)*dydy(i2,k,id)
+     *                         + pa(i2)*pa(i3)*dydy(i1,k,id) )
+c                                 the inner terms can probably be replaced
+c                                 by dppp()...
+               d2g = d2g + w(i) * (
+     *                        pa(i1)*2d0*dydy(i2,k,id)*dydy(i3,k,id)
+     *                      + pa(i2)*2d0*dydy(i1,k,id)*dydy(i3,k,id)
+     *                      + pa(i3)*2d0*dydy(i1,k,id)*dydy(i2,k,id) )
+
+            else 
+
+               call errdbg ('o > 3 gderi1')
+
+            end if
 
          end do
+
 c                                 get derivative of excess function
          if (llaar(id)) then
 c                                 for h&p van laar, this is unnecessary because
@@ -9879,9 +9898,6 @@ c--------------------------------------------------------------------------
       integer jterm, jord, extyp, rko, jsub
       common/ cxt2i /jterm(h9),jord(h9),extyp(h9),rko(m1,h9),
      *               jsub(m2,m1,h9)
-
-      double precision wgl, wkl, vlar
-      common/ cxt2r /wgl(m3,m1,h9),wkl(m16,m17,m18,h9),vlar(m3,m4,h9)
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
@@ -13229,10 +13245,10 @@ c-----------------------------------------------------------------------
       double precision gval, dg, g0(m14)
 
       double precision gex, gfesi, gfesic, gerk, gproj, ghybrid, gzero,
-     *                 gfecr1, gcpd, gfes, gmech, gexces
+     *                 gfecr1, gcpd, gfes, gmech, gexces, omega, gdqf
 
       external gerk, gzero, gex, gfesi, gfesic, gproj, ghybrid, gexces,
-     *         gcpd, gfes, gmech
+     *         gcpd, gfes, gmech, omega, gdqf
 
       integer icomp,istct,iphct,icp
       common/ cst6 /icomp,istct,iphct,icp
@@ -13346,6 +13362,22 @@ c                                 are computed for the p0 mass, this is
 c                                 ok, because the g will be normalized by 
 c                                 the static ctot value.
                g(id) = gexces(id) + dg + gmech(i)
+
+               id = id + 1
+
+            end do
+
+         else if (mcflag(i)) then
+
+c                                 initialize margules, enthalpy of
+c                                 ordering, internal dqfs (last for minfxc)
+            call ingsol (i)
+
+            do j = 1, jend(i,2)
+
+               call setxyp (i,id,bad)
+
+               g(id) = gdqf(i) - t * omega(i,pa) + gex(i,pa) + gmech(i)
 
                id = id + 1
 
@@ -15020,9 +15052,8 @@ c----------------------------------------------------------------------
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 c----------------------------------------------------------------------
       call getnam (name,ukp)
 
@@ -18525,10 +18556,6 @@ c----------------------------------------------------------------------
       character name*8
       common/ csta6 /name
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
       integer ifct,idfl
       common/ cst208 /ifct,idfl
 
@@ -18574,20 +18601,6 @@ c----------------------------------------------------------------------
 
       integer imaf,idaf
       common/ cst33 /imaf(i6),idaf(i6)
-
-      double precision mcomp
-      character mknam*8
-      integer nmak
-      logical mksat
-      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
-
-      double precision mkcoef, mdqf
-      integer mknum, mkind, meos
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
-
-      integer make
-      common / cst335 /make(k10)
 
       integer eos
       common/ cst303 /eos(k10)
@@ -19227,8 +19240,7 @@ c                                 got one
      *      /,'is a fluid. Possible courses of action are:',//,4x,
      *        '1) exclude ',a,' and restart.',/,4x,
      *        '2) remove the phase saturation constraint and restart.',/
-     *    ,4x,'3) ignore this warning and continue execution.',//,
-     *        'Continue (Y/N)?')
+     *    ,4x,'3) ignore this warning and continue execution.',//)
 1070  format (/,'**warning ver534** ',a,' is a molecular fluid species '
      *       ,'the presence of which is ',/,'inconsistent with existe',
      *        'nce of molecular fluid species in the saturated ',/,
@@ -19274,10 +19286,6 @@ c---------------------------------------------------------------------
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
 c----------------------------------------------------------------------
 
       if (icont.eq.1) then 
@@ -19341,13 +19349,10 @@ c---------------------------------------------------------------------
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
-      logical fileio, flsh, anneal, verbos, siphon
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       integer iam
       common/ cst4 /iam
@@ -19428,10 +19433,6 @@ c---------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
 c----------------------------------------------------------------------
 
       do i = 1, jbulk

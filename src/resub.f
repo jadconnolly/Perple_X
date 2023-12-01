@@ -885,7 +885,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical check, bad, quit, notaq, abort
+      logical check, quit, notaq, abort
 
       integer idsol(k19),ksol(k19,k19),ids,xidsol,xksol,irep,jlist(k5),
      *        i,j,jdsol(k19,k19),jd,k,l,nkp(k19),xjdsol(k19),kk
@@ -2907,9 +2907,8 @@ c----------------------------------------------------------------------
       common/ cst52  /hcp,idv(k7) 
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 c----------------------------------------------------------------------
       do i = 1, npt
 
@@ -2974,9 +2973,8 @@ c----------------------------------------------------------------------
       common/ cst330 /mu(k8),mus
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
@@ -3358,7 +3356,7 @@ c----------------------------------------------------------------------
 
       integer itri(4),jtri(4),ijpt
 
-      double precision wt(3), cum
+      double precision wt(3)
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
@@ -3374,9 +3372,8 @@ c----------------------------------------------------------------------
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp

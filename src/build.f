@@ -106,11 +106,8 @@ c-----------------------------------------------------------------------
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
 
       integer ic
-      common/ cst42 /ic(k0)
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
+      common/ cst42 /ic(k0)
 
       integer cl
       character cmpnt*5, dname*80
@@ -124,17 +121,6 @@ c-----------------------------------------------------------------------
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
-
-      double precision mcomp
-      character mknam*8
-      integer nmak
-      logical mksat
-      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
-
-      double precision mkcoef, mdqf
-      integer mknum, mkind, meos
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
 
       integer iam
       common/ cst4 /iam
@@ -1727,8 +1713,10 @@ c                                 component pointers for chkphi
      *        'the EoS to be used for ',/,'the ',
      *        'corresponding composants and mixtures thereof. To over',
      *        'ride this behavior, ',/,'e.g., to use a generic hybrid ',
-     *        'fluid EoS, delete the special_component section ',/,
-     *        'from the thermodynamic data file header.',/)
+     *        'fluid EoS (GFSM) either:',//,
+     *        '  set/add the GFSM option to T in your option file',//,
+     *        '  or delete the special_component section ',
+     *        'from the thermodynamic data file header.')
 1025  format ('NOTE: the EoS choice specified here will override the ',
      *        'EoS choice specified by',/,'the hybrid_EoS option, to',
      *        'override this behavior delete the special_component',/,
@@ -1789,10 +1777,10 @@ c---------------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, j, ivct, ier, iind, idep, iord, kvct, jc, icth,
+      integer i, j, ivct, ier, iind, idep, iord, jc, icth,
      *        jcth, loopx, loopy, ind, ix, jst, jvct
 
-      logical oned, readyn, liqdus
+      logical oned, readyn, liqdus, fileio
 
       character dtext*(*), amount*5, stext*11, nc(3)*2, 
      *          opname*(*), pname(*)*5, cfname*100
@@ -1810,10 +1798,6 @@ c---------------------------------------------------------------------------
       integer ids,isct,icp1,isat,io2
       common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
 
@@ -1829,9 +1813,11 @@ c-----------------------------------------------------------------------
       nc(3) = 'C2'
       iwt = 0
       jcth = 0
+      idep = 0
       amount = 'molar '
       dtext = ' '
       cfname = ' '
+      fileio = .false.
 c                                 coming in icopt has the following values
 
 c                                 1 - convex
@@ -1853,9 +1839,14 @@ c                                 fractionation from a file
             write (*,1080)
          else 
             write (*,1090)
-         end if 
+         end if
+c                                 default for fractionation is isochemical
+c                                 bulk, may be changed by varich.
+         icont = 1
 
          if (readyn()) then
+
+            fileio = .true.
 
             write (*,1100) (vname(iv(i)),i=1,ivct)
             write (*,'(/)')
@@ -1872,10 +1863,7 @@ c                                 fractionation from a file
                icopt = 11
             else
                icopt = 10
-            end if 
-
-            oned = .false.
-            icont = 1
+            end if
 
          end if
 
@@ -1909,10 +1897,10 @@ c                                 3 - swash
 c                                 4 - 1d frac - no fileio (oned true)
 c                                 6 - 0d frac
 c                                 9 - frac2d - no fileo
-c                                10 - 1d - with fileio (oned false)
+c                                10 - 1d - with fileio (oned true)
 c                                11 - frac2d - with fileio (oned false)
 
-      if (icopt.ne.9) then 
+      if (icopt.ne.9.and..not.fileio) then 
 c                                 ====================================
 c                                 ask if p = f(T) or vice versa for all
 c                                 phase diagram calculations:
@@ -1941,10 +1929,8 @@ c                                 pointer to iv(ivct), iind points to the
 c                                 position of the independent variable in 
 c                                 the array v, idep to the dependent v.  
                   call depend (ivct,idep,iind,iord,c,dtext)
-c                                 kvct is the number of independent potentials
-                  kvct = ivct - 1
 
-                  if (icp.eq.1.and.kvct.eq.1) oned = .true.
+                  if (icp.eq.1.and.ivct.eq.1) oned = .true.
 
                end if
 
@@ -1960,20 +1946,27 @@ c                                 kvct is the number of independent potentials
 
       end if 
 
-      if (oned) then 
-
-         icont = 1
+      if (oned.and..not.fileio) then 
 c                                 ======================================
 c                                 for 1d calculations get the independent
-c                                 variable, currently composition is not
-c                                 allowed. 
-         call getxvr (ivct,jvct,icont,jc,oned,'the independent')
+c                                 variable. It is assumed that if a potential
+c                                 has been made dependent on another potential, 
+c                                 that potential is the independent variable
+         if (idep.ne.0) then 
+c                                 redvar uses the iv pointer for the independent potential 
+            call redvar (1,1)
+
+         else 
+c                                 otherwise allow the choice of variables:
+            call getxvr (ivct,jvct,jc,oned,'the independent')
 c                                 get sectioning variables values:
-         do j = 1, ivct
-            if (iv(j).eq.jc) cycle 
-            call redvar (j,2)
-            vmax(iv(j)) = vmin(iv(j))
-         end do     
+            do j = 1, ivct
+               if (iv(j).eq.jc) cycle 
+               call redvar (j,2)
+               vmax(iv(j)) = vmin(iv(j))
+            end do
+
+         end if
 c                                  set the icopt flag to its final value
          if (icopt.eq.2) then
 c                                  1-d minimization
@@ -1987,11 +1980,8 @@ c                                  fractionation, also write the grid blurb
          end if
 
       else if (icopt.eq.10) then
-c                                  1-d "gridded min" from a file, only allow p-t
+c                                  1-d "gridded min" from a file, no choices
          icont = 1
-
-         call getxvr (ivct,jvct,icont,jc,oned,
-     *                                'the independent path')
 
       else if (icopt.eq.9.or.icopt.eq.11) then
 c                                  2-d fractionation, only allow p and t
@@ -1999,7 +1989,7 @@ c                                  2-d fractionation, only allow p and t
          jvct = 1
          icont = 0 
 c                                  choose the primary variable (IV(1)):
-         call getxvr (ivct,jvct,icont,jc,oned,
+         call getxvr (ivct,jvct,jc,oned,
      *                'the primary (usually pressure)')
 
       else if (icopt.eq.6) then 
@@ -2033,7 +2023,7 @@ c                                  gridded minimization:
             icont = 1
             icopt = 5
 c                                  Select the x variable
-            call getxvr (ivct,jvct,icont,jc,oned,'x-axis')
+            call getxvr (ivct,jvct,jc,oned,'x-axis')
 
             if (ivct.eq.2.and.icont.eq.1) then 
 c                                 there is no C variable and there 
@@ -2102,8 +2092,7 @@ c                                 getxvar
             icont = icp
             icp = 0
 c                                 get the independent potential
-            call getxvr (ivct,jvct,icont,jc,oned,
-     *                                          'independent potential')
+            call getxvr (ivct,jvct,jc,oned,'independent potential')
 c                                 reset icp, icont
             icp = icont
             icont = 3
@@ -2153,7 +2142,7 @@ c                                  convert to internal values
 
          if (icopt.eq.1) then
 c                                  Select the x variable (IV(1)):
-            call getxvr (ivct,jvct,icont,jc,oned,'x-axis')
+            call getxvr (ivct,jvct,jc,oned,'x-axis')
 c                                  select the y variable (iv(2)):
             if (ivct.gt.2) then
  
@@ -2197,7 +2186,7 @@ c                                  specify sectioning variables (iv(3)):
 
          else if (icopt.eq.3) then
 c                                  select the y variable (iv(1)):
-            call getxvr (ivct,jvct,icont,jc,oned,'y-axis')
+            call getxvr (ivct,jvct,jc,oned,'y-axis')
 c                                  specify sectioning variable (iv(2)):
             do j = 2, ivct
                call redvar (j,2) 
@@ -2449,7 +2438,7 @@ c                                 open c-space
       end 
 
 
-      subroutine getxvr (ivct,jvct,icont,jc,oned,text)
+      subroutine getxvr (ivct,jvct,jc,oned,text)
 c----------------------------------------------------------------------
 c read primary variable 
 c----------------------------------------------------------------------
@@ -2461,7 +2450,7 @@ c----------------------------------------------------------------------
 
       logical oned
 
-      integer j,ivct, ier, ix, jc, icont, jvct, jcont
+      integer j, ivct, ier, ix, jc, jvct, jcont
 
       integer ifct,idfl
       common/ cst208 /ifct,idfl
@@ -2540,7 +2529,7 @@ c                                 normal variable, swap positions
             iv(1) = iv(jc)
             iv(jc) = ix
 c                                 read limits
-            if (icopt.ne.9.and.icopt.ne.11) call redvar (1,1)
+            if (icopt.lt.9.or.icopt.gt.11) call redvar (1,1)
 
          end if
 

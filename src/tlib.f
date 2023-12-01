@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.4, Oct 26, 2023.',
+     *     'Perple_X release 7.1.5, Dec 1, 2023.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -1802,10 +1802,6 @@ c----------------------------------------------------------------------
       logical oned
       common/ cst82 /oned
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
       integer iam
       common/ cst4 /iam
 c----------------------------------------------------------------------
@@ -3032,7 +3028,7 @@ c                                 accordingly:
 49    format (/,'**error ver049** the order of solution model ',a,
      *        ' is too high, increase parameter m2 (',i2,').',/)
 50    format (/,'**error ver050** requested resolution ',
-     *          '(',f6.0,') for a component in solution:',a,/,
+     *          '(',1pg8.0,') for a component in solution:',a,/,
      *          'exceeds 1/MRES (MRES=',i5,') ',
      *          'reduce requested resolution or inrease',/,
      *          'MRES in routine CARTES',/)
@@ -3819,17 +3815,6 @@ c----------------------------------------------------------------------
       double precision rnum, nums(m3)
 
       character tname*8, name*8, rec*(lchar), tag*3
-
-      double precision mcomp
-      character mknam*8
-      integer nmak
-      logical mksat
-      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
-
-      double precision mkcoef, mdqf
-      integer mknum, mkind, meos
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
 
       integer ixct,ifact
       common/ cst37 /ixct,ifact 
@@ -7238,9 +7223,6 @@ c-----------------------------------------------------------------------
       logical fp
       common/ cxt32 /ifp(k10), fp(h9)
 
-      integer make
-      common / cst335 /make(k10)
-
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 c-----------------------------------------------------------------------
@@ -7647,10 +7629,6 @@ c---------------------------------------------------------------------
       integer ipot,jv,iv
       common / cst24 /ipot,jv(l2),iv(l2)
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
@@ -7691,7 +7669,23 @@ c                                 use nodal coordinates:
 
          do i = 2, jvar
             vnm(i) = vname(jv(i-1))
-         end do  
+         end do
+
+      else if (icopt.eq.7.and.idep.ne.0) then
+c                                 1d calculation, assume if a 
+c                                 potential is dependent on another
+c                                 that this other potential is the
+c                                 independent variable
+         oned = .true.
+
+         jvar = ipot
+
+         do i = 1, jvar
+            vnm(i) = vname(jv(i))
+            vmx(i) = vmax(jv(i))
+            vmn(i) = vmin(jv(i))
+            var(i) = vmin(jv(i))
+         end do
 
       else if (icopt.lt.9) then 
 
@@ -7747,13 +7741,6 @@ c                                 use nodal coordinates:
             end if 
 
          end if 
-
-         if (oned) then 
-c                                 make a fake y-axis for 1-d plots
-            vmx(2) = 1d0
-            vmn(2) = 0d0
-
-         end if
 
       else if (icopt.eq.9) then 
 c                                using non-thermodynamic coordinate frame
@@ -7818,7 +7805,14 @@ c                                  set y = 0 ti be the top
             var(i) = vmin(jv(i-2))
          end do
 
-      end if 
+      end if
+
+      if (oned) then 
+c                                 make a fake y-axis for 1-d plots
+         vmx(2) = 1d0
+         vmn(2) = 0d0
+
+      end if
 
       end
 
@@ -8565,10 +8559,6 @@ c----------------------------------------------------------------------
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
 c----------------------------------------------------------------------
       write (*,'(/,a,/)') 'Current conditions:'
 
@@ -9263,10 +9253,6 @@ c-----------------------------------------------------------------------
       double precision c0,c1,c2,c3,c4,c5
       common/ cst316 /c0,c1,c2,c3,c4,c5,iind,idep
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
       integer ibuf,hu,hv,hw,hx 
       double precision dlnfo2,elag,gz,gy,gx
       common/ cst100 /dlnfo2,elag,gz,gy,gx,ibuf,hu,hv,hw,hx
@@ -9902,17 +9888,12 @@ c-----------------------------------------------------------------------
       integer i,j
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       integer is
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
 
       integer hcp,idv
       common/ cst52  /hcp,idv(k7)
@@ -10505,9 +10486,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, nv(2), nvar, ivar, n
+      integer i, nv(*), nvar, ivar, n
 
-      double precision vmn(2), dv(2)
+      double precision vmn(*), dv(*)
 
       character*100 n6name, n5name, colnam(l3)*14
 
@@ -11292,17 +11273,6 @@ c----------------------------------------------------------------------
       character cmpnt*5, dname*80
       common/ csta5 /cl(k0),cmpnt(k0),dname
 
-      double precision mcomp
-      character mknam*8
-      integer nmak
-      logical mksat
-      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
-
-      double precision mkcoef, mdqf
-      integer mknum, mkind, meos
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
-
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
@@ -11560,17 +11530,6 @@ c----------------------------------------------------------------------
 
       integer iam
       common/ cst4 /iam
-
-      double precision mcomp
-      character mknam*8
-      integer nmak
-      logical mksat
-      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
-
-      double precision mkcoef, mdqf
-      integer mknum, mkind, meos
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
 
       integer ikind,icmpn,icout,ieos
       double precision comp,tot

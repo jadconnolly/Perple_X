@@ -1768,7 +1768,7 @@ c----------------------------------------------------------------------
       logical eof, first, match, readyn
 
       integer inames, jcmpn, i, j, k, l, ier,
-     *        isct, jj, itic, jphct
+     *        isct, jj, itic, jphct, mkst, mkend
 
       external readyn
 
@@ -1813,20 +1813,6 @@ c----------------------------------------------------------------------
       integer idr,ivct
       double precision vnu
       common/ cst25 /vnu(k7),idr(k7),ivct
-
-      double precision mcomp
-      character mknam*8
-      integer nmak
-      logical mksat
-      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
-
-      double precision mkcoef, mdqf
-      integer mknum, mkind, meos
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
-
-      integer make, mkst, mkend
-      common / cst335 /make(k10)
 
       integer jcv,jvct,jpv,jtv,jf
       common / mu2f1 /jcv(2),jvct,jpv,jtv,jf(2)

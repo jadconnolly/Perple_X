@@ -4,7 +4,7 @@
       integer j3,j4,j5,j6,j9
       integer k0,k1,k2,k3,k4,k5,k7,k8,k9,k10,k13,k14,k15
       integer k16,k17,k18,k19,k20,k21,k22,k23,k24,kd2,k25
-      integer l2,l3,l5,l6,l7,l8,l9,l10,lchar
+      integer l2,l3,l5,l6,l7,l8,l9,l10,l11,l12,l13,lchar
       integer m0,m1,m2,m3,m4,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15
       integer m16,m17,m18,m19,m20,m21,m22,m23,m24,m25
       integer msp,mst,mdim,ms1
@@ -135,10 +135,13 @@ c----------------------------------------------------------------------
 !                                 l8 - max number of levels for multilevel grids    
 !                                 l9 - max number of aqueous solute species in minimization programs.         
 !                                l10 - max number of parameters stored in caq for each phase.
+!                                l11 - max number of observations for MC inversion
+!                                l12 - max number of free compounds for MC inversion
+!                                l13 - max number of free solutions for MC inversion
 !                                nsp - max number of species in fluid speciation routines 
 
       parameter (l2=5,l3=l2+2,l5=1000,l6=500,l7=2048,l8=10,l9=150,
-     *           nsp=18,l10=nsp+l9+4)
+     *           nsp=18,l10=nsp+l9+4,l11=400,l12=5,l13=5)
 !                                 m0 - max number of terms for a species site fraction?
 !                                 m1 - max number of terms in excess function
 !                                 m2 - max order of term in excess function
@@ -572,3 +575,47 @@ c                                 LP workspace into common
       double precision pblk, eblk, pmode, emode
       common/ cst67 /pblk(k5,k5), eblk(k5,k5), pmode(k5), emode(k5),
      *               pids(k5), mphase
+
+      logical mcpert, mcflag, oprt, random
+      integer mxpt, cxpt, xptids, xptptr, xptnph, mccpd, mcsol, mcid, 
+     *        mcids, msloc, msolct, nparm, nunc, mcpct, mcpid, mctrm,
+     *        mccoef, mccoid
+      character xptnam*18
+      double precision xptpt, xptblk, xptc, cprng, sprng, wcomp, 
+     *                 wextra, wmiss
+
+      common/ cst68 /xptpt(l11,l2), xptblk(l11,k5), xptc(k5*l11), 
+     *               cprng(l12,3,2),sprng(l13,m1,m3,2), wcomp, wextra,
+     *               wmiss,
+c                                  integer
+     *               mccpd, mcsol, mxpt, cxpt, nparm, nunc, mctrm(l13),
+     *               xptids(l11,k5), xptptr(l11,k5), xptnph(l11),
+     *               mcid(l12), mcids(l13), msolct(l11,h9), 
+     *               msloc(l11,k5), mcpct(l12), mcpid(l12,3),
+     *               mccoef(l12,m1), mccoid(l12,m1,m3),
+c                                  logical
+     *               mcpert, oprt, mcflag(h9), random,
+c                                  character
+     *               xptnam(l11)
+
+      double precision mcomp
+      character mknam*8
+      integer nmak
+      logical mksat
+      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
+
+      integer mknum, mkind, meos
+      double precision mkcoef, mdqf
+      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
+     *                 mknum(k16),meos(k16)
+
+      integer make
+      common / cst335 /make(k10)
+
+      double precision wgl, wkl, vlar
+      common/ cxt2r /wgl(m3,m1,h9),wkl(m16,m17,m18,h9),vlar(m3,m4,h9)
+
+
+      integer icont
+      double precision dblk,cx
+      common/ cst314 /dblk(3,k5),cx(2),icont

@@ -848,9 +848,9 @@ c                                       modfied GH, 12/23/21
 
                write (record,'(a)') 
      *               vnm(i)(1:nblen(vnm(i)))//
-     *               ' = f('//vname(iind)(1:1)//' = '//
+     *               ' = f('//vname(iind)(1:1)//') = '//
      *               nums(1)(1:nblen(nums(1)))//'-'//
-     *               nums(2)(1:nblen(nums(2)))//')'
+     *               nums(2)(1:nblen(nums(2)))
 
             else
 

@@ -98,10 +98,6 @@ c----------------------------------------------------------------------
       double precision cp
       common/ cst12 /cp(k5,k10)
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
       integer iam
       common/ cst4 /iam
 c----------------------------------------------------------------------
@@ -1274,9 +1270,6 @@ c-----------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 
-      integer make
-      common / cst335 /make(k10)
-
       integer eos
       common/ cst303 /eos(k10)
 
@@ -1357,15 +1350,6 @@ c-----------------------------------------------------------------------
 
       double precision mu, pmu, mut, pmut, mup, pmup, 
      *                 ks, pks, kst, pkst, ksp, pksp
-
-      double precision mkcoef, mdqf
-
-      integer mknum, mkind, meos
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
-
-      integer make
-      common / cst335 /make(k10)
 c-----------------------------------------------------------------------
       jd = make(id)
 
@@ -3334,9 +3318,8 @@ c-----------------------------------------------------------------------
       common/ cst4 /iam
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       integer jnd
       double precision aqg,qq,rt

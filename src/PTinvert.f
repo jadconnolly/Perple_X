@@ -23,9 +23,8 @@ c----------------------------------------------------------------------
       external readyn, mcobjf, mcobj1
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       double precision atwt
       common/ cst45 /atwt(k0) 
@@ -384,9 +383,8 @@ c-----------------------------------------------------------------------
       integer i, j, k
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       integer is
       double precision a,b,c

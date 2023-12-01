@@ -40,7 +40,8 @@ c-----------------------------------------------------------------------
       common/ cstcoh /yf(nsp),g(nsp),v(nsp)
 
       logical abort
-      common/ cstabo /abort
+      equivalence (abort,abort1)
+c     common/ cstabo /abort
 
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1

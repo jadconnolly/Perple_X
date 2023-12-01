@@ -317,9 +317,8 @@ c-----------------------------------------------------------------------
       external readyn
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       character cname*5
       common/ csta4 /cname(k5)
@@ -559,13 +558,8 @@ c-----------------------------------------------------------------------
       double precision iblk(k5), errr(k5)
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       character cname*5
       common/ csta4 /cname(k5)
@@ -711,9 +705,8 @@ c-----------------------------------------------------------------------
       common/ cxt46 /x, y
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
@@ -775,11 +768,6 @@ c-----------------------------------------------------------------------
 
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
-      save / cst59 /
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
 
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
@@ -1538,10 +1526,6 @@ c------------------------------------------------------------------------
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c------------------------------------------------------------------------
@@ -1881,10 +1865,6 @@ c---------------------------------------------------------------------
 
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
 
       integer jlow,jlev,loopx,loopy,jinc1
       common/ cst312 /jlow,jlev,loopx,loopy,jinc1
@@ -3326,15 +3306,19 @@ c                                 get phases to be fractionated
                   write (*,1100) phase(ifrct)
                   cycle
 
-               else if (ksmod(ifr(ifrct)).eq.39.and.lopt(32).and.
-     *                  iopt(22).eq.0) then
+               else if (ifr(ifrct).gt.0) then
+
+                  if (ksmod(ifr(ifrct)).eq.39.and.lopt(32).and.
+     *                iopt(22).eq.0) then
 c                                 fractionating an electrolytic fluid:
 c                                 override solid component depletion
 c                                 error trap in yclos2 to allow output,
 c                                 no examples where this does anything.
-                  lopt(71) = .false.
+                     lopt(71) = .false.
 
-                  call warn (62,numb,ifrct,phase(ifrct))
+                     call warn (62,numb,ifrct,phase(ifrct))
+
+                  end if
 
                end if
 

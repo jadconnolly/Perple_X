@@ -65,6 +65,9 @@ clean:
 ###################### TARGETS FOR 692+ PROGRAMS ######################### 
 #
 #
+MC_fit: MC_fit.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) MC_fit.o $(LIBRARY) -o $@$(EXT)
+
 convex: convex.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK) convex.o $(LIBRARY) -o $@$(EXT)
 
@@ -178,6 +181,8 @@ vertex.o: vertex.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c vertex.f
 meemum.o: meemum.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c meemum.f
+MC_fit.o: MC_fit.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c MC_fit.f
 resub.o: resub.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c resub.f
 tlib.o: tlib.f perplex_parameters.h

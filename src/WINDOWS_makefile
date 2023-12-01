@@ -69,6 +69,9 @@ clean:
 ###################### TARGETS FOR 691+ PROGRAMS ######################### 
 #  
 #
+MC_fit: MC_fit.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) convex.o $(LIBRARY) -o $@$(EXT)
+
 convex: convex.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK) convex.o $(LIBRARY) -o $@
 

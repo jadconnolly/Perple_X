@@ -1160,10 +1160,6 @@ c                                 working arrays
       character vnm*8
       common/ cxt18a /vnm(l3)
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
       integer ix,iy,mvar
       double precision z,zt
       common/ dim   /z(nx,ny),ix,iy,mvar
@@ -2740,7 +2736,7 @@ c--------------------------------------------------------------------
 
       equivalence (vi1,vin(1)),(vi2,vin(2)),(vi3,vin(3))
 
-      double precision cx, cy, dot, glo, ghi, grdscl,
+      double precision ccx, ccy, dot, glo, ghi, grdscl,
      *   vrtx(3,ll), fnrm(3,ll), tnrm(3,ll), v0(3), v1(3), v2(3)
 
       double precision dotd
@@ -2771,12 +2767,12 @@ c                                 load vertex coordinates
       ghi = tgrid(1,1)
       n = 0
       do j=1,loopy,jinc
-         cy = (j-1)/dfloat(loopy-1)
+         ccy = (j-1)/dfloat(loopy-1)
          do i=1,loopx-j+1,jinc
-            cx = (i-1)/dfloat(loopx-1)
+            ccx = (i-1)/dfloat(loopx-1)
             n = n + 1
-            vrtx(1,n) = cx
-            vrtx(2,n) = cy
+            vrtx(1,n) = ccx
+            vrtx(2,n) = ccy
             vrtx(3,n) = tgrid(i,j)
             call trneq(vrtx(1,n),vrtx(2,n))
             glo = min(glo,vrtx(3,n))
