@@ -6432,7 +6432,7 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, k, l, i1, i2, id, j
+      integer i, k, i1, i2, id, j
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
