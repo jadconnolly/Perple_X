@@ -619,3 +619,6 @@ c                                  character
       integer icont
       double precision dblk,cx
       common/ cst314 /dblk(3,k5),cx(2),icont
+
+      double precision dppp,sdzdp
+      common/ cxt28 /dppp(j3,j3,m1,h9),sdzdp(j3,m11,m10,h9)

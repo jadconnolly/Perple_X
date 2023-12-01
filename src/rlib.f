@@ -6447,9 +6447,6 @@ c                                 working arrays
 c                                 local alpha
       double precision alpha,dt
       common/ cyt0  /alpha(m4),dt(j3)
-c                                 bookkeeping variables
-      double precision dppp,d2gx,sdzdp
-      common/ cxt28 /dppp(j3,j3,m1,h9),d2gx(j3,j3),sdzdp(j3,m11,m10,h9)
 c----------------------------------------------------------------------
       if (extyp(id).eq.1) then
 c                                 redlich kistler is a special case
@@ -6513,17 +6510,6 @@ c                                     wk(6) = wP0 coefficient on P
 c                                 set higher order derivatives for
 c                                 speciation
          dt(1:nord(id)) = 0d0
-         d2gx(1:nord(id),1:nord(id)) = 0d0
-c                                 for both laar and regular need
-c                                 the d(gex)/dy(k)/dy(l)
-         do i = 1, jterm(id)
-            do k = 1, nord(id)
-               do l = 1, nord(id)
-                  d2gx(l,k) = d2gx(l,k) + w(i) * dppp(l,k,i,id)
-               end do
-            end do
-         end do
-
 
          if (llaar(id)) then
 c                                 for laar also need:
@@ -6706,9 +6692,6 @@ c                                 excess energy variables
       integer jterm, jord, extyp, rko, jsub
       common/ cxt2i /jterm(h9),jord(h9),extyp(h9),rko(m1,h9),
      *               jsub(m2,m1,h9)
-
-      double precision dppp,d2gx,sdzdp
-      common/ cxt28 /dppp(j3,j3,m1,h9),d2gx(j3,j3),sdzdp(j3,m11,m10,h9)
 
       integer ideps,icase,nrct
       common/ cxt3i /ideps(j4,j3,h9),icase(h9),nrct(j3,h9)
@@ -7863,9 +7846,6 @@ c                                 excess energy variables
       common/ cxt2i /jterm(h9),jord(h9),extyp(h9),rko(m1,h9),
      *               jsub(m2,m1,h9)
 
-      double precision dppp,d2gx,sdzdp
-      common/ cxt28 /dppp(j3,j3,m1,h9),d2gx(j3,j3),sdzdp(j3,m11,m10,h9)
-
       double precision p,tk,xc,u1,u2,tr,pr,r,ps
       common/ cst5 /p,tk,xc,u1,u2,tr,pr,r,ps
 
@@ -8075,9 +8055,6 @@ c                                 working arrays
 c                                 configurational entropy variables:
       integer lterm, ksub
       common/ cxt1i /lterm(m11,m10,h9),ksub(m0,m11,m10,h9)
-
-      double precision dppp,d2gx,sdzdp
-      common/ cxt28 /dppp(j3,j3,m1,h9),d2gx(j3,j3),sdzdp(j3,m11,m10,h9)
 
       logical pin
       common/ cyt2 /pin(j3)
@@ -9126,9 +9103,6 @@ c                                 excess energy variables
       common/ cxt2i /jterm(h9),jord(h9),extyp(h9),rko(m1,h9),
      *               jsub(m2,m1,h9)
 
-      double precision dppp,d2gx,sdzdp
-      common/ cxt28 /dppp(j3,j3,m1,h9),d2gx(j3,j3),sdzdp(j3,m11,m10,h9)
-
       double precision enth
       common/ cxt35 /enth(j3)
 
@@ -9144,27 +9118,22 @@ c                                 initialize, d2gx has been set in setw
 
       if (lexces(id)) then
 
-         if (rko(i,id).eq.2) then
+         do i = 1, jterm(id)
+
+            i1 = jsub(1,i,id)
+            i2 = jsub(2,i,id)
+
+            if (rko(i,id).eq.2) then
 c                                regular models
-            d2g = d2gx(k,k)
-
-            do i = 1, jterm(id)
-
-               i1 = jsub(1,i,id)
-               i2 = jsub(2,i,id)
-
                g = g + w(i) * pa(i1) * pa(i2)
 
                dg = dg + w(i) * (pa(i1)*dydy(i2,k,id)
      *                         + pa(i2)*dydy(i1,k,id))
-            end do
 
-         else if (rko(i,id).eq.3) then
+              d2g = d2g + w(i) * dppp(k,k,i,id)
+
+            else if (rko(i,id).eq.3) then
 c                                3rd order subregular
-            do i = 1, jterm(id)
-
-               i1 = jsub(1,i,id)
-               i2 = jsub(2,i,id)
                i3 = jsub(3,i,id)
 
                g = g + w(i) * pa(i1) * pa(i2) * pa(i3)
@@ -9179,13 +9148,13 @@ c                                 by dppp()...
      *                        pa(i1)*2d0*dydy(i2,k,id)*dydy(i3,k,id)
      *                      + pa(i2)*2d0*dydy(i1,k,id)*dydy(i3,k,id)
      *                      + pa(i3)*2d0*dydy(i1,k,id)*dydy(i2,k,id) )
-            end do
+            else
 
-         else
+               call errdbg ('o > 3 gderi1')
 
-            call errdbg ('o > 3 gderi1')
+            end if
 
-         end if
+         end do
 c                                 get derivative of excess function
          if (llaar(id)) then
 c                                 for h&p van laar, this is unnecessary because
@@ -9248,9 +9217,6 @@ c                                 working arrays
 c                                 configurational entropy variables:
       integer lterm, ksub
       common/ cxt1i /lterm(m11,m10,h9),ksub(m0,m11,m10,h9)
-
-      double precision dppp,d2gx,sdzdp
-      common/ cxt28 /dppp(j3,j3,m1,h9),d2gx(j3,j3),sdzdp(j3,m11,m10,h9)
 c----------------------------------------------------------------------
       s = 0d0
       ds = 0d0
@@ -15965,9 +15931,6 @@ c                                 configurational entropy variables:
       integer lterm, ksub
       common/ cxt1i /lterm(m11,m10,h9),ksub(m0,m11,m10,h9)
 
-      double precision dppp,d2gx,sdzdp
-      common/ cxt28 /dppp(j3,j3,m1,h9),d2gx(j3,j3),sdzdp(j3,m11,m10,h9)
-
       double precision alpha,dt0
       common/ cyt0  /alpha(m4),dt0(j3)
 
@@ -16381,9 +16344,6 @@ c                                 excess energy variables
 c                                 configurational entropy variables:
       integer lterm, ksub
       common/ cxt1i /lterm(m11,m10,h9),ksub(m0,m11,m10,h9)
-
-      double precision dppp,d2gx,sdzdp
-      common/ cxt28 /dppp(j3,j3,m1,h9),d2gx(j3,j3),sdzdp(j3,m11,m10,h9)
 
       double precision alpha,dt0
       common/ cyt0  /alpha(m4),dt0(j3)
@@ -21004,9 +20964,6 @@ c---------------------------------------------------------------------
 
       integer lterm, ksub
       common/ cxt1i /lterm(m11,m10,h9),ksub(m0,m11,m10,h9)
-
-      double precision dppp,d2gx,sdzdp
-      common/ cxt28 /dppp(j3,j3,m1,h9),d2gx(j3,j3),sdzdp(j3,m11,m10,h9)
 c                                 endmember pointers
       integer jend
       common/ cxt23 /jend(h9,m14+2)
