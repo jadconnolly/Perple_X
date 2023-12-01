@@ -9139,14 +9139,17 @@ c                                 initialize, d2gx has been set in setw
       g = 0d0
 
       dg = g
+
       d2g = 0d0
 
       if (lexces(id)) then
 
-         do i = 1, jterm(id)
-
-            if (rko(i,id).eq.2) then
+         if (rko(i,id).eq.2) then
 c                                regular models
+            d2g = d2gx(k,k)
+
+            do i = 1, jterm(id)
+
                i1 = jsub(1,i,id)
                i2 = jsub(2,i,id)
 
@@ -9154,11 +9157,12 @@ c                                regular models
 
                dg = dg + w(i) * (pa(i1)*dydy(i2,k,id)
      *                         + pa(i2)*dydy(i1,k,id))
+            end do
 
-               d2g = d2gx(k,k)
-
-            else if (rko(i,id).eq.3) then
+         else if (rko(i,id).eq.3) then
 c                                3rd order subregular
+            do i = 1, jterm(id)
+
                i1 = jsub(1,i,id)
                i2 = jsub(2,i,id)
                i3 = jsub(3,i,id)
@@ -9175,15 +9179,13 @@ c                                 by dppp()...
      *                        pa(i1)*2d0*dydy(i2,k,id)*dydy(i3,k,id)
      *                      + pa(i2)*2d0*dydy(i1,k,id)*dydy(i3,k,id)
      *                      + pa(i3)*2d0*dydy(i1,k,id)*dydy(i2,k,id) )
+            end do
 
-            else 
+         else
 
-               call errdbg ('o > 3 gderi1')
+            call errdbg ('o > 3 gderi1')
 
-            end if
-
-         end do
-
+         end if
 c                                 get derivative of excess function
          if (llaar(id)) then
 c                                 for h&p van laar, this is unnecessary because
