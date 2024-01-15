@@ -239,22 +239,10 @@ c                                 allow restricted plot limits
 
       if (lopt(48).and.(icopt.eq.5.or.icopt.eq.2)) then
 
-         if (lopt(47)) then
-c                                 unsplt, could work out sample on grid with 
-c                                 the spt file, but i'm too lazy.
-           nxy(1) = loopx
-           nxy(2) = loopy
+         call getlvl (i)
 
-           write (*,1000) loopx, loopy
-
-         else 
-
-            call getlvl (i)
-
-            nxy(1) = (loopx - 1)/ 2**(jlev-i) + 1
-            nxy(2) = (loopy - 1)/ 2**(jlev-i) + 1
-
-         end if 
+         nxy(1) = (loopx - 1)/ 2**(jlev-i) + 1
+         nxy(2) = (loopy - 1)/ 2**(jlev-i) + 1
 
       else if (lopt(48)) then 
 c                                 frac2d calculations
@@ -1980,7 +1968,7 @@ c                                  grid
 
          call getlvl (i)
 
-         ipts = (loopx - 1)/ 2**(jlev-i) + 1
+         ipts = (loopy - 1)/ 2**(jlev-i) + 1
          dvr(ind) = (vmx(ind)-vmn(ind))/dfloat(ipts-1)
 
       else if (icopt.eq.5) then

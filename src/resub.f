@@ -891,7 +891,7 @@ c----------------------------------------------------------------------
      *        i,j,jdsol(k19,k19),jd,k,l,nkp(k19),xjdsol(k19),kk
 
       double precision bsol(k19,k19),cpnew(k19,k19),xx,xb(k19),msol,
-     *                 bnew(k19),pnew(k19,m14),ncaq(k19,l10),ximp,sum
+     *                 bnew(k19),pnew(k19,m14),ncaq(k19,l10),ximp
 
       logical solvs1, solvs4
       external solvs1, solvs4
@@ -962,7 +962,8 @@ c                                we have an endmember
             end if 
          else 
             nkp(i) = kkp(i)
-         end if 
+         end if
+
       end do 
 c                                check if any solutions
       do i = 1, ntot
@@ -980,7 +981,9 @@ c                                are present:
       soltol = nopt(8)
 
       do i = 1, ntot
-          
+
+         if (amt(i).lt.nopt(9)) cycle
+
          if (nkp(i).lt.0) then
 c                                 the pseudocompound is a true compound
             ncpd = ncpd + 1 
@@ -1081,10 +1084,14 @@ c                                  signals error ver102
                   end if 
 c                                 the pseudocompound matches a solution
 c                                 found earlier.
-                  idsol(j) = idsol(j) + 1
-                  bsol(j,idsol(j)) = amt(i)
-                  jdsol(j,idsol(j)) = i
+                  if (amt(i).gt.nopt(9)) then 
+                     idsol(j) = idsol(j) + 1
+                     bsol(j,idsol(j)) = amt(i)
+                     jdsol(j,idsol(j)) = i
+                  end if
+
                   quit = .true.
+
                   exit
 
                end if
@@ -1094,11 +1101,13 @@ c                                 found earlier.
             if (quit) cycle 
 c                                 the pseudocompound is a new solution 
 c                                 phase.
-            np = np + 1
-            idsol(np) = 1
-            ksol(np,1) = nkp(i)
-            jdsol(np,1) = i
-            bsol(np,1) = amt(i)
+            if (amt(i).gt.nopt(9)) then 
+               np = np + 1
+               idsol(np) = 1
+               ksol(np,1) = nkp(i)
+               jdsol(np,1) = i
+               bsol(np,1) = amt(i)
+            end if
 
          end if
 
@@ -1176,9 +1185,6 @@ c                               lagged speciation
          end do
 c                                in case pure and impure solvent is going to be averaged
 c                                count fraction of impure solvent
-         ximp = 0d0
-         sum = 0d0
-
          do j = 1, idsol(i)
 
             jd = jdsol(i,j)
@@ -1208,15 +1214,11 @@ c                                save the new compositions
                cpnew(k,i) = cpnew(k,i) + xx*cp3(k,jd)
             end do
 
-            sum = sum + xx
-            
             do k = 1, nstot(ids)
                pnew(i,k) = pnew(i,k) + xx*pa3(jd,k)
             end do
 
             if (lopt(32).and.ksmod(ids).eq.39) then
-
-               if (caq(jd,na1).ne.0d0) ximp = ximp + xx
 c                                lagged speciation (1:nsa), ionic strength (na1), total
 c                                molality (na2), solvent mass (na3), err_log_kw (na4)
 c                                pH, Delta_pH, solute molality, epsilon (nat)
@@ -1227,45 +1229,6 @@ c                                pH, Delta_pH, solute molality, epsilon (nat)
             end if
 
          end do
-
-         if (sum.lt.1d0-zero.or.sum.gt.1d0+zero) then 
-            write (*,*) 'wugga'
-         end if 
-
-c         if (lopt(32).and.ksmod(ids).eq.39.and.ximp.gt.0d0) then
-c                                 renomalize err_log_kw, pH, Delta_pH, epsilon
-c            ncaq(i,na3+1) = ncaq(i,na3+1)/ximp
-c            ncaq(i,na3+2) = ncaq(i,na3+2)/ximp
-c            ncaq(i,na3+3) = ncaq(i,na3+3)/ximp
-c            ncaq(i,nat) = ncaq(i,nat)/ximp
-
-c         end if
-
-      end do
-
-
-      do i = 1, np
-
-         sum = 0d0
-        
-         do k = 1, nstot(ksol(i,1))
-            sum = sum + pnew(i,k)
-         end do
-c DEBUG691
-         if (sum.lt.one.or.sum.gt.1d0+zero) then
-            write (*,*) 'bad pa3 sum',ksol(i,1),sum
-
-           do j = 1, ntot
-              sum = 0d0
-              do k = 1, nstot(ksol(i,1))
-                 sum = sum + pa3(j,k)
-              end do
-
-              write (*,*) j, sum, kkp(j)
-
-           end do
-
-         end if
 
       end do
 c                                 make a list of solutions as ordered 
@@ -1299,8 +1262,6 @@ c                                 check composition against solution model range
          if (lopt(11)) call sollim (ids,i)
 
       end do
-
-9000  format (i2,3x,i8,3x,i8,3x,g14.6)
 
       do i = 1, ncpd
 
