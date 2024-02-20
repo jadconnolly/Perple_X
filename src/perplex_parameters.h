@@ -4,7 +4,7 @@
       integer j3,j4,j5,j6,j9
       integer k0,k1,k2,k3,k4,k5,k7,k8,k9,k10,k13,k14,k15
       integer k16,k17,k18,k19,k20,k21,k22,k23,k24,kd2,k25
-      integer l2,l3,l5,l6,l7,l8,l9,l10,lchar
+      integer l2,l3,l5,l6,l7,l8,l9,l10,l11,lchar
       integer m0,m1,m2,m3,m4,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15
       integer m16,m17,m18,m19,m20,m21,m22,m23,m24,m25
       integer msp,mst,mdim,ms1
@@ -103,52 +103,19 @@ c----------------------------------------------------------------------
 !                                    k13 = imax(k1,k21)/k33.
 !                                 The memory allocated for compositions is then 
 !                                    memory = (1 + k31 + k32)*(k1 + k21) + imax(k1,k21)/k33
-!                                 or if k1 is taken as the independent variable 
-!                                    k21 = ((memory (-k31 - k32 - 1)*k1) - imax(k1,k21)/ k33) / (1 + k31 + k32).
-!                                 Experience indicates that for most problems k1>k21, and that k21 approaches
-!                                 k1 for complex (10-d) solutions with the default values of resolution_factor (2)
-!                                 reach_increment (0). For larger resolution_factor or reach_increment the required
-!                                 value for k21 may excede k1, whereas for problems with simple (low-dimension) 
-!                                 solutions k21 may be << k1. The compromise adopted here is to equate k21 and k1
-!                                 in which case 
-!                                    k1 = memory / (2 * k31 + 2 * k32 + 2 + 1 / k33)
+!                                 Experience indicates that for most problems k1>k21 and setting k33 = 1
+!                                    k21 = (memory - (k31 + k32 + 2)*k1) / (1 + k31 + k32)
 !                                 The value of memory is dependent on the other parameters set here as well as 
 !                                 system/compiler limitations, which typically limit image size to 2 Gb. For the
 !                                 present parameter choices, memory was found by trial and error (i.e., by varying 
 !                                 increasing the value of memory until the compiler or system complained about 
 !                                 image size) to be 0.78 Gb.
-
-!                                 The program kays.f writes out the parameters k1,k21,k20,k18,k24,k25,k13 computed
-!                                 by the above logic. 
-
-!                                 uncomment this line to specify k1 independently of k21 (assumes k1>k21)
-!     parameter (memory=78000000,k31=4,k32=10,k33=1,k1=4000000)
-!                                 the next two lines make k1 = k21, comment these if the line above is uncommented.
-!     parameter (memory=78000000,k31=4,k32=10,k33=1)
-!     parameter (k1 = memory/(2*k31+2*k32+2+1/k33))
-!                                 set k13 = k21/k33 if k21 > k1
-!     parameter (k13=k1/k33)
-!     parameter (k21=((memory-(k31+k32+1)*k1)-k13)/(1+k31+k32))
-!     parameter (k18=k1*k31, k20=k21*k31, k24=k1*k32, k25=k21*k32)
-!                                 laggit version static: 
-!                                    k18 = k1 * k31
-!                                    k24 = k1 * k32
-!                                 laggit version dynamic: 
-!                                    k20 = k18 (static and dynamic generate comparable simplicial coordinates)
-!                                    k25 = k21 * k32
-!                                  then 
-!                                    memory = k1 + k21 + k18 + k20 + k24 + k25 + k1;
-!                                  and solving for k21 
-!                                    k21 = (memory - k1*(2*k31 + k32 + 2))/(k32+1)
-! DEBUG691
-      parameter(memory=70000000,k31=2,k32=10,k1=3000000)
-!     parameter(memory=42000000,k31=2,k32=10,k1=1800000)
-!                                  static
-      parameter(k18=k1*k31,k24=k1*k32,k13=k1)
-!                                  dynamic, for lt 6.9.0
-!     parameter(k21=(memory-(2*k31+k32+2)*k1)/(1+k32))
-!                                  for ge 6.9.0
-      parameter(k21=100000)
+      parameter(memory = 55000000, k31 = 2, k32 = 10, k1 = 2100000)
+!                                  static composition array dimensions:
+      parameter(k18 = k1*k31, k24 = k1*k32, k13 = k1)
+!                                  solve for k21 as above:
+      parameter(k21 = (memory - (k31 + k32 + 2)*k1) / (1 + k31 + k32))
+!                                  dynamic composition array dimensions:
       parameter(k20=k18,k25=k21*k32)
 c----------------------------------------------------------------------
       parameter (k0=25,k2=100000,k3=2000,k4=32,k5=14)
@@ -168,10 +135,11 @@ c----------------------------------------------------------------------
 !                                 l8 - max number of levels for multilevel grids    
 !                                 l9 - max number of aqueous solute species in minimization programs.         
 !                                l10 - max number of parameters stored in caq for each phase.
+!                                l11 - max number of observations for MC inversion
 !                                nsp - max number of species in fluid speciation routines 
 
       parameter (l2=5,l3=l2+2,l5=1000,l6=500,l7=2048,l8=10,l9=150,
-     *           nsp=18,l10=nsp+l9+4)
+     *           nsp=18,l10=nsp+l9+4,l11=400)
 !                                 m0 - max number of terms for a species site fraction?
 !                                 m1 - max number of terms in excess function
 !                                 m2 - max order of term in excess function
@@ -600,3 +568,55 @@ c                                 LP workspace into common
 
       character prject*100,tfname*100
       common/ cst228 /prject,tfname
+
+      integer mphase, pids
+      double precision pblk, eblk, pmode, emode
+      common/ cst67 /pblk(k5,k5), eblk(k5,k5), pmode(k5), emode(k5),
+     *               pids(k5), mphase
+
+      logical mcpert, mcflag, oprt, random
+      integer mxpt, cxpt, xptids, xptptr, xptnph, mccpd, mcsol, mcid, 
+     *        mcids, msloc, msolct, nparm, nunc, mcpct, mcpid, mctrm,
+     *        mcj, mccoef, mccoid
+      character xptnam*18
+      double precision xptpt, xptblk, xptc, cprng, sprng, wcomp, 
+     *                 wextra, wmiss, oktol, scores
+
+      common/ cst68 /xptpt(l11,l2), xptblk(l11,k5), xptc(k5*l11), 
+     *               cprng(k5,3,2),sprng(k5,m1,m3,2), wcomp, wextra,
+     *               wmiss, oktol, scores(l11), 
+c                                  integer
+     *               mccpd, mcsol, mxpt, cxpt, nparm, nunc, mctrm(k5),
+     *               xptids(l11,k5), xptptr(l11,k5), xptnph(l11),
+     *               mcid(k5), mcids(k5), msolct(l11,h9), 
+     *               msloc(l11,k5), mcpct(k5), mcpid(k5,3),
+     *               mccoef(k5,m1), mcj(k5,m1), mccoid(k5,m1,m3),
+c                                  logical
+     *               mcpert, oprt, mcflag(h9), random,
+c                                  character
+     *               xptnam(l11)
+
+      double precision mcomp
+      character mknam*8
+      integer nmak
+      logical mksat
+      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
+
+      integer mknum, mkind, meos
+      double precision mkcoef, mdqf
+      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
+     *                 mknum(k16),meos(k16)
+
+      integer make
+      common / cst335 /make(k10)
+
+      double precision wgl, wkl, vlar
+      common/ cxt2r /wgl(m3,m1,h9),wkl(m16,m17,m18,h9),vlar(m3,m4,h9)
+
+
+      integer icont
+      double precision dblk,cx
+      common/ cst314 /dblk(3,k5),cx(2),icont
+
+      double precision dppp,sdzdp
+      common/ cxt28 /dppp(j3,j3,m1,h9),sdzdp(j3,m11,m10,h9)

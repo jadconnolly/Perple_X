@@ -1121,12 +1121,23 @@ c psline - subroutine to output a line (absolute).
  
       call psotrn
  
-      write (nps,1020) int ((x1-xmn) * xscale), int ((y1-ymn) * yscale),
-     *                 int ((x2-xmn) * xscale), int ((y2-ymn) * yscale)
+      write (nps,1020) x1, y1, x2, y2,
+     *  max (-99999,min (999999,int ((x1-xmn) * xscale))),
+     *  max (-99999,min (999999,int ((y1-ymn) * yscale))),
+     *  max (-99999,min (999999,int ((x2-xmn) * xscale))),
+     *  max (-99999,min (999999,int ((y2-ymn) * yscale)))
+      if (     abs (int ((x1-xmn) * xscale)) .gt. 1e5
+     *    .or. abs (int ((y1-ymn) * yscale)) .gt. 1e5
+     *    .or. abs (int ((x2-xmn) * xscale)) .gt. 1e5
+     *    .or. abs (int ((y2-ymn) * yscale)) .gt. 1e5) then
+         print *,'**Oh oh, bad coord or scale:',x1,y1,x2,y2,
+     *      xscale,yscale
+         print *,'         (or perhaps x & y coordinates swapped?)'
+      end if
  
 1000  format ('Begin %I Line')
 1010  format ('%I p',/,'0 SetP')
-1020  format ('%I',/,4(I6,1x),' Line',/,'End',/)
+1020  format ('%I',1p,4g12.4,0p,/,4(I6,1x),' Line',/,'End',/)
  
       end
 c------------------------------------------------------------------

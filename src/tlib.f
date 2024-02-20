@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.1, Jul 13, 2023.',
+     *     'Perple_X release 7.1.6, Jan 21, 2024.',
 
      *     'Copyright (C) 1986-2023 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -202,6 +202,8 @@ c                                 loop to find machine precision (mainly
 c                                 for nag)
       r1 = 1d-12
       r2 = 0d0
+
+c     write (*,*) k1, k21
 
       do
          if (1d0+r1.eq.1d0) exit
@@ -1802,10 +1804,6 @@ c----------------------------------------------------------------------
       logical oned
       common/ cst82 /oned
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
       integer iam
       common/ cst4 /iam
 c----------------------------------------------------------------------
@@ -3032,7 +3030,7 @@ c                                 accordingly:
 49    format (/,'**error ver049** the order of solution model ',a,
      *        ' is too high, increase parameter m2 (',i2,').',/)
 50    format (/,'**error ver050** requested resolution ',
-     *          '(',f6.0,') for a component in solution:',a,/,
+     *          '(',1pg8.0,') for a component in solution:',a,/,
      *          'exceeds 1/MRES (MRES=',i5,') ',
      *          'reduce requested resolution or inrease',/,
      *          'MRES in routine CARTES',/)
@@ -3825,17 +3823,6 @@ c----------------------------------------------------------------------
       double precision rnum, nums(m3)
 
       character tname*8, name*8, rec*(lchar), tag*3
-
-      double precision mcomp
-      character mknam*8
-      integer nmak
-      logical mksat
-      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
-
-      double precision mkcoef, mdqf
-      integer mknum, mkind, meos
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
 
       integer ixct,ifact
       common/ cst37 /ixct,ifact 
@@ -7247,9 +7234,6 @@ c-----------------------------------------------------------------------
       logical fp
       common/ cxt32 /ifp(k10), fp(h9)
 
-      integer make
-      common / cst335 /make(k10)
-
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 c-----------------------------------------------------------------------
@@ -7656,10 +7640,6 @@ c---------------------------------------------------------------------
       integer ipot,jv,iv
       common / cst24 /ipot,jv(l2),iv(l2)
 
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
-
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
@@ -7670,9 +7650,10 @@ c---------------------------------------------------------------------
       logical oned
       common/ cst82 /oned
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       integer iind, idep
       double precision c0,c1,c2,c3,c4,c5
@@ -7699,7 +7680,23 @@ c                                 use nodal coordinates:
 
          do i = 2, jvar
             vnm(i) = vname(jv(i-1))
-         end do  
+         end do
+
+      else if (icopt.eq.7.and.idep.ne.0) then
+c                                 1d calculation, assume if a 
+c                                 potential is dependent on another
+c                                 that this other potential is the
+c                                 independent variable
+         oned = .true.
+
+         jvar = ipot
+
+         do i = 1, jvar
+            vnm(i) = vname(jv(i))
+            vmx(i) = vmax(jv(i))
+            vmn(i) = vmin(jv(i))
+            var(i) = vmin(jv(i))
+         end do
 
       else if (icopt.lt.9) then 
 
@@ -7755,13 +7752,6 @@ c                                 use nodal coordinates:
             end if 
 
          end if 
-
-         if (oned) then 
-c                                 make a fake y-axis for 1-d plots
-            vmx(2) = 1d0
-            vmn(2) = 0d0
-
-         end if
 
       else if (icopt.eq.9) then 
 c                                using non-thermodynamic coordinate frame
@@ -7826,7 +7816,14 @@ c                                  set y = 0 ti be the top
             var(i) = vmin(jv(i-2))
          end do
 
-      end if 
+      end if
+
+      if (oned) then 
+c                                 make a fake y-axis for 1-d plots
+         vmx(2) = 1d0
+         vmn(2) = 0d0
+
+      end if
 
       end
 
@@ -8573,10 +8570,6 @@ c----------------------------------------------------------------------
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
 c----------------------------------------------------------------------
       write (*,'(/,a,/)') 'Current conditions:'
 
@@ -9230,9 +9223,10 @@ c-----------------------------------------------------------------------
 
       integer idum, nstrg, i, j, k, ierr, icmpn, jcont, kct
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       character*100 cfname
       common/ cst227 /cfname
@@ -9273,10 +9267,6 @@ c-----------------------------------------------------------------------
       integer iind, idep
       double precision c0,c1,c2,c3,c4,c5
       common/ cst316 /c0,c1,c2,c3,c4,c5,iind,idep
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
 
       integer ibuf,hu,hv,hw,hx 
       double precision dlnfo2,elag,gz,gy,gx
@@ -9743,12 +9733,10 @@ c                             t = 2, and xco2 = 3, respectively.
       read (n1,*,err=998) (iv(i), i = 1, 5)
 c                             check variable ranges are consistent,
 c                             variable iv(1), UNLESS:
-c                             normal calculations w/o limits
-      if (icopt.ne.0.and.icopt.ne.4.and.icopt.ne.12.and.
-c                             fractionation calculations
-     *    icopt.ne.7.and.icopt.le.9.
-c                              MEEMUM
-     *    and.iam.ne.2) then
+c                             normal calculations w/o limits,
+c                             fractionation calculations, or
+c                             MEEMUM
+      if (icopt.ne.0.and.icopt.ne.4.and.icopt.le.6.and.iam.ne.2) then
 
          if (iv(1).eq.3.and.ifct.eq.0) call error (110,r,i,'I')
 
@@ -9756,7 +9744,7 @@ c                              MEEMUM
 
             if (icopt.ne.7.and.iv(2).ne.3) call error (111,r,i,'I')
 
-         end if 
+         end if
 
          if (vmin(iv(1)).ge.vmax(iv(1)).and.icopt.lt.5) then 
 
@@ -9773,7 +9761,7 @@ c                              MEEMUM
 
       end if
 c                             variable iv(2):
-      if (iam.ne.2.and.(icopt.eq.1.or.
+      if (iam.ne.2.and.icopt.le.6.and.(icopt.eq.1.or.
      *                  (icopt.eq.5.and.icont.eq.1.and..not.oned))) then
 
          if (iv(2).eq.3.and.ifct.eq.0) call error (110,r,i,'INPUT1')
@@ -9915,17 +9903,12 @@ c-----------------------------------------------------------------------
       integer i,j
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       integer is
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
 
       integer hcp,idv
       common/ cst52  /hcp,idv(k7)
@@ -9952,7 +9935,7 @@ c                                 closed composition
 c                                 modify cblk here to change the 
 c                                 composition before minimization.
       ctotal = 0d0 
-c                                 get total moles to compute mole fractions             
+c                                 get total moles to compute mole fractions 
       do i = 1, hcp
          ctotal = ctotal + cblk(i)
       end do
@@ -10030,18 +10013,18 @@ c----------------------------------------------------------------------
       do i = 1, isoct
          if (unnown.eq.fname(i)) then
              itis = i
-             goto 99
+             return
          end if
       end do
 
       do i = 1, iphct
          if (unnown.eq.names(i)) then
             itis = -i
-            goto 99
+            return
          end if
       end do 
 
-99    end
+      end
 
       subroutine maktit 
 c-----------------------------------------------------------------------
@@ -10141,12 +10124,16 @@ c-----------------------------------------------------------------------
       common/ cst23  /a(k8,k8),b(k8),ipvt(k8),idv(k8),iophi,idphi,
      *                iiphi,iflg1
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       character*100 cfname
       common/ cst227 /cfname
+
+      integer ids,isct,icp1,isat,io2
+      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c-----------------------------------------------------------------------
 c                                 look for input data from a file 
 c                                 of type aux
@@ -10165,6 +10152,7 @@ c                                 can only be pressure and temperature
       ipot = 1
 
       jbulk = icp
+      kbulk = icp
 c                                 true => flush model, ~true => subducting column
       read (n8,*) dynam
 c                                 this is just a trick to avoid changing the variable 
@@ -10175,9 +10163,16 @@ c                                 true => basal mass flux
 c                                 true => anneal the column
       read (n8,*) anneal
 c                                 true => don't output console info on the fractionated phase
-      read (n8,*) short
+      read (n8,*) verbos
+c                                 true => in frac2d, don't pass fluid through overlying nodes
+      read (n8,*) siphon
 c                                 true => p-t field from file/internal function
       read (n8,*) pzfunc
+c                                 true => dump final column compositions to my_project_***.cmp 
+c                                      => *** z0 coodinate in km
+      read (n8,*) colcmp
+c                                 true => initialize column compositions from my_project_***.cmp
+      read (n8,*) usecmp
 c                                 Perple_X assumes upward directed depth, but to 
 c                                 make the input intuitive, the input is specified
 c                                 in downward coordinates, hence the sign changes 
@@ -10285,6 +10280,8 @@ c                                 end of data indicated by zero
      *                               'increase lay in common cst66')
 
          read (n8,*) (iblk(ilay,i),i=1,icp)
+c                                 initialize charge deficit to zero
+         iblk(ilay,icp1) = 0d0
 
          irep(ilay) = idint(zlayer/vz(1)) 
 
@@ -10367,9 +10364,10 @@ c----------------------------------------------------------------------
       double precision vn
       common/ cst31 /vn(k2,k7),irct,ird
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
@@ -10503,9 +10501,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, nv(2), nvar, ivar, n
+      integer i, nv(*), nvar, ivar, n
 
-      double precision vmn(2), dv(2)
+      double precision vmn(*), dv(*)
 
       character*100 n6name, n5name, colnam(l3)*14
 
@@ -10527,9 +10525,10 @@ c----------------------------------------------------------------------
       integer iam
       common/ cst4 /iam
 
-      logical fileio, flsh, anneal, short
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
-      common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
 c------------------------------------------------------------------------
 c                                 generate a file name and
 c                                 open the file on n5
@@ -11289,17 +11288,6 @@ c----------------------------------------------------------------------
       character cmpnt*5, dname*80
       common/ csta5 /cl(k0),cmpnt(k0),dname
 
-      double precision mcomp
-      character mknam*8
-      integer nmak
-      logical mksat
-      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
-
-      double precision mkcoef, mdqf
-      integer mknum, mkind, meos
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
-
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
@@ -11557,17 +11545,6 @@ c----------------------------------------------------------------------
 
       integer iam
       common/ cst4 /iam
-
-      double precision mcomp
-      character mknam*8
-      integer nmak
-      logical mksat
-      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
-
-      double precision mkcoef, mdqf
-      integer mknum, mkind, meos
-      common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
 
       integer ikind,icmpn,icout,ieos
       double precision comp,tot

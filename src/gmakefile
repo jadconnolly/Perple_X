@@ -66,6 +66,9 @@ clean:
 ###################### TARGETS FOR 692+ PROGRAMS ######################### 
 #
 #
+MC_fit: MC_fit.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) MC_fit.o $(LIBRARY) -o $@$(EXT)
+
 convex: convex.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK) convex.o $(LIBRARY) -o $@$(EXT)
 
@@ -78,8 +81,8 @@ vertex: vertex.o $(LIBRARY)
 werami: werami.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
-pssect: psect.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) psect.o $(LIBRARY) -o $@$(EXT)
+pssect: psect.o cont_lib.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) psect.o cont_lib.o $(LIBRARY) -o $@$(EXT)
 
 pstable: pstable.o $(LIBRARY_PS)
 	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
@@ -132,65 +135,68 @@ frendly: frendly.o $(LIBRARY)
 # Explicitly make objects to override the default compiler choice implemented
 # on some machines.
 
-actcor.o: actcor.f
+actcor.o: actcor.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c actcor.f
-build.o: build.f
+build.o: build.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c build.f
-DEW_2_ver.o: DEW_2_ver.f
+DEW_2_ver.o: DEW_2_ver.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c DEW_2_ver.f
-fluids.o: fluids.f
+fluids.o: fluids.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c fluids.f
-convex.o: convex.f
+convex.o: convex.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c convex.f
-cont_lib.o: cont_lib.f
+cont_lib.o: cont_lib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c cont_lib.f
-ctransf.o: ctransf.f
+ctransf.o: ctransf.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c ctransf.f
-frendly.o: frendly.f
+frendly.o: frendly.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c frendly.f
-#ge0pt.o: ge0pt.f
+#ge0pt.o: ge0pt.f perplex_parameters.h
 #	$(COMP77) $(FFLAGS) -c ge0pt.f
-#hptover.o: hptover.f
+#hptover.o: hptover.f perplex_parameters.h
 #	$(COMP77) $(FFLAGS) -c hptover.f
-#htog.o: htog.f
+#htog.o: htog.f perplex_parameters.h
 #	$(COMP77) $(FFLAGS) -c htog.f
-psect.o: psect.f
+psect.o: psect.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c psect.f
-psvdraw.o: psvdraw.f
+psvdraw.o: psvdraw.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c psvdraw.f
-pscom.o: pscom.f
+pscom.o: pscom.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c pscom.f
-pspts.o: pspts.f
+pspts.o: pspts.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c pspts.f
-pstable.o: pstable.f
+pstable.o: pstable.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c pstable.f
 
 # NEXT LINE MODIFIED BY pappel (PA@MIN.UNI-KIEL.DE) 2010SEPT08: CHANGED ptcurv.o TO pt2curv.o
 
-pt2curv.o: pt2curv.f
+pt2curv.o: pt2curv.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c pt2curv.f
-werami.o: werami.f
+werami.o: werami.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c werami.f
-flib.o: flib.f
+flib.o: flib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c flib.f
-pslib.o: pslib.f
+pslib.o: pslib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c pslib.f
-vertex.o: vertex.f
+vertex.o: vertex.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c vertex.f
-meemum.o: meemum.f
+meemum.o: meemum.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c meemum.f
-resub.o: resub.f
+MC_fit.o: MC_fit.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c MC_fit.f
+resub.o: resub.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c resub.f
-tlib.o: tlib.f
+tlib.o: tlib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c tlib.f
-olib.o: olib.f
+olib.o: olib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c olib.f
-rlib.o: rlib.f
+rlib.o: rlib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c rlib.f
-blas2lib.o: blas2lib.f
+blas2lib.o: blas2lib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c blas2lib.f
-minime_blas.o: minime_blas.f
+minime_blas.o: minime_blas.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c minime_blas.f
+
 
 # WFM 2007Sep05
 .c.o:

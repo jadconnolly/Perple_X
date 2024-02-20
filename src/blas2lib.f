@@ -7292,7 +7292,7 @@ c
       if (nz.gt.0) then
 
          nrank = isrank(nz,r,nrowr+1,1d0/rcndbd)
-         drgm = sqrt(abs(r(1,1)*r(nrank,nrank)))/2d0
+         if (nrank.gt.0) drgm = sqrt(abs(r(1,1)*r(nrank,nrank)))/2d0
          drgs = abs(r(1,1))/rcndbd
 
          if (nz.gt.nrank) then

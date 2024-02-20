@@ -118,6 +118,7 @@ c      cnum is written to rnum which is then assigned to the corresponding
 c      element of the array compon.
 
       atoms = 0
+      comps(:) = 0d0
 
       do i = 1, 19
             nst = 15 + (i-1)*12

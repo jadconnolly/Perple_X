@@ -2,7 +2,7 @@ c Please do not distribute any part of this source.
  
 c Copyright (c) 1987-2020 by James A. D. Connolly, Institute for Mineralogy
 c & Petrography, Swiss Federal Insitute of Technology, CH-8092 Zurich,
-c SWITZERLAND. All rights reserved.
+c SWITZERLAND. All rights reserved. 
 
       program meemm
 c----------------------------------------------------------------------
@@ -21,9 +21,8 @@ c----------------------------------------------------------------------
       external readyn
 
       integer npt,jdv
-      logical fulrnk
       double precision cptot,ctotal
-      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt,fulrnk
+      common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
       double precision atwt
       common/ cst45 /atwt(k0) 
@@ -49,10 +48,6 @@ c----------------------------------------------------------------------
 
       double precision goodc, badc
       common/ cst20 /goodc(3),badc(3)
-
-      integer icont
-      double precision dblk,cx
-      common/ cst314 /dblk(3,k5),cx(2),icont
 
       integer iam
       common/ cst4 /iam
@@ -85,8 +80,6 @@ c                                 computations are done solely in molar units.
       amount = 'molar '
 
       if (iwt.eq.1) amount = 'weight'
-
-      if (lopt(28)) open (666,file='times.txt')
 c                                 computational loop
       do 
 c                                 read potential variable values    
@@ -127,12 +120,15 @@ c                                 files set up for bulk compositional variables
             call setblk
 
          end if 
-c                                 meemum does the minimization and outputs
-c                                 the results to the print file.
+c                                 meemum does the minimization and
+c                                 via getloc computes system and derivative
+c                                 properties, these computations are costly 
+c                                 and can be streamlined for specific applications.
          call meemum (bad)
 
          if (.not.bad) then
-c                                 print summary to LUN 6
+c                                 calpr0 outputs the results to console 
+c                                 and, if requested, the print file (n3)
             call calpr0 (6)
 
             if (io3.eq.0) call calpr0 (n3)
@@ -156,4 +152,4 @@ c                                 print summary to LUN 6
 1060  format (/,'Enter ',a,' amounts of the components:')
 1070  format (/,'Enter (zeroes to quit) ',7(a,1x))
 
-      end 
+      end
