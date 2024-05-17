@@ -19,6 +19,7 @@ src/pssect
 src/pt2curv 
 src/vertex 
 src/werami
+src/MC_fit
 test/**/*.arf
 test/**/*.blk
 test/**/*.plt
