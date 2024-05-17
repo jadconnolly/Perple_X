@@ -53,6 +53,8 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------- 
 c                                 MC_inv uses the MEEMUM iam flag value
       iam = 2
+      getInput = .true.
+      sWarn = .false.
 c                                 initialization, read files etc.
       call iniprp
 c                                 open inversion problem file

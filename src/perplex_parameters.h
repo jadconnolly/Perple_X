@@ -621,5 +621,8 @@ c                                  character
       double precision dppp,sdzdp
       common/ cxt28 /dppp(j3,j3,m1,h9),sdzdp(j3,m11,m10,h9)
 
+      !Commons implemented for perplexwrap.f
+      !getInput must be set to true for any program that calls 
+      !fopen1, input1, or iniprp in tlib.f
       logical :: getInput, meemumInit, sWarn    
       common/ libVars /getInput, meemumInit, sWarn

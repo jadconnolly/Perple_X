@@ -79,7 +79,6 @@ c-----------------------------------------------------------------------
       save err,first
       data err,first/.false.,.true./
 
-      l
 
       getInput = .true.
       sWarn = .false.

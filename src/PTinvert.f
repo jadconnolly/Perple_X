@@ -60,6 +60,8 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 2
+      getInput = .true.
+      sWarn = .false.
 c                                 initialization, read files etc.
       call iniprp
 

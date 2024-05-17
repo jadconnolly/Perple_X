@@ -72,7 +72,6 @@ c                                 solution model names
       double precision amu
       common/ cst48 /amu(k8,k2)
 
-      l
 
       getInput = .true.
       sWarn = .false.
