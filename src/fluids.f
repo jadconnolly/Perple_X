@@ -339,8 +339,7 @@ c-----------------------------------------------------------------------
        save tentoe
        data tentoe/2.302585093d0/
 
-      logical :: getInput, meemumInit, sWarn      
-      common/ libVars /getInput, meemumInit, sWarn
+      
 
       getInput = .true.
       sWarn = .false.

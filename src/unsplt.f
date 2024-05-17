@@ -72,8 +72,7 @@ c                                 solution model names
       double precision amu
       common/ cst48 /amu(k8,k2)
 
-      logical :: getInput, meemumInit, sWarn      
-      common/ libVars /getInput, meemumInit, sWarn
+      l
 
       getInput = .true.
       sWarn = .false.

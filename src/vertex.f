@@ -79,8 +79,7 @@ c-----------------------------------------------------------------------
       save err,first
       data err,first/.false.,.true./
 
-      logical :: getInput, meemumInit, sWarn      
-      common/ libVars /getInput, meemumInit, sWarn
+      l
 
       getInput = .true.
       sWarn = .false.

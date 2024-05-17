@@ -130,9 +130,9 @@ c-----------------------------------------------------------------------
 
       data dsol/'solution_model.dat'/
 
-      logical :: getInput, meemumInit, sWarn
+     
                 
-      common/ libVars /getInput, meemumInit, sWarn
+      
       
       getInput = .true.
       sWarn = .false.

@@ -3221,9 +3221,7 @@ c---------------------------------------------------------------------
       double precision rid 
       common/ cst327 /grid(6,2),rid(5,2)
 
-      logical :: getInput, meemumInit, sWarn
-                
-      common/ libVars /getInput, meemumInit, sWarn
+      
 c----------------------------------------------------------------------
       if (.not.sWarn) then
       if (ier.eq.1) then 
@@ -5449,8 +5447,7 @@ c------------------------------------------------------------------------
       integer jx, jy, lev, xn, yn
       common/ cst58 /jx, jy, lev, xn, yn
 
-      logical :: getInput, meemumInit, sWarn
-      common/ libVars /getInput, meemumInit, sWarn
+      
 c-----------------------------------------------------------------------
       do 
 c                                 get the root for all output files
@@ -8875,9 +8872,7 @@ c                                 solution model names
       integer iam
       common/ cst4 /iam
 
-      logical :: getInput, meemumInit, sWarn
-                
-      common/ libVars /getInput, meemumInit, sWarn
+      
 c-----------------------------------------------------------------------
       refine = .false.
 c                                 only use autorefine if solutions

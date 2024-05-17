@@ -27,8 +27,7 @@ c Please do not distribute any part of this source.
       integer iam
       common/ cst4 /iam
 
-      logical :: getInput, meemumInit, sWarn      
-      common/ libVars /getInput, meemumInit, sWarn
+     
 
       getInput = .true.
       sWarn = .false.

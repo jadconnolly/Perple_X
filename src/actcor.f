@@ -35,9 +35,9 @@ c-----------------------------------------------------------------------
       common/ cst4 /iam
 
       data blank8/' '/ 
-      logical :: getInput, meemumInit, sWarn
+     
                 
-      common/ libVars /getInput, meemumInit, sWarn
+      
       
       getInput = .true.
       sWarn = .false.

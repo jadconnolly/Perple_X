@@ -36,8 +36,7 @@ c----------------------------------------------------------------------
       common/ cst6 /icomp,istct,iphct,icp
 
 
-      logical :: getInput, meemumInit, sWarn      
-      common/ libVars /getInput, meemumInit, sWarn
+     
 
       getInput = .true.
       sWarn = .false.

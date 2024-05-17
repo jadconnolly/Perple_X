@@ -122,9 +122,7 @@
                 double precision dblk,cx
                 common/ cst314 /dblk(3,k5),cx(2),icont
                 
-                logical :: getInput, meemumInit, sWarn
                 
-                common/ libVars /getInput, meemumInit, sWarn
 
                 
                 
@@ -284,9 +282,7 @@
                 double precision goodc, badc
                 common/ cst20 /goodc(3),badc(3)
       
-                logical :: getInput, meemumInit, sWarn
                 
-                common/ libVars /getInput, meemumInit, sWarn
 
                 
 

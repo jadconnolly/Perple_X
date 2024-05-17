@@ -1657,9 +1657,7 @@ c----------------------------------------------------------------------
       save iwarn1, iwarn2, iwarn3, wname1, wname2, wname3
       data iwarn1, iwarn2, iwarn3, wname1, wname2, wname3 /3*0,3*' '/
 
-      logical :: getInput, meemumInit, sWarn
-                
-      common/ libVars /getInput, meemumInit, sWarn
+     
 c----------------------------------------------------------------------
       
       if (sWarn) then
