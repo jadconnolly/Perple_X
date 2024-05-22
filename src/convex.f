@@ -100,6 +100,10 @@ c                                    iam = 11 - fluids
 c                                    iam = 13 - unsplt (global)
 c                                    iam = 14 - unsplt (local)
 c                                    iam = 15 - convex
+      
+
+      getInput = .true.
+      sWarn = .false.
       iam = 15
 c                                 version info
       call vrsion (6)
@@ -4792,7 +4796,7 @@ c---------------------------------------------------------------------
       ip = 0 
       im = 0
 
-      do i = 1, 8
+      do i = 1, k8
          mpart(i) = '                              '
          ppart(i) = '                              '
       end do

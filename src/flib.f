@@ -2867,6 +2867,37 @@ c                                 fugacities.
   
       end
 
+      function csrkp(xi)
+c-----------------------------------------------------------------------
+c subroutine to help calculate the CSRK volumes using Newton-Raphson
+
+      implicit none
+
+      double precision p,t,xco2,u1,u2,tr,pr,rbar,ps
+      common/ cst5  /p,t,xco2,u1,u2,tr,pr,rbar,ps
+
+      double precision csrkp, xi, num, den
+
+      double precision frtob, faost, brtsqt, a8, fosqtb
+      common/ csrkcm /frtob, faost, brtsqt, a8, fosqtb
+
+      num =  p
+     *    - frtob*xi/(1.d0-xi)**3 * (1.d0 + xi + xi**2 - xi**3)
+     *    + faost*xi**2/(1.d0+4.d0*xi)
+
+      den = -fosqtb/((4.d0*xi+1.d0)**2 * (xi-1.d0)**4) * (
+     *    brtsqt*(
+     *       16.d0*xi**6 - 56.d0*xi**5 + 33.d0*xi**4 + 92.d0*xi**3 +
+     *       52.d0*xi**2 + 12.d0*xi + 1.d0
+     *    )
+     *    - a8*xi*(
+     *       2.d0*xi**5 - 7.d0*xi**4 + 8.d0*xi**3 - 2.d0*xi**2 -
+     *       2.d0*xi + 1.d0
+     *    )
+     *)
+      csrkp = -num / den
+      end
+
       subroutine mrkpur (ins, isp)
 c-----------------------------------------------------------------------
 c subroutine to calculate the log fugacities and volume of single
@@ -2910,8 +2941,9 @@ c-----------------------------------------------------------------------
  
       double precision f(nsp),ev(3),dsqrtt,rt,
      *                 d1,d2,d4,bx,v1,v2,aij,c1,c2,c3,pdv,r
+      double precision csrkp,hserh2,xi,gt,z,gam
 
-      integer ins(*), isp, k, iroots, i, ineg, ipos 
+      integer ins(*), isp, k, iroots, i, ineg, ipos, j
  
       double precision p,t,xco2,u1,u2,tr,pr,rbar,ps
       common/ cst5  /p,t,xco2,u1,u2,tr,pr,rbar,ps
@@ -2927,6 +2959,9 @@ c-----------------------------------------------------------------------
 
       double precision a, b
       common/ rkab /a(nsp),b(nsp)
+
+      double precision frtob, faost, brtsqt, a8, fosqtb
+      common/ csrkcm /frtob, faost, brtsqt, a8, fosqtb
  
       save r
                              
@@ -2957,11 +2992,11 @@ c                                by evaluating p*delta(v) - int(pdv)
      *            dlog((v2-bx)/(v1-bx))  * rt - 
      *            dlog((v2+bx)/(bx+v1)*v1/v2) * aij/bx/dsqrtt
 
-           if (pdv.gt.0d0) then
-              vol = v1
-           else 
-              vol = v2
-           end if 
+            if (pdv.gt.0d0) then
+               vol = v1
+            else 
+                 vol = v2
+            end if 
 
          else if (iroots.eq.3) then
 
@@ -2984,7 +3019,7 @@ c                                 compute fugacities.
          if (i.lt.3) fg(i) = f(i)
          g(i) = dexp(f(i))/p 
 
-      end do 
+      end do
 
       end
 
@@ -5869,7 +5904,7 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
  
-      double precision brk(nsp), ark(nsp)
+      double precision brk(nsp), ark(nsp), tc, pc
 
       integer ins(*), isp, i, k
 
@@ -5940,7 +5975,7 @@ c                                 see mrk_water.mws.
 c                                 MRK dispersion term for CO2
             a(2) =  92935540d0 + t*(-82130.73d0 + 21.29d0*t)
 
-c         else if (i.eq.5) then 
+         else if (i.eq.5) then 
 c                                 MRK fit to NIS table for H2 at 10 kbar
 c                                 400-1000 K.
 c            b(5) = 12.81508162d0
@@ -5948,6 +5983,12 @@ c            a(5) = 0.391950132949994654D8
 c     *           + t * (-0.881231157499978144D5) 
 c     *           + t**2 * 0.890185987380923081D2 
 c     *           + t**3 * (-0.286881183333320412D-1)
+c           CSRK parameters for H2 fitting data of Presnall (1969)
+            tc = 41.2d0
+            pc = 21.1d0
+            b(5) = 1.533943d0 * tc/pc * (tc/t)**(3d0/18d0)
+            a(5) = (10.2277d0*tc + 10.7632d0*t - 561.2307d0*tc**2/t) *
+     *             tc**1.5/pc
 
 
          else if (i.eq.14) then 

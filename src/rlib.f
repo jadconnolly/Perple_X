@@ -547,10 +547,10 @@ c                                 real O fluid (O and O2 species)
 c                                 this is -RT(lnk2+lnk3)/2 (rksi5 k's)
 c    *         -0.3213822427D7 / t + 0.6464888248D6 - 0.1403012026D3*t
 
-         else if (eos(id).ge.610.and.eos(id).le.637) then
+         else if (eos(id).ge.610.and.eos(id).le.654) then
 c                                 lacaze & Sundman (1990) EoS for Fe-Si-C alloys and compounds
 c                                 Xiong et al., 2011 for Fe-Cr alloys
-            gval = gval + glacaz(eos(id)) + vdp + thermo(1,id)
+            gval = gval + glacaz(eos(id)) + thermo(1,id)
 
 c        else if (eos(id).eq.800) then
 
@@ -566,6 +566,12 @@ c              write (*,'(a,g14.6)') 'from interpolator, v = ',vt
 c              write (*,'(a,g14.6)') 'from interpolator, g = ',a
 c              write (*,'(a,g14.6)') 'from interpolator, g = ',b
 c           end if
+
+         else
+
+            write (*,'(a,1x,i3)')
+     *         'what the **** am i doing here in gcpd for EOS',eos(id)
+            call errpau
 
          end if
 
@@ -739,9 +745,6 @@ c---------------------------------------------------------------------
 
       integer iam
       common/ cst4 /iam
-
-      integer idspe,ispec
-      common/ cst19 /idspe(2),ispec
 
       integer ihy, ioh
       double precision gf, epsln, epsln0, adh, msol
@@ -943,6 +946,7 @@ c                               b13 on return
 c                               ref stuff
      *             tr,pr,r,eos(id))
 
+
       if (tr.eq.0d0) then
          thermo(1,id) = thermo(1,k10)
          thermo(2,id) = thermo(2,k10)
@@ -1101,6 +1105,17 @@ c                              JADC, 12/3/2017.
                  therlm(j+1,k,lamin) = tm(j,k)
 
               end do
+
+           end do
+
+        else if (jlam.eq.8) then
+
+           do k = 1, ilam
+c                              magnetic transitions a la Hillert & Jarl (1978)
+c                              load into therlm: Tc, B, p
+              therlm(1,k,lamin) = thermo(25,id)
+              therlm(2,k,lamin) = thermo(26,id)
+              therlm(3,k,lamin) = thermo(27,id)
 
            end do
 
@@ -3719,9 +3734,6 @@ c----------------------------------------------------------------------
 
       integer ids,isct,icp1,isat,io2
       common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
-      integer idspe,ispec
-      common/ cst19 /idspe(2),ispec
 
       integer ifct,idfl
       common/ cst208 /ifct,idfl
@@ -6452,10 +6464,10 @@ c----------------------------------------------------------------------
 c                                 redlich kistler is a special case
 c                                     wk(1) = w0 cst
 c                                     wk(2) = wT coefficient on T
-c                                     wk(3) = wP some term in brosh's murnaghan-like excess term
+c                                     wk(3) = wP0 some term in brosh's murnaghan-like excess term
 c                                     wk(4) = wP1 some term in brosh's murnaghan-like excess term
 c                                     wk(5) = wP2 some term in brosh's murnaghan-like excess term
-c                                     wk(6) = wP0 coefficient on P
+c                                     wk(6) = wP coefficient on P
          do i = 1, jterm(id)
             do j = 1, rko(i,id)
 
@@ -7080,7 +7092,7 @@ c                                 arbitrary expansion
             end do
 
          else
-c                                 redlich-kistler
+c                                 redlich-kister
             do k = 1, rkord(i)
                do j = 1, m16
                   wkl(j,k,i,im) = wk(j,k,i)
@@ -10122,7 +10134,7 @@ c                                 like LAAR
                      end if
 
                      exces(l,iphct) = exces(l,iphct)
-     *                                + zpr * wkl(l,j,i,im)
+     *                                + zpr * wkl(h,j,i,im)
 
                   end do
 
@@ -10675,7 +10687,10 @@ c---------------------------------------------------------------------
 
       integer id
 
-      double precision hserfe, hsersi, crbcc, hserc, fefcc
+      double precision hserfe, hsersi, crbcc, hserc, fefcc, febcc
+      double precision hserh2, gtmp
+
+      external hserh2, hsersi, crbcc, hserc, fefcc, febcc
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
@@ -10879,6 +10894,94 @@ c                                 Fe7C3 after Djurkovic et al., 2011
      *            0.2975999679D3 * t * dlog(t) - 0.3148668241D-3 *
      *            t ** 2 + 0.1708400854D7 / t - 0.1762000881D9 /
      *            t ** 2 + 0.8000004D10 / t ** 3
+
+      else if (id.eq.643) then
+c                            Fe-hcp Dinsdale 1991
+         if (t.lt.1811d0) then
+            glacaz = -2480.08d0 + 136.725d0*t - 24.6643d0*t*dlog(t)
+     *          - .00375752d0*t**2 - 5.89269d-8*t**3 + 77358.5d0/t
+         else
+            glacaz = -29340.78d0 + 304.56206d0*t - 46d0*t*dlog(t)
+     *          + 2.78854d31/t**9
+         end if
+
+      else if (id.eq.648) then
+c                            FCC FeH Helffrich '21
+         if (t.lt.1811d0) then
+            gtmp = -1462.4d0 + 8.282d0*t - 1.15d0*t*dlog(t)
+     *           + 6.4d-4*t**2
+         else
+            gtmp = -1713.815d0 + 0.94001d0*t + 4.9251d30/t**9
+         end if
+         glacaz = gtmp + febcc(t) + 0.5d0*hserh2(t)
+     *     + 25746.7209d0 + 48.1250165d0*t
+c    *     + 32171.069d0 + 43.509d0*t
+c    *     - 10556.19d0 + 29.42d0*t
+
+      else if (id.eq.649) then
+c                            liquid FeH(1) Helffrich '21
+         if (t.lt.1811d0) then
+            gtmp = 12040.17d0 - 6.55843d0 * t - 3.67516d-21 * t**7
+     *               + febcc(t)
+         else
+            gtmp = -10838.83d0 + 291.302d0 * t - 46d0 * t*dlog(t)
+         end if
+         glacaz = gtmp + 0.5d0*hserh2(t) + 28172.583d0 + 40.004166d0*t
+
+      else if (id.eq.650) then
+c                            BCC FeH Helffrich '21
+         if (t.lt.1811d0) then
+            glacaz = febcc(t) + 0.5d0*hserh2(t)
+c    *       + 71098.3995d0 - 986.034062d0*t + 155.942278d0*t*dlog(t)
+c    *       - 0.0894166963d0*t**2
+     *       + 48986.67d0 - 183.6735d0*t + 33.3078d0*t*log(t)
+     *       - 0.01682617*t**2
+         else
+c           glacaz = 80393.95d0 + 16.72144d0*t
+            glacaz = 112509.5112d0 + 32.8105280102615d0*t
+         end if
+
+      else if (id.eq.651) then
+c                            HCP FeH Helffrich '21
+         if (t.lt.1811d0) then
+            gtmp = -3705.78d0 + 12.591d0*t - 1.15d0*t*dlog(t)
+     *       + 6.4d-4*t**2
+         else
+            gtmp = -3957.199d0 + 5.24951d0*t + 4.9251d30/t**9
+         end if
+         glacaz = gtmp + febcc(t) + 0.5d0*hserh2(t)
+c        Zinkevich'02 original
+c    *      + 34000d0 + 42.7d0*t
+c        antonov.R fit
+c    *      + 17269d0 + 61.28d0*t
+c        guess S similar to FCC FeHx
+     *      - 10000d0 + 88.0d0*t
+
+      else if (id.eq.653) then
+c                            HCP Fe for use with HCP FeH Helffrich '23
+         if (t.lt.1811d0) then
+            gtmp = -3705.78d0 + 12.591d0*t - 1.15d0*t*log(t)
+     *           + 6.4d-4*t**2
+         else
+            gtmp = -3957.199d0 + 5.24951d0*t + 4.9251d30/t**9
+         end if
+         glacaz = gtmp + febcc(t)
+
+      else if (id.eq.654) then
+c                            FCC Fe for use with FCC FeH Helffrich '23
+         if (t.lt.1811d0) then
+            gtmp = -1462.4d0 + 8.282d0*t - 1.15d0*t*log(t)
+     *           + 6.4d-4*t**2
+         else
+            gtmp = -1713.815d0 + 0.94001d0*t + 4.9251d30/t**9
+         end if
+         glacaz = gtmp + febcc(t)
+
+      else
+
+         write (*,'(a,1x,i3)')
+     *      'what the **** am i doing here in glacaz for EOS',id
+         call errpau
 
       end if
 
@@ -11903,6 +12006,13 @@ c-----------------------------------------------------------------------
       double precision x3, caq
       common/ cxt16 /x3(k5,h4,mst,msp),caq(k5,l10),na1,na2,na3,nat,kd
 
+      integer kkp,np,ncpd,ntot
+      double precision cp3,amt
+      common/ cxt15 /cp3(k0,k19),amt(k19),kkp(k19),np,ncpd,ntot
+
+      integer iam
+      common/ cst4 /iam
+
       save badct
       data badct/0/
 c----------------------------------------------------------------------
@@ -11928,7 +12038,14 @@ c                                 values
 
          end do
 
+      else if (iam.eq.1) then 
+c                                 fractionation with simple back-calc
+         do i = 1, ns
+            ysp(i,jd) = pa3(jd,i)
+         end do
+
       end if
+
 c                                 set feos = .true. because can't be
 c                                 sure that the last solvent calculation was
 c                                 at the present p-t condition.
@@ -11958,6 +12075,31 @@ c                                 back calculated bulk composition
          return
 
       end if
+
+      if (iam.eq.1) then
+c                                 aqrxdo is being called by VERTEX this is only done
+c                                 for fractionation calculations when lagged speciation is
+c                                 off. In this case AQRXDO computes a 
+c                                 pseudo composition by simple back-calculation
+c                                 to be fractionated. The resulting calculations
+c                                 will not conserve mass, additionally all other
+c                                 phase properties will be those of the pure solvent.
+
+c                                 want molar composition in units of moles/mol-solvent-species
+c                                 cp3(j,jd) is already loaded with solvent composition
+c                                 msol is the mass of 1 mole of pure solvent computed 
+c                                 by slvnt3, ergo
+         do i = 1, aqct
+c                                 total solute molality
+            do j = 1, kbulk
+               cp3(j,jd) = cp3(j,jd) + msol*mo(i)*aqcp(j,i)
+            end do
+
+         end do
+
+         return
+
+      end if
 c                                 compute charge balance error
       err = 0d0
 
@@ -11966,12 +12108,10 @@ c                                 compute charge balance error
       end do
 c                                 neutral pH
       ph0 = -lnkw/2d0/2.302585d0
-
-      do i = 1, kbulk
-         blk(i) = 0d0
-      end do
 c                                 total molality
       smot = 0d0
+
+      blk(1:kbulk) = 0d0
 c                                 compute mole fractions, total moles first
       do i = 1, ns
 c                                 moles/kg-solvent
@@ -12541,7 +12681,7 @@ c                                 no solution model found:
 c                                 turn off lagged speciation just to be sure
          lopt(32) = .false.
 
-        if (.not.lopt(25)) aqct = 0
+         if (.not.lopt(25)) aqct = 0
 
 c                                 else look for H2O
          do i = 1, ipoint
@@ -12574,6 +12714,28 @@ c                                refine_endmembers to true.
          end if 
 
       end if
+
+      if (lopt(67).and.icopt.gt.6) then
+
+         if (aqct.eq.0) then
+            lopt(25) = .false.
+            lopt(67) = .false.
+         end if
+c                                aq_fractionation_simpl is T, then for 
+c                                fractionation calculations shut off 
+c                                lagged speciation
+         if (lagged.and.lopt(67)) then
+
+            call warn (99,0d0,0,'aq_lagged_speciation is inconsistent w'
+     *            //'ith aq_fractionation_simple and will be disabled'//
+     *              ' (AQIDST)')
+
+            if (lopt(56)) call wrnstp
+
+         end if
+
+      end if
+
 c                                open a bad point file for lagged and
 c                                back-calculated speciation calculations
       if (lagged.and.iam.le.2) then
@@ -18579,9 +18741,6 @@ c----------------------------------------------------------------------
       integer ihy, ioh
       double precision gf, epsln, epsln0, adh, msol
       common/ cxt37 /gf, epsln, epsln0, adh, msol, ihy, ioh
-
-      integer idspe,ispec
-      common/ cst19 /idspe(2),ispec
 c-----------------------------------------------------------------------
 c                               initialization for each data set
 c                               for k10 endmembers
@@ -18609,13 +18768,14 @@ c                               transformations, read make definitions.
       call topn2 (0)
 c                               general input data for main program
 
-c                               reorder thermodynamic components
-c                               if the saturated phase components are 
-c                               present
+c                               reorder thermodynamic components if 
+c                               they include special components, this 
+c                               is archaic
       if (lopt(7)) then
 
          do k = 1, ispec 
-                             
+c                               check for special components in the the
+c                               thermodynamic composition space.
             do i = 1, icp
 
                if (cname(i).eq.cmpnt(idspe(k))) then 
@@ -20266,7 +20426,7 @@ c----------------------------------------------------------------------
       else if (extyp(ids).eq.1) then 
 
           deriv(ids) = .false.
-          reason = 'redlich-kistler ex'
+          reason = 'redlich-kister ex'
 
       else if (.not.equimo(ids)) then
 
@@ -22052,9 +22212,9 @@ c                                 holland and powell bragg-williams model
             call lambw (dg,lmda(id))
             gval = gval + dg
 
-         else if (ltyp(id).eq.7) then
+         else if (ltyp(id).eq.8) then
 c                                 George's Hillert & Jarl magnetic transition model
-            if (lct(id).gt.1) write(0,*)'**>1 type = 7 trans.!?'
+            if (lct(id).gt.1) write(0,*)'**>1 magnetic trans.!?'
             tc = therlm(1,1,lmda(id))
             b = therlm(2,1,lmda(id))
             pee = therlm(3,1,lmda(id))

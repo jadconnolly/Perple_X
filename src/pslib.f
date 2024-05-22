@@ -154,25 +154,25 @@ c pspygn - subroutine to generate closed polygons, abs. coordinates.
 1030  format (/,'Begin %I Poly')
       end
 c----------------------------------------------------------------
-      subroutine pspyln (x,y,npts,rline,width,ifill)
+      subroutine pspyln (x,y,npts,rline,width,icol)
  
 c pspyln - subroutine to generate open polylines.
 
       implicit none
 
-      integer npts,ifill
+      integer npts,icol
  
       double precision x(npts),y(npts),width,rline
 
       integer nps
       double precision xscale,yscale,xmn,ymn
       common/ scales /xscale,yscale,xmn,ymn,nps
- 
+
       write (nps,1030)
  
       call psolin (rline,width)
-      call psoclr
-      call psofil (ifill)
+      call psocfg (icol,icol)
+      call psofil (0)
       call psotrn
       call psopts (x,y,npts)
  

@@ -125,10 +125,14 @@ c-----------------------------------------------------------------------
       integer iam
       common/ cst4 /iam
 
-      integer idspe,ispec
-      common/ cst19 /idspe(2),ispec
-
       data dsol/'solution_model.dat'/
+
+     
+                
+      
+      
+      getInput = .true.
+      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 4
@@ -1161,9 +1165,6 @@ c----------------------------------------------------------------------
 
       integer igood, jcmpn, iflu, i, j
 
-      integer idspe,ispec
-      common/ cst19 /idspe(2),ispec
-
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
@@ -1248,9 +1249,6 @@ c---------------------------------------------------------------------------
 
       integer ifct,idfl
       common/ cst208 /ifct,idfl
-
-      integer idspe,ispec
-      common/ cst19 /idspe(2),ispec
 
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
@@ -1843,6 +1841,8 @@ c                                 fractionation from a file
 c                                 default for fractionation is isochemical
 c                                 bulk, may be changed by varich.
          icont = 1
+
+         if (icopt.eq.9) icopt = 11
 
          if (readyn()) then
 

@@ -36,6 +36,11 @@ c----------------------------------------------------------------------
       double precision rcps, a0
       common/ comps /rcps(2*k5,m13),a0(m13,2),icps(2*k5,m13),jcx(m13),
      *               jcx1(m13),kds(m13),stol(i11),savg(i11),spec(m13)
+
+      
+
+      getInput = .true.
+      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 3
@@ -99,9 +104,10 @@ c                                 initialize variables
          else
 c                                 it's a calculation along a path
             write (*,1021)
-            write (*,1026)
 
          end if
+
+         write (*,1026)
 
          read (*,*,iostat=ierr) imode
          if (ierr.ne.0) cycle 
@@ -2231,8 +2237,9 @@ c                                 set composition
 
          do i = 2, isol
             pcomp(j,index) = pcomp(j,index) + x(i)*pcomp(j,jdsol(i))
-         end do 
-      end do 
+         end do
+
+      end do
 c                                 set physical properties assuming molar
 c                                 weighting (this is wrong for volumetric
 c                                 properties!!!). 

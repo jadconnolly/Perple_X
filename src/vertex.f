@@ -78,6 +78,10 @@ c-----------------------------------------------------------------------
 
       save err,first
       data err,first/.false.,.true./
+
+
+      getInput = .true.
+      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam indicates the Perple_X program
 c                                    iam = 1  - vertex
@@ -2790,7 +2794,7 @@ c                               do all points on lowest level
          end do
 c                               progress info
          tot = tot + dinc
-         write (*,1030) tot
+         write (*,1030) tot,char(13)
 c                               flush stdout for paralyzer
          flush (6)
 
@@ -2984,8 +2988,8 @@ c                               output interim plt file
 c                                 ouput grid data
 10    if (outprt) call outgrd (loopx,loopy,1,n4,0)
 
-1030  format (f5.1,'% done with low level grid.')
-1050  format (/,'Beginning grid refinement stage.',/)
+1030  format (f5.1,'% done with low level grid.',a,$)
+1050  format (//,'Beginning grid refinement stage.',/)
 1060  format (i6,' grid cells to be refined at grid level ',i1)
 1070  format (7x,'refinement at level ',i1,' involved ',i6,
      *        ' minimizations')
@@ -3578,6 +3582,9 @@ c                                 do fractionation
 c                                 the phase to be fractionated
 c                                 is present, remove from bulk
                      there(i) = .true.
+c                                 simple back calculated speciation
+c                                 is being used for fractionation:
+                     if (lopt(67)) call aqrxdo (j,-1)
 
                      if (amt(j).lt.0d0) amt(j) = 0d0
 
