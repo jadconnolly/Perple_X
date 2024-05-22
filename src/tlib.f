@@ -36,9 +36,9 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.7b Jan 21, 2024.',
+     *     'Perple_X release 7.1.7b May 23, 2024.',
 
-     *     'Copyright (C) 1986-2023 James A D Connolly '//
+     *     'Copyright (C) 1986-2024 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
 
       end
@@ -186,8 +186,6 @@ c----------------------------------------------------------------------
      *        maxact, mxfree, maxnz
       common/ ngg010 /itmax1, itmax2, kchk, kcycle, lcrash, lprob, 
      *                maxact, mxfree, maxnz
-
-     
 c----------------------------------------------------------------------
 c                                 periodic fractions
       r13 = 1d0/3d0
@@ -3227,10 +3225,7 @@ c---------------------------------------------------------------------
       integer grid
       double precision rid 
       common/ cst327 /grid(6,2),rid(5,2)
-
-      
 c----------------------------------------------------------------------
-      if (.not.sWarn) then
       if (ier.eq.1) then 
          write (*,1) 
       else if (ier.eq.2) then 
@@ -3447,7 +3442,6 @@ c                                 generic warning, also 99
          write (*,228) char, realv, int, char
       else
          write (*,999) ier, char, realv, int
-      end if
       end if
 
 1     format (/,'**warning ver001** the amount of a saturated phase is'
@@ -5462,13 +5456,11 @@ c------------------------------------------------------------------------
 
       integer jx, jy, lev, xn, yn
       common/ cst58 /jx, jy, lev, xn, yn
-
-      
 c-----------------------------------------------------------------------
       do 
 c                                 get the root for all output files
 c                                 except if unsplt-local
-         if (iam.ne.14 .and. getInput) then 
+         if (iam.ne.14) then 
 
             if (iam.eq.4) then 
 c                                 BUILD
@@ -8881,8 +8873,6 @@ c                                 solution model names
 
       integer iam
       common/ cst4 /iam
-
-      
 c-----------------------------------------------------------------------
       refine = .false.
 c                                 only use autorefine if solutions
@@ -8938,7 +8928,7 @@ c                                 second cycle of automated mode
 
                write (n8,*) refine
 
-            else if (ier.eq.0.and.iam.eq.2.and.iopt(6).ne.0.and.getInput) then 
+            else if (ier.eq.0.and.iam.eq.2.and.iopt(6).ne.0) then 
 c                                 MEEMUM, ask the user if he wants
 c                                 to use the data 
                write (*,'(/,a,a,/,a)') 'Auto-refine data exists from a',
