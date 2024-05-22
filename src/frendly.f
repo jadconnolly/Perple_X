@@ -1829,9 +1829,6 @@ c----------------------------------------------------------------------
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
 
-      integer idspe,ispec
-      common/ cst19 /idspe(2),ispec
-
       integer ifct,idfl
       common/ cst208 /ifct,idfl
 

@@ -99,9 +99,10 @@ c                                 initialize variables
          else
 c                                 it's a calculation along a path
             write (*,1021)
-            write (*,1026)
 
          end if
+
+         write (*,1026)
 
          read (*,*,iostat=ierr) imode
          if (ierr.ne.0) cycle 
@@ -2231,8 +2232,9 @@ c                                 set composition
 
          do i = 2, isol
             pcomp(j,index) = pcomp(j,index) + x(i)*pcomp(j,jdsol(i))
-         end do 
-      end do 
+         end do
+
+      end do
 c                                 set physical properties assuming molar
 c                                 weighting (this is wrong for volumetric
 c                                 properties!!!). 

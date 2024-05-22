@@ -478,70 +478,82 @@ c                                 the assemblage doesn't occur if lex(k) = 0
 c                                 but this should be possible
          if (lex(k).eq.0) cycle
 
+         call psbtxt (lex(k), text, iend)
          if (nctr(k).lt.2) then 
 c           write (*,*) 'skipping label for dot field: ',
 c    *                  text(1:nblen(text))
             cycle
          end if
-c                                 compute barycenter, added by 
-c                                 G Helffrich, Mar 24, 2009. 
-         i = max(1,nint(bctr(1,k)/nctr(k)))
-         j = max(1,nint(bctr(2,k)/nctr(k)))
-c                                 test that it's ok
-         if (igrd(i,j).eq.0) then 
-            ipoly = 0 
-         else
-            ipoly = iap(igrd(i,j))
-         end if 
 
-         if (ipoly.eq.lex(k)) then
+c                                 check whether the assemblage is stable in
+c                                 one or more than one disjoint fields before
+c                                 calculating the barycenter.  the effect of a
+c                                 small, separated field might not shift the
+c                                 barycenter of a larger field enough to shift
+c                                 it out of the field extent.
+         nax(1) = 0
+         nax(2) = 0
 
-            x = xmin + (i-1)/jinc*dx
-            y = ymin + (j-1)/jinc*dy
-            ipoint = iap(igrd(i,j))
+         ipoly = lex(k)
 
-         else 
-
-            if (rlabel.lt.1d0) then 
-c                                 ---------begin georges block-----------
-            call psbtxt (lex(k), text, iend)
-c                                  scan the range to find a node
-c                                  with the assemblage
-            nax(1) = 0
-            nax(2) = 0
-
-            ipoly = lex(k)
-
-            do ii = iran(1,k),iran(2,k),jinc
-               do jj = jran(1,k),jran(2,k),jinc
-                  if (iap(igrd(ii,jj)).eq.ipoly) then
+         do ii = iran(1,k),iran(2,k),jinc
+            do jj = jran(1,k),jran(2,k),jinc
+               if (iap(igrd(ii,jj)).eq.ipoly) then
 c                                  add i,j indices to list used
-                     call iasadd(ii,nax(1),iax(1,1))
-                     call iasadd(jj,nax(2),iax(1,2))
-                  end if
-               end do
+                  call iasadd(ii,nax(1),iax(1,1))
+                  call iasadd(jj,nax(2),iax(1,2))
+               end if
             end do
+         end do
 c                                  if nothing matched, we're hosed
-            if (nax(1).eq.0 .and. nax(2).eq.0) then
-                write (*,*) 'uh-oh on assemblage',text(1:nblen(text))
-                cycle 
-            end if
+         if (nax(1).eq.0 .and. nax(2).eq.0) then
+            write (*,*) 'uh-oh on assemblage',text(1:nblen(text))
+            cycle 
+         end if
 c                                  determine number of contiguous ranges
 c                                  of i- and j-indices.  the breaks will
 c                                  mark group edges.
-            ii = 1
+         ii = 1
 
-            do i = 2,nax(1)
-               if (iax(i,1)-iax(i-1,1) .gt. 1) ii = ii + 1
-            end do
+         do i = 2,nax(1)
+            if (iax(i,1)-iax(i-1,1) .gt. 1) ii = ii + 1
+         end do
 
-            jj = 1
+         jj = 1
 
-            do i = 2,nax(2)
-               if (iax(i,2)-iax(i-1,2) .gt. 1) jj = jj + 1
-            end do
+         do i = 2,nax(2)
+            if (iax(i,2)-iax(i-1,2) .gt. 1) jj = jj + 1
+         end do
 
-            if (ii*jj .gt. 1) then
+         if (ii*jj .le. 1) then
+c                                 there is only one contiguous group of points.
+c                                 compute barycenter, added by 
+c                                 G Helffrich, Mar 24, 2009. 
+            i = max(1,nint(bctr(1,k)/nctr(k)))
+            j = max(1,nint(bctr(2,k)/nctr(k)))
+c                                 test that it's ok
+            if (igrd(i,j).eq.0) then 
+               ipoly = 0 
+            else
+               ipoly = iap(igrd(i,j))
+            end if 
+
+            if (ipoly.eq.lex(k)) then
+
+               x = xmin + (i-1)/jinc*dx
+               y = ymin + (j-1)/jinc*dy
+               call psflbl (x,y,lex(k),nblen(text),text)
+               cycle
+            end if
+         end if
+
+         if (ii*jj.gt.1) then
+c                                 there are discontiguous stability assemblages.
+            if (rlabel.lt.1d0) then 
+c                                 ---------begin georges block-----------
+c                                  scan the range of the bounding polygon of the
+c                                  two (or more) fields to find a node
+c                                  with the assemblage
 
                write (*,1010) max(ii,jj),text(1:nblen(text))
 c                                  process dimension with largest number
@@ -622,8 +634,8 @@ c                                  extent for label.
 
                      if (iap(igrd(ii,jj)).eq.ipoly) then
                         i = i + 1
-                        x = x + dfloat(ii/jinc)
-                        y = y + dfloat(jj/jinc)
+                        x = x + dfloat((ii-1)/jinc)
+                        y = y + dfloat((jj-1)/jinc)
                      end if
 
                   end do
@@ -641,7 +653,10 @@ c                                 for grid spacing jinc. JADC
                jj = 1 + nint(y/i)*jinc
 
                if (igrd(ii,jj).eq.0) then
-                  write (*,*) 'can this be?',ii,jj
+                  write (*,*) 'for ',
+     *               text(1:nblen(text)),', can this be?',ii,jj,
+     *               xmin + dfloat((ii-1)/jinc)*dx,
+     *               ymin + dfloat((jj-1)/jinc)*dy 
                   cycle
                end if
 c                                  in the money this time -- agrees?
@@ -747,7 +762,7 @@ c                                 igrd to zero allows this?
             write (*,*) 'uh-oh on assemblage', ipoly
             cycle
 
-         end if 
+c        end if 
 c                                 call label routine:
 50       call psbtxt (ipoint, text, iend)
          call psflbl (x,y,lex(k),iend,text)

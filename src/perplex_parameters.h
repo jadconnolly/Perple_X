@@ -574,25 +574,28 @@ c                                 LP workspace into common
       common/ cst67 /pblk(k5,k5), eblk(k5,k5), pmode(k5), emode(k5),
      *               pids(k5), mphase
 
-      logical mcpert, mcflag, oprt, random
-      integer mxpt, cxpt, xptids, xptptr, xptnph, mccpd, mcsol, mcid, 
+      logical mcpert, mcflag, oprt
+      integer mxpt, cxpt, random,
+     *        xptids, xptptr, xptnph, xpterr, mccpd, mcsol, mcid, 
      *        mcids, msloc, msolct, nparm, nunc, mcpct, mcpid, mctrm,
      *        mcj, mccoef, mccoid
       character xptnam*18
-      double precision xptpt, xptblk, xptc, cprng, sprng, wcomp, 
+      double precision xptpt, xptblk, xptc, xpte, cprng, sprng, wcomp, 
      *                 wextra, wmiss, oktol, scores
 
-      common/ cst68 /xptpt(l11,l2), xptblk(l11,k5), xptc(k5*l11), 
-     *               cprng(k5,3,2),sprng(k5,m1,m3,2), wcomp, wextra,
+      common/ cst68 /xptpt(l11,l2), xptblk(l11,k5),
+     *               xptc(k5*l11), xpte(k5*l11), xpterr(l11),
+     *               cprng(k5,3,3),sprng(k5,m1,m3,3), wcomp, wextra,
      *               wmiss, oktol, scores(l11), 
 c                                  integer
-     *               mccpd, mcsol, mxpt, cxpt, nparm, nunc, mctrm(k5),
+     *               mccpd, mcsol, mxpt, cxpt, nparm, nunc(2),
+     *               mctrm(k5),
      *               xptids(l11,k5), xptptr(l11,k5), xptnph(l11),
      *               mcid(k5), mcids(k5), msolct(l11,h9), 
      *               msloc(l11,k5), mcpct(k5), mcpid(k5,3),
      *               mccoef(k5,m1), mcj(k5,m1), mccoid(k5,m1,m3),
 c                                  logical
-     *               mcpert, oprt, mcflag(h9), random,
+     *               mcpert, oprt, mcflag(h9), random(3),
 c                                  character
      *               xptnam(l11)
 
@@ -620,3 +623,6 @@ c                                  character
 
       double precision dppp,sdzdp
       common/ cxt28 /dppp(j3,j3,m1,h9),sdzdp(j3,m11,m10,h9)
+
+      integer idspe,ispec
+      common/ cst19 /idspe(2),ispec
