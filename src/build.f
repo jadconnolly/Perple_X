@@ -126,6 +126,13 @@ c-----------------------------------------------------------------------
       common/ cst4 /iam
 
       data dsol/'solution_model.dat'/
+
+     
+                
+      
+      
+      getInput = .true.
+      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 4

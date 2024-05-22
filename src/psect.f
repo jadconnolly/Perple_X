@@ -23,6 +23,11 @@ c Please do not distribute any part of this source.
 
       integer iam
       common/ cst4 /iam
+
+      
+
+      getInput = .true.
+      sWarn = .false.  
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 7

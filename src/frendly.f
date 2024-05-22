@@ -51,6 +51,11 @@ c------------------------------------------------------------------------
       common/ cst4 /iam
 
       save idiag
+
+      
+
+      getInput = .true.
+      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam flag indicates the Perple_X program
       iam = 5

@@ -78,6 +78,10 @@ c-----------------------------------------------------------------------
 
       save err,first
       data err,first/.false.,.true./
+
+
+      getInput = .true.
+      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam indicates the Perple_X program
 c                                    iam = 1  - vertex

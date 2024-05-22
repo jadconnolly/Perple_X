@@ -48,11 +48,14 @@ COMP77 = gfortran
 # G. Helffrich/30 Nov. '15
 # FFLAGS =  -O3 -static-libgfortran -Wpedantic
 
-FFLAGS = -O3 -std=legacy -fno-backtrace
+#FFLAGS = -O3
+FFLAGS = -O3 -fPIC -Wpedantic -ffixed-line-length-none #dont remove the fPIC flag, its important
+FLINK = -static-libgfortran -m64 -lgfortran -lgcc -lm
+LLINK = -shared -m64 -lgfortran -lgcc -lm
 
 #-Wstrict-overflow -Wstringop-overflow=2 removed for 690
 # WFM Added 2007Sep05, PAPPEL 2010SEPT08: for 6.6.0
-MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami
+MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit perplexwrap
 all: $(MYOBJ)
 
 LIBRARY = pscom.o pslib.o rlib.o tlib.o flib.o olib.o resub.o minime_blas.o blas2lib.o
@@ -60,7 +63,15 @@ LIBRARY = pscom.o pslib.o rlib.o tlib.o flib.o olib.o resub.o minime_blas.o blas
 LIBRARY_PS = cont_lib.o pscom.o pslib.o tlib.o
 
 clean: 
-	rm -f *.o $(MYOBJ)
+	rm -f *.o $(MYOBJ) *.so *.mod
+
+######### PerplexWrap shared library compilation
+#
+perplexwrap: perplexwrap.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(LLINK) perplexwrap.o $(LIBRARY) -o perplexwrap.so
+perplexwrap.o: perplexwrap.f
+	$(COMP77) $(FFLAGS) -c perplexwrap.f
+
 
 ###################### TARGETS FOR 692+ PROGRAMS ######################### 
 #
