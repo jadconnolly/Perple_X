@@ -245,14 +245,21 @@ f3clin = 1 clin - 1/2 gr + 1/2 andr
        DQF(J/mol) = 2d3 0 0  
 kho1 = 1 py - 1 gr + 1 andr
        DQF(J/mol) = 27d3  
-sil8L = 8/5 silL               
-       DQF(J/mol) = -23d3  
-fo8L = 2 foL                    
-       DQF(J/mol) = -10d3 
-fa8L = 2 faL                              
-       DQF(J/mol) = -9d3 0 -1.3 
-q8L = 4 qL    
-       DQF(J/mol) = -20                           | a small DQF is added to stabilize q8L relative to qL
+|--------------------------------------------------------------------------------
+                                 | Generic 8-oxygen HP liquid endmembers. Because 
+                                 | these occur in many melts models they are created
+                                 | here with a nominal DQF, the true model specific
+                                 | DQF must be added in the solution model. JADC 2/2024
+sil8L = 8/5 silL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+fo8L = 2 foL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+fa8L = 2 faL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+q8L = 4 qL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+|--------------------------------------------------------------------------------
+
 fmu = 1 mu + 1/2 andr - 1/2 gr
        DQF(J/mol) = 25d3
 ma1_dqf = 1 ma
@@ -314,12 +321,7 @@ fajL = 1 faL
 hmjL = 0.5 hemL
        DQF(J/mol) = 0       +  0.20 * p_bar  
 ekjL = 0.5 eskL
-       DQF(J/mol) = 21d3     
-                                  | Make definitions for Green et al., JMG, 2016 melt
-foTL = 2 foL
-   dqf = -4d3 
-faTL = 2 faL
-   dqf = -8.2d3  - 1.4 * P
+       DQF(J/mol) = 21d3
                                   | Make definitions for Green et al., JMG, 2016 clinoamphibole
 mrbG  = 1 gl - 1 gr + 1 andr
    DQF = 0
@@ -1605,20 +1607,20 @@ b1 = .38E-4  b5 = 416.5931  b6 = 513000  b7 = -.143E-4  b8 = 7.33
 end
 
  
-fbi       EoS = 8 | H=  -5896080 
-MgO(2)Al2O3(1)SiO2(2)K2O(.5)FeO(1)O2(.25)H2O(1)
-GH = -6000045  S0 = 348.7  V0 = 15.0725  
-c1 = 791.8  c2 = -.38031E-1  c3 = -1718300  c5 = -6886.9  
-b1 = .38E-4  b5 = 477.1646  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
-end
+|fbi       EoS = 8 | H=  -5896080 
+|MgO(2)Al2O3(1)SiO2(2)K2O(.5)FeO(1)O2(.25)H2O(1)
+|GH = -6000045  S0 = 348.7  V0 = 15.0725  
+|c1 = 791.8  c2 = -.38031E-1  c3 = -1718300  c5 = -6886.9  
+|b1 = .38E-4  b5 = 477.1646  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
+|end
 
  
-obi       EoS = 8 | H=  -5862620 
-MgO(2)Al2O3(.5)SiO2(3)K2O(.5)FeO(1)H2O(1)
-GH = -5969158  S0 = 357.33  V0 = 15.12  
-c1 = 785.4  c2 = -.36246E-1  c3 = -1546000  c5 = -6843.3  
-b1 = .38E-4  b5 = 468.9124  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
-end
+|obi       EoS = 8 | H=  -5862620 
+|MgO(2)Al2O3(.5)SiO2(3)K2O(.5)FeO(1)H2O(1)
+|GH = -5969158  S0 = 357.33  V0 = 15.12  
+|c1 = 785.4  c2 = -.36246E-1  c3 = -1546000  c5 = -6843.3  
+|b1 = .38E-4  b5 = 468.9124  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
+|end
 
  
 mnbi      EoS = 8 | H=  -5475440 

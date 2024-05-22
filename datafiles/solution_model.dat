@@ -2432,9 +2432,9 @@ begin_model
                       make_definition section at the end of this model:
 
                       dqf(silL) = 6.35d3  -0.320*Pbar
-                          updated to DQF   6.20  0  -0.318
+                          updated to DQF   6.20  -0.318
                       dqf(woL)  = -0.18d3  -0.118*Pbar
-                          updated to DQF  -0.45  0   -0.114
+                          updated to DQF  -0.45  -0.114
                       dqf(h2oL) = 3.24d3  -3.9*TK  0.00085*Pbar
 
                       dqf(CO2)   = 54355.   |based on Morizet 2010 for basalt data & rhyolite curve in  Fig. 11, JADC-CAH apr22
@@ -2645,11 +2645,11 @@ begin_model
                       This model requires the following make definitions in the
                       thermodynamic data file make_definitions section:
 
-                      foTL = 2 foL
-                         dqf = -4d3
+                      fo8L = 2 foL
+                         dqf = 0
 
-                      faTL = 2 faL
-                         dqf = -8.2d3  - 1.4 * P
+                      fa8L = 2 faL
+                         dqf = 0
 
                       q8L = 4 qL
                          dqf = 0
@@ -2681,7 +2681,7 @@ full_name    liquid
 1                                  | number of simplices
 8                                  | number of vertices (endmembers) on each simplex
 
-foTL     faTL
+fo8L     fa8L
 abL      silL     kspL
 woL      q8L      h2oL
 
@@ -2706,41 +2706,41 @@ begin_excess_function
 W(q8L abL)    =    12d3   - 0.4 * P
 W(q8L kspL)   =   -2d3    -  .5 * P
 W(q8L woL)    =   -5d3
-W(q8L foTL)   =    42d3   +   1 * P
+W(q8L fo8L)   =    42d3   +   1 * P
 W(q8L h2oL)   =    18.1d3 - 0.68 * P
 W(q8L oanL)   =   -29.5d3 -  .1 * P
 
 W(abL kspL)   =   -6d3    + 3   * P
 W(abL woL)    =   -12d3
 W(abL silL)   =    10d3
-W(abL faTL)   =   -30d3   + 0.8 * P
-W(abL foTL)   =   -47.3d3 + 0.3 * P
+W(abL fa8L)   =   -30d3   + 0.8 * P
+W(abL fo8L)   =   -47.3d3 + 0.3 * P
 W(abL h2oL)   =   -4.4d3  - 0.17 * P
 W(abL oanL)   =    8.6d3  +  0.4 * P
 
 W(kspL woL)   =   -13d3
-W(kspL faTL)  =   -11.3d3
-W(kspL foTL)  =    6.8d3
+W(kspL fa8L)  =   -11.3d3
+W(kspL fo8L)  =    6.8d3
 W(kspL h2oL)  =    10.4d3 - 0.39 * P
 W(kspL oanL)  =   -16d3   - 0.25 * P
 
 W(woL silL)   =   -1.6d3
-W(woL faTL)   =    6.5d3
-W(woL foTL)   =    4d3
+W(woL fa8L)   =    6.5d3
+W(woL fo8L)   =    4d3
 W(woL h2oL)   =    21d3
 W(woL oanL)   =    3.5d3
 
-W(silL faTL)  =    12d3
-W(silL foTL)  =    12d3
+W(silL fa8L)  =    12d3
+W(silL fo8L)  =    12d3
 W(silL h2oL)  =    11d3   -  .5 * P
 W(silL oanL)  =    6.4d3
 
-W(faTL foTL)  =    18d3
-W(faTL h2oL)  =    29d3
-W(faTL oanL)  =   -43.5d3 - 0.95 * P
+W(fa8L fo8L)  =    18d3
+W(fa8L h2oL)  =    29d3
+W(fa8L oanL)  =   -43.5d3 - 0.95 * P
 
-W(foTL h2oL)  =    29d3   -  .5 * P
-W(foTL oanL)  =   -26d3   - 0.6 * P
+W(fo8L h2oL)  =    29d3   -  .5 * P
+W(fo8L oanL)  =   -26d3   - 0.6 * P
 
 W(h2oL oanL)  =    9.75d3 -  .5 * P
 
@@ -2755,12 +2755,12 @@ end_excess_function
 OH
 2 1 1                       | water-vacancy site
 z(OH)  = 1 h2oL
-z(Vac) = 1 foTL + 1 faTL + 1 abL + 1 silL + 1 kspL + 1 woL + 1 q8L + 1 oanL
+z(Vac) = 1 fo8L + 1 fa8L + 1 abL + 1 silL + 1 kspL + 1 woL + 1 q8L + 1 oanL
 
 Ol
 2 0 0                       | Temkin olivine site
-n(Mg) = 4 foTL
-n(Fe) = 4 faTL
+n(Mg) = 4 fo8L
+n(Fe) = 4 fa8L
 
 M
 8 0 0                       | melt site, pseudo-Temkin
@@ -2770,7 +2770,7 @@ z(ab)    = 1 abL
 z(sil)   = 1 silL
 z(an)    = 1 oanL
 z(wo)    = 1 woL
-z(Ol)    = 1 faTL + 1 foTL  | this term was not counted prior to dec 12, 2018.
+z(Ol)    = 1 fa8L + 1 fo8L  | this term was not counted prior to dec 12, 2018.
 z(OH)    = 1 h2oL
 
 none                        | formula suffix, enter "none" for no suffix.
@@ -2778,13 +2778,15 @@ none                        | formula suffix, enter "none" for no suffix.
 begin_dqf_corrections
 dqf(silL) = -7800
 dqf(woL)  =  1300
+dqf(fo8L) = -4d3
+dqf(fa8L) = -8.2d3  - 1.4 * P
 end_dqf_corrections
 
 begin_flagged_endmembers
                                     | endmembers listed in this section are not associated with the
                                     | solution on output and are identified by endmember name.
-foTL     
-faTL
+fo8L     
+fa8L
 abL      
 silL     
 kspL
@@ -3823,16 +3825,16 @@ begin_model
                                       thermodynamic data file make_definitions section:
 
                                       sil8L = 8/5 silL
-                                      -23d3 0 0
+                                      0
 
                                       fo8L = 2 foL
-                                      -10d3 0 0
+                                      0
 
                                       fa8L = 2 faL
-                                      -9d3 0 -1.3
+                                      0
 
                                       q8L = 4 qL
-                                      0 0 0
+                                      0
 
                                       WARNING 3: the (stabilizing) dqf corrections made
                                       to the fo8L, fa8L, and sil8L enedmembers make the
@@ -3917,6 +3919,12 @@ n(sil)   = 1 sil8L
 n(an)    = 1 anL
 n(ol)    = 1 fo8L + 1 fa8L  | this term was not counted prior to dec 2018.
 n(w)     = 1 h2oL
+
+begin_dqf_corrections
+DQF(sil8L) = -23d3
+DQF(fo8L) = -10d3
+DQF(fa8L) = -9d3 -1.3*P_bar
+end_dqf_corrrections
 
 end_of_model
                       --------------------------------------------------------
@@ -16016,15 +16024,15 @@ h2oL
                                     | Ab-H2O etc etc; these numbers seem about right
                                     | for pelite melting.
 
-0      .1    .1 0                   | range and resolution of X(fo),  0 => cartesian subdivision
-0      .2    .1 0                   | range and resolution of X(fa),  0 => cartesian subdivision
-1e-4  1e-2   .1 1                   | range and resolution of X(zrL), 1 => asymmetric subdivision
-0      .4    .1 0                   | range and resolution of X(ab),  0 => cartesian subdivision
-0      .4    .1 0                   | range and resolution of X(sil), 0 => cartesian subdivision
-0      .1    .1 0                   | range and resolution of X(an),  0 => cartesian subdivision
-0      .4    .1 0                   | range and resolution of X(ksp), 0 => cartesian subdivision
-1e-4  1e-2   .1 1                   | range and resolution of X(wiL), 1 => asymmetric subdivision
-0      .7    .1 0                   | range and resolution of X(q),   0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(fo),  0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(fa),  0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(zrL), 1 => asymmetric subdivision
+0      1    .1 0                    | range and resolution of X(ab),  0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(sil), 0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(an),  0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(ksp), 0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(wiL), 1 => asymmetric subdivision
+0      1    .1 0                    | range and resolution of X(q),   0 => cartesian subdivision
 
 begin_excess_function
                                     | the excess parameters used for the haplo-
@@ -16104,12 +16112,9 @@ z(zr)    = 1 zr8L
 z(ol)    = 1 fo8L + 1 fa8L + 1 wi8L
 
 begin_dqf_corrections
-dqf(fo8L)  -10d3
-dqf(fa8L)  -9d3 0 -1.3
+dqf(fo8L)  -15d3
+dqf(fa8L)  -15d3
 dqf(sil8L) -10d3
-                                     | pre-white et al '07 value: dqf(fo8L)  -15d3 0 0
-                                     | pre-white et al '07 value: dqf(fa8L)  -15d3 0 0
-                                     | pre-white et al '07 value: dqf(sil8L) -10d3 0 0
 end_dqf_corrections
 
 end_of_model
@@ -16264,7 +16269,7 @@ end_of_model
 begin_model
                       Peridotite melting - Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
 
-                      Entered by DB Sept 2022. modified JADC, Oct 2022
+                      Entered by Debaditya Bandyopadhyay, Sept 2022. modified JADC, Oct 2022
 
                       This model requires the following make definitions in the
                       thermodynamic data file make_definitions section:
@@ -16529,7 +16534,7 @@ begin_model
 
                       Initially coded for Perple_X by JRDC Oct 2018; reworked JADC Apr 2019.
 
-                      Modified parameters entered by DB Sept 2022.
+                      Modified parameters entered by Debaditya Bandyopadhyay, Sept 2022.
 
                       NOTE: to use this model:
 
@@ -16682,7 +16687,7 @@ begin_model
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
 
-                      Revised parameters entered by DB Sept 2022.
+                      Revised parameters entered by Debaditya Bandyopadhyay, Sept 2022.
 
                       JADC, Oct 2022
 
@@ -16791,7 +16796,7 @@ begin_model
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
 
-                      Revised parameters entered by DB Sept 2022.
+                      Revised parameters entered by Debaditya Bandyopadhyay, Sept 2022.
 
                       JADC, Oct 2022
 
@@ -17066,7 +17071,7 @@ begin_model
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
 
-                      Revised parameters entered by DB Sept 2022.
+                      Revised parameters entered by Debaditya Bandyopadhyay, Sept 2022.
 
                       JADC, Oct 2022
 
@@ -17397,9 +17402,8 @@ begin_model
                                 ab   0.674    0  0
                                 an   0.550    0  0
                                 san  1.000    0  0
-                      ---------------------------------------------------------   
-
-Fsp(HGP21)                         | solution name.
+                      ---------------------------------------------------------
+Fsp(HGP)                          | solution name.
 abbreviation Fsp
 full_name    ternary-feldspar
 
@@ -17444,3 +17448,48 @@ end_van_laar_sizes
 
 end_of_model
                       --------------------------------------------------------
+begin_model
+                        Model for the Na-rich side of the Peristerite gap to
+                        be used together with Fsp(HGP21) from:
+                        Holland, TJB, Green, ECR & Powell, R (2021)
+
+                        Entered by Maria M. Ariza, 2024/01/17
+                      --------------------------------------------------------- 
+lAb(HGP)                           | solution name.
+abbreviation lAb
+full_name    binary-feldspar
+
+688                                | model type: 688 format standard model
+1                                  | number of polytopes
+1                                  | number of simplices
+2                                  | number of vertices on each simplex
+ab                                 | endmembers on the vertices
+an
+
+0. 1   .1   0                      | range and resolution for albite, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+w(an ab)          3400
+end_excess_function
+
+1                                   | number of sites in configurational entropy model
+M                                   | site name
+2 1 1                               | number of species, effective multiplicity, true multiplicity
+z(Na,M)  = 1 ab
+z(Ca,M)  = 1 an
+
+[O8]                                | formula suffix, enter "none" for no suffix.
+
+begin_van_laar_sizes
+alpha(ab)      0.64
+alpha(an)      1
+end_van_laar_sizes
+
+begin_dqf_corrections
+dqf(ab) = -1746 +  2 * T_K
+dqf(an) = 10000
+end_dqf_corrections
+
+end_of_model
+                      --------------------------------------------------------
+
