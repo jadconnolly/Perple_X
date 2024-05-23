@@ -61,7 +61,7 @@ COMP77 = gfortran
 # is better left out. (True, unless you compile with -g, in which case the backtrace is useful) 
 
 FFLAGS = -O3 -std=legacy -fno-backtrace -fPIC
-FLINK = -static-libgfortran -lgfortran -lgcc -lm
+FLINK = -m64 -static-libgfortran -lgfortran -lgcc -lm
 
 MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit perplexwrap
 all: $(MYOBJ)
@@ -77,7 +77,7 @@ clean:
 # PerplexWrap won't compile under -std=legacy, and link option -shared
 
 FFWRAP = -O3 -fPIC -Wpedantic -ffixed-line-length-none
-FLWRAP = -shared -lgfortran -lgcc -lm
+FLWRAP = -m64 -shared -lgfortran -lgcc -lm
 
 perplexwrap: perplexwrap.o $(LIBRARY)
 	$(COMP77) $(FFWRAP) $(FLWRAP) perplexwrap.o $(LIBRARY) -o perplexwrap.so
