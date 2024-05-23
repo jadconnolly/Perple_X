@@ -50,10 +50,10 @@ COMP77 = gfortran
 
 # -fPIC (position independent code) added for perplexwrap
 
-FFLAGS = -O3 -std=legacy -fno=backtrace -fPIC
+FFLAGS = -O3 -std=legacy -fno-backtrace -fPIC
 FLINK = -static-libgfortran -lgfortran -lgcc -lm
 
-# original perplexwarp/sc-dyer make FFLAGS (-ffixed.. added explicitly to perplexwrap target):
+# original perplexwrap/sc-dyer make FFLAGS (-ffixed.. added explicitly to perplexwrap target):
 #FFLAGS = -O3 -fPIC -Wpedantic -ffixed-line-length-none #dont remove the fPIC flag, its important
 #FLINK = -static-libgfortran -m64 -lgfortran -lgcc -lm
 #LLINK = -shared -m64 -lgfortran -lgcc -lm
@@ -76,7 +76,6 @@ perplexwrap: perplexwrap.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) -ffixed-line-length-none $(LLINK) perplexwrap.o $(LIBRARY) -o perplexwrap.so
 perplexwrap.o: perplexwrap.f
 	$(COMP77) $(FFLAGS) -c perplexwrap.f
-
 
 ###################### TARGETS FOR 692+ PROGRAMS ######################### 
 #
