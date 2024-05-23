@@ -338,14 +338,13 @@ c-----------------------------------------------------------------------
 
        save tentoe
        data tentoe/2.302585093d0/
-
-      
-
-      getInput = .true.
-      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 11
+c                                 perplexwrap.f flags
+      getInput = .true.
+      sWarn = .false.
+
       vname(1) = 'P(bar)'
       vname(2) = 'T(K)'
 c                                 max number of indendent potentials, may be

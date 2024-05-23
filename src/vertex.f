@@ -78,10 +78,6 @@ c-----------------------------------------------------------------------
 
       save err,first
       data err,first/.false.,.true./
-
-
-      getInput = .true.
-      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam indicates the Perple_X program
 c                                    iam = 1  - vertex
@@ -99,6 +95,9 @@ c                                    iam = 13 - unsplt (global)
 c                                    iam = 14 - unsplt (local)
 c                                    iam = 15 - convex
       iam = 1
+c                                 perplexwrap.f flags
+      getInput = .true.
+      sWarn = .false.
 c                                 initialization
       call iniprp
 c                                 start the total timer (30)

@@ -51,14 +51,12 @@ c----------------------------------------------------------------------
 
       integer iam
       common/ cst4 /iam
-
-      
-
-      getInput = .true.
-      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 2
+c                                 perplexwrap.f flags
+      getInput = .true.
+      sWarn = .false.
 c                                 initialization, read files etc.
       call iniprp
 

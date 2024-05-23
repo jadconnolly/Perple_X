@@ -34,16 +34,13 @@ c-----------------------------------------------------------------------
       integer iam
       common/ cst4 /iam
 
-      data blank8/' '/ 
-     
-                
-      
-      
-      getInput = .true.
-      sWarn = .false.
+      data blank8/' '/
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 9
+c                                 perplexwrap.f flags
+      getInput = .true.
+      sWarn = .false.
 c                                 version info
       call vrsion (6)
 

@@ -23,6 +23,9 @@ c                                 MC_inv uses the MEEMUM iam flag value
       iam = 2
 c                                 initialization, read files etc.
       call iniprp
+c                                 perplexwrap.f flags
+      getInput = .true.
+      sWarn = .false.
 c                                 open inversion problem file
       call opnimc (invprb,ntry,tol,simplx,frac,conchk,iprint,iquad,
      *             kcount)

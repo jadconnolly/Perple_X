@@ -71,10 +71,6 @@ c                                 solution model names
 
       double precision amu
       common/ cst48 /amu(k8,k2)
-
-
-      getInput = .true.
-      sWarn = .false.
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 13

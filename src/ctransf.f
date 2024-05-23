@@ -34,16 +34,12 @@ c----------------------------------------------------------------------
 
       integer icomp,istct,iphct,icp
       common/ cst6 /icomp,istct,iphct,icp
-
-
-     
-
-      getInput = .true.
-      sWarn = .false.
-      
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 6
+c                                 perplexwrap.f flags
+      getInput = .true.
+      sWarn = .false.
 c                                 version info
       call vrsion (6)
 

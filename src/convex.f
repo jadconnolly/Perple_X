@@ -100,11 +100,10 @@ c                                    iam = 11 - fluids
 c                                    iam = 13 - unsplt (global)
 c                                    iam = 14 - unsplt (local)
 c                                    iam = 15 - convex
-      
-
+      iam = 15
+c                                 perplexwrap.f flags
       getInput = .true.
       sWarn = .false.
-      iam = 15
 c                                 version info
       call vrsion (6)
 c                                 initialize outprt to .false. to force input1 to 
