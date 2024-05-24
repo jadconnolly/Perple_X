@@ -41,8 +41,9 @@
             !                                 perplex option values:
                 integer iopt
                 logical lopt
+                character valu*3
                 double precision nopt
-                common/ opts /nopt(i10),iopt(i10),lopt(i10)
+                common/ opts /nopt(i10),iopt(i10),lopt(i10),valu(i10)
             !                                 ntot - number of phases stable
             !                                 np - number of solution phases
             !                                 ncpd - number of compounds
@@ -193,8 +194,9 @@
             !                                 perplex option values:
                 integer iopt
                 logical lopt
+                character valu*3
                 double precision nopt
-                common/ opts /nopt(i10),iopt(i10),lopt(i10)
+                common/ opts /nopt(i10),iopt(i10),lopt(i10),valu(i10)
             !                                 ntot - number of phases stable
             !                                 np - number of solution phases
             !                                 ncpd - number of compounds
@@ -281,11 +283,6 @@
 
                 double precision goodc, badc
                 common/ cst20 /goodc(3),badc(3)
-      
-                
-
-                
-
             !----------------------------------------------------------------------
                 
                 ! print*,suppressWarn
