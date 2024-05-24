@@ -82,10 +82,10 @@ clean:
 FFWRAP = -O3 -fPIC -Wpedantic -ffixed-line-length-none $(FARCH)
 FLWRAP = -shared -lgfortran -lgcc -lm $(FARCH)
 
-perplexwrap: perplexwrap.o $(LIBRARY)
-	$(COMP77) $(FFWRAP) $(FLWRAP) perplexwrap.o $(LIBRARY) -o perplexwrap.so
-perplexwrap.o: perplexwrap.f
-	$(COMP77) $(FFWRAP) -c perplexwrap.f
+#perplexwrap: perplexwrap.o $(LIBRARY)
+#	$(COMP77) $(FFWRAP) $(FLWRAP) perplexwrap.o $(LIBRARY) -o perplexwrap.so
+#perplexwrap.o: perplexwrap.f
+#	$(COMP77) $(FFWRAP) -c perplexwrap.f
 ###################### TARGETS FOR 692+ PROGRAMS #########################
 
 MC_fit: MC_fit.o $(LIBRARY)
