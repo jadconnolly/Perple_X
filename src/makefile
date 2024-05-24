@@ -15,6 +15,9 @@
 #                   
 #                  COMP77 = the name of the local fortran 77 compatible compiler
 COMP77 = gfortran
+#                  Architecture
+FARCH = -m64
+
 #                  FFLAGS = compile options
 #                  FLINK = linker options
 
@@ -60,8 +63,8 @@ COMP77 = gfortran
 # where the program was loaded anyway, or what addresses correspond to what subprograms, so it 
 # is better left out. (True, unless you compile with -g, in which case the backtrace is useful) 
 
-FFLAGS = -O3 -std=legacy -fno-backtrace -fPIC
-FLINK = -m64 -static-libgfortran -lgfortran -lgcc -lm
+FFLAGS = -O3 -std=legacy -fno-backtrace -fPIC $(FARCH)
+FLINK = -static-libgfortran -lgfortran -lgcc -lm $(FARCH)
 
 MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit perplexwrap
 all: $(MYOBJ)
@@ -76,8 +79,8 @@ clean:
 ######### PerplexWrap shared library compilation #########################
 # PerplexWrap won't compile under -std=legacy, and link option -shared
 
-FFWRAP = -O3 -fPIC -Wpedantic -ffixed-line-length-none
-FLWRAP = -m64 -shared -lgfortran -lgcc -lm
+FFWRAP = -O3 -fPIC -Wpedantic -ffixed-line-length-none $(FARCH)
+FLWRAP = -shared -lgfortran -lgcc -lm $(FARCH)
 
 perplexwrap: perplexwrap.o $(LIBRARY)
 	$(COMP77) $(FFWRAP) $(FLWRAP) perplexwrap.o $(LIBRARY) -o perplexwrap.so
