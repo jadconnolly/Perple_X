@@ -14,27 +14,27 @@
 ##################### COMPILER VARIABLES ####################################  
 #                   
 #                  COMP77 = the name of the local fortran 77 compatible compiler
-#COMP77 = g77
+
 COMP77 = gfortran
-#                  FFLAGS = compile options
+
+#                  Architecture
+
+FARCH = -m64
+
+#                  FFLAGS = compiler options
 #                  FLINK = linker options
-#FFLAGS = -C -O3 -Wpedantic -Wunused
+# -Wpedantic 
+# -Wunused
+# -finit-local-zero 
+# -ffpe-trap=zero,overflow,underflow to catch fp errors.
+# -ffpe-trap 
+# -fbounds-check array bound checking
+# -finit-real=snan -fpe=trap check for unitialized variables
+# -Wall -Wextra for extensive warnings
+# -static-libgfortran
+# -m64, -m32  
+# -Os, -Ofast optimize size, speed
 
-# pappel: for use with gfortran
-# JADC 1/21/13: O2 and O3 cause fp errors in the speciation routine speci2 in gfortran, the optimization
-# seems to work if local variables are initialized to zero (even though there are no uninitialized variables).
-# use -ffpe-trap=zero,overflow,underflow to catch fp errors.
-# use -ffpe-trap 
-# use -fbounds-check array bound checking
-# use -finit-real=snan -fpe=trap check for unitialized variables
-# use -Wall -Wextra for extensive warnings
-
-# Mark Caddick's OSX generic gfortran compilation flags:
-
-#FFLAGS = -O3 
-#FFLINK = -static-libgfortran -lgfortran -lgcc -lSystem -nodefaultlibs -mmacosx-version-min=10.6  /usr/local/lib/libquadmath.a
-
-# FFLAGS = -finit-local-zero -Os -m64 -static-libgfortran
 # For distribution using static (pre-linked) compiler run-time libraries, use
 # following compiler flags for gfortran builds on MacOSX/Darwin.  gfortran
 # versions up through 4.9 lack the ability to include a static libquadmath, so
@@ -46,15 +46,32 @@ COMP77 = gfortran
 # and substitute the directory name you find for LQMDIR.  En garde choosing
 # 32/64 bit libraries.
 # G. Helffrich/30 Nov. '15
-# FFLAGS =  -O3 -static-libgfortran -Wpedantic
 
-#FFLAGS = -O3
-FFLAGS = -O3 -fPIC -Wpedantic -ffixed-line-length-none #dont remove the fPIC flag, its important
-FLINK = -static-libgfortran -m64 -lgfortran -lgcc -lm
-LLINK = -shared -m64 -lgfortran -lgcc -lm
+# George's justifications/objections for/to current f77 options:
 
-#-Wstrict-overflow -Wstringop-overflow=2 removed for 690
-# WFM Added 2007Sep05, PAPPEL 2010SEPT08: for 6.6.0
+# -fPIC (position independent code) added for perplexwrap, there may be some OS / machine 
+# combinations where -fPIC won’t work, but probably the Julia linkage won’t work on those 
+# either, so no functionality will be lost.  The Julia wrappers shouldn’t really use -fPIC 
+# explicitly; when Julia tries to link with the wrappers, then if PIC is not available, 
+# they won’t link and it will be Julia’s problem to solve - not perplex's.
+
+# -std=legacy prevents gfortran from warning about things like not ending numbered DO loops 
+# with CONTINUE statements, labels on IF statements, 3-way IF statements, etc.  There are a 
+# lot of these warnings that the perplex programs elicit.
+
+# -fno-backtrace When you interrupt or a program ends with a runtime error, the Fortran 
+# library gives a call backtrace.  -fno-backtrace suppresses this. The backtrace is useless 
+# because it only contains hex addresses, and the compiler never gives you any info about 
+# where the program was loaded anyway, or what addresses correspond to what subprograms, so it 
+# is better left out. (True, unless you compile with -g, in which case the backtrace is useful) 
+
+#FFLAGS = -O3 #original github make
+#FFLAGS = -O3 -std=legacy -fno-backtrace $(FARCH) #for perplex
+FFLAGS = -O3 -fPIC -Wpedantic -ffixed-line-length-none $(FARCH) #for perplex + perplexwrap
+
+FLINK = -static-libgfortran -lgfortran -lgcc -lm $(FARCH)
+LLINK = -shared -lgfortran -lgcc -lm $(FARCH)
+
 MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit perplexwrap
 all: $(MYOBJ)
 
@@ -65,14 +82,16 @@ LIBRARY_PS = cont_lib.o pscom.o pslib.o tlib.o
 clean: 
 	rm -f *.o $(MYOBJ) *.so *.mod
 
-######### PerplexWrap shared library compilation
-#
+######### PerplexWrap shared library compilation #########################
+# PerplexWrap won't compile under -std=legacy, and needs link option -shared?
+
 perplexwrap: perplexwrap.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(LLINK) perplexwrap.o $(LIBRARY) -o perplexwrap.so
 perplexwrap.o: perplexwrap.f
 	$(COMP77) $(FFLAGS) -c perplexwrap.f
-###################### TARGETS FOR 692+ PROGRAMS ######################### 
-#
+
+###################### TARGETS FOR 692+ PROGRAMS #########################
+
 MC_fit: MC_fit.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK) MC_fit.o $(LIBRARY) -o $@$(EXT)
 
@@ -123,10 +142,8 @@ frendly: frendly.o $(LIBRARY)
 
 #hptover: hptover.o
 #	$(COMP77) $(FFLAGS) $@.o -o $@
-
 #htog: htog.o
 #	$(COMP77) $(FFLAGS) $@.o -o $@
-
 # targets missing from '07:
 #rk: rk.o flib.o tlib.o
 #	$(COMP77) $(FFLAGS) $@.o tlib.o flib.o -o $@
@@ -200,10 +217,3 @@ blas2lib.o: blas2lib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c blas2lib.f
 minime_blas.o: minime_blas.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c minime_blas.f
-
-# WFM 2007Sep05
-.c.o:
-	$(CC) $(CFLAGS) $(INCL) -c $<
-
-.f.o:
-	$(FC) $(FFLAGS) $(INCL) -c $<
