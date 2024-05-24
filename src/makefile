@@ -66,7 +66,7 @@ FARCH = -m64
 FFLAGS = -O3 -std=legacy -fno-backtrace -fPIC $(FARCH)
 FLINK = -static-libgfortran -lgfortran -lgcc -lm $(FARCH)
 
-MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit perplexwrap
+MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit #perplexwrap
 all: $(MYOBJ)
 
 LIBRARY = pscom.o pslib.o rlib.o tlib.o flib.o olib.o resub.o minime_blas.o blas2lib.o
