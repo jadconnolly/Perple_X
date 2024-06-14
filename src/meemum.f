@@ -24,17 +24,11 @@ c----------------------------------------------------------------------
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
-      double precision atwt
-      common/ cst45 /atwt(k0) 
-
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
       integer ipot,jv,iv
       common / cst24 /ipot,jv(l2),iv(l2)
-
-      character*5 cname
-      common/ csta4 /cname(k5)
 
       integer is
       double precision a,b,c

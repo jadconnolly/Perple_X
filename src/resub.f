@@ -918,9 +918,6 @@ c                                  x-coordinates for the final solution
       integer nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
       common/ cst337 /nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
 
-      double precision fwt
-      common/ cst338 /fwt(k10)
-
       integer jnd
       double precision aqg,q2,rt
       common/ cxt2 /aqg(m4),q2(m4),rt,jnd(m4)
@@ -2680,9 +2677,6 @@ c----------------------------------------------------------------------
       integer npt,jdv
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
-
-      character*5 cname
-      common/ csta4 /cname(k5)
 c                                 hcp is different from icp only if usv
       integer hcp,idv
       common/ cst52  /hcp,idv(k7)
@@ -2912,9 +2906,6 @@ c----------------------------------------------------------------------
       double precision comp(k8,k8), g, lc(k19,k19), lg(k19)
 
       external readyn
-
-      character cname*5
-      common/ csta4  /cname(k5)
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
@@ -3324,9 +3315,6 @@ c----------------------------------------------------------------------
 
       integer ipot,jv,iv
       common / cst24 /ipot,jv(l2),iv(l2)
-
-      character*5 cname
-      common/ csta4 /cname(k5)
 
       integer is
       double precision a,b,c

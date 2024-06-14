@@ -5,13 +5,13 @@
       double precision a(5*l5,40), b(5*l5,40), x, y, ymax, ymin,
      *                 xmax, xmin, z
        
-      integer itic(40),i,icod,j,ier
+      integer itic(40), i, icod, j, ier, nblen
 
       character yes*1
 
       logical readyn
 
-      external readyn
+      external readyn, nblen
 c----------------------------------------------------------------------
 c                                 version info
       call vrsion (6)
@@ -43,7 +43,7 @@ c                                 get input file
 
       call mertxt (tfname,prject,'.plt',0)
       open (11,file=tfname)
-      write (*,1020) tfname
+      write (*,1020) tfname(1:nblen(tfname))
 
       write (*,1040)
       read (*,'(a)') yes 

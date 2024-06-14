@@ -1786,9 +1786,6 @@ c----------------------------------------------------------------------
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp  
 
-      character*8 exname,afname
-      common/ cst36 /exname(h8),afname(2)
-
       character*8 name
       common/ csta6 /name
 
@@ -1825,9 +1822,6 @@ c----------------------------------------------------------------------
 
       double precision props,psys,psys1,pgeo,pgeo1
       common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
-      double precision atwt
-      common/ cst45 /atwt(k0)
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)

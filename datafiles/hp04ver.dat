@@ -18,22 +18,27 @@ end_standard_variables
 
 tolerance  -.1E-2  |<= DTOL for unconstrained minimization, energy units
 
-begin_components |<= name (<5 characters), molar weight (g)
-NA2O    61.9790
-MGO     40.3040
-AL2O3  101.9610
-SIO2    60.0840
-K2O     94.1960
-CAO     56.0770
-TIO2    79.8660
-MNO     70.9370
-FEO     71.8440
-NIO     74.6930
-ZRO2   123.2200
-CL2     70.9060
-O2      31.9990
-H2O     18.0150
-CO2     44.0100
+HSC_conversion     |<= tag enabling HSC to SUP apparent energy conversion, requires elemental entropies in the component list below
+
+begin_components   | < 6 chars, molar weight (g), elemental entropy (R)
+NA2O    61.9790    205.175
+MGO     40.3040    135.255
+AL2O3  101.9610    364.425
+SIO2    60.0840    223.96
+K2O     94.1960    231.935
+CAO     56.0770    144.205
+TIO2    79.8660    235.87
+MNO     70.9370    134.795
+FEO     71.8440    129.855
+NIO     74.6930    132.375
+CE2O3   328.24     451.8
+P2O5    141.94     595.2
+Y2O3    225.81     396.6
+H2O     18.015     188.8  
+O2      31.999     205.2
+ZRO2    123.22     244.2
+CO2     44.01      213.8
+CL2     70.9060    223.08
 end_components
 
 begin_special_components
@@ -141,27 +146,29 @@ atgts = 4 clin + 9/17 atg - 24/17 br      | Tshermaks antigorite for Atg(PN) mod
 
  odo = 1/2 mag + 1/2 cc          | ordered dolmite species for H&P dolomite model
  -13.5d3 0 0 
-                                | endmembers for the melt(HP) model, the dqf corrections
-                                | made in the solution model could be applied here, but 
-                                | should not be done in both the thermodynamic data file 
-                                | and the solution model. The small dqf corrections here
-                                | are made to avoid degeneracy between sil8L and silL etc.
-                                | These may not be necessary, and are definitely superfluous
-                                | if silL, foL and faL are excluded in calculations with 
-                                | vertex.
+|--------------------------------------------------------------------------------
+                                 | Generic 8-oxygen HP liquid endmembers. Because 
+                                 | these occur in many melts models they are created
+                                 | here with a nominal DQF, the true model specific
+                                 | DQF must be added in the solution model. JADC 2/2024
+sil8L = 8/5 silL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+fo8L = 2 foL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+fa8L = 2 faL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+q8L = 4 qL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+wi8L = 2 wiL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+cep8L = 2 cepL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+alp8L = 2 alpL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+yp8L = 2 ypL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
 
-sil8L = 8/5 silL                | sil8L is dqf corrected in the melt(HP) solution model
--20 0 0 
-
-fo8L = 2 foL                    | fa8L is dqf corrected in the melt(HP) solution model
--20 0 0 
-
-fa8L = 2 faL                    | fa8L is dqf corrected in the melt(HP) solution model            
--20 0 0 
-
-q8L = 4 qL                      | q8L has no dqf correction 
--20 0 0 
-
+|--------------------------------------------------------------------------------
                                 | endmembers for Green et al (2007) omph model, ds5 databases
 acm_dqf = 1 acm
        DQF(J/mol) = -4000
@@ -2028,3 +2035,55 @@ end
      |  -7373450.      0.0    -7100.150      0.0     0.0                               
      |  0.5583505E-04  0.0     0.0     0.0    -.5583505E-03                            
      |  2324507.     -333.7500      4.0                                                
+
+cemnz      EoS = 1 |ce-monazite from Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019; entered by Felix Gervais, 4/23/2020
+CE2O3(0.5)P2O5(0.5)
+GH = -2007471.839 S0 = 133.06 V0 = 4.516  
+c1 = 82.85 c2 = 0.123 c3 = -852650  
+end
+
+ymnz      EoS = 1 |ce-monazite from Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019; entered by Felix Gervais, 4/23/2020
+Y2O3(0.5)P2O5(0.5)
+GH = -2019726.07 S0 = 107.29 V0 = 4.3 
+c1 = 78.05 c2 = 0.117 c3 = -924000 
+end
+
+xtm      EoS = 1 |xenotime from Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019; entered by Felix Gervais, 4/23/2020
+Y2O3(0.5)P2O5(0.5)
+GH = -2038313.07 S0 = 107.29 V0 = 4.3 
+c1 = 78.05 c2 = 0.117 c3 = -924000 
+end
+
+yag      EoS = 1 |Y-garnet from Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019; entered by Felix Gervais, 4/23/2020
+AL2O3(2.5)Y2O3(1.5)
+GH = -7347900 S0 = 305.164 V0 = 13.008 
+c1 = 465.841 c2 = 0.0442 c3 = -10884000 
+end
+
+OHAp      EoS = 1 |hydrous apatite from Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019; entered by Felix Gervais, 4/23/2020
+CAO(5)P2O5(1.5)H2O(0.5)
+GH = -6855034.4 S0 = 390.4 V0 = 13.008 
+c1 = 387.8  c3 = -12700000.0 c5 = 1811.0 
+end
+
+alpL      EoS = 2 |Al-P melt from Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019; entered by Felix Gervais, 4/23/2020
+AL2O3(0.5)P2O5(0.5)                                                     
+GH = -1715072.02 S0 = 90.8 V0 = 4.658 
+c1 = 1983.3 c2 = -1.65  c3 = 20607000.0 c4 = 0.000772 c5 = -29319.3
+b8 = 4
+end
+
+cepL      EoS = 2 |Ce-P melt from Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019; entered by Felix Gervais, 4/23/2020
+CE2O3(0.5)P2O5(0.5)                                                  
+GH = -1912189.84 S0 = 133.06 V0 = 4.516 
+c1 = 82.85 c2 = 0.123  c3 = -852650.0 
+b8 = 4
+end
+
+ypL      EoS = 2 |Y-P melt from Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019; entered by Felix Gervais, 4/23/2020
+Y2O3(0.5)P2O5(0.5)                                                  
+GH = -1943024.51 S0 = 107.29 V0 = 4.3
+c1 = 78.05 c2 = 0.117  c3 = -924000.0 
+b8 = 4
+end
+

@@ -602,9 +602,6 @@ c-----------------------------------------------------------------------
       double precision delt,dtol,utol,ptol
       common/ cst87 /delt(l2),dtol,utol,ptol
 
-      character cname*5
-      common/ csta4  /cname(k5) 
-
       integer ipvt,idv,iophi,idphi,iiphi,iflg1
       double precision a,b
       common/ cst23 /a(k8,k8),b(k8),ipvt(k8),idv(k8),
@@ -840,9 +837,6 @@ c-----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i,j
-
-      character cname*5
-      common/ csta4  /cname(k5)
 
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
@@ -2266,9 +2260,6 @@ c-----------------------------------------------------------------------
       character exten(2)*7
 
       integer i
-
-      character cname*5
-      common/ csta4  /cname(k5) 
 
       integer iffr,isr
       double precision vuf,vus
@@ -4753,9 +4744,6 @@ c-----------------------------------------------------------------------
 
       integer jchar(2),ip,im,i,id,j,nchar
 
-      character cname*5
-      common/ csta4  /cname(k5) 
-
       character rxnstr*(kd2)
       common/ cst104 /rxnstr(k2)
 
@@ -4926,9 +4914,6 @@ c-----------------------------------------------------------------------
       integer i,ict
 
       character*8 rname(k8), exten(2)
-
-      character cname*5
-      common/ csta4  /cname(k5) 
 
       integer iffr,isr
       double precision vuf,vus
@@ -5221,9 +5206,6 @@ c----------------------------------------------------------------------
       integer is
       double precision cp, bbb, ccc
       common/ cst313 /cp(k5,k1),bbb(k5),ccc(k1),is(k1+k5)
-
-      character*5 cname
-      common/ csta4 /cname(k5)
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp

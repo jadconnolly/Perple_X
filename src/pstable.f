@@ -7,11 +7,11 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer ier
+      integer ier, nblen
 
       logical ratio, readyn
  
-      external readyn
+      external readyn, nblen
 
       integer ix,iy,mvar
       double precision z
@@ -41,7 +41,7 @@ c                                 get input file
 
          if (ier.eq.0) exit
        
-         write (*,1010) tfname
+         write (*,1010) tfname(1:nblen(tfname))
 
          if (readyn()) cycle 
 
@@ -69,7 +69,7 @@ c                                 get second table file name
 
                if (ier.eq.0) exit
        
-               write (*,1010) tfname
+               write (*,1010) tfname(1:nblen(tfname))
 
                if (readyn()) cycle 
 

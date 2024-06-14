@@ -354,27 +354,22 @@ fatg = 1 atg - 16 ta + 16 fta
 
  | odo = 1/2 mag + 1/2 cc          | ordered dolmite species for H&P dolomite model
  | -13.5d3 0 0 
-                                | endmembers for the melt(HP) model, the dqf corrections
-                                | made in the solution model could be applied here, but 
-                                | should not be done in both the thermodynamic data file 
-                                | and the solution model. The small dqf corrections here
-                                | are made to avoid degeneracy between sil8L and silL etc.
-                                | These may not be necessary, and are definitely superfluous
-                                | if silL, foL and faL are excluded in calculations with 
-                                | vertex.
-
-sil8L = 8/5 silL                | sil8L is dqf corrected in the melt(HP) solution model
--20 0 0 
-
-fo8L = 2 foL                    | fa8L is dqf corrected in the melt(HP) solution model
--20 0 0 
-
-fa8L = 2 faL                    | fa8L is dqf corrected in the melt(HP) solution model            
--20 0 0 
-
-q8L = 4 qL                      | q8L has no dqf correction 
--20 0 0 
-
+|--------------------------------------------------------------------------------
+                                 | Generic 8-oxygen HP liquid endmembers. Because 
+                                 | these occur in many melts models they are created
+                                 | here with a nominal DQF, the true model specific
+                                 | DQF must be added in the solution model. JADC 2/2024
+sil8L = 8/5 silL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+fo8L = 2 foL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+fa8L = 2 faL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+q8L = 4 qL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+wi8L = 2 wiL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+|--------------------------------------------------------------------------------
                                 | endmembers for the Diener et al. (JMG, 2007) amphibole models
 mrb = 1 gl - 2 jd +2 acm        | magnesio riebekite, stoichiometry corrected 3/30/08 JADC
 8d3 0. 0. 

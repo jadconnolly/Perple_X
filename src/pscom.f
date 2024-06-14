@@ -1506,12 +1506,14 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer ier
+      integer ier, nblen
 
       double precision dsx,dsy,dtx,dty,drot
       
       character*3 key*22, val, nval1*12, nval2*12,
      *            nval3*12,opname*40, strg*40,strg1*40
+
+      external nblen
       
       character font*40
       common/ myfont /font
@@ -1577,7 +1579,7 @@ c                                 look for file
       
       open (n8, file = opname, iostat = ier, status = 'old')
 c                                 no option file
-      if (ier.ne.0) write (*,1120) opname
+      if (ier.ne.0) write (*,1120) opname(1:nblen(opname))
 c                                 read cards to end of option file
       do while (ier.eq.0) 
 

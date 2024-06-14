@@ -883,9 +883,6 @@ c----------------------------------------------------------------
 
       double precision prop, r, gtcomp, mode(3)
 
-      double precision atwt
-      common/ cst45 /atwt(k0)
-
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
 
@@ -1263,9 +1260,6 @@ c-------------------------------------------------------------------
 
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
-
-      character*5 cname
-      common/ csta4 /cname(k5)
 
       integer javg,jdsol
       common/ cxt5 /javg,jdsol(k5)
@@ -2676,7 +2670,7 @@ c----------------------------------------------------------------
 
       integer i, j, k, id, dim, dummy
 
-      double precision mode(3), fwt, cprp(i11)
+      double precision mode(3), fmwt, cprp(i11)
 
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
@@ -2712,9 +2706,6 @@ c----------------------------------------------------------------
       common/ cst77 /prop(i11),prmx(i11),prmn(i11),
      *               kop(i11),kcx(i11),k2c(i11),iprop,
      *               first,kfl(i11),tname
-
-      double precision atwt
-      common/ cst45 /atwt(k0)
 
       save cprp
 c----------------------------------------------------------------------
@@ -2806,7 +2797,7 @@ c                                 normal properties
                   prop(i) = psys(i)
                end do 
 c                                 bulk composition and excess charge
-               fwt = psys(17)
+               fmwt = psys(17)
 
                do i = i8+4, i8+3+icomp
 c                                 absolute molar bulk composition
@@ -2821,7 +2812,7 @@ c                                 normal properties
                   prop(i) = psys1(i)
                end do 
 c                                 bulk composition 
-               fwt = psys1(17)
+               fmwt = psys1(17)
 
                do i = i8+4, i8+3+icomp
                   prop(i) = fbulk1(i-i8-3)
@@ -2863,7 +2854,7 @@ c                                 absolute mass
                      prop(i) = prop(i)*atwt(i-i8-3)
                   else 
 c                                 relative (%)
-                     prop(i) = prop(i)*atwt(i-i8-3)/fwt*1d2
+                     prop(i) = prop(i)*atwt(i-i8-3)/fmwt*1d2
                   end if
 
                end do
@@ -3093,9 +3084,6 @@ c----------------------------------------------------------------
 
       integer ivar,ind
       common/ cst83 /ivar,ind
-
-      character cname*5
-      common/ csta4  /cname(k5)
 
       integer ifp
       logical fp
@@ -3619,9 +3607,6 @@ c----------------------------------------------------------------
       character dname*14, title*162
       common/ cst76 /inv(i11),dname(i11),title
 
-      character cname*5
-      common/ csta4  /cname(k5)
-
       save warned
       data warned/.false./
 
@@ -3909,9 +3894,6 @@ c----------------------------------------------------------------
       character dname*14, title*162
       common/ cst76 /inv(i11),dname(i11),title
 
-      character cname*5
-      common/ csta4  /cname(k5)
-
       integer nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
       common/ cst337 /nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
 
@@ -3949,7 +3931,7 @@ c                                 bulk composition, wt% or mol
 c                                 absolute mass, units hardwired here, but
 c                                 are actually determined by component formula 
 c                                 mass specified in the thermodynamic data file.
-               dname(i) = cname(i)//',g       '
+               dname(i) = cname(i)//',g,abs   '
 
             else
 c                                 mass fraction (%)
@@ -4075,7 +4057,14 @@ c                                 only one phase:
 c                                 bulk composition
          if (lopt(41)) then
 c                                 absolute composition
-            x = props(16,jd)
+            if (iopt(2).eq.0) then 
+c                                 molar units
+               x = props(16,jd)
+            else 
+c                                 mass units
+               x = props(16,jd) * props(17,jd) / 1d2
+            end if
+
          else
 c                                 relative composition
             x = 1d0

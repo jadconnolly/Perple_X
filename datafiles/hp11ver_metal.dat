@@ -113,14 +113,22 @@ f3clin = 1 clin -1/2 gr 1/2 andr
 2d3 0 0 
 kho1 = 1 py -1 gr 1 andr 
 27d3 0 0 
-sil8L = 8/5 silL 
--23d3 0 0 
-fo8L = 2 foL 
--10d3 0 0 
-fa8L = 2 faL 
--9d3 0 -1.3 
-q8L = 4 qL 
--20 0 0 
+|--------------------------------------------------------------------------------
+                                 | Generic 8-oxygen HP liquid endmembers. Because 
+                                 | these occur in many melts models they are created
+                                 | here with a nominal DQF, the true model specific
+                                 | DQF must be added in the solution model. JADC 2/2024
+sil8L = 8/5 silL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+fo8L = 2 foL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+fa8L = 2 faL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+q8L = 4 qL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+wi8L = 2 wiL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+|--------------------------------------------------------------------------------
 fmu = 1 mu 1/2 andr -1/2 gr 
 25d3 0 0 
 ma1_dqf = 1 ma 

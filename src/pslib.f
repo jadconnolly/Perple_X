@@ -599,7 +599,10 @@ c psopen - subroutine to open LUN nps, write prologue
 
       include 'perplex_parameters.h'
 
-      integer nps
+      integer nps, nblen
+
+      external nblen
+
       double precision xscale, yscale, xmn, ymn
       common/ scales /xscale,yscale,xmn,ymn,nps
 c----------------------------------------------------------------------
@@ -611,7 +614,7 @@ c----------------------------------------------------------------------
 c                                 output eps prolog
       call psprol (nps)       
 c                                 write output file name
-      write (*,1010) tfname
+      write (*,1010) tfname(1:nblen(tfname))
  
 1010  format (/,'PostScript will be written to file: ',a)
  

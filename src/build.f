@@ -96,10 +96,7 @@ c-----------------------------------------------------------------------
       common/ cst100 /dlnfo2,elag,gz,gy,gx,ibuf,hu,hv,hw,hx
   
       integer ixct,ifact
-      common/ cst37 /ixct,ifact 
-
-      character*8 exname,afname
-      common/ cst36 /exname(h8),afname(2)
+      common/ cst37 /ixct,ifact
 
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
@@ -193,7 +190,7 @@ c                                 aux file and set icopt, icopt may be
 c                                 changed to 10 in varich if fileio.
          icopt = 9
          call mertxt (tfname,prject,'.aux',0)
-         write (*,1500) tfname
+         write (*,1500) tfname(1:nblen(tfname))
 
       else if (icopt.eq.8) then 
 c                                 liquidus diagrams are a special case of
@@ -1266,9 +1263,6 @@ c---------------------------------------------------------------------------
       character cmpnt*5, dname*80
       common/ csta5 /cl(k0),cmpnt(k0),dname
 
-      character*8 exname,afname
-      common/ cst36 /exname(h8),afname(2)
-
       data fugact/'chem_pot','fugacity','activity'/
 c---------------------------------------------------------------------------
       jcmpn = icmpn
@@ -1772,7 +1766,7 @@ c---------------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i, j, ivct, ier, iind, idep, iord, jc, icth,
-     *        jcth, loopx, loopy, ind, ix, jst, jvct
+     *        jcth, loopx, loopy, ind, ix, jst, jvct, nblen
 
       logical oned, readyn, liqdus, fileio
 
@@ -1781,7 +1775,7 @@ c---------------------------------------------------------------------------
 
       double precision c(0:4)
 
-      external readyn
+      external readyn, nblen
 
       integer ifct,idfl
       common/ cst208 /ifct,idfl
@@ -2118,7 +2112,7 @@ c                                  inform the user of the grid settings:
 
          end do 
 
-         write (*,3090) opname
+         write (*,3090) opname(1:nblen(opname))
 
       else if (icopt.eq.1) then
 c                                  =========================

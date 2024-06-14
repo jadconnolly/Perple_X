@@ -24,9 +24,6 @@ c----------------------------------------------------------------------
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
-      character cname*5
-      common/ csta4  /cname(k5) 
-
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
 
@@ -42,10 +39,7 @@ c----------------------------------------------------------------------
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
       character vnm*8
-      common/ cxt18a /vnm(l3)  
-
-      double precision atwt
-      common/ cst45 /atwt(k0)
+      common/ cxt18a /vnm(l3)
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
@@ -1599,9 +1593,6 @@ c----------------------------------------------------------------------
 
       integer iam
       common/ cst4 /iam
-
-      double precision atwt
-      common/ cst45 /atwt(k0)
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp

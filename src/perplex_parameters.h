@@ -573,8 +573,8 @@ c                                 LP workspace into common
       double precision pblk, eblk, pmode, emode
       common/ cst67 /pblk(k5,k5), eblk(k5,k5), pmode(k5), emode(k5),
      *               pids(k5), mphase
-
-      logical mcpert, mcflag, oprt
+c                                 MC_fit common block:
+      logical mcpert, mcflag, oprt, grh, invxpt
       integer mxpt, cxpt, random,
      *        xptids, xptptr, xptnph, xpterr, mccpd, mcsol, mcid, 
      *        mcids, msloc, msolct, nparm, nunc, mcpct, mcpid, mctrm,
@@ -582,7 +582,6 @@ c                                 LP workspace into common
       character xptnam*18
       double precision xptpt, xptblk, xptc, xpte, cprng, sprng, wcomp, 
      *                 wextra, wmiss, oktol, scores
-
       common/ cst68 /xptpt(l11,l2), xptblk(l11,k5),
      *               xptc(k5*l11), xpte(k5*l11), xpterr(l11),
      *               cprng(k5,3,3),sprng(k5,m1,m3,3), wcomp, wextra,
@@ -595,7 +594,7 @@ c                                  integer
      *               msloc(l11,k5), mcpct(k5), mcpid(k5,3),
      *               mccoef(k5,m1), mcj(k5,m1), mccoid(k5,m1,m3),
 c                                  logical
-     *               mcpert, oprt, mcflag(h9), random(3),
+     *               mcpert, oprt, mcflag(h9), random(3), grh, invxpt,
 c                                  character
      *               xptnam(l11)
 
@@ -616,19 +615,31 @@ c                                  character
       double precision wgl, wkl, vlar
       common/ cxt2r /wgl(m3,m1,h9),wkl(m16,m17,m18,h9),vlar(m3,m4,h9)
 
-
       integer icont
       double precision dblk,cx
       common/ cst314 /dblk(3,k5),cx(2),icont
 
       double precision dppp,sdzdp
       common/ cxt28 /dppp(j3,j3,m1,h9),sdzdp(j3,m11,m10,h9)
-
-      !Commons implemented for perplexwrap.f
-      !getInput must be set to true for any program that calls 
-      !fopen1, input1, or iniprp in tlib.f
-      logical :: getInput, meemumInit, sWarn    
+c                                 perplexwrap.f common block
+c                                 getInput must be set to true for any 
+c                                 program that calls  fopen1, input1, or iniprp in tlib.f
+      logical :: getInput, meemumInit, sWarn
       common/ libVars /getInput, meemumInit, sWarn
-
+c                                 special component indices and counter
       integer idspe,ispec
       common/ cst19 /idspe(2),ispec
+c                                 component gram formula weights
+      double precision atwt
+      common/ cst45 /atwt(k0)
+c                                 species gram formula weights
+      double precision fwt
+      common/ cst338 /fwt(k10)
+c                                 active component names
+      character cname*5
+      common/ csta4  /cname(k5)
+c                                 exname - list of excluded species names
+c                                 afname - list of reference species names for
+c                                 calculations as a function of activity/fugacity
+      character*8 exname,afname
+      common/ cst36 /exname(h8),afname(2)

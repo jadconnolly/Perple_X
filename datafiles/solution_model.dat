@@ -11850,8 +11850,6 @@ z(Ca,M2b)   = 1 di + 1 hed + 1 om + 1 cfm
 
 [Si2O6]                            | formula suffix, enter "none" for no suffix.
 
-reach_increment 0
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -11875,8 +11873,6 @@ end_excess_function
 
 2 1                                   2 species, site multiplicity = 1.
 z(Fe) = 1 iron
-
-reach_increment 3
 
 end_of_model
                       --------------------------------------------------------
@@ -17450,7 +17446,7 @@ end_of_model
                       --------------------------------------------------------
 begin_model
                         Model for the Na-rich side of the Peristerite gap to
-                        be used together with Fsp(HGP21) from:
+                        be used together with Fsp(HGP) from:
                         Holland, TJB, Green, ECR & Powell, R (2021)
 
                         Entered by Maria M. Ariza, 2024/01/17
@@ -17489,6 +17485,214 @@ begin_dqf_corrections
 dqf(ab) = -1746 +  2 * T_K
 dqf(an) = 10000
 end_dqf_corrections
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+melt(SP)
+abbreviation Liq
+full_name    liquid
+
+2                                     model type: simplicial composition space
+
+13                                    number of endmembers
+
+fo8L     fa8L     zr8L
+abL      sil8L    anL
+kspL     wi8L     q8L
+alp8L     cep8L
+yp8L      h2oL      
+
+0 0 0 0 0 0 0 0 0 0 0 0 0           | endmember flags.
+
+0      1     .1 0                   | range and resolution of X(fo),  0 => cartesian subdivision
+0      1     .1 0                   | range and resolution of X(fa),  0 => cartesian subdivision
+0      .1    .1 0                   | range and resolution of X(zrL), 0 => asymmetric subdivision
+0      1     .1 0                   | range and resolution of X(ab),  0 => cartesian subdivision
+0      1     .1 0                   | range and resolution of X(sil), 0 => cartesian subdivision
+0      1     .1 0                   | range and resolution of X(an),  0 => cartesian subdivision
+0      1     .1 0                   | range and resolution of X(ksp), 0 => cartesian subdivision
+0      .1    .1 0                   | range and resolution of X(wiL), 0 => asymmetric subdivision
+0      1     .1 0                   | range and resolution of X(q),   0 => cartesian subdivision
+0      .1    .1 0                   | range and resolution of X(apL), 0 => asymmetric subdivision
+0      .1    .1 0                   | range and resolution of X(cepL), 0 => asymmetric subdivision
+0      .1    .1 0                   | range and resolution of X(ypL), 0 => asymmetric subdivision
+begin_excess_function
+                                    | the excess parameters used for the haplo-
+                                    | granite melt model vary between papers (notably w(an-sil)),
+                                    | the values here are from the thermocalc
+                                    | model file 'thdmloss.txt' and appear largely
+                                    | consistent with the white et al paper.
+w(q8L    anL) -10d3
+w(q8L  sil8L) 12d3
+w(q8L    abL) 12d3    -0.4 * P_bar
+w(q8L   kspL) -2d3    -0.5 * P_bar
+w(q8L   h2oL) 15d3
+w(q8L   fo8L) 12d3    -0.4 * P_bar
+w(q8L   fa8L) 14d3
+w(abL  sil8L) 12d3
+w(abL   kspL) -6d3     3. * P_bar
+w(abL   fo8L) 10d3
+w(abL   fa8L)  2d3
+w(abL   h2oL)  1d3    -0.2 * P_bar
+w(kspL   anL)   0     -1. * P_bar
+w(kspL sil8L) 12d3
+w(kspL  h2oL) 11d3    -0.45 * P_bar
+w(kspL  fo8L) 12d3
+w(kspL  fa8L) 12d3
+                                    | w(anL sil8) is 12 kJ in the Holland & Powell J Pet paper
+                                    | but appears to have accidentally been set to zero
+                                    | for the calculations published in the White et al. JMG
+                                    | paper. To restore this parameter delete the comment
+                                    | marker "|" on the following line:
+                                    | w(anL sil8) 12d3
+w(anL   h2oL)  9d3   -0.85 * P_bar
+w(sil8L fo8L) 12d3
+w(sil8L fa8L) 12d3
+w(sil8L h2oL) 16d3
+w(fo8L  fa8L) 18d3
+w(fo8L  h2oL) 11d3   -0.5 * P_bar
+w(fa8L  h2oL) 12d3
+
+w(q8L   wi8L) 14d3
+w(abL   wi8L) 10d3
+w(kspL  wi8L) 12d3
+w(wi8L  fo8L) 18d3
+w(wi8L  fa8L) 18d3
+w(wi8L  h2oL) 11d3   -0.5 * P_bar
+
+w(q8L   cep8L) 14d3
+w(abL   cep8L) 12d3
+w(kspL  cep8L) 12d3
+w(cep8L  fo8L) 12d3
+w(cep8L  fa8L) 12d3
+w(cep8L  h2oL) 25d3
+
+w(q8L   yp8L) 14d3
+w(abL   yp8L) 12d3
+w(kspL  yp8L) 12d3
+w(yp8L  fo8L) 12d3
+w(yp8L  fa8L) 12d3
+w(yp8L  h2oL) 25d3
+
+w(q8L   alp8L) 14d3
+w(abL   alp8L) 12d3
+w(kspL  alp8L) 12d3
+w(alp8L  fo8L) 12d3
+w(alp8L  fa8L) 12d3
+w(alp8L  h2oL) 25d3
+
+end_excess_function
+
+4                           | Configurational entropy: two non-temkin sites (Water, Melt)
+                            | and one temkin site (olvine). hp assume a fsp = ab + or "molecule""
+                            | with mixing on a temkin M site, but the math works out the same as
+                            | the endmembers are treated as separate endmembers and the M site
+                            | dropped.
+
+2 1                         | water-vacancy site
+z(H) = 1 h2oL
+
+3 0                         | temkin olivine site
+n(Mg) = 4 fo8L
+n(Fe) = 4 fa8L
+n(Zn) = 4 wi8L
+
+9 0                         | silicate species site
+z(w)     = 1 h2oL
+z(q)     = 1 q8L
+z(ksp)   = 1 kspL
+z(ab)    = 1 abL
+z(sil)   = 1 sil8L
+z(an)    = 1 anL
+z(zr)    = 1 zr8L
+z(ol)    = 1 fo8L + 1 fa8L + 1 wi8L
+z(phos) = 1 alp8L + 1 cep8L + 1 yp8L
+
+3 2
+z(P)     = 1 alp8L
+z(CE)     = 1 cep8L
+
+begin_dqf_corrections
+dqf(fo8L)  -10d3
+dqf(fa8L)  -9d3 0 -1.3
+dqf(sil8L) -10d3
+                                     | pre-white et al '07 value: dqf(fo8L)  -15d3 0 0
+                                     | pre-white et al '07 value: dqf(fa8L)  -15d3 0 0
+                                     | pre-white et al '07 value: dqf(sil8L) -10d3 0 0
+end_dqf_corrections
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                                      HP '98 quaternary garnet + Y model Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019. F. Gervais COVID time 2020
+
+YGt(SP)
+abbreviation Gt
+full_name    garnet
+
+2                                     model type: simplicial composition space
+5                                   number of endmembers
+yag   spss
+py     gr     alm                     endmember names
+
+1  1  0  0  0                        | endmember flags
+
+1e-5  1e-4  .1 1           | imod = 1 -> non-linear subdivision
+0  1     .1 0              |
+0  1     .1 0              | imod = 0 -> cartesian subdivision
+0  1     .1 0              | imod = 0 -> cartesian subdivision
+                           | NOTE restricted subdivision range on Mn (Species 1)!
+
+begin_excess_function
+w(py gr) 33000
+w(alm py)  2500                | hp '98 give 2.4 kJ
+w(py spss) 4500
+w(alm spss)  240
+end_excess_function
+
+1                                   | 1 site entropy model
+
+5 3                                 | 5 species, site multiplicity 3
+z(Fe) = 1 alm
+z(Mg) = 1 py
+z(Ca) = 1 gr
+z(Mn) = 1 spss
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                             Ideal monazite from Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019. F. Gervais COVID time 2020
+                                                      M
+                                                     _____________
+
+                                      Mutliplicity    2
+                                                     _____________
+
+                                       cemnz            ce
+                                       ymnz               y
+Mnz(SP)
+abbreviation mz
+full_name    monazite
+
+2                           | model type: simplicial
+
+2                           | endmembers
+cemnz ymnz
+
+                            | see commentary in the header of this file for explanation of
+                            | endmember flags and subdivision schemes.
+
+0  0                        | endmember flags
+
+0  1     .1   0             | cemnz
+
+ideal 
+
+1                           | 1 site entropy model
+
+2 2                         | M 2 species, site multiplicity = 1
+z(ce) = 1 cemnz
 
 end_of_model
                       --------------------------------------------------------

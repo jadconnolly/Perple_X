@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.7b May 23, 2024.',
+     *     'Perple_X BETA release 7.1.7c Jun 14, 2024.',
 
      *     'Copyright (C) 1986-2024 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -1056,7 +1056,7 @@ c                                  686+ read second value as arf value
 
                if (ier.ne.0) then
 c                                  special backward compatibility msg
-                  write (*,1010) opname
+                  write (*,1010) opname(1:nblen(opname))
                   call errpau
 
                end if 
@@ -1459,9 +1459,9 @@ c                                 refinement points
 c                                 write and optional file choices
       if (iam.ne.14) then 
          if (jer.ne.0) then 
-            write (*,1120) opname
+            write (*,1120) opname(1:nblen(opname))
          else 
-            write (*,1130) opname
+            write (*,1130) opname(1:nblen(opname))
          end if
       end if 
 
@@ -1476,7 +1476,7 @@ c                                 vertex only files:
                tfname = 'not requested'
             end if 
 
-            write (*,1170) tfname
+            write (*,1170) tfname(1:nblen(tfname))
 
          end if 
 c                                 auto refine summary
@@ -1488,7 +1488,7 @@ c                                 auto refine summary
                tfname = 'not requested'
             end if 
 
-            write (*,1150) tfname
+            write (*,1150) tfname(1:nblen(tfname))
 
          end if
 
@@ -1502,7 +1502,8 @@ c                                 auto refine summary
             tfname = 'not requested'
          end if 
 
-         write (*,'(a)') 'Writing seismic data options to: '//tfname
+         write (*,'(a)') 'Writing seismic data options to: '//
+     *                   tfname(1:nblen(tfname))
 
       end if 
 c                                 pseudocompound glossary
@@ -1514,7 +1515,7 @@ c                                 pseudocompound glossary
             tfname = 'not requested'
          end if 
 
-         write (*,1140) tfname
+         write (*,1140) tfname(1:nblen(tfname))
 
       end if 
 c                                 computational options this is redundant
@@ -1533,7 +1534,7 @@ c                                 computational options this is redundant
             tfname = 'not requested'
          end if 
  
-         write (*,1160) tfname
+         write (*,1160) tfname(1:nblen(tfname))
 
       end if 
 c                                 -------------------------------------
@@ -1625,7 +1626,7 @@ c                                 file version, create the file name
             call outopt (n8)
             close (n8) 
 
-            write (*,1000) tfname
+            write (*,1000) tfname(1:nblen(tfname))
 
          end if 
 
@@ -3824,10 +3825,7 @@ c----------------------------------------------------------------------
       character tname*8, name*8, rec*(lchar), tag*3
 
       integer ixct,ifact
-      common/ cst37 /ixct,ifact 
-
-      character*8 exname,afname
-      common/ cst36 /exname(h8),afname(2)
+      common/ cst37 /ixct,ifact
 
       integer length,com
       character chars*1
@@ -4482,9 +4480,6 @@ c----------------------------------------------------------------------
       common/ cst56 /strgs(k4),mstrg(6),dstrg(m8),tstrg(m7),wstrg(m16),
      *               e16st(13)
 
-      double precision atwt
-      common/ cst45 /atwt(k0)
-
       integer ic
       common/ cst42 /ic(k0)
 
@@ -4976,9 +4971,6 @@ c----------------------------------------------------------------------
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5  /p,t,xco2,u1,u2,tr,pr,r,ps
-
-      double precision atwt
-      common/ cst45 /atwt(k0)
 
       character*80 commnt
       common/delet/commnt
@@ -5820,9 +5812,6 @@ c----------------------------------------------------------------------
       character cmpnt*5, dname*80
       common/ csta5 /cl(k0),cmpnt(k0),dname
 
-      double precision atwt
-      common/ cst45 /atwt(k0)
-
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
@@ -6000,9 +5989,6 @@ c----------------------------------------------------------------------
 
       character tcname*5,xcmpnt*5
       common/ csta9 /tcname(k0),xcmpnt(k0)
-
-      double precision atwt
-      common/ cst45 /atwt(k0)
 
       integer length,com
       character chars*1
@@ -7856,9 +7842,6 @@ c----------------------------------------------------------------
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
-      character cname*5
-      common/ csta4  /cname(k5)
-
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
@@ -9241,9 +9224,6 @@ c-----------------------------------------------------------------------
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
-      character*5 cname
-      common/ csta4 /cname(k5) 
-
       integer icp2
       common/ cst81 /icp2
 
@@ -9283,9 +9263,6 @@ c-----------------------------------------------------------------------
       integer ixct,ifact
       common/ cst37 /ixct,ifact
 
-      character*8 exname,afname
-      common/ cst36 /exname(h8),afname(2)
-
       integer ids,isct,icp1,isat,io2
       common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
@@ -9309,7 +9286,6 @@ c-----------------------------------------------------------------------
 
       integer iam
       common/ cst4 /iam
-
 
       save blank
       data blank/' '/
@@ -10043,9 +10019,6 @@ c-----------------------------------------------------------------------
       integer ivfl
       common/ cst102 /ivfl
 
-      character*5 cname
-      common/ csta4 /cname(k5)
-
       integer ids,isct,icp1,isat,io2
       common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
@@ -10672,9 +10645,11 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, ier, n
+      integer i, ier, n, nblen
 
       character string*(*)
+
+      external nblen
 c----------------------------------------------------------------------
 
       call mertxt (tfname,prject,string,0)
@@ -10684,7 +10659,8 @@ c----------------------------------------------------------------------
       open (n, file=string, status='replace', iostat=ier)
 
       if (ier.ne.0) call error (999,0d0,i,
-     *             'file '//tfname//' is in use by another application')
+     *             'file '//tfname(1:nblen(tfname))//
+     *             ' is in use by another application')
 
       end
 
@@ -11023,6 +10999,10 @@ c                              stixrude & lithgow-bertelloni GJI '05
          etas0  = f
          g0     =  emodu(1)
          g0p    =  emodu(2)
+c                                 for backward compatability beta_el and gamma_el are read under b1 and b2, move
+c                                 them to b13 and c8 (thermo 23/24 on return).
+         b13 = b1
+         c8 = b2
 c                                 nr9
          b1 = 9d0*n*r
 c                                 c1
@@ -11761,9 +11741,6 @@ c-----------------------------------------------------------------------
 
       integer ixct,ifact
       common/ cst37 /ixct,ifact
-
-      character*8 exname,afname
-      common/ cst36 /exname(h8),afname(2)
 
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
@@ -12812,7 +12789,7 @@ c        b = 0.2228D1 * x - 0.8D-2 - 0.85D0 * (1d0 - x) * x
          tc = 1043d0 * xfe + (-311.5d0) * xcr +
      *        xfe * xcr * (1650d0 + 550d0*(xcr-xfe))
          b = 2.22d0 * xfe + (-0.008d0) * xcr + xfe*xcr*(-0.008d0)
-         gmag2 = gmags (tc,b,0.40d0)
+         gmag2 = gmags (tc,b,0.40d0,8)
 
       end if
 
@@ -13580,9 +13557,12 @@ c -----------
       xn = 1d0/(1d0 - an + an*(1d0 + n/(3*an) * p/Bo)**(1d0/real(n)))
       end function xn
 
-      double precision function gmags (tc,b,pee)
+      double precision function gmags (tc,b,pee,itype)
 c-----------------------------------------------------------------------
-c gmags returns the magnetic contribution to G parameterized as in
+c gmags returns the magnetic contribution to G parameterized as in either
+
+c itype = 8
+
 c Sundman 1991 J. Ph. Equil. v12, 127-140.
 c     tc - transition temperature
 c     b - Bohr magneton value
@@ -13599,10 +13579,26 @@ c structures, divide tc and b by -1; for fcc & hcp (p=0.28) antiferromagnetic
 c structures, divide tc and b by -3.
 
 c                                      G. Helffrich, ELSI, 8 Apr. 2016.
+
+c or itype = 9
+
+c Stixrude & Lithgow-Bertelloni (GJI 2024, Eqs A5-A7) where
+c     tc - transition temperature
+c     b - entropy of disordering (R*ln(b+1))
+c     pee - structural magnetic parameter
+
+c there's no fundamental reason for having two transition flags for the same 
+c model, but for some reason parameters for type 8 are read into thermo
+c for CALPHAD EoS, whereas they are read as transition data for Stx-GJI
+c EoS having two flags makes it easy to maintain backward compatability.
+
+c                                      JADC, June 11, 2024
 c-----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
+
+      integer itype
 
       double precision a0,a1,t5,t15,t25,f1,f0,f3,f9,f15
 
@@ -13615,23 +13611,31 @@ c-----------------------------------------------------------------------
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
-
+c-----------------------------------------------------------------------
       if (tc.lt.0d0) then
+
          if (pee.lt.0.4d0) then
+
             bc = -b/3
             t0 = -3*t/tc
+
          else
+
             bc = -b
             t0 = -t/tc
-         endif
+
+         end if
+
       else
+
          t0 = t/tc
          bc = b
-      endif
 
+      endif
+c                                 stixrude's D
       a = a0 + a1*(1d0/pee - 1d0)
 
-      if (t0.lt.1d0) then
+      if (t0.le.1d0) then
 
          f = t - (f1*tc/pee + t * f0 * (1d0/pee - 1d0) *
      *       (f3 + t0**6 * (f9 + t0**6 * f15)) * t0**3) / a
@@ -13642,7 +13646,15 @@ c-----------------------------------------------------------------------
 
       end if
 
-      gmags = r*f*dlog(bc+1)
+      if (itype.eq.8) then 
+c                                 r*ln(beta+1) is S_max
+         gmags = r*f*dlog(bc+1)
+
+      else if (itype.eq.9) then
+
+         gmags = f*b
+
+      end if
 
       end
 

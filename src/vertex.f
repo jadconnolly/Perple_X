@@ -323,9 +323,6 @@ c-----------------------------------------------------------------------
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
-      character cname*5
-      common/ csta4 /cname(k5)
-
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
@@ -564,9 +561,6 @@ c-----------------------------------------------------------------------
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
-      character cname*5
-      common/ csta4 /cname(k5)
-
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
@@ -701,9 +695,6 @@ c-----------------------------------------------------------------------
 
       external readyn
 
-      double precision atwt
-      common/ cst45 /atwt(k0)
-
       double precision x, y
       common/ cxt46 /x, y
 
@@ -758,9 +749,6 @@ c-----------------------------------------------------------------------
       common/ cst77 /prop(i11),prmx(i11),prmn(i11),
      *               kop(i11),kcx(i11),k2c(i11),iprop,
      *               tirst,kfl(i11),tname
-
-      character cname*5
-      common/ csta4  /cname(k5)
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -3399,9 +3387,11 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i
+      integer i, nblen
 
       character phase*10
+
+      external nblen
 c-----------------------------------------------------------------------
  
       tfname = '_'//phase//'.dat'
@@ -3410,7 +3400,7 @@ c-----------------------------------------------------------------------
 
       call mertxt (tfname,prject,tfname,0)
 
-      write (*,1010) phase, tfname
+      write (*,1010) phase(1:nblen(phase)), tfname(1:nblen(tfname))
 
       open (n0+i,file=tfname,status='unknown')
 
@@ -3435,9 +3425,6 @@ c-----------------------------------------------------------------------
 
       double precision mass(k23), tmass, x, errr(k5)
 
-      double precision atwt
-      common/ cst45 /atwt(k0)
-
       double precision dcomp
       common/ frct2 /dcomp(k5)
 
@@ -3450,9 +3437,6 @@ c-----------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      character*5 cname
-      common/ csta4 /cname(k5)
 
       integer kkp,np,ncpd,ntot
       double precision cp3,amt

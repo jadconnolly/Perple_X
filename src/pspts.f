@@ -15,11 +15,11 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer ier
+      integer ier, nblen
 
       logical readyn
 
-      external readyn
+      external readyn, nblen
 c----------------------------------------------------------------------
 c                                 version info
       call vrsion (6)
@@ -39,7 +39,7 @@ c                                 get input file
 
          if (ier.ne.0) then
        
-            write (*,1010) tfname
+            write (*,1010) tfname(1:nblen(tfname))
             if (readyn()) cycle 
 
             stop
