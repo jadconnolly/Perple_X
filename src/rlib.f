@@ -176,7 +176,8 @@ c---------------------------------------------------------------------
 
       logical proj
 
-      double precision ialpha, vt, trv, pth, vdp, vdpbm3, gsixtr,
+      double precision ialpha, vt, trv, pth, vdp, vdpbm3, vdpbmt,
+     *                 gsixtr,
      *                 gstxgi, fs2, fo2, kt, gval, gmake, gkomab, kp,
      *                 a, b, c, gstxlq, glacaz, v1, v2, gmet, gmet2,
      *                 gterm2, km, kmk, lnfpur, gaq, ghkf, lamla2
@@ -466,6 +467,12 @@ c                                 temperature
             end if
 c                                 destabilize the phase
             vdp = thermo(3,id)**2*p
+
+         else if (lopt(68)) then
+c                                 finite strain alpha handling
+            vdp = vdpbmt (
+     *         thermo(3,id),ialpha,thermo(16,id),thermo(18,id)
+     *      )
 
          else
 
@@ -3547,6 +3554,106 @@ c                                 45/Pi
       end do
 
 c     call endtim (3,.false.,'plg')
+      end
+
+      double precision function vdpbmt (v0,ai,k,kprime)
+c-----------------------------------------------------------------------
+c vdpbmt computes the vdp integral of a compound identified by id
+c that is described by Birch-Murnaghan 3rd order EoS, but with the
+c modification that the thermal expansivity will not become negative.
+c this is accomplished by avoiding a model for K(T) [bulk modulus behavior
+c with changing temperature].
+c    v0 - is the volume at Pr & Tr
+c    ai - is the integral(alpha(T),Tr..T)
+c    k  - is the bulk modulus at Pr & Tr
+c    kprime - is -K' at Pr and Tr
+c-----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer itic, jerk
+
+      double precision k, kt, v0, vt, vpt, ai, rat, rat2, c0, c1, c2,
+     *                 c3, c4, c5, a0, a1, v, df, f, ft, af, dv, kprime,
+     *                 vint
+
+      double precision p,t,xco2,u1,u2,tr,pr,r,ps
+      common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
+
+      double precision units, r13, r23, r43, r59, zero, one, r1
+      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
+
+      save jerk
+      data jerk /0/
+c----------------------------------------------------------------------
+c                                 constants:
+      a0 = 0.375d0 * v0 * k
+      a1 = -0.125d0 * v0**2 * k
+      c0 = (-28d0 -6d0 * kprime) * v0 * a0
+      c1 = (12d0 + 3d0 * kprime) * v0**2 * a0
+      c2 = (16d0 + 3d0 * kprime) * a0
+      c3 = a1 * v0 * (-196d0 - 42d0 * kprime)
+      c4 = a1 * (80d0 + 15d0 * kprime)
+      c5 = a1 * v0 * (108d0 + 27d0 * kprime)
+c                                 use murnaghan guess for volume. GH, 6/23/16
+c                                 initial guess for volume:
+      dv = 1d0
+      v = v0 * (1d0 - kprime*p/k)**(dv/kprime)
+      itic = 0
+
+      do while (dabs(dv/(1d0+v)).gt.nopt(51))
+
+         itic = itic + 1
+         rat = (v0/v)**r13
+         rat2 = rat**2
+         f = p  + ((c0*v*rat+c1+c2*v**2*rat2)/v**3)
+         df = (c3/rat2+c4*v/rat+c5)/v**4
+         dv = f/df
+         v = v - dv
+
+         if (v.le.0d0.or.v.gt.1d6.or.itic.gt.20) then
+
+            if (jerk.lt.iopt(1)) then
+
+               jerk = jerk + 1
+               write (*,1000) t,p
+
+               if (jerk.eq.iopt(1)) call warn (49,r,369,'VDPBMT')
+
+            end if
+
+            vdpbmt = 1d2*p
+
+            return
+
+         end if
+
+      end do
+c                                 finite strain parameter to calculate decrease
+c                                 of alpha with p; see Helffrich (2017) AM 102
+c                                 1690-1695; based on Murnaghan EOS, which might
+c                                 be questionable.
+      f = 0.5d0*((v0/v)**r23-1d0)
+      af = (1d0 + 2d0*f)**-2.5d0 * (1d0 + 1d0/(1d0 + 2d0*f)**2) * 0.5d0
+c                                 V(p,t)
+      vpt = v*exp(af*ai)
+c                                 V(0,t)
+      vt = v0*exp(ai)
+c                                 effective f from V(P=0,T) to V(P,T)
+      ft = ((vt/vpt)**r23-1d0) * 0.5d0
+      kt = (p-pr) /
+     *   (3d0*ft*(1d0 + 2d0*ft)**2.5d0 * (1d0-ft*3d0*(4d0+kprime)/4d0))
+c                                 and the vdp integral is:
+c                                 checked in BM3_integration.mws
+      vdpbmt = p*vpt - vt*(pr-4.5d0*kt*ft**2*(1d0-ft*(4d0+kprime)))
+
+1000  format (/,'**warning ver369** failed to converge at T= ',f8.2,' K'
+     *       ,' P=',f9.1,' bar',/,'Using Birch-Murnaghan ',
+     *        'EoS, probably for Ghiorso et al. MELTS/PMELTS endmember',
+     *        ' data.',/,
+     *        'The affected phase will be destabilized.',/)
+
       end
 
       double precision function vdpbm3 (vt,k,kprime)
@@ -9637,23 +9744,25 @@ c                                 indicate site_check_override and refine endmem
             end if
 
          end if
-c                               read next solution
+c                                 read next solution
       end do
-c                               make lists of found/not-found solutions
+c                                 make lists of found/not-found solutions
       infnd = 0
       ifnd = 0
-
+c                                 check if fname was included:
       do i = 1, isoct
 
          ok = .false.
-c                                 check if fname was included:
+
          do j = 1, im
+
             if (fname(i).eq.sname(j)) then 
                ok = .true.
                ifnd = ifnd + 1
                solptr(ifnd) = j
                exit
             end if
+
          end do
 
          if (ok) cycle
@@ -22109,7 +22218,7 @@ c----------------------------------------------------------------------
 
       integer id
 
-      double precision gval, dg, vdp, gmags, lamla2, told
+      double precision gval, dg, vdp, gmags, lamla2
 
       external gmags, lamla2
 

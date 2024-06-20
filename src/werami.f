@@ -3257,7 +3257,14 @@ c                                 eject if no fluid phase
 c                                  ask which result is to be output
                write (*,1160)
 
-               if (readyn()) kfl(1) = .true.
+               if (readyn()) then
+
+                  kfl(1) = .true.
+
+                  if (lopt(40)) call errdbg ('absolute option cannot be'
+     *                  //' set T for simple back-calculated results.')
+
+               end if 
 
             else if (.not.lopt(25)) then 
 c                                 eject if no aqueous species
@@ -3265,9 +3272,12 @@ c                                 eject if no aqueous species
      *                             'calculation of solute speciation')
                cycle
 
-            else                  
+            else
 c                                 back-calculated is the only option
                kfl(1) = .true. 
+
+               if (lopt(40)) call errdbg ('absolute option cannot be'//
+     *                    ' set T for simple back-calculated results.')
 
             end if 
 c                                 identify the solvent
@@ -4131,7 +4141,14 @@ c                                 averaged by avgcmp, load into prop:
 c                                 bulk composition
          if (lopt(41)) then
 c                                 absolute composition
-            x = props(16,jd)
+            if (iopt(2).eq.0) then 
+c                                 molar units
+               x = props(16,jd)
+            else 
+c                                 mass units
+               x = props(16,jd) * props(17,jd) / 1d2
+            end if
+
          else
 c                                 relative composition
             x = 1d0
