@@ -1379,9 +1379,9 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical ok, bad, randm
+      logical ok, bad, randm, absent(k5)
 
-      integer i, ids, nph, ier, absent(k5)
+      integer i, ids, nph, ier
 
       character key*22, val*3, nval1*12, nval2*12, nval3*12,
      *          strg*40, strg1*40, tag*(*)
