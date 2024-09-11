@@ -347,6 +347,8 @@ c                                 perplexwrap.f flags
 
       vname(1) = 'P(bar)'
       vname(2) = 'T(K)'
+c                                 initialize fo2 for debugger
+      fo2 = 0d0
 c                                 max number of indendent potentials, may be
 c                                 increased depending on EoS choices. 
       ipot = 2
@@ -1114,9 +1116,19 @@ c                                  output results:
                igo = 1
 
                if (ifug.ne.27) then 
-                  fhc(1) = dexp(fhc(1)) 
-                  fhc(2) = dexp(fhc(2)) 
+                  
+                  fhc(1) = dexp(fhc(1))
+                  fhc(2) = dexp(fhc(2))
                   fo2 = fo2 / tentoe
+                  
+                  if (fo2.eq.0d0) fo2 = nopt(7)
+                  
+                  if (xo.eq.0) then 
+                     fhc(1) = nopt(7)
+                  else if (xo.eq.1d0) then
+                     fhc(2) = nopt(7)
+                  end if
+
                end if 
 
                if (ifug.le.2.or.ifug.eq.5.or.ifug.eq.14) then

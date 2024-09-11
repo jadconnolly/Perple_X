@@ -2279,7 +2279,7 @@ reach_increment 0
 end_of_model
                            --------------------------------------------------------
 begin_model
-                      Aqueous low density silicate fluid/melt - Holland, Green, & Powell; J Pet, 2018, 59:881–900.
+                      Aqueous low density silicate fluid/melt - Holland, Green, & Powell; J Pet, 2018, 59:881ï¿½900.
 
                       Intended to account for the solubility of silicates in water
                       at P > 1 GPa. Use with caution.
@@ -4814,7 +4814,7 @@ end_dqf_corrections
 end_of_model
                       --------------------------------------------------------
 begin_model
-                            Sapphirine, O/D non-ideal, Wheller & Powell (JMG, 32, 287–299, 2014)
+                            Sapphirine, O/D non-ideal, Wheller & Powell (JMG, 32, 287ï¿½299, 2014)
 
                             Modified JADC model entered by Tim Johnson, 7 April 2014.
 
@@ -11772,7 +11772,7 @@ abbreviation Cpx
 full_name    clinopyroxene
 
 
-688                               | model type: 688 format standard model
+688                                | model type: 688 format standard model
 
 1                                  | number of polytopes
 1                                  | number of simplices
@@ -14183,7 +14183,7 @@ z(fe,m2) = 1 fta
 end_of_model
                       --------------------------------------------------------
 begin_model
-                             Antigorite with Tschermak's substitution (Padrón-Navarta et al., 2013, Lithos)
+                             Antigorite with Tschermak's substitution (Padrï¿½n-Navarta et al., 2013, Lithos)
 
                              reformulated from relict equipartion (model type 7) to simplicial
                              composition space (model type 2).
@@ -15359,7 +15359,7 @@ site_check_override
 end_of_model
                       --------------------------------------------------------
 begin_model
-                             Olivine - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                             Olivine - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                              Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                              JADC, April 2019.
@@ -15426,7 +15426,7 @@ z(M2,ca) = 1 mont
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Orthopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Orthopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
                       -------------------------------------------------------- 
                       W(en odi) and the odi DQF revised to destabilize Ca-rich
@@ -15707,7 +15707,7 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Initially coded for Perple_X by JRDC Oct 2018; reworked JADC Apr 2019.
@@ -15854,7 +15854,7 @@ end_dqf_corrections
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       JADC, April 2019
@@ -16523,7 +16523,7 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       as revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
@@ -16678,7 +16678,7 @@ end_van_laar_sizes
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
@@ -16787,7 +16787,7 @@ end_van_laar_sizes
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Orthopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Orthopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
@@ -17062,7 +17062,7 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Clinopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Clinopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
@@ -17359,7 +17359,7 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                        Ternary feldspar “4TR” model
+                        Ternary feldspar ï¿½4TRï¿½ model
                         Holland, TJB, Green, ECR & Powell, R (2021)
 
                         * entered by Bob Myhill, 2023/07/08
@@ -17374,7 +17374,7 @@ begin_model
 
                         * Thermocalc input:
 
-                            % ternary feldspar, “4TR” model, with plagioclase-friendly 
+                            % ternary feldspar, ï¿½4TRï¿½ model, with plagioclase-friendly 
                             %         parameterisation.
                             %
                             % Holland, TJB, Green, ECR & Powell, R (2021). A thermodynamic model

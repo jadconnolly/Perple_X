@@ -20,13 +20,13 @@ c----------------------------------------------------------------------
 
       double precision parm(44)
 
-      open (n1,file='species_names.txt',status='old')
-      open (n3,file='STXVER.dat',status='unknown')
+      open (n1,file='lars24/species_names.txt',status='old')
+      open (n3,file='lars24/STXVER.dat',status='unknown')
 
       do 
 
          read (n1,*,end=99) spname
-         open (n2,file=spname,status='old')
+         open (n2,file='lars24/'//spname,status='old')
 
          call redcd1 (n2,ier,key,val,nval1,nval2,nval3,strg,strg1)
 
@@ -40,12 +40,15 @@ c----------------------------------------------------------------------
 
         if (parm(9).ne.0d0) call errdbg ('non-zero k"')
         if (parm(32).ne.0d0) call errdbg ('vinet')
-c                                 F0, -n, V0
-         write (n3,1000) parm(5)*1d3,-int(parm(1)),parm(6)/1d1
+c                                 F0, -n, -V0
+         write (n3,1000) parm(5)*1d3,-int(parm(1)),-parm(6)/1d1
 c                                 K0 (7), K' (8), Debeye T (10), 
 c                                 gamma0(26), q0 (27), eta_S0 (37)
          write (n3,1010) parm(7)*1d4,parm(8),parm(10),parm(26),
      *                  parm(27),parm(37)
+c                                 STX 24, F_el: beta_el, gamma_el
+         if (parm(28).ne.0d0.or.parm(29).ne.0d0) write (n3,1015) 
+     *                                           parm(28),parm(29)
 c                                 mu0 (35), mu' (36)
          write (n3,1020) parm(35)*1d4, parm(36)
 
@@ -62,11 +65,12 @@ c                                 landau low, Tc (38), Sd (39), Vd (40)
 
       end do
 
-1000  format ('G0 = ',f11.2,' S0 = ',i3,' V0 = ',f8.4)
+1000  format ('G0 = ',f11.2,' S0 = ',i3,' V0 = ',f10.6)
 1010  format ('c1 = ',f9.1,' c2 = ',f8.5,' c3 = ',f10.5,' c4 = ',f7.5
      *       ,' c5 = ',f7.5,' c6 = ',f7.5)
+1015  format ('b1 = ',f7.5,' b2 = ',f7.5)
 1020  format ('m0 = ',f9.1,' m1 = ',f9.5)
-1030  format ('transition = 1 type = 7  t1 = ',f11.5,' t2 = ',f10.5,
+1030  format ('transition = 1 type = 7  t1 = ',f8.2,' t2 = ',f9.5,
      *        ' t3 = ',f8.4)
 
 99    close (n1)

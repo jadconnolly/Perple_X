@@ -1879,8 +1879,8 @@ c----------------------------------------------------------------
       common / cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
 
       write (*,1000) 
-      read (*,'(a)') file
-      if (file.eq.' ') return
+      read (*,'(a)',iostat=ier) file
+      if (ier.ne.0 .or. file.eq.' ') return
 1000  format ('Enter file name for the plot_extra_data option:')
 
       open (n8,file=file,status='old',iostat=ier)

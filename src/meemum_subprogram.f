@@ -91,8 +91,9 @@ c                                 vname -> the name of the potential variables
 c                                 cname -> the names of the components
       character*5 cname
       common/ csta4 /cname(k5)
-
-
+c                                 phase compositions
+      double precision pcomp
+      common/ cst324 /pcomp(k0,k5)
 c                                 phase names
       character pname*14
       common/ cxt21a /pname(k5)
@@ -119,22 +120,22 @@ c                                 computations are done solely in molar units.
          amount = 'molar '
       end if
 c                                 computational loop
-      do 
+      do  ii =1,208
 c                                 get physical conditions
-         write (*,'(10a)') 'Enter ',(vname(jv(i)), i = 1, ipot)
+! henri [commented]        write (*,'(10a)') 'Enter ',(vname(jv(i)), i = 1, ipot)
          read (*,*,iostat=ier) (v(jv(i)), i = 1, ipot)
 c                                 get chemical composition
          do 
-             write (*,1060) amount
-             write (*,'(12(a,1x))') (cname(i),i=1,jbulk)
-             read (*,*,iostat=ier) (cblk(i),i=1,jbulk)
+!henri [commented]            write (*,1060) amount
+!henri [commented]            write (*,'(12(a,1x))') (cname(i),i=1,jbulk)
+c             read (*,*,iostat=ier) (cblk(i),i=1,jbulk)
              if (ier.eq.0) exit
          end do  
          
          if (iwt.eq.1) then 
 c                                 convert mass to molar composition
             do i = 1, jbulk
-                cblk(i) = cblk(i)/atwt(i)
+c               cblk(i) = cblk(i)/atwt(i)
             end do 
 
          end if

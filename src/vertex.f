@@ -326,9 +326,6 @@ c-----------------------------------------------------------------------
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
-      character*100 cfname
-      common/ cst227 /cfname
-
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
@@ -339,9 +336,6 @@ c-----------------------------------------------------------------------
       integer ncol, nrow
       common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
      *                usecmp, colcmp
-
-      double precision dcomp
-      common/ frct2 /dcomp(k5)
 
       integer is
       double precision a,b,c
@@ -356,12 +350,12 @@ c-----------------------------------------------------------------------
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
 
-      integer jlow,jlev,loopx,loopy,jinc1
-      common/ cst312 /jlow,jlev,loopx,loopy,jinc1
-
       integer fmode,ifrct,ifr
       logical gone
       common/ frct1 /fmode,ifrct,ifr(k23),gone(k5)
+
+      integer jlow,jlev,loopx,loopy,jinc1
+      common/ cst312 /jlow,jlev,loopx,loopy,jinc1
 c-----------------------------------------------------------------------
 
       iasct = 0
@@ -564,9 +558,6 @@ c-----------------------------------------------------------------------
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
-      character*100 cfname
-      common/ cst227 /cfname
-
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
@@ -577,9 +568,6 @@ c-----------------------------------------------------------------------
       integer ncol, nrow
       common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
      *                usecmp, colcmp
-
-      double precision dcomp
-      common/ frct2 /dcomp(k5)
 
       integer is
       double precision a,b,c
@@ -714,9 +702,6 @@ c-----------------------------------------------------------------------
       integer is
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
-
-      double precision dcomp
-      common/ frct2 /dcomp(k5)
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
@@ -2556,7 +2541,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      character string*(*), pname*14
+      character string*(*), char14*14
 
       integer i, ist, iend
 
@@ -2580,11 +2565,11 @@ c----------------------------------------------------------------------
 
       do i = 1, npt
 
-         call getnam (pname,jkp(jdv(i)))
+         call getnam (char14,jkp(jdv(i)))
 
          ist = iend + 1
          iend = ist + 14
-         read (pname,'(400a)') chars(ist:iend)
+         read (char14,'(400a)') chars(ist:iend)
 
          call ftext (ist,iend)
 
@@ -2769,7 +2754,7 @@ c                               increments at each level
 
       call setvar
 c                               init progress info
-      dinc = 1d2/real(loopx/kinc + 1)
+      dinc = 1d2/real((loopx-1)/kinc + 1)
       tot = 0d0
 
 c     if (lopt(28)) call begtim (11)
@@ -2786,6 +2771,8 @@ c                               flush stdout for paralyzer
          flush (6)
 
       end do
+
+      write (*,1030)
 
 c     if (lopt(28)) call endtim (11,.true.,'low level grid')
 c                               output interim plt file
@@ -3249,7 +3236,6 @@ c          ifrct - number of phases to be fractionated
 c          ifr(ifract) - 0 if cpd, else ikp (solution pointer)
 c          jfr(ifract) - cpd pointer
 c----------------------------------------------------------------------
-
       implicit none
  
       include 'perplex_parameters.h'
@@ -3424,16 +3410,13 @@ c-----------------------------------------------------------------------
       logical there(k23), warn, output, quit, liquid, verbos
 
       double precision mass(k23), tmass, x, errr(k5)
-
-      double precision dcomp
-      common/ frct2 /dcomp(k5)
+ 
+      integer ipot,jv,iv
+      common/ cst24 /ipot,jv(l2),iv(l2)
 
       integer fmode,ifrct,ifr
       logical gone
       common/ frct1 /fmode,ifrct,ifr(k23),gone(k5)
- 
-      integer ipot,jv,iv
-      common/ cst24 /ipot,jv(l2),iv(l2)
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
@@ -3567,7 +3550,7 @@ c                                 is present, remove from bulk
                      there(i) = .true.
 c                                 simple back calculated speciation
 c                                 is being used for fractionation:
-                     if (lopt(67)) call aqrxdo (j,-1)
+                     if (lopt(67)) call aqrxdo (j,-1,.false.)
 
                      if (amt(j).lt.0d0) amt(j) = 0d0
 
@@ -3705,13 +3688,13 @@ c                                 warn on complete depletion of a component
 
       end 
 
-      character*22 function lgname (pname,ids)
+      character*22 function lgname (char14,ids)
 c----------------------------------------------------------------------
       implicit none
  
       include 'perplex_parameters.h'
 
-      character pname*14
+      character char14*(*)
 
       integer ids
 
@@ -3721,14 +3704,14 @@ c----------------------------------------------------------------------
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 c----------------------------------------------------------------------
-      call getnam (pname,ids)
+      call getnam (char14,ids)
 
       if (ids.lt.0) then 
 
          if (ikp(-ids).gt.0) then 
             lgname = lname(ikp(-ids))
          else if (ids.gt.0) then 
-            lgname = pname
+            lgname = char14
          end if 
 
       else 

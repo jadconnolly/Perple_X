@@ -640,7 +640,7 @@ c                                  the result to prop.
                   else
 c                                  output back-calculated result to props, -1 signals
 c                                  tab file output.  
-                     call aqrxdo (komp,-1)
+                     call aqrxdo (komp,-1,.false.)
 
                   end if 
 
@@ -885,9 +885,6 @@ c----------------------------------------------------------------
 
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
-
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
 
       logical mus
       double precision mu
@@ -2204,9 +2201,6 @@ c-------------------------------------------------------------------
 
       double precision x(k5), ntot
 
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 c----------------------------------------------------------------------
@@ -2442,10 +2436,7 @@ c----------------------------------------------------------------
 
       integer id
 
-      double precision mode(3)
-
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
+      double precision mode(*)
 c----------------------------------------------------------------
       if (aflu.and.lflu.or.(.not.aflu).or.psys1(1).eq.0d0) then
 c                     total mode:
@@ -2675,9 +2666,6 @@ c----------------------------------------------------------------
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
 
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
@@ -2695,9 +2683,6 @@ c----------------------------------------------------------------
       logical mus
       double precision mu
       common/ cst330 /mu(k8),mus
-
-      character pname*14
-      common/ cxt21a /pname(k5)
 
       character*14 tname
       integer kop,kcx,k2c,iprop
@@ -3072,7 +3057,7 @@ c----------------------------------------------------------------
 
       parameter (kprop=40)
 
-      character propty(kprop)*60, pname*10
+      character propty(kprop)*60, char10*10
 
       external readyn
 
@@ -3209,7 +3194,7 @@ c                                 choose property
          if (lop.eq.7.or.lop.eq.20.or.lop.eq.37) then 
 c                                 modes:
 c                                 get phase name
-             call rnam1 (icx,pname,2)
+             call rnam1 (icx,char10,2)
 
              phluid = .false.
 
@@ -3261,7 +3246,7 @@ c                                  ask which result is to be output
 
                   kfl(1) = .true.
 
-                  if (lopt(40)) call errdbg ('absolute option cannot be'
+                  if (lopt(41)) call errdbg ('absolute option cannot be'
      *                  //' set T for simple back-calculated results.')
 
                end if 
@@ -3276,7 +3261,7 @@ c                                 eject if no aqueous species
 c                                 back-calculated is the only option
                kfl(1) = .true. 
 
-               if (lopt(40)) call errdbg ('absolute option cannot be'//
+               if (lopt(41)) call errdbg ('absolute option cannot be'//
      *                    ' set T for simple back-calculated results.')
 
             end if 
@@ -3371,7 +3356,7 @@ c                                 ask if fluids included
 c                                 get solution identity
             do 
 
-               call rnam1 (icx,pname,0)
+               call rnam1 (icx,char10,0)
                if (icx.gt.0) exit  
                write (*,1140)
 
@@ -3406,7 +3391,7 @@ c                                 icx = 999 all props, else phase index
 
             else if (i.eq.2) then 
 c                                 get phase index
-               call rnam1 (icx,pname,2)
+               call rnam1 (icx,char10,2)
 
             end if 
 
@@ -3467,7 +3452,7 @@ c                                 should be included:
                else 
 c                                 get phase name
                   do 
-                     call rnam1 (icx,pname,2)
+                     call rnam1 (icx,char10,2)
                      if (icx.lt.1.and.lop.eq.8) then
                         write (*,1140)
                         cycle 
@@ -3495,19 +3480,19 @@ c                                 "all" prop option
                mprop = i8 + 3
 c                                 basic props
                do i = 1, mprop
-                  call gtname (lop,icx,i,komp,pname)
+                  call gtname (lop,icx,i,komp,char10)
                end do 
 c                                 for all prop option make the
 c                                 bulk composition and chemical 
 c                                 potential variable names
                do i = mprop + 1, mprop + icomp
 c                                 bulk compositions, lop = 6
-                  call gtname (6,i-mprop,i,komp,pname)
+                  call gtname (6,i-mprop,i,komp,char10)
                end do 
 
                do i = mprop + icomp + 1, i8 + 3 + icomp + icp
 c                                 chemical potentials, lop = 23
-                  call gtname (23,i-mprop-icomp,i,komp,pname)
+                  call gtname (23,i-mprop-icomp,i,komp,char10)
                end do 
 
                dname(iprop) = 'nom_ox'
@@ -3516,10 +3501,10 @@ c                                 chemical potentials, lop = 23
 c                                 "custom" prop option, kop
 c                                 pointer is offset because 
 c                                 kop(1) = 38
-               if (icx.eq.999) pname = 'phase     '
+               if (icx.eq.999) char10 = 'phase     '
 
                do i = 1, iprop
-                  call gtname (kop(i+1),icx,i,komp,pname)
+                  call gtname (kop(i+1),icx,i,komp,char10)
                end do 
 
             else if (lop.eq.40) then 
@@ -3540,7 +3525,7 @@ c                                 global arrays
             k2c(iprop) = komp
 c                                 make the name of the property and save
 c                                 it in array dname
-            call gtname (lop,icx,iprop,komp,pname)
+            call gtname (lop,icx,iprop,komp,char10)
 
          end if 
 
@@ -3590,7 +3575,7 @@ c                                 it in array dname
   
       end
 
-      subroutine gtname (lop,icx,jprop,komp,pname)
+      subroutine gtname (lop,icx,jprop,komp,char10)
 c----------------------------------------------------------------
 c makes the name of property iprop and saves it in dname(iprop)
 c called only by chsprp, variable names as in chsprp.
@@ -3603,7 +3588,7 @@ c----------------------------------------------------------------
 
       integer icx, jprop, lop, komp, l2p(39)
 
-      character prname(45)*14, pname*10, temp*20
+      character prname(45)*14, char10*10, temp*20
 
       character*14 tname
       integer kop,kcx,k2c,iprop
@@ -3663,7 +3648,7 @@ c                                 21-30
 c                                 31-39
      *         25,26,27,20,21, 0, 45, 0, 28/
 c----------------------------------------------------------------------
-      if ((lop.eq.6.or.lop.eq.36).and..not.warned) then
+      if (lop.eq.36.and..not.warned) then
 c                                this warning could be shifted to where
 c                                the phase/system option is chosen.
          if (lopt(23)) then
@@ -3714,21 +3699,21 @@ c                                 mass fraction (%)
 c                                 mode of a phase
          if (iopt(3).eq.0) then 
 c                                 vol%
-            temp = pname//',vo%'
+            temp = char10//',vo%'
 
          else if (iopt(3).eq.1) then 
 c                                 wt%
-            temp = pname//',wt%'
+            temp = char10//',wt%'
 
          else  
 c                                 mol%
-            temp = pname//',mo%'
+            temp = char10//',mo%'
 
          end if 
 
       else if (lop.eq.8) then 
 c                                phase composition
-        write (temp,'(a,i2,a)') 'C['//pname,komp,']'
+        write (temp,'(a,i2,a)') 'C['//char10,komp,']'
 
       else if (lop.eq.23) then 
 c                                chemical potential of a component
@@ -3743,15 +3728,15 @@ c                                to prmame
 c                                extent of a phase
          if (iopt(3).eq.0) then 
 c                                volume
-            temp = pname//',m3 '
+            temp = char10//',m3 '
 
          else if (iopt(3).eq.1) then 
 c                                 mass
-            temp = pname//',kg '
+            temp = char10//',kg '
 
          else  
 c                                 mol
-            temp = pname//',mol'
+            temp = char10//',mol'
 
          end if   
 
@@ -4052,9 +4037,6 @@ c-----------------------------------------------------------------------
       integer kd, na1, na2, na3, nat
       double precision x3, caq
       common/ cxt16 /x3(k5,h4,mst,msp),caq(k5,l10),na1,na2,na3,nat,kd
-
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
 c----------------------------------------------------------------------
       if (jd.eq.0) then 
 c                                 no solvent phase stable

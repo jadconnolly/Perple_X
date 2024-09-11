@@ -29,9 +29,6 @@ c------------------------------------------------------------------------
 
       external gcpd, readyn
 
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
       integer ifct,idfl
       common/ cst208 /ifct,idfl
 
@@ -1155,9 +1152,6 @@ c---------------------------------------------------------------------
       double precision tm,td
       common/ cst202 /tm(m7,m6),td(m8),ilam,jlam,idiso,lamin,idsin
 
-      double precision therdi,therlm
-      common/ cst203 /therdi(m8,m9),therlm(m7,m6,k9)
-
       integer idf
       double precision act
       common/ cst205 /act(k7),idf(3)
@@ -1486,7 +1480,7 @@ c                                 b1-b12
 c                                 b13 on return
      *            thermo(23,id),
 c                                 ref stuff
-     *            tr,pr,r,0)
+     *            tr,0)
 
                   exit 
 
@@ -1819,9 +1813,6 @@ c----------------------------------------------------------------------
 
       character tname
       common/ csta10 /tname(2)
-
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
@@ -2249,9 +2240,6 @@ c----------------------------------------------------------------------
 
       logical sick(i8), ssick, ppois, bulkg, bsick
 
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
       integer icomp,istct,iphct,icp
       common/ cst6 /icomp,istct,iphct,icp
 
@@ -2306,10 +2294,7 @@ c----------------------------------------------------------------------
 
       double precision lgk
 
-      logical table 
-
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
+      logical table
 
       double precision v,tr,pr,r,ps
       common/ cst5 /v(l2),tr,pr,r,ps

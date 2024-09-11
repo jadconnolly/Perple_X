@@ -29,7 +29,7 @@ c-----------------------------------------------------------------------
       double precision c(0:4)
 
       character mnames(k16*k17)*8, n9name*100, dsol*100, opname*100,
-     *          mname(k5)*5, oname(k5)*5, pname(k5)*5, cfname*100,
+     *          mname(k5)*5, oname(k5)*5, kname(k5)*5,
      *          uname(k0)*5, group*28, aname(i9)*6, amount*5, new*3, 
      *          text*256, dtext*200, title*162, lname(i9)*22,
      *          sname(i9)*10, tn1*6, tn2*22, fname(i9)*10,
@@ -58,9 +58,6 @@ c-----------------------------------------------------------------------
 
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
-
-      integer imaf,idaf
-      common/ cst33 /imaf(i6),idaf(i6)
 
       integer grid
       double precision rid 
@@ -201,11 +198,11 @@ c                                 2d gridded minimization
 
       end if
 c                                 choose chemical components
-      call compch (ivct,feos,mname,pname,oname,uname)
+      call compch (ivct,feos,mname,kname,oname,uname)
 c                                 physical variable choices and ranges
 c                                 set icopt to its internal value:
       call varich (c,ivct,iind,oned,idep,iord,jcth,amount,dtext,opname,
-     *             pname,cfname,liqdus)
+     *             kname,liqdus)
 c                                 warn about the use of chemical potentials
 c                                 in different types of calculations
       if (jmct.gt.0) then 
@@ -647,9 +644,9 @@ c                                 output component data:
 
       do i = 1, icp 
          if (i.gt.jcth) then 
-            write (n1,3000) pname(i),0,0.,0.,0.,'unconstrained'
+            write (n1,3000) kname(i),0,0.,0.,0.,'unconstrained'
          else 
-            write (n1,3000) pname(i),icont,(dblk(j,i),j=1,3),amount
+            write (n1,3000) kname(i),icont,(dblk(j,i),j=1,3),amount
          end if 
       end do 
 
@@ -660,9 +657,9 @@ c                                 output component data:
       do i = icp + 1, icp + isat
 
          if (i.gt.jcth) then 
-            write (n1,3000) pname(i),0,0.,0.,0.,'unconstrained'
+            write (n1,3000) kname(i),0,0.,0.,0.,'unconstrained'
          else 
-            write (n1,3000) pname(i),icont,(dblk(j,i),j=1,3),amount
+            write (n1,3000) kname(i),icont,(dblk(j,i),j=1,3),amount
          end if
 
       end do 
@@ -810,7 +807,7 @@ c                                 diagrams:
 
          write (n1,'(i4,1x,g14.6,1x,a)')  i, v(1),
      *                         'Number and size (mole) of fluid '//
-     *                         'aliquots for 0d infilitration model'
+     *                         'aliquots for 0d infiltration model'
 
       end if
  
@@ -1086,9 +1083,6 @@ c----------------------------------------------------------------------
 
       external readyn
 
-      integer imaf,idaf
-      common/ cst33 /imaf(i6),idaf(i6)
-
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
 
@@ -1213,7 +1207,7 @@ c                                 find index in uname array
      *        ', and do not use leading blanks. Try again:',/)
       end
 
-      subroutine compch (ivct,feos,mname,pname,oname,uname)
+      subroutine compch (ivct,feos,mname,kname,oname,uname)
 c---------------------------------------------------------------------------
 c interactively choose components for build.
 c---------------------------------------------------------------------------
@@ -1227,7 +1221,7 @@ c---------------------------------------------------------------------------
 
       character mname(*)*5, qname(k0)*5, char5*5, uname(*)*5,
      *          oname(*)*5, nname(k5)*5, char6*6, 
-     *          pname(*)*5, fugact(3)*8
+     *          kname(*)*5, fugact(3)*8
 
       external findph, readyn
 
@@ -1236,9 +1230,6 @@ c---------------------------------------------------------------------------
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
-
-      integer imaf,idaf
-      common/ cst33 /imaf(i6),idaf(i6)
 
       integer ifct,idfl
       common/ cst208 /ifct,idfl
@@ -1274,7 +1265,7 @@ c                                 Component stuff first:
       do i = 1, icmpn
          uname(i) = cmpnt(i)
          qname(i) = cmpnt(i)
-         pname(i) = cmpnt(i)
+         kname(i) = cmpnt(i)
       end do
 
       if (lopt(7).and.icopt.ne.9) then 
@@ -1614,7 +1605,7 @@ c                                  good name, count and save index
             if (icp.gt.k5) call error (197,0d0,icp,'BUILD')
 
             ic(icp) = igood
-            pname(icp) = char5
+            kname(icp) = char5
 
          else 
 c                                 blank input, check counter
@@ -1633,9 +1624,9 @@ c                                 in thermodynamic composition space.
       do i = 1, icp
 
          do j = 1, ispec
-            if (pname(i).ne.uname(idspe(j))) cycle
+            if (kname(i).ne.uname(idspe(j))) cycle
             jspec = jspec + 1
-            mname(jspec) = pname(i)
+            mname(jspec) = kname(i)
          end do
 
       end do
@@ -1659,9 +1650,9 @@ c                                 probably should change iv(3)?
      *      ivct = ivct - 1
 
       end if
-c                                 make pname into a list of retained (non-mobile) components
+c                                 make kname into a list of retained (non-mobile) components
       do i = icp + 1, icp + isat
-         pname(i) = nname(i-icp)
+         kname(i) = nname(i-icp)
       end do
 c                                 jcmpn unused components are in qname
 c                                 get the indices for chkphi
@@ -1757,7 +1748,7 @@ c                                 component pointers for chkphi
       end 
 
       subroutine varich (c,ivct,iind,oned,idep,iord,jcth,amount,dtext,
-     *                   opname,pname,cfname,liqdus)
+     *                   opname,kname,liqdus)
 c---------------------------------------------------------------------------
 c interatctively choose physical variables for build.
 c---------------------------------------------------------------------------
@@ -1771,7 +1762,7 @@ c---------------------------------------------------------------------------
       logical oned, readyn, liqdus, fileio
 
       character dtext*(*), amount*5, stext*11, nc(3)*2, 
-     *          opname*(*), pname(*)*5, cfname*100
+     *          opname*(*), kname(*)*5
 
       double precision c(0:4)
 
@@ -2227,7 +2218,7 @@ c                                 for constrained minimization
 
             do i = icp + 1, icth
 
-               write (*,1430) pname(i)
+               write (*,1430) kname(i)
 
                if (readyn()) then
                   jcth = jcth + 1
@@ -2266,7 +2257,7 @@ c                                initial bulk, then infiltrant:
                         write (*,1360) amount
                      end if 
 
-                     write (*,'(12(1x,a))') (pname(j), j = 1, jcth)
+                     write (*,'(12(1x,a))') (kname(j), j = 1, jcth)
                      write (*,1410) 
                      read (*,*,iostat=ier) (dblk(i,j), j = 1, jcth)
                      if (ier.eq.0) exit
@@ -2280,7 +2271,7 @@ c                                initial bulk, then infiltrant:
 c                                fixed bulk composition
                do 
                   write (*,1390) amount
-                  write (*,'(12(1x,a))') (pname(j), j = 1, jcth)
+                  write (*,'(12(1x,a))') (kname(j), j = 1, jcth)
                   write (*,1410) 
                   read (*,*,iostat=ier) (dblk(1,j), j = 1, jcth)
                   if (ier.eq.0) exit
@@ -2317,7 +2308,7 @@ c                                 open c-space
 
                   do 
                      write (*,1390) amount
-                     write (*,'(12(1x,a))') (pname(j), j = 1, jcth)
+                     write (*,'(12(1x,a))') (kname(j), j = 1, jcth)
                      write (*,1530) nc(i)
                      read (*,*,iostat=ier) (dblk(i,j), j = 1, jcth)
                      if (ier.eq.0) exit

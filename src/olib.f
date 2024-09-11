@@ -27,9 +27,6 @@ c----------------------------------------------------------------------
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
 
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
       integer kkp,np,ncpd,ntot
       double precision cp3,amt
       common/ cxt15 /cp3(k0,k19),amt(k19),kkp(k19),np,ncpd,ntot
@@ -53,9 +50,6 @@ c----------------------------------------------------------------------
 
       integer hcp,idv
       common/ cst52  /hcp,idv(k7)
-
-      character pname*14
-      common/ cxt21a /pname(k5)
 
       integer ld, na1, na2, na3, nat
       double precision x3, caq
@@ -108,9 +102,9 @@ c                                 probably unnecessary?
 c                                 print standard potentials
       write (lu,1000)
 
-      if (iam.eq.2) then 
+      if (iam.eq.2) then
+
          write (lu,1120) (vname(jv(i)),v(jv(i)), i = 1, ipot)
-         write (lu,1120) (vname(jv(i)),v(jv(i)), i = 3, ipot)
 
          do i = 2, icont
             write (lu,1121) i-1, cx(i-1)
@@ -757,7 +751,7 @@ c                                 ergo set cblk to the phase based bulk
 c                                 composition fbulk
                cblk(1:kbulk) = fbulk(1:kbulk)
 
-               call aqrxdo (i,lu)
+               call aqrxdo (i,lu,.false.)
 
             end if 
 
@@ -876,10 +870,6 @@ c                                 for final adaptive solution
 
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
-
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
 
       logical mus
       double precision mu
@@ -1582,14 +1572,8 @@ c----------------------------------------------------------------------
 
       external poiss, ginc
 
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
-
-      character pname*14
-      common/ cxt21a /pname(k5)
 
       integer iam
       common/ cst4 /iam
@@ -2651,12 +2635,6 @@ c-----------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
-
-      character pname*14
-      common/ cxt21a /pname(k5)
-
       integer hs2p
       double precision hsb
       common/ cst84 /hsb(i8,4),hs2p(6)
@@ -3203,9 +3181,6 @@ c----------------------------------------------------------------------
       integer i
 
       logical ssick,ppois,bulkg,bsick
-
-      double precision props,psys,psys1,pgeo,pgeo1
-      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
 
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)

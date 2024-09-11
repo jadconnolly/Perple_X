@@ -565,53 +565,65 @@ c                                 LP workspace into common
 
       integer  iop0 
       common / basic /iop0
-
+c                                 project name, temporary file name
       character prject*100,tfname*100
       common/ cst228 /prject,tfname
 
-      integer mphase, pids
-      double precision pblk, eblk, pmode, emode
-      common/ cst67 /pblk(k5,k5), eblk(k5,k5), pmode(k5), emode(k5),
-     *               pids(k5), mphase
+      double precision pmode, emode
+      common/ cst67 /pmode(k5), emode(k5)
 c                                 MC_fit common block:
-      logical mcpert, mcflag, oprt, grh, invxpt
-      integer mxpt, cxpt, random,
+      logical mcpert, mcflag, oprt, grh, invxpt, fprint, grdsch, seed, 
+     *        mcgrid, grhobj, bayes, better, vital, consol
+
+      integer mxpt, cxpt, random, cextra, optct,
      *        xptids, xptptr, xptnph, xpterr, mccpd, mcsol, mcid, 
      *        mcids, msloc, msolct, nparm, nunc, mcpct, mcpid, mctrm,
      *        mcj, mccoef, mccoid
+
       character xptnam*18
+
       double precision xptpt, xptblk, xptc, xpte, cprng, sprng, wcomp, 
-     *                 wextra, wmiss, oktol, scores
+     *                 wextra, wmiss, oktol, scores, plow, pdelta
+
       common/ cst68 /xptpt(l11,l2), xptblk(l11,k5),
      *               xptc(k5*l11), xpte(k5*l11), xpterr(l11),
      *               cprng(k5,3,3),sprng(k5,m1,m3,3), wcomp, wextra,
-     *               wmiss, oktol, scores(l11), 
+     *               wmiss, oktol, scores(l11), plow(l2 + k5), 
+     *               pdelta(l2 + k5),
 c                                  integer
      *               mccpd, mcsol, mxpt, cxpt, nparm, nunc(2),
-     *               mctrm(k5),
+     *               mctrm(k5), cextra, optct, 
      *               xptids(l11,k5), xptptr(l11,k5), xptnph(l11),
      *               mcid(k5), mcids(k5), msolct(l11,h9), 
      *               msloc(l11,k5), mcpct(k5), mcpid(k5,3),
      *               mccoef(k5,m1), mcj(k5,m1), mccoid(k5,m1,m3),
 c                                  logical
      *               mcpert, oprt, mcflag(h9), random(3), grh, invxpt,
+     *               fprint, grdsch, seed, mcgrid, grhobj, bayes, 
+     *               better, vital, consol,
 c                                  character
      *               xptnam(l11)
 
+c                                 minim parameters
+      integer mtry, conchk, jprint, iquad, kcount 
+      double precision invtol, simplx, frac
+      common/ cminim /invtol, simplx, frac,
+     *                mtry, conchk, jprint, iquad, kcount
+c                                 make definitions
       double precision mcomp
       character mknam*8
       integer nmak
       logical mksat
       common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
-
+c                                 make definitions
       integer mknum, mkind, meos
       double precision mkcoef, mdqf
       common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
      *                 mknum(k16),meos(k16)
-
+c                                 make definitions
       integer make
       common / cst335 /make(k10)
-
+c                                 global excess functions
       double precision wgl, wkl, vlar
       common/ cxt2r /wgl(m3,m1,h9),wkl(m16,m17,m18,h9),vlar(m3,m4,h9)
 
@@ -643,3 +655,34 @@ c                                 afname - list of reference species names for
 c                                 calculations as a function of activity/fugacity
       character*8 exname,afname
       common/ cst36 /exname(h8),afname(2)
+c                                 assemblage indexed phase names
+      character pname*14
+      common/ cxt21a /pname(k5)
+c                                 assemblage indexed phase properties and
+c                                 bulk system properties
+      double precision props,psys,psys1,pgeo,pgeo1
+      common/ cxt22 /props(i8,k5),psys(i8),psys1(i8),pgeo(i8),pgeo1(i8)
+c                                 endmember transition data
+      double precision therdi, therlm
+      common/ cst203 /therdi(m8,m9),therlm(m7,m6,k9)
+c                                 excess energy variables
+      integer jterm, jord, extyp, rko, jsub
+      common/ cxt2i /jterm(h9),jord(h9),extyp(h9),rko(m1,h9),
+     *               jsub(m2,m1,h9)
+c                                 coordinate file name
+      character*100 cfname
+      common/ cst227 /cfname
+c                                 bulk composition increments during 
+c                                 fractionation
+      double precision dcomp
+      common/ frct2 /dcomp(k5)
+
+      double precision mmu
+      common/ cst39 /mmu(i6)
+
+      integer imaf,idaf
+      common/ cst33 /imaf(i6),idaf(i6)
+
+      double precision vnumu
+      common/ cst44 /vnumu(i6,k10)
+      

@@ -1,0 +1,874 @@
+689 DO NOT DELETE THIS LINE
+
+| Solution models consistent with:
+
+| Stixrude, L. and Lithgow-Bertelloni, C. (2024)
+
+| The models are to be used with the Perple_X thermodynamic data file stx24ver.dat. Refer to 
+| the header of that file for additional implementation notes. JADC, 9/11/24 
+
+| The solution model names used here are:
+
+| O
+| Pl
+| Sp
+| Cpx
+| Wad
+| Ring
+| Pv
+| Wus
+| C2/c
+| Opx
+| Aki
+| Ppv
+| CF
+| Gt
+| NaAl
+
+| These are not necessarily identical to the names used in STX24.
+                      --------------------------------------------------------
+begin_model C2/c
+                                      C2/c pyroxene solution, aka HP-Cpx or C2c
+
+                                      JADC, 9/4/2024.
+
+C2/c
+
+688                                | model type: generic
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+2                                  | number of vertices on each simplex
+
+mgc2      fec2
+
+0. 1. .1  0
+
+ideal
+
+1                                     1 site entropy model
+M
+2 2 2                                 2 species, site multiplicity = 2.
+z(Mg,M) = 1 mgc2
+z(Fe,M) = 1 fec2
+
+[Si2O6]                       | formula suffix, enter "none" for no suffix.
+
+
+end_of_model C2/c
+|                      --------------------------------------------------------
+begin_model Wus
+
+                                      Wuestite solution. aka ferropericlase (FP)
+
+                                      From HeFESTO output it seems STX24
+                                      actually uses the 2 site model:
+
+                                                      M1        M2
+                                                     _____________
+
+                                      Mutliplicity    2         2
+                                                     _____________
+
+                                      1 pe            Mg        Mg
+                            Species:  2 wu            Fe        Fe
+                                      3 wuls          Fe        Fe
+                                      4 mag           VFe       Fe
+                                      5 anao          Na        Al
+
+                                      this is stoichiometrically inconsistent
+                                      for mag composition but will yield
+                                      S/R = 2 ln 2 for 50/50 wu-mag
+
+                            JADC, 9/4/2024.
+
+                            mag/Wuestite and smag/Spinel are degenerate in SLB 24,
+                            to prevent mag/Wuestite from being computed
+                            as the stable phase in close proximity to the
+                            Fe3O4 composition the mag endmember has been
+                            destabilized relative to smag by 100 J/mol. 
+
+                            JADC, 9/11/24
+
+Wus
+
+688                                | model type: implicit O/D, screwy
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+5                                  | number of vertices on each simplex
+
+pe    wu    wuls    anao    mag
+
+0. 1. .1  0                        | range and resolution for X(pe)
+0. 1. .1  0                        | range and resolution for X(wu)
+0. 1. .1  0                        | range and resolution for X(wuls)
+0. 1. .1  0                        | range and resolution for X(anao)
+
+begin_excess_function
+W(pe wu)     44d3 + 0.044 * P_bar
+W(pe wuls)  -87.12047d3
+W(pe anao)   120d3
+W(pe mag)    302.7452d3
+W(wu wuls)   -60.21909d3
+W(wu anao)   120d3
+W(wu mag)    106.1549d3
+W(wuls anao) 120d3
+W(wuls mag)  106.15149d3
+W(anao mag)  120d3
+end_excess_function
+
+2                                  | 2 site entropy pseudo-model
+
+M1                                 | site name
+4 2 2                              | 4 species on M1, 4 site per formula unit.
+
+z(Mg,M1)   = 1 pe
+z(Fe,M1)   = 1 wu + 1 wuls
+z(VFe,M1)  = 1 mag
+z(Na,M1)   = 1 anao
+
+M2                                 | site name
+3 2 2                              | 4 species on M1, 4 site per formula unit.
+
+z(Mg,M2)   = 1 pe
+z(Fe,M2)   = 1 wu + 1 wuls + 1 mag
+z(Al,M2)   = 1 anao
+
+[O4]                               | formula suffix, enter "none" for no suffix.
+
+begin_van_laar_sizes
+alpha(pe)          1
+alpha(wu)          1
+alpha(wuls)        1
+alpha(anao)        1
+alpha(mag)         0.08293
+end_van_laar_sizes
+
+begin_dqf_corrections
+DQF(mag) = 20
+end_dqf_corrections
+
+
+end_of_model Wus
+|                      --------------------------------------------------------
+begin_model Sp
+                                      Spinel solution, aka Magnetite
+
+                                                      A         B
+                                                     _____________
+
+                                      Mutliplicity    1         2
+                                                     _____________
+
+                                      1 sp            Mg        Al
+                            Species:  2 hc            Fe        Al
+                                      3 smag          Fe        Fe
+                                      4 picr          Mg        Cr
+
+                            smag is identical to mag used in Wus
+
+                            JADC, 9/4/2024.
+
+                            to prevent mag/Wuestite from being computed
+                            as the stable phase in close proximity to the
+                            Fe3O4 composition the mag endmember has been
+                            destabilized by 100 J/mol. 
+
+                            JADC, 9/11/24
+
+Sp
+
+688                                | model type: generic, normal spinel
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+4                                  | number of vertices on each simplex
+
+sp   hc   smag   picr
+
+0. 1. .1  0                        | range and resolution for X(sp)
+0. 1. .1  0                        | range and resolution for X(hc)
+0. 1. .1  0                        | range and resolution for X(picr)
+
+
+begin_excess_function
+W(sp   hc)    -1.3109d3
+W(sp   smag)   63d3
+W(sp   picr)   20.99394d3
+W(hc   smag)   55d3
+W(hc   picr)   21d3
+W(smag picr)   42d3
+end_excess_function
+
+2                                  | 2 site entropy pseudo-model
+
+A                                  | site name
+2 1 1                              | 2 species on A, 1 site per formula unit.
+
+z(Mg,A)   = 1 sp + 1 picr
+z(Fe,A)   = 1 hc + 1 smag
+
+B                                  | site name
+3 2 2                              | 3 species on B, 4 site per formula unit.
+
+z(Fe,B)   = 1 smag
+z(Al,B)   = 1 sp + 1 hc
+z(Cr,B)   = 1 picr
+
+[O4]                               | formula suffix, enter "none" for no suffix.
+
+end_of_model Sp
+|                      --------------------------------------------------------
+begin_model Pv
+                                    Perovskite solution, AKA Bridgemanite
+
+                                    JADC, 9/4/2024.
+Pv
+
+688                                | model type: generic, normal spinel
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+7                                  | number of vertices on each simplex
+
+mgpv   fepv   alpv   hepv   hlpv   fapv   crpv
+
+0. 1. .1  0                        | range and resolution for X(mgpv)
+0. 1. .1  0                        | range and resolution for X(fepv)
+0. 1. .1  0                        | range and resolution for X(alpv)
+0. 1. .1  0                        | range and resolution for X(hepv)
+0. 1. .1  0                        | range and resolution for X(hlpv)
+0. 1. .1  0                        | range and resolution for X(fapv)
+
+begin_excess_function
+W(mgpv fepv)   -12.46739d3
+W(mgpv alpv)    31.66295d3
+W(mgpv hepv)    93.86753d3
+W(mgpv hlpv)    49.85996d3
+W(mgpv crpv)    93.18402d3
+W(fepv hepv)    93.86753d3
+W(fepv hlpv)    49.85996d3
+W(fepv crpv)    93.18402d3
+W(alpv hepv)    65d3
+W(alpv hlpv)    65d3
+W(alpv fapv)    65d3
+W(alpv crpv)    4d4
+W(hepv hlpv)   -5.8751d3
+W(hepv fapv)    65d3
+W(hepv crpv)    4d4
+W(hlpv fapv)    65d3
+W(hlpv crpv)    4d4
+W(fapv crpv)    4d4
+end_excess_function
+
+2                                  | 2 site entropy model
+
+M
+4 1 1                              | 4 species on M site multiplicity = 1
+z(mg,M)   = 1 mgpv
+z(fe,M)   = 1 fepv + 1 hepv + 1 hlpv + 1 fapv
+z(al,M)   = 1 alpv
+z(cr,M)   = 1 crpv
+
+T
+4 1 1                              | 4 species on T site multiplicity = 1.
+z(si,T)  = 1 mgpv + 1 fepv
+z(al,T)  = 1 alpv + 1 fapv
+z(fe,T)  = 1 hepv + 1 hlpv
+z(cr,T ) = 1 crpv
+
+[O3]                               | formula suffix, enter "none" for no suffix
+
+end_of_model Pv
+                      --------------------------------------------------------
+begin_model Pl
+                                   Plagioclase, STX24 endmembers have no 
+                                   configurational entropy implying a molecular
+                                   configurational entropy model.
+
+                                   JADC, 9/4/2024.
+
+Pl
+
+688                               | model type: 688 format standard model
+
+1                                 | number of polytopes
+1                                 | number of simplices
+2                                 | number of vertices (endmembers) on each simplex
+
+ab
+an
+
+0. 1. .1  0                       | imod = 0 -> cartesian subdivision
+
+begin_excess_function 
+w(an ab) 13d3
+end_excess_function
+
+1                                 | 1 site molecular model:
+M
+2 1 1
+z(Ab,M) = 1 ab
+z(An,M) = 1 an
+
+none                              | formula suffix, enter "none" for no suffix
+
+end_of_model Pl
+                      --------------------------------------------------------
+begin_model O
+                                  Olivine solution
+
+                                  JADC, 9/4/2024.
+
+O
+
+688                               | model type: generic
+
+1                                 | number of polytopes
+1                                 | number of simplices
+2                                 | number of vertices (endmembers) on each simplex
+
+fo
+fa
+
+0 1 .1  0                         | subdivision range, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+W(fo fa) 2.47406d3
+end_excess_function
+
+1                                 | 1 site entropy model
+
+M
+2 2 2                             | 2 species, site multiplicity = 2.
+z(Mg,M) = 1 fo
+z(Fe,M) = 1 fa
+
+[Si2O4]                           | formula suffix, enter "none" for no suffix.
+
+end_of_model O
+                      --------------------------------------------------------
+begin_model Wad
+                                  Wadsleysite solution
+
+                                  JADC, 9/4/2024.
+
+Wad
+
+688                               | model type: generic
+
+1                                 | number of polytopes
+1                                 | number of simplices
+2                                 | number of vertices (endmembers) on each simplex
+
+mgwa
+fewa
+
+0 1 .1  0                         | subdivision range, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+W(mgwa fewa)     12.86875d3
+end_excess_function
+
+1                                 | 1 site entropy model
+
+M
+2 2 2                             | 2 species, site multiplicity = 2.
+z(Mg,M) = 1 mgwa
+z(Fe,M) = 1 fewa
+
+[Si2O4]                           | formula suffix, enter "none" for no suffix.
+
+end_of_model Wad
+                      --------------------------------------------------------
+begin_model Ring
+                                  Ringwoodite solution
+
+                                  JADC, 9/4/2024.
+
+Ring
+
+688                               | model type: generic
+
+1                                 | number of polytopes
+1                                 | number of simplices
+2                                 | number of vertices (endmembers) on each simplex
+
+mgri
+feri
+
+0 1 .1  0                         | subdivision range, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+W(mgri feri)      6.22927d3
+end_excess_function
+
+1                                 | 1 site entropy model
+
+M
+2 2 2                             | 2 species, site multiplicity = 2.
+z(Mg,M) = 1 mgri
+z(Fe,M) = 1 feri
+
+[Si2O4]                           | formula suffix, enter "none" for no suffix.
+
+end_of_model Ring
+                      --------------------------------------------------------
+begin_model Opx
+                                    Orthopyroxene solution
+
+                                    JADC, 9/4/2024.
+Opx
+
+688                                | model type: generic
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+4                                  | number of vertices on each simplex
+
+odi
+en
+fs
+mgts
+
+0. 1. .1  0                       | range and resolution for X(odi)
+0. 1. .1  0                       | range and resolution for X(en)
+0. 1. .1  0                       | range and resolution for X(fs)
+
+begin_excess_function
+W(en odi)     32.21303d3
+W(fs odi)     32.21303d3
+W(mgts odi)   46.64038d3
+end_excess_function
+
+2                                 | 2 site entropy model
+M1
+3 1 1                             | 3 species, M1 site multiplicity = 1.
+z(Ca,M1) = 1 odi
+z(Fe,M1) = 1 fs
+z(Mg,M1) = 1 en + 1 mgts
+
+M2
+3 1 1                             | 3 species, M2 site multiplicity = 1.
+z(Al,M2) = 1 mgts
+z(Fe,M2) = 1 fs
+z(Mg,M2) = 1 odi + 1 en
+
+[(Si,Al)O6]                       | formula suffix, enter "none" for no suffix.
+
+end_of_model Opx
+                      --------------------------------------------------------
+begin_model Cpx
+                                    Clinopyroxene solution
+
+                                    JADC, 9/4/2024.
+Cpx
+
+688                                | model type: generic
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+6                                  | number of vertices on each simplex
+
+di  he  cen  cats  jd  acm
+
+0. 1. .1  0                        | range and resolution for X(di)
+0. 1. .1  0                        | range and resolution for X(he)
+0. 1. .1  0                        | range and resolution for X(cen)
+0. 1. .1  0                        | range and resolution for X(cats)
+0. 1. .1  0                        | range and resolution for X(jd)
+
+begin_excess_function
+W(di   cen)   24.74d3
+W(di   cats)  26.0d3
+W(di   jd)    24.3d3
+W(di   acm)   24.3d3
+W(he   cen)   24.74d3
+W(he   cats)  26d3
+W(he   jd)    24.3d3
+W(he   acm)   24.3d3
+W(cen  cats)  63.71812d3
+W(cen  jd)    46.03709d3
+W(cen  acm)   46.03709d3
+W(cats jd)    10d3
+W(cats acm)   10d3
+end_excess_function
+ 
+3                                  | 3 site entropy model
+
+M1
+3 1 1                              | 3 species, M1 site multiplicity = 1.
+
+z(Mg,M1) = 1 cen
+z(Ca,M1) = 1 di + 1 he + 1 cats
+z(Na,M1) = 1 jd + 1 acm
+
+M2
+3 1 1                              | 3 species, M2 site multiplicity = 1.
+z(Fe,M2) = 1 he + 1 acm
+z(Al,M2) = 1 jd + 1 cats
+z(Mg,M2) = 1 cen + 1 di
+
+T
+2 2 2                              | 2 species, T site, multiplicity 2
+z(Al,T) = 1/2 cats + 1 di + 1 he + 1 cen + 1 jd + 1 acm
+z(Si,T) = 1/2 cats
+
+[O6]                               | formula suffix, enter "none" for no suffix.
+
+begin_van_laar_sizes
+alpha(jd)      1
+alpha(di)      1
+alpha(he)      1
+alpha(cen)     1
+alpha(cats)    3.5
+alpha(acm)     1
+end_van_laar_sizes
+
+end_of_model Cpx
+                      --------------------------------------------------------
+begin_model Aki
+                                    Akimotoite solution, aka Ilmenite
+
+                                    JADC, 9/4/2024.
+Aki
+
+688                                | model type: generic
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+5                                  | number of vertices on each simplex
+
+mgil   feil   co   hem   esk
+
+0  1.  0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+0  1   0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+0  1.  0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+0  1   0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+W(mgil  co)      62.48740d3
+W(mgil  hem)     65d3
+W(mgil  esk)     93.18402d3
+W(feil  co)      62.48740d3
+W(feil  hem)     65d3
+W(feil  esk)     93.18402d3
+W(co    hem)     65d3
+W(co    esk)     40d3
+W(hem   esk)     40d3
+end_excess_function 
+
+2                                     2 site entropy model
+
+M
+4 1 1                                  3 species on M site multiplicity = 1.
+z(Mg,M)  = 1 mgil
+z(Fe,M)  = 1 feil + 1 hem
+z(Al,M)  = 1 co
+z(Cr,M)  = 1 esk
+
+T
+4 1 1                                  2 species on T site multiplicity = 1.
+z(Si,T)  = 1 mgil + 1 feil
+z(Al,T)  = 1 co
+z(Fe,T)  = 1 hem
+z(Cr,T)  = 1 esk
+
+[O3]                               | formula suffix, enter "none" for no suffix.
+
+begin_van_laar_sizes
+alpha(mgil)      1
+alpha(feil)      1
+alpha(co)        1
+alpha(hem)      1.3
+alpha(esk)       1
+end_van_laar_sizes
+
+end_of_model Aki
+                      --------------------------------------------------------
+begin_model                
+                                      Garnet solution with Fe-majorite (Fe3MgSiSi3O12) and
+                                      Ca-majorite (Ca3MgSiSi3O12), the use of these endmembers
+                                      appear to be necessary to reproduce the Stixrude
+                                      & Lithgow-Bertelloni (2011) calculations. 
+
+                                      reformulated as an irregular prismatic model, JADC, 5/18
+
+                                      reformulated as 688 standard format. JADC, 10/19
+
+                                      updated for STX24. JADC, 9/5/2024.
+
+                                                      A            B1/B2
+                                                     ____________________
+
+                                      Multiplicity    3            2
+                                                     ____________________
+                   prismatic vertex:
+                                        py            Mg           AlAl   independent   
+                                        al            Fe           AlAl   independent     
+                                        gr            Ca           AlAl   independent
+
+                                        mgmj          Mg           MgSi   independent   
+                                        fmaj          Fe           MgSi   dependent   
+                                        cmaj          Ca           MgSi   dependent   
+
+                                        knor          Mg           CrCr   independent   
+                                        fmaj          Fe           CrCr   dependent   
+                                        cmaj          Ca           CrCr   dependent
+
+                                        mand          Mg           FeFe   dependent   
+                                        fand          Fe           FeFe   dependent   
+                                        andr          Ca           FeFe   independent   
+                   orphan vertex:
+                                        namj          Na2Mg        SiSi   independent (orphan)
+
+Gt
+
+688                                | model type: 688 format standard model
+
+2                                  | number of polytopes
+                                   | polytope names and composite composition space subdivision schemes 
+[namj]   0    1   .1  0            | subdivision range for X(1) = M-free
+[~namj]  by difference             | = [M][Al,MgSi], M = Mg,Fe,Ca
+                                   | ----------------------------
+                                   | Polytope 1 - 1 simplex
+1                                  | number of simplices, [Na2/3Al1/3][AlSi]
+1                                  | number of vertices on each simplex
+namj                               | endmembers on the vertices
+                                   | ----------------------------
+                                   | Polytope 2 - 3x4 simplices
+2                                  | number of simplices
+3  4                               | number of vertices on each simplex
+                                   | endmembers on the vertices
+cmaj   fmaj   mgmj
+gr     al     py
+ckno   fkno   knor
+andr   fand   mand
+                                   | First 3-simplex
+X_Ca,A    0. 1. .1   0             | range and resolution for X(Ca,A), imod = 0 -> cartesian subdivision
+X_Fe,A    0. 1. .1   0             | range and resolution for X(Fe,A), imod = 0 -> cartesian subdivision
+X_Mg,A    by difference 
+                                   | Second 4-simplex
+X_MgSi,B  0. 1. .1   0             | range and resolution for X(1-Ts,B), imod = 0 -> cartesian subdivision
+X_AlAl,B  0. 1. .1   0             | range and resolution for X(Al,B), imod = 0 -> cartesian subdivision
+X_FeFe,B  0. 1. .1   0             | range and resolution for X(Fe,B), imod = 0 -> cartesian subdivision
+X_CrCr,B  by difference
+
+begin_dependent_endmembers
+fmaj = 1 mgmj + 1 al - 1 py
+cmaj = 1 mgmj + 1 gr - 1 py
+fkno = 1 knor + 1 al - 1 py
+ckno = 1 knor + 1 gr - 1 py
+mand = 1 andr + 1 py - 1 gr
+fand = 1 andr + 1 al - 1 gr
+end_dependent_endmembers
+
+begin_excess_function
+
+W(py gr)       19.08857d3
+W(py mgmj)     23.16432d3
+W(py namj)     23.16432d3
+W(py andr)     53d3
+W(al mgmj)     23.16432d3
+W(al namj)     23.16432d3
+W(al andr)     44d3
+W(al knor)     1d4
+W(gr mgmj)     64.68245d3
+W(gr namj)     64.68245d3
+W(gr knor)    -2d4
+W(mgmj namj)   71.17245d3
+W(mgmj andr)   64.68245d3
+W(mgmj knor)   25.87913d3
+W(namj andr)   64.68245d3
+W(namj knor)   25.87913d3
+W(andr knor)   75d3
+
+end_excess_function
+
+3                                 | 3 site configurational entropy model
+
+A                                 | site name
+4 3 3                             | number of species, effective multiplicity, true multiplicity
+z(Ca,A) = 1 gr + 1 andr
+z(Fe,A) = 1 al 
+z(Na,A) = 2/3 namj
+z(Mg,A) = 1 py + 1 mgmj + 1/3 namj + 1 knor
+
+B1                                | site name
+5 1 1                             | number of species, effective multiplicity, true multiplicity
+z(Mg,B1) = 1 mgmj 
+z(Al,B1) = 1 gr + 1 py + 1 al 
+z(Si,B1) = 1 namj
+z(Cr,B1) = 1 knor
+z(Fe,B1) = 1 andr
+
+B2                                | site name
+4 1 1                             | number of species, effective multiplicity, true multiplicity
+z(Si,B2) = 1 mgmj + 1 namj
+z(Al,B2) = 1 gr + 1 py + 1 al 
+z(Cr,B2) = 1 knor
+z(Fe,B2) = 1 andr
+
+[Si3O12]                          | formula suffix, enter "none" for no suffix.
+
+end_of_model
+                      --------------------------------------------------------     
+begin_model Ppv
+                                    Post-perovskite solution
+
+                                    JADC, 9/4/2024.
+Ppv
+
+688                                | model type: generic
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+5                                  | number of vertices on each simplex
+mppv  fppv  appv  hppv  cppv
+
+0  1.  0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+0  1   0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+0  1.  0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+0  1   0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+W(mppv fppv)  -39.83177d3
+W(mppv appv)   31.66295d3
+W(mppv hppv)   93.86753d3
+W(mppv cppv)   93.18402d3
+W(fppv appv)   31.66295d3
+W(fppv hppv)   93.86753d3
+W(fppv cppv)   93.18402d3
+W(appv hppv)   65d3
+W(appv cppv)   40d3
+W(hppv cppv)   40d3
+end_excess_function
+
+2                                     2 site entropy model
+
+M
+4 1 1                                 3 species on M site multiplicity = 1.
+z(mg,M)  = 1 mppv
+z(fe,M)  = 1 fppv + 1 hppv
+z(al,M)  = 1 appv
+z(cr,M)  = 1 cppv
+
+T
+4 1 1                                 4 species on T site multiplicity = 1.
+z(si)  = 1 mppv + 1 fppv
+z(al)  = 1 appv
+z(fe)  = 1 hppv
+z(cr)  = 1 cppv
+
+[O3]                               | formula suffix, enter "none" for no suffix.
+
+end_of_model Ppv
+                      --------------------------------------------------------
+begin_model CF
+                                    Ca-Ferrite solution.
+
+                                    JADC, 9/4/2024.
+CF
+
+688                                | model type: generic
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+5                                  | number of vertices on each simplex
+
+mgcf fecf nacf hmag crcf
+
+0  1.  0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+0  1   0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+0  1.  0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+0  1   0.1  0                      | subdivision range, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+W(mgcf nacf)  67.19452d3
+W(fecf nacf)  67.19452d3
+W(nacf crcf)  67.19452d3
+end_excess_function 
+
+3                                     number of sites for the entropy model
+
+A
+3 1 1                                 3 species, A site multiplicity = 1.
+z(Fe,A)  = 1 fecf + 1 hmag
+z(Mg,A)  = 1 mgcf + 1 crcf
+z(Na,A)  = 1 nacf
+
+T1
+3 1 1
+z(Fe,T1)  = 1 hmag
+z(Al,T1)  = 1 mgcf + 1 fecf + 1 nacf
+z(Cr,T1)  = 1 crcf
+
+T2
+4 1 1
+z(Si,T2)  = 1 nacf
+z(Fe,T2)  = 1 hmag
+z(Al,T2)  = 1 mgcf + 1 fecf
+z(Cr,T2)  = 1 crcf
+
+[O4]                               | formula suffix, enter "none" for no suffix.
+
+begin_van_laar_sizes
+alpha(mgcf)          1
+alpha(fecf)          1
+alpha(nacf)          3.97647
+alpha(hmag)          1
+alpha(crcf)          1
+end_van_laar_sizes
+
+end_of_model
+
+                      --------------------------------------------------------
+begin_model NaAl
+                                      Na-Al phase solution. 
+
+                                      JADC, 9/4/2024.
+
+                                      A    B      C
+                                      1    2      6
+                              mnal    Na   Mg   Al5Si1
+                              fnal    Na   Fe   Al5Si1
+                              nnal    Na   Na   Al3Si3
+
+
+NaAl
+
+688                                | model type: 688 format standard model
+
+1                                  | number of polytopes
+1                                  | number of simplices, [Na2/3Al1/3][AlSi]
+3                                  | number of vertices on each simplex
+fnal                               | endmembers on the vertices
+mnal
+nnal
+
+0. 1. .1   0                       | range and resolution for X(fnal), imod = 0 -> cartesian subdivision
+0. 1. .1   0                       | range and resolution for X(mnal), imod = 0 -> cartesian subdivision
+
+begin_excess_function 
+w(mnal nnal)    -62.08292d3
+w(fnal nnal)    -62.08292d3
+end_excess_function 
+
+2                                   | number of sites in configurational entropy model
+
+B                                   | site name
+3 2 2                               | number of species, effective multiplicity, true multiplicity
+z(Na,B)  = 1 nnal
+z(Mg,B)  = 1 mnal
+z(Fe,B)  = 1 fnal
+
+C                                   | site name
+2 6 6                               | number of species, effective multiplicity, true multiplicity
+z(Al,C) = 5/6 mnal + 5/6 fnal + 1/2 nnal
+z(Si,C) = 1/6 mnal + 1/6 fnal + 1/2 nnal
+
+[NaO12]                             | formula suffix, enter "none" for no suffix.
+
+end_of_model
+

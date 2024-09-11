@@ -122,11 +122,6 @@
                 integer icont
                 double precision dblk,cx
                 common/ cst314 /dblk(3,k5),cx(2),icont
-                
-                
-
-                
-                
             !----------------------------------------------------------------------
                 iam = 2
                 
