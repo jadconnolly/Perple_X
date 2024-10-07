@@ -8,6 +8,7 @@ Seismic wavespeed computational options:
     seismic_output          som       [some] none all
     poisson_test            F         [F] T
     Anderson-Gruneisen      F         [F] T
+    finite_strain_alpha     F         [F] T
     Tisza_test              F         [F] T
     fluid_shear_modulus     T         [T] F
     phi_d                   0.36      [0.36] 0->1
