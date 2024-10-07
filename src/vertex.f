@@ -64,9 +64,6 @@ c-----------------------------------------------------------------------
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
 
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
-
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
 
@@ -81,7 +78,7 @@ c-----------------------------------------------------------------------
 c----------------------------------------------------------------------- 
 c                                 iam indicates the Perple_X program
 c                                    iam = 1  - vertex
-c                                    iam = 2  - meemum
+c                                    iam = 2  - meemum, MC_fit
 c                                    iam = 3  - werami 
 c                                    iam = 4  - build 
 c                                    iam = 5  - frendly
@@ -89,7 +86,7 @@ c                                    iam = 6  - ctransf
 c                                    iam = 7  - pssect 
 c                                    iam = 8  - psvdraw
 c                                    iam = 9  - actcor
-c                                    iam = 10 - rewrite 
+c                                    iam = 10 - rewrite
 c                                    iam = 11 - fluids
 c                                    iam = 13 - unsplt (global)
 c                                    iam = 14 - unsplt (local)
@@ -98,8 +95,9 @@ c                                    iam = 15 - convex
 c                                 perplexwrap.f flags
       getInput = .true.
       sWarn = .false.
-c                                 initialization
+c                                 read input files, etc
       call iniprp
+c                                 -------------------------------------
 c                                 start the total timer (30)
       if (lopt(61)) call begtim (30)
 
@@ -1437,6 +1435,7 @@ c                                 possibility.
       if (idead.eq.0) call lpopt0 (idead)
 c                                 if idead = 0 optimization was ok
       if (idead.ne.0) idead = k2
+
       call isgood (i,j,idead)
 
       end 
@@ -1563,9 +1562,6 @@ c-----------------------------------------------------------------------
 
       integer hcp,idv
       common/ cst52 /hcp,idv(k7)
-
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
 
       integer tphct
       double precision g2, cp2, c2tot
@@ -2546,8 +2542,8 @@ c----------------------------------------------------------------------
       integer i, ist, iend
 
       integer length,com
-      character chars*1
-      common/ cst51 /length,com,chars(lchar)
+      character chars*1, card*lchar
+      common/ cst51 /length,com,chars(lchar),card
 
       integer npt,jdv
       double precision cptot,ctotal

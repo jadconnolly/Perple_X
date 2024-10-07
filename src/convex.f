@@ -58,16 +58,13 @@ c parameters are assigned in "perplex_parameter.h"
 c-----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
-      logical first, pots, err  
+      logical first, pots, err
 
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
 
       integer jtest,jpot
       common/ debug /jtest,jpot
-
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
@@ -79,11 +76,14 @@ c-----------------------------------------------------------------------
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
 
-      save err,first,pots
-      data err,first/.false.,.true./
+      integer eos
+      common/ cst303 /eos(k10)
 
       integer iam
       common/ cst4 /iam
+
+      save err,first,pots
+      data err,first/.false.,.true./
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
 c                                    iam = 1  - vertex
@@ -315,9 +315,6 @@ c-------------------------------------------------------------------
       integer iasmbl
       common/ cst27  /iasmbl(j9)
 
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
-
       integer idcf,icfct
       common/ cst96 /idcf(k5,j9),icfct
 
@@ -411,10 +408,7 @@ c-----------------------------------------------------------------------
       common/ csta8 /title(4)
 
       integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
+      common/ cst6  /icomp,istct,iphct,icp
 
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
@@ -1420,9 +1414,6 @@ c----------------------------------------------------------------------------
       integer hcp,id
       common/ cst52 /hcp,id(k7)
 
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
-
       integer is
       double precision cp, bbb, ccc
       common/ cst313 /cp(k5,k1),bbb(k5),ccc(k1),is(k1+k5)
@@ -1686,9 +1677,6 @@ c                                 working arrays
 
       integer ikp
       common/ cst61 /ikp(k1)
-
-      integer ipoint, imyn, kphct
-      common/ cst60 /ipoint,kphct,imyn
 c----------------------------------------------------------------------
       do k = 1, ntot
 
@@ -5872,10 +5860,7 @@ c---------------------------------------------------------------------
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
 
       integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
-      integer ipoint,kphct,imyn
-      common/ cst60  /ipoint,kphct,imyn
+      common/ cst6  /icomp,istct,iphct,icp
 
       integer tphct
       double precision g2, cp2, c2tot

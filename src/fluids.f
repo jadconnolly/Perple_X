@@ -293,13 +293,13 @@ c-----------------------------------------------------------------------
 
       character y*1, n4name*100, title*100, tags(33)*14
 
-      integer ier, igo, i, isp, j, k, l, kmax, kount, nel
+      integer ier, igo, i, isp, j, k, l, kmax, kount, nel, jc(2), nblen
 
       double precision nc, nh, no, ns, nn, nsi, tentoe, fo2, fs2, fh2,
      *                 ag, tot, totx, var(l2), f, prop(40), vdif,
      *                 vpar(nsp), xxs(nsp), xg(nsp)
 
-      external readyn
+      external readyn, nblen
 
       double precision fhc
       common / cst11 /fhc(3)
@@ -368,7 +368,7 @@ c                                 configure EoS
          fs2 = -9999d0*tentoe/2d0
          elag = 0d0
 c                                 get the users choice of EoS:   
-         call rfluid (1)
+         call rfluid (1,jc)
 c                                 for multispecies fluids set
 c                                 up species indices and name
 c                                 of independent variable
@@ -1076,7 +1076,8 @@ c                                 get P-T conditions:
                else 
 c                                  or get P-T-X/f conditions:
                   write (*,'(/,a,a,a)') 
-     *                   'Enter p(bar), T(K), ',vname(3),':'
+     *                   'Enter p(bar), T(K), ',
+     *                   vname(3)(1:nblen(vname(3))),':'
 
                   do 
                      read (*,*,iostat=ier) p, t, xo
@@ -1110,7 +1111,7 @@ c                                  a buffer:
 c                                  call fluid routine:
                call cfluid (fo2, fs2)
                write (*,*) ' '
-               call rfluid (3)
+               call rfluid (3,jc)
                write (*,1280) p,t
 c                                  output results:
                igo = 1

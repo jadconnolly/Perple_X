@@ -59,8 +59,8 @@ c----------------------------------------------------------------------
       common/ cxt23 /jend(h9,m14+2)
 
       integer length,com
-      character chars*1
-      common/ cst51 /length,com,chars(lchar)
+      character chars*1, card*lchar
+      common/ cst51 /length,com,chars(lchar),card
 
       integer jnd
       double precision aqg,q2,rt
@@ -1775,8 +1775,14 @@ c                                 to refine difference increments
          cp = -t*gtt
 c                                  these are the only properties output
 c                                  for reactions:
-         alpha = gpt/v
-         beta = -gpp/v
+         if (v.ne.0d0) then
+            alpha = gpt/v
+            beta = -gpp/v
+         else
+            alpha = nopt(7)
+            beta = nopt(7)
+         end if
+
          props(2,jd) = e
          props(11,jd) = g0 
          props(12,jd) = cp

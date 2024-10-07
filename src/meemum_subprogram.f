@@ -18,19 +18,9 @@ c                                 these common blocks are necessary to
 c                                 communicate between the MAIN program
 c                                 and perplex:
 
-c                                 jbulk -> the number of chemical components
-c                                 cblk -> the molar bulk composition
-!henri [commented]     integer jbulk
-!henri [commented]     double precision cblk
-!henri [commented]     common/ cst300 /cblk(k5),jbulk
 c                                 iam -> a variable indicating the Perple_X program
       integer iam
       common/ cst4 /iam
-c                                 perplex option values:
-!henri [commented]     integer iopt
-!henri [commented]     logical lopt
-!henri [commented]     double precision nopt
-!henri [commented]     common/ opts /nopt(i10),iopt(i10),lopt(i10)
 c                                 ntot - number of phases stable
 c                                 np - number of solution phases
 c                                 ncpd - number of compounds
@@ -100,10 +90,12 @@ c                                 phase names
 c                                 iwt => 1 mass bulk comp, 0 molar bulk comp
       integer iwt
       common/ cst209 /iwt
+
       integer :: ii      ! henri [added]
       logical:: verbose  ! henri [added]
-      verbose = .false.  ! henri [added]
 c----------------------------------------------------------------------
+      verbose = .false.  ! henri [added]
+
       iam = 2
         open(1212,file='memum_data_691.dat')   ! henri [added]
         write(1212,*) '#P(bar) T(K) rho vp vs' ! henri [added]

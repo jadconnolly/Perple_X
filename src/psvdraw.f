@@ -359,7 +359,7 @@ c pschem - subroutine to output ternary chemographies.
  
       integer iperm(2,3),i,j,iflag,isat,iop1,kvert,id,nchar
 
-      integer icp,istct,ipoint,ifct,ipot,jas,jd
+      integer icp,istct,ifct,ipot,jas,jd
 
       logical vline, tlbl, readyn
 
@@ -486,14 +486,14 @@ c                                  don't draw tielines
 c                                  first divariant 
             do i = 1, ib                      
                if (iasmbl(i).eq.2) then
-                  call merger (i,iperm,kvert,ipoint,xx,yy)
+                  call merger (i,iperm,kvert,xx,yy)
                   call pspygn (xx,yy,kvert,0d0,0d0,7)
                end if
             end do
 c                                  third univariant
             do i = 1, ib                      
                if (iasmbl(i).eq.1) then
-                  call merger (i,iperm,kvert,ipoint,xx,yy)
+                  call merger (i,iperm,kvert,xx,yy)
                   call pspygn (xx,yy,kvert,1d0,0d0,3)
                end if
             end do
@@ -618,7 +618,7 @@ c                                       sectioning constraints
 
 99    end
 
-      subroutine merger (i,iperm,kvert,ipoint,xx,yy)
+      subroutine merger (i,iperm,kvert,xx,yy)
 
       implicit none
  
@@ -627,7 +627,7 @@ c                                       sectioning constraints
       double precision xx(j9), yy(j9)
  
       integer iperm(2,3),idv(j9),idp(3),jdv(3),jas,i,kvert,j,id,
-     *                   kas,k,l,jvert,kp,kp2,ipoint,ll1,ll2,ll3
+     *                   kas,k,l,jvert,kp,kp2,ll1,ll2,ll3
 
       integer idf,ib,iasmbl,ivchk
       double precision x
@@ -1155,7 +1155,7 @@ c psmixd - subroutine to draw binary mixed variable diagrams
 
       include 'perplex_parameters.h'
 
-      integer icp,ipoint,ifct,isat,ipot,i,ird,ivar
+      integer icp,ifct,isat,ipot,i,ird,ivar
 
       character*8 title*162, string*(lchar), tname(5)
 
@@ -1174,7 +1174,7 @@ c psmixd - subroutine to draw binary mixed variable diagrams
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
       character vnm*8
-      common/ cxt18a /vnm(l3)  
+      common/ cxt18a /vnm(l3)
 
       integer ivct,iplus,iminus,idr
       double precision vnu
@@ -1197,6 +1197,7 @@ c psmixd - subroutine to draw binary mixed variable diagrams
       common/ ln4 /iphct
 
       data idf,igo/4*0/
+c----------------------------------------------------------------------
 c                                  start-of-header
 c                                  ------------------------------
 c                                  read simple variables

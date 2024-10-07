@@ -57,7 +57,7 @@ c                                 perplexwrap.f flags
 c                                 version info
       call vrsion (6)
 c                                 assign data files
-      call fopen2 (2,opname)
+      call fopen2 (2)
 c                                 read options
       opname = 'perplex_option.dat'
       call redop1 (.false.,opname)
@@ -1140,7 +1140,7 @@ c---------------------------------------------------------------------
 
       logical readyn
 
-      integer i,j,ier,id,jdis,imurg,kv,ichk,h,k,kd,jd
+      integer i,j,ier,id,jdis,imurg,kv,ichk,h,k,kd,jd,jc(2)
  
       character y*1
 
@@ -1566,9 +1566,13 @@ c                                end of phase loop
 
       write (*,1160)
 
-      if (.not.readyn()) return 
+      if (.not.readyn()) return
 
-      call rfluid (1)
+      do i = 1, ispec
+         jc(i) = idspe(i)
+      end do
+
+      call rfluid (5,jc)
 c                                 for multispecies fluids set
 c                                 up species indices and name
 c                                 of independent variable
@@ -1584,9 +1588,9 @@ c                                 of independent variable
      *          '.html',//,'Units: J, bar, K, mole')
 1020  format (/,'Enter the index of the parameter to be modified:',//,
      *          9(2(1x,i2,') ',a,23x),/),
-     *         ' 19) thermodynamic activity',3x,
+     *         ' 19) thermodynamic activity',4x,
      *         ' 20) reaction coefficient',//,
-     *         'Enter zero when you are finished: ')
+     *         'Enter zero if none and/or to finish: ')
 1030  format (/,'Old value for ',a,' of ',a,' was ',g15.8,/,
      *          'Enter new value: ')
 1040  format (/,'Enter a name (<9 characters left justified) to',
@@ -1764,7 +1768,7 @@ c----------------------------------------------------------------------
 
       logical eof, first, match, readyn
 
-      integer inames, jcmpn, i, j, k, l, ier,
+      integer inames, jcmpn, i, j, k, l, ier, jc(2),
      *        isct, jj, itic, jphct, mkst, mkend
 
       external readyn
@@ -2033,6 +2037,7 @@ c                                 set special flag if O2
                vuf(k) = vvv
                idf(k) = iphct
                ifct = ifct + 1
+               jc(ifct) = idspe(k)
                exit 
             end do
 
@@ -2096,7 +2101,7 @@ c                                remake pointer array for makes
       end do  
 c                                 select equation of state for the
 c                                 saturated phase.
-      if (ifct.gt.0) call rfluid (1)
+      if (ifct.gt.0) call rfluid (5,jc)
 c                                 compute formula weights
       do l = 1,iphct
 

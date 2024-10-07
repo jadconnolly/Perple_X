@@ -2386,11 +2386,11 @@ transition = 2 type = 2 t1  = 3400   t4  = 127.129  t5 = 12.005d-3 t6 = -354.785
 end
 
 
-!C2H6*     EoS = 116 ideal gas from Chao et al J Phys Chem Ref Data 1973, Cp from fit by NASA 
-!H2(3)C(2)
-!G0 = -32802.56  S0 = 229.11584
-!c1 = 9.401448  c2 = 0.15983298  c4 = -4.6229016d-5
-!end
+|C2H6*     EoS = 116 ideal gas from Chao et al J Phys Chem Ref Data 1973, Cp from fit by NASA 
+|H2(3)C(2)
+|G0 = -32802.56  S0 = 229.11584
+|c1 = 9.401448  c2 = 0.15983298  c4 = -4.6229016d-5
+|end
 
 
 O2        EoS = 107
@@ -2404,7 +2404,6 @@ H2        EoS = 105
 H2(1)
 GH = -38968.2  S0 = 130.7  
 c1 = 23.3  c2 = .4627E-2  c5 = 76.3  
-b5 = 148.1543  
 end
 
  
@@ -2412,7 +2411,6 @@ S2        EoS = 1
 S2(1)
 GH = 59667.35  S0 = 231  
 c1 = 37.1  c2 = .2398E-2  c3 = -161000  c5 = -65  
-b5 = 87.22322  
 end
 
  

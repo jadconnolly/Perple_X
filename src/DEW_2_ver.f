@@ -20,8 +20,8 @@ c----------------------------------------------------------------------
       external iscan, iscnlt, elchk
 
       integer length,com
-      character chars*1
-      common/ cst51 /length,com,chars(lchar)
+      character chars*1, card*lchar
+      common/ cst51 /length,com,chars(lchar),card
 
       character*2 strgs*3, mstrg, dstrg, tstrg*3, wstrg*3, e16st*3
       common/ cst56 /strgs(32),mstrg(6),dstrg(m8),tstrg(m7),wstrg(m16),
@@ -411,11 +411,9 @@ c----------------------------------------------------------------------
 
       external iscan, iscnlt
 
-      character card*(lchar)
-
       integer length,com
-      character chars*1
-      common/ cst51 /length,com,chars(lchar)
+      character chars*1, card*lchar
+      common/ cst51 /length,com,chars(lchar),card
 c----------------------------------------------------------------------
 
       ier = 0 

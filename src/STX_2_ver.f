@@ -15,7 +15,7 @@ c----------------------------------------------------------------------
 
       character spname*8
 
-      character card*(lchar), key*22, val*3,
+      character key*22, val*3,
      *          nval1*12, nval2*12, nval3*12, strg*40, strg1*40
 
       double precision parm(44)

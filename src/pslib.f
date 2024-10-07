@@ -1331,7 +1331,7 @@ c                                 the double backslash
 c                                 here is necessary for SUNS
 c                                 because the first is read
 c                                 as an escape character. On
-c                                 convex this cause a compile
+c                                 convex this causes a compile
 c                                 time warning, and on Mac and
 c                                 IBM compilers there is no
 c                                 warning.

@@ -199,7 +199,6 @@ c----------------------------------------------------------------------
       parameter (kd2=k8*35)
 c------------------------------------------------------------------------------
 c                                 commons with globally consistent, non-conflicting, variable names:
-
       integer spx, icox, jcox
       double precision xco
       common/ cxt10 /xco(k18),spx(h4,mst),icox(k1),jcox(k24)
@@ -639,7 +638,7 @@ c                                 program that calls  fopen1, input1, or iniprp 
       logical :: getInput, meemumInit, sWarn
       common/ libVars /getInput, meemumInit, sWarn
 c                                 special component indices and counter
-      integer idspe,ispec
+      integer idspe, ispec
       common/ cst19 /idspe(2),ispec
 c                                 component gram formula weights
       double precision atwt
@@ -669,20 +668,32 @@ c                                 excess energy variables
       integer jterm, jord, extyp, rko, jsub
       common/ cxt2i /jterm(h9),jord(h9),extyp(h9),rko(m1,h9),
      *               jsub(m2,m1,h9)
-c                                 coordinate file name
-      character*100 cfname
-      common/ cst227 /cfname
+c                                 common file names
+c                                 cfname = coordinate file
+c                                 n1name = problem definition file
+c                                 n2name = thermodynamic data file
+c                                 n9name = solution model file
+      character*100 cfname,n1name,n2name,n9name
+      common/ cst227 /cfname,n1name,n2name,n9name
 c                                 bulk composition increments during 
 c                                 fractionation
       double precision dcomp
       common/ frct2 /dcomp(k5)
-
+c                                 chemical potentials of mobile components
       double precision mmu
       common/ cst39 /mmu(i6)
-
+c                                 imaf - mobile component implementation (1 =
+c                                 chemical potential, 2 = fugacity, 3 =
+c                                 activity).
+c                                 idaf - index of reference phase for imaf > 1.
       integer imaf,idaf
       common/ cst33 /imaf(i6),idaf(i6)
-
+c                                 stoichiometric coefficients of mobile
+c                                 components in endmember phases
       double precision vnumu
       common/ cst44 /vnumu(i6,k10)
-      
+c                                 ipoint - index of last stoichiometric phase
+c                                 kphct - index of last saturated component/phase composant
+c                                 imyn - flag indicating mobile components
+      integer ipoint, imyn, kphct
+      common/ cst60 /ipoint,kphct,imyn

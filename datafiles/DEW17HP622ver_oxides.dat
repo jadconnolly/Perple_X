@@ -50,6 +50,11 @@ S2      64.1300     64.1     0 | Corrected 9/21/2018, Jilei Li. These values are
 F2      37.9968    202.79    0
 end_components
 
+begin_special_components
+H2O
+CO2
+end_special_components
+
 begin_makes             
                                 | the make definitions segment of the thermodynamic
                                 | data file is preceded by the "begin_makes" keyword,

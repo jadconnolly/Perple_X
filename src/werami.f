@@ -452,8 +452,11 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, ier
+      integer i, ier, nblen
+
       logical quit
+
+      external nblen
 
       integer jvar
       double precision var,dvr,vmn,vmx
@@ -471,7 +474,8 @@ c----------------------------------------------------------------------
 
             quit = .false.
 
-            write (*,1000) vnm(1),vnm(2)
+            write (*,1000) vnm(1)(1:nblen(vnm(1))),
+     *                     vnm(2)(1:nblen(vnm(2)))
             read (*,*,iostat=ier) var(1),var(2)
             if (ier.ne.0) cycle 
 
@@ -484,12 +488,14 @@ c----------------------------------------------------------------------
                do i = 1, 2
                   if (vmn(i).lt.vmx(i)) then
                      if (var(i).lt.vmn(i).or.var(i).gt.vmx(i)) then  
-                        write (*,1010) vnm(i),vmn(i),vmx(i)
+                        write (*,1010) vnm(i)(1:nblen(vnm(i))),
+     *                                 vmn(i),vmx(i)
                         quit = .true.
                      end if 
                   else 
                      if (var(i).lt.vmx(i).or.var(i).gt.vmn(i)) then  
-                        write (*,1010) vnm(i),vmn(i),vmx(i)
+                        write (*,1010) vnm(i)(1:nblen(vnm(i))),
+     *                                 vmn(i),vmx(i)
                         quit = .true.  
                      end if 
                   end if 
@@ -509,7 +515,7 @@ c----------------------------------------------------------------------
 
             quit = .false.
 
-            write (*,1020) vnm(1)
+            write (*,1020) vnm(1)(1:nblen(vnm(1)))
             read (*,*) var(1)
 
 
@@ -518,12 +524,14 @@ c----------------------------------------------------------------------
             if (.not.quit) then 
                if (vmn(1).lt.vmx(1)) then
                   if (var(1).lt.vmn(1).or.var(1).gt.vmx(1)) then  
-                     write (*,1010) vnm(1),vmn(1),vmx(1)
+                     write (*,1010) vnm(1)(1:nblen(vnm(1))),
+     *                              vmn(1),vmx(1)
                      cycle  
                   end if 
                else 
                   if (var(1).lt.vmx(1).or.var(1).gt.vmn(1)) then  
-                     write (*,1010) vnm(1),vmn(1),vmx(1)
+                     write (*,1010) vnm(1)(1:nblen(vnm(1))),
+     *                              vmn(1),vmx(1)
                      cycle  
                   end if 
                end if 

@@ -28,18 +28,19 @@ c-----------------------------------------------------------------------
 
       double precision c(0:4)
 
-      character mnames(k16*k17)*8, n9name*100, dsol*100, opname*100,
+      character mnames(k16*k17)*8, dsol*100, opname*100,
      *          mname(k5)*5, oname(k5)*5, kname(k5)*5,
      *          uname(k0)*5, group*28, aname(i9)*6, amount*5, new*3, 
      *          text*256, dtext*200, title*162, lname(i9)*22,
      *          sname(i9)*10, tn1*6, tn2*22, fname(i9)*10,
      *          liqs*240
 
-      integer i, k, l, iind, im, idum, ivct, jcth, j, ier, idep, 
-     *        gct(i9), gid(i9,i9), ict, idsol, inames, nblen
+      integer i, k, l, iind, im, idum, ivct, jcth, j, ier, idep, ict,
+     *        hsmod(i9), gct(i9), gid(i9,i9), idsol, inames, nblen, 
+     *        jc(2)
 
-      logical eof, good, oned, findph, first, feos, chksol, readyn, 
-     *        liqdus
+      logical eof, good, oned, findph, first, chksol, readyn, 
+     *        liqdus, inteos
 
       external chksol, findph, readyn, nblen
 
@@ -66,9 +67,6 @@ c-----------------------------------------------------------------------
       integer ictr, itrans
       double precision ctrans
       common/ cst207 /ctrans(k0,k0),ictr(k0),itrans
-
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
@@ -138,7 +136,7 @@ c                                 initialize strings (necessary for some OS).
 c                                 name and open computational option file (unit n1)      
       call fopen1 
 c                                 choose and open thermo data file (unit n2)
-      call fopen2 (1,opname)
+      call fopen2 (1)
 c                                 get computational option file name
       write (*,1170) 
       read (*,'(a)') opname
@@ -198,7 +196,7 @@ c                                 2d gridded minimization
 
       end if
 c                                 choose chemical components
-      call compch (ivct,feos,mname,kname,oname,uname)
+      call compch (ivct,mname,kname,oname,uname)
 c                                 physical variable choices and ranges
 c                                 set icopt to its internal value:
       call varich (c,ivct,iind,oned,idep,iord,jcth,amount,dtext,opname,
@@ -336,47 +334,10 @@ c                                 Excluded phases:
         end if
  
       end if
-c                                check for fluid species EoS if no special components:
-c                                as of 3/16/2016 this was incorrect, so far as i can 
-c                                an EoS is automatically associated with fluid species
-c                                if eos(i) = 10 (ideal) gas, or 117 > eos(i) > 103, therefore
-c                                101 (H2O) and 102 (CO2) are the only special cases that
-c                                require the user to specify an EoS
+c                                eliminated check for special component 
+c                                EoS 201/202 as set in compch. And, as of 7.1.8
+c                                overridden by GFSM.
 
-c                                for true ternary c-o-h fluid calculations H2O and CO2
-c                                should be excluded and this loop should not request that
-c                                the user specify an EoS
-      good = .true.
-
-      if (.not.feos) then
- 
-         do i = 1, iphct
-
-            if (eos(i).eq.201.or.eos(i).eq.202) then 
-
-               do j = 1, ixct
-
-                  if (exname(j).eq.names(i)) then
-                     good = .false.
-                     exit 
-                  end if  
-
-               end do 
-
-               if (.not.good) cycle
-c                               got one, get the EoS
-               write (*,'(/,a,/)') 
-     *               'One or more endmembers require a fluid EoS'
-
-               call rfluid (1) 
-
-               exit 
-
-            end if 
-
-         end do 
-
-      end if 
 c                                read solution phases.
       if (.not.liqdus) then
          write (*,2500)
@@ -438,6 +399,7 @@ c                                 check for endmembers:
             ict = ict + 1
             if (ict.gt.i9) call error (24,0d0,i9,'build')
 
+            hsmod(ict) = jsmod
             fname(ict) = tname
             aname(ict) = tn1
             lname(ict) = tn2
@@ -513,10 +475,11 @@ c                                 just one group
 
             end if 
 
-            write (*,1180) 
+            write (*,1180) n9name(1:nblen(n9name))
 c                                 initialize tname, because reading a 
 c                                 null record may not do that. 
             tname  = ' '
+            inteos = .false.
 
             do 
 
@@ -530,20 +493,45 @@ c                                 check if name in list
                good = .false.
 
                do i = 1, ict
+
                   if (tname.eq.fname(i)) then
+
                      isoct = isoct + 1
                      if (isoct.gt.h9) call error (25,0d0,h9,'BUILD') 
                      sname(isoct) = tname
+c                                 check if the model requires an
+c                                 internal eos
+                     if (hsmod(i).eq.0) then
+
+                        inteos = .true.
+                        j = i
+
+                     end if
+
                      good = .true.
-                     exit 
-                  end if 
+                     exit
+
+                  end if
+
                end do 
 
                if (good) cycle
 
                write (*,2310) tname
 
-            end do  
+            end do
+
+            if (inteos) then
+c                                 user has chosen a model that relies on an
+c                                 internal eos (jsmod = 0), choose the eos
+               write (*,1040) fname(j)(1:nblen(fname(j)))
+
+               call rfluid (1,jc)
+
+1040  format (/,'Solution model ',a,' requires an internal fluid EoS ',
+     *        'select the EoS:',/)
+
+            end if
 
          end if
 
@@ -568,7 +556,7 @@ c                                 plot output request
 c                                 solution model file request
       call mertxt (text,n9name,
      *            '| solution model file, blank = none',5)
-      write (n1,'(a)') text
+      write (n1,'(a)') text(1:nblen(text))
 c                               if special dependencies, put them in the
 c                               title
       if (title.eq.' '.and.idep.ne.0) then 
@@ -581,10 +569,10 @@ c                               title
          call mertxt (text,title,dtext,5)
       end if 
 c                                 title
-      write (n1,'(a)') text
+      write (n1,'(a)') text(1:nblen(text))
 c                                 option file name
       call mertxt (text,opname,'| Perple_X option file',5)
-      write (n1,'(a)') text 
+      write (n1,'(a)') text(1:nblen(text))
 c                                 computational mode:
       write (n1,1010) icopt,'calculation type: 0- composition,'//
      *    ' 1- Schreinemakers, 2 - liquidus/solidus, 3- Mixed,'//
@@ -594,7 +582,7 @@ c                                 computational mode:
 c                                 coordinate file name if necessary
       if (icopt.eq.10.or.icopt.eq.11) then 
          call mertxt (text,cfname,'| coordinate file',5)
-         write (n1,'(a)') text
+         write (n1,'(a)') text(1:nblen(text))
       end if 
 
       write (n1,1010) idum,'unused place holder, post 06'
@@ -774,7 +762,8 @@ c                                 check in the compound list
       else if (icopt.eq.0) then
 c                                 get conditions for composition
 c                                 diagrams:
-         if (ifct.eq.1) write (*,7150) 'fluid', vname(3) 
+         if (ifct.eq.1) write (*,7150) 'fluid', 
+     *                                  vname(3)(1:nblen(vname(3)))
 
          i = 0
 
@@ -817,7 +806,7 @@ c                                 diagrams:
  
 999   stop
 
-1000  format ('Specify computational mode:',//,
+1000  format (/,'Specify computational mode:',//,
      *    5x,'1 - liquidus [default]',/,5x,'2 - solidus',/)
 1010  format (i5,1x,a,a,a,a,a)
 1020  format (a,' does not exist in the selected data base')
@@ -827,9 +816,8 @@ c                                 diagrams:
 1170  format (/,'Enter the computational option file name ',
      *       '[default = perplex_option.dat]:',/,
      *       'See: www.perplex.ethz.ch/perplex_options.html')
-1180  format (/,'For details on these models see: ',
-     *        'www.perplex.ethz.ch/perplex_solution_model_glossary.html'
-     *      /,'or read the commentary in the solution model file.',/)
+1180  format (/,'For details on these models read the commentary in ',
+     *        a,/)
 1200  format (/,'In this mode the liquidus or solidus surface of a pha',
      *        'se is mapped by VERTEX over a 2-d',/,'composition space',
      *       ' as a function a thermodynamic potential (e.g., T or P).',
@@ -847,7 +835,7 @@ c                                 diagrams:
 1330  format (i2,1x,i2,1x,g13.6,1x,g13.6,1x,a)
 1340  format (5(g13.6,1x))
 1350  format (a,1x,a)
-1490  format ('Specify computational mode:',//,
+1490  format (/,'Specify computational mode:',//,
      *    5x,'1 - Convex-Hull minimization',/, 
      *    5x,'2 - Constrained minimization on a 2d grid [default]',/,
      *    5x,'3 - Constrained minimization on a 1d grid',/,
@@ -875,7 +863,7 @@ c                                 diagrams:
 2110  format (/,'Calculations with saturated components (Y/N)?')
 2310  format (/,a,' is invalid. Check spelling, upper/lower case match',
      *        ', and do not use leading blanks. Try again:',/)
-2500  format (/,'Include solution models (Y/N)?')
+2500  format ('Include solution models (Y/N)?')
 2510  format (/,'Select models from the following list, enter',
      *        ' 1 per line, press <enter> to finish',/)
 2520  format (/,'Melt phase(s) for liquidus finding.',/,
@@ -913,12 +901,12 @@ c                                 diagrams:
      *       )
 7050  format ('Try again (Y/N)?')
 7070  format (/,'Enter calculation title:')
-7150  format (/,'*Although only one component is specified for the ',a,
-     *       ' phase, its equation of state ',/,
+7150  format (/,'*Although only one component is specified for the ',
+     *       'saturated ',a,' phase, its EoS',/,
      *       'permits use of its compositional variable: ',a,'.',/) 
 
       end
- 
+
       subroutine depend (ivct,idep,iind,iord,c,dtext)
 c---------------------------------------------------------------------------
 c subroutine to reset variable flags and counters if one variable is
@@ -1207,7 +1195,7 @@ c                                 find index in uname array
      *        ', and do not use leading blanks. Try again:',/)
       end
 
-      subroutine compch (ivct,feos,mname,kname,oname,uname)
+      subroutine compch (ivct,mname,kname,oname,uname)
 c---------------------------------------------------------------------------
 c interactively choose components for build.
 c---------------------------------------------------------------------------
@@ -1215,15 +1203,16 @@ c---------------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, j, jcmpn, ivct, igood, ier, jsat(h5), ima, jspec, jc(2)
+      integer i, j, jcmpn, ivct, igood, ier, jsat(h5), ima, jspec, 
+     *        nblen, jc(2)
 
-      logical satflu, mobflu, good, findph, eof, quit, feos, readyn
+      logical satflu, mobflu, good, findph, eof, quit, readyn
 
       character mname(*)*5, qname(k0)*5, char5*5, uname(*)*5,
      *          oname(*)*5, nname(k5)*5, char6*6, 
      *          kname(*)*5, fugact(3)*8
 
-      external findph, readyn
+      external findph, readyn, nblen
 
       integer ic
       common/ cst42 /ic(k0)
@@ -1259,7 +1248,6 @@ c---------------------------------------------------------------------------
       jcmpn = icmpn
       satflu = .false.
       mobflu = .false.
-      feos = .false.
       char5 = ' '
 c                                 Component stuff first:
       do i = 1, icmpn
@@ -1268,8 +1256,8 @@ c                                 Component stuff first:
          kname(i) = cmpnt(i)
       end do
 
-      if (lopt(7).and.icopt.ne.9) then 
-c                                 components of saturated phase:
+      if (lopt(7)) then
+c                                   components of saturated phase:
          write (*,2030)
 
          if (readyn()) then
@@ -1313,6 +1301,10 @@ c                                 blank input
             end if
 
          end if
+
+      else
+c                                 write explanation why no saturated phase constraint
+         write (*,1050) n2name(1:nblen(n2name))
 
       end if
 c                                 number of used special components
@@ -1377,8 +1369,8 @@ c                                 count component
 
                else 
 c                                 blank input
-                  exit   
-             
+                  exit
+
                end if 
 
             end do 
@@ -1389,7 +1381,7 @@ c                                 mobile components:
 
          if (readyn()) then
          
-            do 
+            do
 c                                 write prompt
                write (*,2050) 
                if (jmct.eq.1) write (*,2055)
@@ -1460,20 +1452,23 @@ c                                 phase
 c                                 names contains the list of candidates
                   if (iphct.eq.0) then
 
-                     write (*,2061) fugact(ima),char5
+                     write (*,2061) fugact(ima),char5(1:nblen(char5))
                      ima = 1
                      imaf(jmct) = ima
                      jmuct = jmuct + 1
 
                   else if (iphct.eq.1) then 
 
-                     write (*,2062) names(1),char5,fugact(ima)
+                     write (*,2062) names(1)(1:nblen(names(1))),
+     *                              char5(1:nblen(char5)),
+     *                              fugact(ima)
+
                      afname(jmct) = names(1)
                      icp = 1
 
                   else 
 
-                     write (*,2063) char5,fugact(ima)
+                     write (*,2063) char5(1:nblen(char5)),fugact(ima)
                      write (*,2064) (names(i),i=1,iphct)
                      good = .false.
                      do 
@@ -1490,7 +1485,7 @@ c                                 names contains the list of candidates
                         write (*,2310) name
                      end do
 
-                     write (*,1190) 
+                     write (*,1190)
 
                   end if
 
@@ -1511,25 +1506,11 @@ c                                 now make the variable name
                   end if
 
                   write (*,2065) char5,fugact(ima),vname(3+jmct)
-c                                 if name is a special phase component 
-c                                 set flag for eos request
-                  do i = 1, ispec
-                     if (names(icp).ne.uname(idspe(i))) cycle
-                     jspec = jspec + 1
-                     mname(jspec) = uname(idspe(i))
-                  end do 
 
                else 
 
                   write (vname(3+jmct),'(a,a)') 'mu_',char5
                   write (*,2066) char5,vname(3+jmct)
-c                                 if component is a special phase component 
-c                                 set flag for eos request
-                  do i = 1, ispec
-                     if (char5.ne.uname(idspe(i))) cycle
-                     jspec = jspec + 1
-                     mname(jspec) = uname(idspe(i))
-                  end do 
 
                end if 
                 
@@ -1631,23 +1612,25 @@ c                                 in thermodynamic composition space.
 
       end do
 
-      if (jspec.gt.0) then
-c                                 get fluid equation of state
-c                                 write explanation
-         write (*,1010) (mname(i), i = 1, jspec)
-         write (*,1020)
+      if (ifct.ne.0) then
+c                                 a saturated phase constraint has
+c                                 been specified, get the EoS
+         call rfluid (4,jc)
+c                                 check will rudely boot the user
+c                                 out on error, should allow another try
+         call rfluid (0,jc)
 
-         if (ifct.ne.0) write (*,1025) 
-
-         feos = .true.
-         call rfluid (1)
          write (*,'(/)')
-c                                 eliminate composition variable
-c                                 for saturated fluid if constrained
-c                                 fugacity EoS is used:
+c                                 eliminate saturated fluid composition variable
+c                                 if constrained fugacity EoS is selected.
 c                                 probably should change iv(3)?
-         if ((ifug.eq.9.or.ifug.eq.24).and.ifct.gt.1) 
-     *      ivct = ivct - 1
+         if (ifug.eq.9.or.ifug.eq.24) then
+
+            ivct = ivct - 1
+            iv(3)=4
+            iv(4)=5
+
+         end if
 
       end if
 c                                 make kname into a list of retained (non-mobile) components
@@ -1689,31 +1672,33 @@ c                                 component pointers for chkphi
 1010  format ('Because the thermodynamic data file identifies:',
      *        5(1x,a5))
 1020  format ('as special components, you will be prompted next for ',
-     *        'the EoS to be used for ',/,'the ',
-     *        'corresponding composants and mixtures thereof. To over',
-     *        'ride this behavior, ',/,'e.g., to use a generic hybrid ',
-     *        'fluid EoS (GFSM) either:',//,
-     *        '  set/add the GFSM option to T in your option file',//,
-     *        '  or delete the special_component section ',
-     *        'from the thermodynamic data file header.')
-1025  format ('NOTE: the EoS choice specified here will override the ',
-     *        'EoS choice specified by',/,'the hybrid_EoS option, to',
-     *        'override this behavior delete the special_component',/,
-     *        'section from the the thermodynamic data file header.',/)
+     *        'the EoS to be used for',/,'the corresponding ',
+     *        'composants and mixtures thereof. This choice will ',/,
+     *        'be overriden if you subsequently specify a GFSM ',
+     *        'solution model')
 1030  format (/,'For C-O-H fluids it is only necessary to select ',
      *       'volatile species present in',/,'the solids of interest. ',
      *       'If the species listed here are H2O and CO2, then to',/,
      *       'constrain O2 chemical potential to be consistent with ',
      *       'C-O-H fluid speciation',/,'treat O2 as a saturated ',
      *       'component. Refer to the Perple_X Tutorial for details.',/)
+1040  format (/,'**warning ver613** explicit phase saturation constrai',
+     *          'nts have been disabled',/,'by the GFSM option. Satura',
+     *          'ted phase constraints are NOT equivalent to saturated'
+     *        /,'component constraints.')
+1050  format (/,'**warning ver614** explicit phase saturation constrai',
+     *          'nts cannot be implemented',/,'because ',a,' does not ',
+     *          'specify special components. Saturated phase',/,
+     *          'constraints are NOT equivalent to saturated component',
+     *          ' constraints.')
 1070  format ('Ok, but don''t say i didn''t warn you.')
 1080  format ('Wise move, choose another component.')
 1190  format (/,'**warning ver064** in general it is wise to exclude ',
      *        'the unused phases from',/,'the above list from your ',
      *        'calcultion. NOTE: you will not be prompted for these ',/,
      *        'phases if you select the automatic phase exclusion ',
-     *        'prompt. To exclude unused',/,'reference phases either',
-     *        'do not select the prompt option or edit the problem',/,
+     *        'prompt. To exclude unused',/,'reference phases either ',
+     *        'do NOT select the prompt option or edit the problem',/,
      *        'definition after running BUILD',/)
 2021  format ('Enter names, 1 per line, press <enter> to finish:')
 2030  format (/,'Calculations with a saturated fluid (Y/N)?')
@@ -1733,8 +1718,8 @@ c                                 component pointers for chkphi
 2061  format (/,'The data file contains no phase suitable to define ',
      *        'the',a,' of ',a,/,'This component will be ',
      *        'characterized by its chemical potential',/)
-2062  format (/,'Phase ',a,' will be used to define ',a,' ',a)
-2063  format (/,'Select the phase to be used to define ',a,' ',
+2062  format (/,'Endmember ',a,' will be used to define ',a,' ',a)
+2063  format (/,'Choose the endmember to be used to define ',a,' ',
      *        a,' from the following:',/)
 2064  format (4(5x,9(a,1x),/))
 2065  format (/,'The log10(',a,' ',a,') variable is named: ',a,/)
@@ -1891,13 +1876,17 @@ c                                 phase diagram calculations:
 
             if (icopt.ne.3.and.icopt.ne.10.and.icopt.ne.6) then 
 
-               write (*,1050) vname(1),vname(2)
+               write (*,1050) vname(1)(1:nblen(vname(1))),
+     *                        vname(2)(1:nblen(vname(2)))
                if (icopt.eq.4) write (*,1160)
 
                if (readyn()) then
 
                   do 
-                     write (*,1060) vname(1),vname(2),vname(2),vname(1)
+                     write (*,1060) vname(1)(1:nblen(vname(1))),
+     *                              vname(2)(1:nblen(vname(2))),
+     *                              vname(2)(1:nblen(vname(2))),
+     *                              vname(1)(1:nblen(vname(1)))
                      read (*,*,iostat=ier) idep
                      if (ier.eq.0) exit
                      call rerr
@@ -2323,8 +2312,8 @@ c                                 open c-space
 
       end if 
 
-1050  format (/,'The data base has ',a,' and ',a,' as default ',
-     *       'independent potentials.',/,'Make one dependent on the ',
+1050  format ('The data base has ',a,' and ',a,' as default ',
+     *       'independent potentials. Make',/,'one dependent on the ',
      *       'other, e.g., as along a geothermal gradient (y/n)? ')
 1060  format (/,'Select dependent variable:',//,'  1 - ',a,' = f(',a,')'
      *       ,/,'  2 - ',a,' = f(',a,')',/)
@@ -2347,10 +2336,10 @@ c                                 open c-space
      *        'present initially in the system:')
 1380  format (/,'The amounts you enter next need not be normalized;',
      *        ' regardless of units, they',/,
-     *        'define the molar amount of the system',/)
-1390  format (/,'Enter the ',a,' amounts of the components:')
+     *        'define the molar amount of the system.',/)
+1390  format ('Enter the ',a,' amounts of the components:')
 1410  format ('for the bulk composition of interest:')
-1420  format (/,'Specify component amounts by mass (Y/N)?')
+1420  format ('Specify component amounts by mass (Y/N)?')
 1430  format ('Constrain component ',a,' (Y/N)?')
 1450  format (/,'All thermodynamic components must be ',
      *         'constrained,',/'specify ',
@@ -2359,7 +2348,6 @@ c                                 open c-space
      *        ' component constraints.',/,
      *        'Answering no at any point',
      *        ' completes the set of constraints.',/)
-1470  format (5x,i1,' - Composition X_C1* (user defined)')
 1480  format (5x,i1,' - Composition X_C2 (user defined)')
 1500  format (//,'Specify number of independent potential variables:',
      *         /,5x,'0 - Composition diagram [default]',/,
@@ -2375,7 +2363,6 @@ c                                 open c-space
      *       'as:',/,a,/,
      *       'where X_C1 and X_C2 vary between 0 and 1, and C0, C1 ',
      *       'and C2 are the',/,'compositions specified next.')
-1570  format (/,'*X_C1 can not be selected as the y-axis variable',/)
 1590  format (5x,'2 - Sections and Schreinemakers-type diagrams')
 2010  format ('Enter the ',a,' file name [default = ',a,']:')
 2111  format (/,'Select x-axis variable:')
@@ -2412,9 +2399,6 @@ c                                 open c-space
      *            'electrolyte data',/,
      *         3x,' - set aq_lagged_speciation and refine_endmembers to'
      *           ,' true (T)')
-7150  format (/,'*Although only one component is specified for the ',a,
-     *       ' phase, its equation of state ',/,
-     *       'permits use of its compositional variable: ',a,'.',/) 
 
       end 
 
@@ -2431,7 +2415,9 @@ c----------------------------------------------------------------------
 
       logical oned
 
-      integer j, ivct, ier, ix, jc, jvct, jcont
+      integer j, ivct, ier, ix, jc, jvct, jcont, nblen
+
+      external nblen
 
       integer ifct,idfl
       common/ cst208 /ifct,idfl
@@ -2481,7 +2467,7 @@ c                                 bulk composition allowed
 c                                 bulk composition variable
             if (jcont.eq.1) write (*,1470) j
 c                                 saturated phase composition explanation
-            if (ifct.eq.1) write (*,7150) vname(3)
+            if (ifct.eq.1) write (*,7150) vname(3)(1:nblen(vname(3)))
 c                                 warn that the bulk composition
 c                                 variable can't be used on y
             if (.not.oned.and.jcont.eq.1) write (*,1570)
@@ -2519,11 +2505,11 @@ c                                 read limits
       end do
 
 1470  format (5x,i1,' - Composition X_C1* (user defined)')
-1570  format (/,'*X_C1 can not be selected as the y-axis variable',/)
+1570  format ('*X_C1 can not be selected as the y-axis variable.')
 2111  format (/,'Select ',a,' variable:')
 2140  format (5x,I1,' - ',a)
-7150  format (/,'*Although only one component is specified for the ',a,
-     *       ' phase, its equation of state',/,
-     *       ' permits use of its compositional variable: ',a,'.',/)
+7150  format ('**Although only one saturated phase component is ',
+     *        'specified, the phase EoS ',/,2x,
+     *        'permits use of its compositional variable ',a,'.')
 
       end

@@ -148,7 +148,7 @@ fper = 1 per - 1/3 ta + 1/3 fta
 fatg = 1 atg - 16 ta + 16 fta
 0 0 0
 
-atgts = 4 clin + 9/17 atg - 24/17 br      | Tshermaks antigorite for Atg(PN) model (Padrón-Navarta et al., 2013, Lithos)
+atgts = 4 clin + 9/17 atg - 24/17 br      | Tshermaks antigorite for Atg(PN) model (Padrï¿½n-Navarta et al., 2013, Lithos)
 -2e3 46.1 0
 
 | ettore's makes for oCcM(EF):
@@ -1914,7 +1914,7 @@ m0 = 457000 m1 = .8829 m2 = -143.88
 end
 
  
-H2O      EoS = 101 | H= -241810.                                                                    
+H2O      EoS = 201 | H= -241810.                                                                    
 H2O(1)
 G0 = -228542.3 S0 = 188.8  
 c1 = 40.1 c2 = .8656001E-2 c3 = 487500 c5 = -251.2  
@@ -1922,7 +1922,7 @@ m0 = .1E-15
 end
 
  
-CO2      EoS = 102 | H= -393510.                                                                    
+CO2      EoS = 202 | H= -393510.                                                                    
 CO2(1)
 G0 = -394332.9 S0 = 213.7  
 c1 = 87.8 c2 = -.2644E-2 c3 = 706400 c5 = -998.9  
@@ -1937,7 +1937,7 @@ c1 = 45.7 c2 = -.97E-4 c3 = 662700 c5 = -414.7
 m0 = .1E-15  
 end
 
- 
+
 CH4      EoS = 104 | H= -74810.                                                                     
 O2(-2)H2O(2)CO2(1)
 G0 = -50695.63 S0 = 186.26  
@@ -2183,7 +2183,7 @@ m0 = .1E-15
 end
 
  
-Si       EoS = 2 | Silicon metal, not from HP data base, JADC 1/2010                              
+Si(s)     EoS = 2 | Silicon metal, not from HP data base, JADC 1/2010                              
 SIO2(1)O2(-1)
 S0 = 18.82 V0 = 1.21  
 c1 = 36.12 c2 = -.398E-3 c3 = .8987E-2 c5 = -285.3  

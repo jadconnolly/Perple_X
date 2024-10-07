@@ -31,9 +31,6 @@ c     double precision wbig(lwbig)
       integer hcp,idv
       common/ cst52  /hcp,idv(k7)
 
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
-
       double precision g
       common/ cst2 /g(k1)
 
@@ -465,9 +462,6 @@ c----------------------------------------------------------------------
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
-
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
 c----------------------------------------------------------------------
 c                                 reset refinement point flags
       do i = 1, jpoint
@@ -961,19 +955,10 @@ c                                we have an endmember
             nkp(i) = kkp(i)
          end if
 
-      end do 
-c                                check if any solutions
-      do i = 1, ntot
-         if (nkp(i).gt.0) goto 10
-      end do 
-
-      np = 0
-      ncpd = ntot
-
-      goto 99
+      end do
 c                                figure out how many solutions
 c                                are present:
-10    np = 0
+      np = 0
       ncpd = 0
       soltol = nopt(8)
 
@@ -1274,7 +1259,7 @@ c                                 compound composition into cp3 array
 
       ntot = np + ncpd
 
-99    end 
+      end 
 
       subroutine sollim (ids,jd)
 c----------------------------------------------------------------------
@@ -1689,9 +1674,6 @@ c----------------------------------------------------------------------
       logical degen, solvus, quit, news, solvnt(k19)
 
       double precision x(*), slam(h9), clamda(*)
-
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
 
       integer icomp,istct,iphct,icp
       common/ cst6  /icomp,istct,iphct,icp
@@ -2655,7 +2637,7 @@ c----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
 
-      integer i, j, k, id, jds, tictoc
+      integer i, j, id, jds, tictoc
 
       logical abort, stic, bad
 
@@ -2683,9 +2665,6 @@ c                                 hcp is different from icp only if usv
 
       integer ids,isct,icp1,isat,io2
       common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
-      integer ipoint,kphct,imyn
-      common/ cst60 /ipoint,kphct,imyn
 
       logical mus
       double precision mu
@@ -2773,14 +2752,13 @@ c                                 amounts
       if (jbulk.gt.icp) then  
 c                                 get the amounts of the saturated phases:
          do i = icp+1, jbulk
-c                                 k is the saturated component pointer
-            k = i - icp
-c                                 initialize bulk
-            c(k) = cblk(i)
+c                                 corrected to use full component indexing
+c                                 in C. JADC 9/13/2023
+            c(i) = cblk(i)
 c                                 subtract the amount of the component in the 
 c                                 phases in the thermodynamic c-space
             do j = 1, npt 
-               c(k) = c(k)- amt(j)*cp3(i,j)
+               c(i) = c(i)- amt(j)*cp3(i,j)
             end do 
 
          end do 
@@ -2800,7 +2778,7 @@ c                                  meemum
                stop 
             end if 
 c                                  amount of the staurated phase
-            amt(npt) = c(i-icp)/cp(i,id)
+            amt(npt) = c(i)/cp(i,id)
 c                                  warn on undersaturation
             if (amt(npt).lt.nopt(9)) then 
                if (amt(npt).lt.-nopt(9).and.tictoc.lt.1) call warn (99,
@@ -2812,7 +2790,7 @@ c                                  warn on undersaturation
                exit
             end if 
 c                                  remove the saturated phase from 
-c                                  the bulk composition.
+c                                  the temporary bulk composition
             do j = icp+1, i - 1
                c(j) = c(j) - amt(npt)*cp(j,id)
             end do 
@@ -3386,27 +3364,36 @@ c                                 compute derivative properties
 
       subroutine iniprp
 c----------------------------------------------------------------------
-c iniprp - read data files and initialization for meemum
+c iniprp - read data files and initialization for meemum and vertex
 c----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
 
+      logical first, err
+
+      integer eos
+      common/ cst303 /eos(k10)
+
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
-
-      logical first, err 
 c-----------------------------------------------------------------------
 c                                 version info
       call vrsion (6)
-c                                 stage flag
+c                                 iniprp resets refine if starting from 
+c                                 autorefine stage. not clear if refine really
+c                                 need to be initialized, probably not.
       refine = .false.
-
-      first = .true.
-c                                 initialize outprt to .false. to force input1 to 
-c                                 read input, subsequently outprt is set in setau2
+c                                 outprt must be initialized to .false. 
+c                                 to force input1 to read project file name.
+c                                 subsequently outprt is set in setau2
       outprt = .false.
+c                                 first controls whether input1 reads the
+c                                 option file, some initializations in 
+c                                 input2, and whether input2 and input9
+c                                 write summaries to console
+      first = .true.
 c                                 -------------------------------------------
 c                                 open statements for units n1-n5 and n9
 c                                 are in subroutine input1
@@ -3414,7 +3401,7 @@ c                                 are in subroutine input1
 c                                 read thermodynamic data on unit n2:
       call input2 (first)
 c                                 allow reading of auto-refine data 
-      call setau1 
+      call setau1
 c                                 read data for solution phases on n9:
       call input9 (first)
 c                                 load static compositions for manual autorefine

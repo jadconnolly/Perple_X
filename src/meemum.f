@@ -51,9 +51,9 @@ c                                 iam is a flag indicating the Perple_X program
 c                                 perplexwrap.f flags
       getInput = .true.
       sWarn = .false.
-c                                 initialization, read files etc.
+c                                 read input files, etc
       call iniprp
-
+c                                 -------------------------------------
       bulk = .false.
 
       if (icont.eq.1) then 

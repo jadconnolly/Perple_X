@@ -136,27 +136,22 @@ fatg = 1 atg - 16 ta + 16 fta
 
  | odo = 1/2 mag + 1/2 cc          | ordered dolmite species for H&P dolomite model
  | -13.5d3 0 0 
-                                | endmembers for the melt(HP) model, the dqf corrections
-                                | made in the solution model could be applied here, but 
-                                | should not be done in both the thermodynamic data file 
-                                | and the solution model. The small dqf corrections here
-                                | are made to avoid degeneracy between sil8L and silL etc.
-                                | These may not be necessary, and are definitely superfluous
-                                | if silL, foL and faL are excluded in calculations with 
-                                | vertex.
-
-sil8L = 8/5 silL                | sil8L is dqf corrected in the melt(HP) solution model
--20 0 0 
-
-fo8L = 2 foL                    | fa8L is dqf corrected in the melt(HP) solution model
--20 0 0 
-
-fa8L = 2 faL                    | fa8L is dqf corrected in the melt(HP) solution model            
--20 0 0 
-
-q8L = 4 qL                      | q8L has no dqf correction 
--20 0 0 
-
+|--------------------------------------------------------------------------------
+                                 | Generic 8-oxygen HP liquid endmembers. Because 
+                                 | these occur in many melts models they are created
+                                 | here with a nominal DQF, the true model specific
+                                 | DQF must be added in the solution model. JADC 2/2024
+sil8L = 8/5 silL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+fo8L = 2 foL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+fa8L = 2 faL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+q8L = 4 qL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+wi8L = 2 wiL
+       DQF(J/mol) = -10  | a small DQF added to stabilize the made endmember
+|--------------------------------------------------------------------------------
                                 | endmembers for Green et al (2007) omph model, ds5 databases
 acm_dqf = 1 acm
        DQF(J/mol) = -4000
@@ -1865,7 +1860,7 @@ m0 = 457000 m1 = .8829 m2 = -143.88
 end
 
  
-H2O      EoS = 1 | H= -241810.                                                                    
+H2O      EoS = 101 | H= -241810.                                                                    
 H2O(1)
 G0 = -228542.3 S0 = 188.8  
 c1 = 40.1 c2 = .8656001E-2 c3 = 487500 c5 = -251.2  
@@ -1873,7 +1868,7 @@ m0 = .1E-15
 end
 
  
-CO2      EoS = 1 | H= -393510.                                                                    
+CO2      EoS = 102 | H= -393510.                                                                    
 CO2(1)
 G0 = -394332.9 S0 = 213.7  
 c1 = 87.8 c2 = -.2644E-2 c3 = 706400 c5 = -998.9  
@@ -1881,7 +1876,7 @@ m0 = .1E-15
 end
 
  
-CO       EoS = 1 | H= -110530.                                                                    
+CO       EoS = 103 | H= -110530.                                                                    
 O2(-.5)CO2(1)
 G0 = -137163.7 S0 = 197.67  
 c1 = 45.7 c2 = -.97E-4 c3 = 662700 c5 = -414.7  
@@ -1889,7 +1884,7 @@ m0 = .1E-15
 end
 
  
-CH4      EoS = 1 | H= -74810.                                                                     
+CH4      EoS = 104 | H= -74810.                                                                     
 O2(-2)H2O(2)CO2(1)
 G0 = -50695.63 S0 = 186.26  
 c1 = 150.1 c2 = .2062E-2 c3 = 3427700 c5 = -2650.4  
@@ -1897,7 +1892,7 @@ m0 = .1E-15
 end
 
  
-O2       EoS = 1 | H=  0.                                                                         
+O2       EoS = 0 | H=  0.                                                                         
 O2(1)
 S0 = 205.2  
 c1 = 48.3 c2 = -.691E-3 c3 = 499200 c5 = -420.7  
@@ -1905,7 +1900,7 @@ m0 = .1E-15
 end
 
  
-H2       EoS = 1 | H=  0.                                                                         
+H2       EoS = 105 | H=  0.                                                                         
 O2(-.5)H2O(1)
 G0 = -.4549408E-2 S0 = 130.7  
 c1 = 23.3 c2 = .4627E-2 c5 = 76.3  

@@ -283,7 +283,7 @@ c----------------------------------------------------------------------
 
       integer k, iran(2,k3), jran(2,k3), i, hfill, nblen, maxvar, j, 
      *        ipoly, idr(k5), iop5, iop6, jop0, nctr(k3), minvar,
-     *        iop7, imatch, iend, ivar, ipoint, jj, ii, lex(k3), ntot,
+     *        iop7, imatch, iend, ivar, kpoint, jj, ii, lex(k3), ntot,
      *        iax(l7,2), nax(2), ibeg, jbeg, jend, kk, ictr
 
       double precision rline, x, y, x1, y1, x2, y2, x10, cctr(2,k3), 
@@ -663,9 +663,9 @@ c                                 for grid spacing jinc. JADC
                   cycle
                end if
 c                                  in the money this time -- agrees?
-               ipoint = iap(igrd(ii,jj))
+               kpoint = iap(igrd(ii,jj))
 
-               if (ipoint.ne.lex(k)) then 
+               if (kpoint.ne.lex(k)) then 
 c                  write (*,*) '**oops - barycenter at ',x,y,
 c     *              ' for ',text(1:nblen(text)),' region ',kk,' missed'
                else 
@@ -716,7 +716,7 @@ c                                 at half the j-range
                   if (igrd(ii,jj).eq.0) cycle
 
                   if (iap(igrd(ii,jj)).eq.ipoly) then
-                     ipoint = iap(igrd(ii,jj))
+                     kpoint = iap(igrd(ii,jj))
                      x = xmin + (ii-1)/jinc*dx
                      y = ymin + (jj-1)/jinc*dy
                      goto 50
@@ -734,7 +734,7 @@ c                                 at half the i-range
                   if (igrd(ii,jj).eq.0) cycle
 
                   if (iap(igrd(ii,jj)).eq.ipoly) then
-                     ipoint = iap(igrd(ii,jj))
+                     kpoint = iap(igrd(ii,jj))
                      x = xmin + (ii-1)/jinc*dx
                      y = ymin + (jj-1)/jinc*dy
                      goto 50
@@ -750,7 +750,7 @@ c                                 with the assemblage
                   if (igrd(ii,jj).eq.0) cycle
 
                   if (iap(igrd(ii,jj)).eq.ipoly) then
-                     ipoint = iap(igrd(ii,jj))
+                     kpoint = iap(igrd(ii,jj))
                      x = xmin + (ii-1)/jinc*dx
                      y = ymin + (jj-1)/jinc*dy
                      goto 50
@@ -767,7 +767,7 @@ c                                 igrd to zero allows this?
 
 c        end if 
 c                                 call label routine:
-50       call psbtxt (ipoint, text, iend)
+50       call psbtxt (kpoint, text, iend)
          call psflbl (x,y,lex(k),iend,text)
 
       end do 
@@ -2294,7 +2294,7 @@ c psax1d - subroutine to output (sloppy) 1d axes.
 
       logical readyn
 
-      character record*20
+      character record*40
 
       external readyn
 
@@ -2303,7 +2303,13 @@ c psax1d - subroutine to output (sloppy) 1d axes.
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
       character vnm*8
-      common/ cxt18a /vnm(l3)   
+      common/ cxt18a /vnm(l3)
+
+      double precision vmax,vmin,dv
+      common/ cst9  /vmax(l2),vmin(l2),dv(l2)
+
+      integer ipot,jv,iv
+      common / cst24 /ipot,jv(l2),iv(l2)
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
@@ -2353,14 +2359,15 @@ c                                  sectioning constraints
          call pssctr (ifont,nscale,nscale,0d0)
          y = ymax + 15d0*dcy*nscale
          do i = 2, j 
-            write (record,1000) vnm(i),vmn(i)
+            write (record,1000) vnm(i),vmin(jv(i))
+            call deblnk (record)
             call pstext (xmin,y,record,0)
             y = y - 3d0*dcy*nscale
          end do 
  
       end if
  
-1000  format (a,'=',1pg9.3)
+1000  format (a,' = ',1pg12.6)
 1010  format (/,'Modify default axes (y/n)?')
 1030  format (/,'Enter the starting value and interval for',
      *          ' major tick marks on',/,'the ',a,'-axis (',
