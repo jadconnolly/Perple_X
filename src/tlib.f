@@ -4384,7 +4384,7 @@ c----------------------------------------------------------------------
       character chars*1, card*400
       common/ cst51 /length,com,chars(400),card
 
-      character commnt*lchar
+      character commnt*400
       common/ cst99 /commnt
 c----------------------------------------------------------------------
       eof = .false.
@@ -5019,7 +5019,7 @@ c----------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5  /p,t,xco2,u1,u2,tr,pr,r,ps
 
-      character commnt*lchar
+      character commnt*400
       common/ cst99 /commnt
 
       character*2 strgs*3, mstrg, dstrg, tstrg*3, wstrg*3, e16st*3
