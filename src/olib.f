@@ -59,8 +59,8 @@ c----------------------------------------------------------------------
       common/ cxt23 /jend(h9,m14+2)
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       integer jnd
       double precision aqg,q2,rt

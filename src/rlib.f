@@ -1758,8 +1758,8 @@ c----------------------------------------------------------------------
       common/ cst18a /mname(m4)
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       ier = 0
 
@@ -1817,8 +1817,8 @@ c----------------------------------------------------------------------
       double precision rnums(*)
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
 c                                 read card scans for non blank data
 c                                 card:
@@ -1912,8 +1912,8 @@ c----------------------------------------------------------------------
      *      rkord(m1),iterm,iord,istot,jstot,kstot
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       character*2 strgs*3, mstrg, dstrg, tstrg*3, wstrg*3, e16st*3
       common/ cst56 /strgs(32),mstrg(6),dstrg(m8),tstrg(m7),wstrg(m16),
@@ -2101,8 +2101,8 @@ c----------------------------------------------------------------------
      *          strg*40, strg1*40
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       integer indq,idqf
       double precision dqf
@@ -2221,8 +2221,8 @@ c----------------------------------------------------------------------
       double precision nums(m3)
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       integer kstot,jend,i,ict
 c----------------------------------------------------------------------
@@ -2318,8 +2318,8 @@ c----------------------------------------------------------------------
       double precision nums(m3)
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       integer jend,i,idqf,indq
       double precision dqf
@@ -2408,8 +2408,8 @@ c----------------------------------------------------------------------
       common/ cst18a /mname(m4)
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       ier = 0
 
@@ -2532,8 +2532,8 @@ c----------------------------------------------------------------------
       character name*8, tname*10, tag*3
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       ict = 0
       do i = 1, k7
@@ -9530,8 +9530,8 @@ c---------------------------------------------------------------------
       character begin*5, tag*3, tname*10
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
 
       call readcd (n9,ier,.true.)
@@ -12089,8 +12089,8 @@ c-----------------------------------------------------------------------
       common/ cxt2 /aqg(m4),qq(m4),rt,jnd(m4)
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       integer idaq, jdaq
       logical laq
@@ -14584,8 +14584,8 @@ c                                 adaptive coordinates
       common/ cxt2 /aqg(m4),qq(m4),rt,jnd(m4)
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       integer idaq, jdaq
       logical laq
@@ -17181,8 +17181,8 @@ c----------------------------------------------------------------------
       character name*8, eod*3, tname*10
 
       integer length,com
-      character chars(lchar)*1, card*lchar
-      common/ cst51 /length,com,chars,card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       integer iend,isub,insp,iterm,iord,istot,jstot,kstot,rkord
       double precision wg,wk

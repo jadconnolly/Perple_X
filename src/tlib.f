@@ -169,8 +169,8 @@ c----------------------------------------------------------------------
       common/ cst4 /iam
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       logical mus
       double precision mu
@@ -2256,8 +2256,8 @@ c----------------------------------------------------------------------
      *          nval1*12, nval2*12, nval3*12, strg*40, strg1*40
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------    
       ier = 0 
       key = ' '
@@ -2387,8 +2387,8 @@ c----------------------------------------------------------------------
       character string(3)*8
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
 
       eof = .false.
@@ -3830,8 +3830,8 @@ c----------------------------------------------------------------------
       common/ cst37 /ixct,ifact
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
 
       call readcd (n2,ier,.true.)
@@ -3950,8 +3950,8 @@ c-----------------------------------------------------------------------
       character name*(*)
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
 
       ier = 0 
@@ -3994,8 +3994,8 @@ c----------------------------------------------------------------------
       external iscan, iscnlt
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
 
       ier = 0 
@@ -4080,8 +4080,8 @@ c-----------------------------------------------------------------------
       character num*30
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       ier = 0 
 c                                 now find start of a number
@@ -4147,8 +4147,8 @@ c-----------------------------------------------------------------------
       character num*30
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       ier = 0 
 
@@ -4381,8 +4381,8 @@ c----------------------------------------------------------------------
       common/ cst4 /iam
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       character commnt*lchar
       common/ cst99 /commnt
@@ -4518,8 +4518,8 @@ c----------------------------------------------------------------------
       common/ cst318 /emodu(k15)
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       character*2 strgs*3, mstrg, dstrg, tstrg*3, wstrg*3, e16st*3
       common/ cst56 /strgs(k4),mstrg(6),dstrg(m8),tstrg(m7),wstrg(m16),
@@ -4817,8 +4817,8 @@ c----------------------------------------------------------------------
       external iscan, iscnlt
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
 
       ier = 0 
@@ -4903,8 +4903,8 @@ c----------------------------------------------------------------------
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       character tcname*5,xcmpnt*5
       common/ csta9 /tcname(k0),xcmpnt(k0)
@@ -5007,8 +5007,8 @@ c----------------------------------------------------------------------
       common/ csta5 /cl(k0),cmpnt(k0),dname
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       integer ltyp,lct,lmda,idis
       common/ cst204 /ltyp(k10),lct(k10),lmda(k10),idis(k10)
@@ -5238,8 +5238,8 @@ c----------------------------------------------------------------------
       integer i, ibeg, iend, siz, len0, jend
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       if (num.ne.0d0.or.strg.eq.'EoS') then 
 c                                 pad with 2 blanks, if not at line begining
@@ -5624,8 +5624,8 @@ c----------------------------------------------------------------------
       integer kscan, iscnlt, ierr, siz
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
 
       do 
@@ -5712,8 +5712,8 @@ c----------------------------------------------------------------------
       integer kscan, siz
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       read (tfname,'(100a)') chars(1:100)
 c                                 find end of name ' '
@@ -5811,8 +5811,8 @@ c----------------------------------------------------------------------
       character text*(*), text1*(*), text2*(*)
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       chars(1:lchar) = ' '
 c                                 strip leading blanks in text1 and
@@ -6064,8 +6064,8 @@ c----------------------------------------------------------------------
       common/ csta9 /tcname(k0),xcmpnt(k0)
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       integer ipot,jv,iv1,iv2,iv3,iv4,iv5
       common/ cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
@@ -6514,8 +6514,8 @@ c-------------------------------------------------------------------
       character text*(*)
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c-------------------------------------------------------------------
       nchar = len(text)
  
@@ -6616,8 +6616,8 @@ c subprogram to filter blanks from text
       integer ist,iend,i,itic,igot,jend
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       itic = ist - 1
       igot = 0
@@ -6667,8 +6667,8 @@ c----------------------------------------------------------------------
       character text*(*)
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       nchar = len(text) + ibeg -1 
       if (nchar.gt.lchar) nchar = lchar
@@ -6722,8 +6722,8 @@ c----------------------------------------------------------------------
       integer ibeg, iend
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
 
       do iscan = ibeg, iend
@@ -6748,8 +6748,8 @@ c----------------------------------------------------------------------
       integer ibeg, iend, inc
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       if (ibeg.gt.iend) then 
          inc = -1
@@ -6779,8 +6779,8 @@ c----------------------------------------------------------------------
       integer ibeg, iend, inc
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
 
       if (ibeg.le.iend) then 
@@ -6854,8 +6854,8 @@ c----------------------------------------------------------------------
       character text*(*)
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c---------------------------------------------------------------------- 
       nchar = len(text) 
 
@@ -6891,8 +6891,8 @@ c----------------------------------------------------------------------
       character text*(*)
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c---------------------------------------------------------------------- 
       nchar = len(text) 
 
@@ -7018,8 +7018,8 @@ c----------------------------------------------------------------------
       character text*(*)
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       nchar = len(text) 
       if (nchar.gt.lchar) nchar = lchar
@@ -7080,8 +7080,8 @@ c----------------------------------------------------------------------
       external iscan, iscnlt
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       do i = 2, 3
          coeffs(i) = 0d0
@@ -7489,8 +7489,8 @@ c----------------------------------------------------------------------
       common / cst41 /io3,io4,io9
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       character tname*10
       logical refine, lresub
@@ -8672,8 +8672,8 @@ c id identifies the assemblage
       integer i, ist, iend, id, ids
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       iend = 0
 

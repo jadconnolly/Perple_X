@@ -882,8 +882,8 @@ c-----------------------------------------------------------------------
      *      rkord(m1),iterm,iord,istot,jstot,kstot
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       integer ltyp,lct,lmda,idis
       common/ cst204 /ltyp(k10),lct(k10),lmda(k10),idis(k10)
@@ -1645,8 +1645,8 @@ c----------------------------------------------------------------------
      *      rkord(m1),iterm,iord,istot,jstot,kstot
 
       integer length,com
-      character chars*1, card*lchar
-      common/ cst51 /length,com,chars(lchar),card
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
       ier = 0
       bad = .false.
