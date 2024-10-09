@@ -65,14 +65,15 @@ FARCH = -m64
 # where the program was loaded anyway, or what addresses correspond to what subprograms, so it 
 # is better left out. (True, unless you compile with -g, in which case the backtrace is useful) 
 
-#FFLAGS = -O3 #original github make
+FFLAGS = -O3 #original github make
 #FFLAGS = -O3 -std=legacy -fno-backtrace $(FARCH) #for perplex
-FFLAGS = -O3 -fPIC -Wpedantic -ffixed-line-length-none $(FARCH) #for perplex + perplexwrap
+#FFLAGS = -O3 -fPIC -Wpedantic -ffixed-line-length-none $(FARCH) #for perplex + perplexwrap
 
-FLINK = -static-libgfortran -lgfortran -lgcc -lm $(FARCH)
-LLINK = -shared -lgfortran -lgcc -lm $(FARCH)
+#FLINK = -static-libgfortran -lgfortran -lgcc -lm $(FARCH) #for perplex + perplexwrap
+#LLINK = -shared -lgfortran -lgcc -lm $(FARCH) #for perplex + perplexwrap
 
-MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit perplexwrap
+#MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit perplexwrap
+MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit 
 all: $(MYOBJ)
 
 LIBRARY = pscom.o pslib.o rlib.o tlib.o flib.o olib.o resub.o minime_blas.o blas2lib.o
@@ -85,10 +86,10 @@ clean:
 ######### PerplexWrap shared library compilation #########################
 # PerplexWrap won't compile under -std=legacy, and needs link option -shared?
 
-perplexwrap: perplexwrap.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(LLINK) perplexwrap.o $(LIBRARY) -o perplexwrap.so
-perplexwrap.o: perplexwrap.f
-	$(COMP77) $(FFLAGS) -c perplexwrap.f
+#perplexwrap: perplexwrap.o $(LIBRARY)
+#	$(COMP77) $(FFLAGS) $(LLINK) perplexwrap.o $(LIBRARY) -o perplexwrap.so
+#perplexwrap.o: perplexwrap.f
+#	$(COMP77) $(FFLAGS) -c perplexwrap.f
 
 ###################### TARGETS FOR 692+ PROGRAMS #########################
 
