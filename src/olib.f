@@ -89,10 +89,10 @@ c----------------------------------------------------------------------
       integer iam
       common/ cst4 /iam
 c----------------------------------------------------------------------
-      mus = .false.
 c                                 test for non-NaN chemical potentials
 c                                 probably unnecessary?
       mus = .false.
+
       do i = 1, jbulk
          if (.not.isnan(mu(i))) then
             mus = .true.
@@ -1247,6 +1247,8 @@ c-----------------------------------------------------------------------
       integer id
 
       double precision mu,mut,mup,mu2,ks,kst,ksp,dt,dp,g,ginc
+
+      external ginc
 
       double precision smu
       common/ cst323 /smu

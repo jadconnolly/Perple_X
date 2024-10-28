@@ -15282,6 +15282,9 @@ c-----------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 
+      integer jfct,jmct,jprct,jmuct
+      common/ cst307 /jfct,jmct,jprct,jmuct
+
       integer iam
       common/ cst4 /iam
 c----------------------------------------------------------------------
@@ -15300,6 +15303,9 @@ c                                 frendly
          gee = gfrnd(-id)
 
       else
+c                                 if mobile components with activity/fugacity call subinc
+c                                 to convert to chemical potentials
+        if (jmct.gt.0) call subinc
 c                                 meemum/werami
          gee = gsol(id)
 
@@ -19978,7 +19984,7 @@ c                                 coordinate file.
          if (ier.ne.0) call error (6,vip(1,1),i,cfname)
          if (loopy.gt.k2) call error (1,vip(1,1),loopy,'k2')
          do j = 1, loopy
-            read (n8,*,iostat=ier) (vip(i,j), i = 1, ipot)
+            read (n8,*,iostat=ier) (vip(jv(i),j), i = 1, ipot)
             if (ier.ne.0) then 
                write (*,1000) cfname
                stop

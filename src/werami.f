@@ -385,6 +385,9 @@ c---------------------------------------------------------------------
       double precision vip
       common/ cst28 /vip(l2,k2)
 
+      integer jfct,jmct,jprct,jmuct
+      common/ cst307 /jfct,jmct,jprct,jmuct
+
       logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
       common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
@@ -396,11 +399,11 @@ c                                 only exact nodal coordinates allowed
           ind = idint(var(1))
 
           do j = 1, ipot
-             v(jv(j)) = vip(j,ind)
-          end do 
+             v(jv(j)) = vip(jv(j),ind)
+             var(j+1) = v(jv(j))
+          end do
 
-          var(2) = v(jv(1))
-          var(3) = v(jv(2))
+          if (jmct.gt.0) call subinc
 
       else if (icopt.eq.12) then 
 c                                 0-d infiltration, var(2) is the
@@ -1882,7 +1885,7 @@ c----------------------------------------------------------------------
 
       character*100 n5name, n6name
 
-      double precision xmn, xmx, vr(1)
+      double precision xmn, xmx, vr(1), dy
 
       external readyn
 
@@ -1972,14 +1975,14 @@ c                                  grid
          call getlvl (i)
 
          ipts = (loopy - 1)/ 2**(jlev-i) + 1
-         dvr(ind) = (vmx(ind)-vmn(ind))/dfloat(ipts-1)
+         dy = (vmx(ind)-vmn(ind))/dfloat(ipts-1)
 
       else if (icopt.eq.5) then
 
          write (*,1080) 
          read (*,*) ipts
 
-         dvr(ind) = (xmx-xmn)/dfloat(ipts-1)
+         dy = (xmx-xmn)/dfloat(ipts-1)
 
       end if
 c                                 name and open plot file, write header
@@ -1990,7 +1993,7 @@ c                                 name and open plot file, write header
 
       do i = 1, ipts
 
-         var(ind) = vmn(ind) + dfloat(i-1) * dvr(ind)
+         var(ind) = vmn(ind) + dfloat(i-1) * dy
 
          call polprp (1)
 

@@ -185,7 +185,7 @@ c----------------------------------------------------------------------
       parameter (lchar=400)
 !                                 frac2d parameters:
       integer maxbox,lay,mpol,mord
-      parameter (maxbox=1760,lay=6,mpol=7,mord=mpol-1) 
+      parameter (maxbox=1760,lay=6,mpol=36,mord=mpol-1) 
 
 
 ! NOTE: increasing parameter K5 requires changes to the following

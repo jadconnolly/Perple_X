@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.8 Oct 7, 2024.',
+     *     'Perple_X release 7.1.9 Oct 28, 2024.',
 
      *     'Copyright (C) 1986-2024 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -62,7 +62,7 @@ c----------------------------------------------------------------------
      *         new.eq.'672'.or.new.eq.'673'.or.new.eq.'674'.or.
      *         new.eq.'675'.or.new.eq.'676'.or.new.eq.'678'.or.
      *         new.eq.'679'.or.new.eq.'689'.or.new.eq.'690'.or.
-     *         new.eq.'691') then 
+     *         new.eq.'691'.or.new.eq.'719') then 
 
          chksol = .true.
 

@@ -1,4 +1,4 @@
-690 DO NOT DELETE THIS LINE
+719 DO NOT DELETE THIS LINE
 
                             ---------------------------------------------------------------------------
                              FOR MODEL DEFINITIONS AND REFERENCES READ THE MODEL COMMENTARY OR REFER TO
@@ -44,10 +44,10 @@
 
                              0     - internal (fluid) EoS
                              20    - Electrolyte (charge balance) model
-                             26    - Haefner H2O-CO2-NaCl
-                             29    - BCC Fe-Si alloy, Lacaze & Sundman 1990.
-                             30-33 - FeSiC alloys (BCC/FCC/CBCC/HCP), Lacaze & Sundman 1990.
-                             39    - generic hybrid fluid EoS
+                             26    - H2O-CO2-NaCl, Aranovich et al. (2010)
+                             29    - BCC Fe-Si alloy, Lacaze & Sundman 1990
+                             30-33 - FeSiC alloys (BCC/FCC/CBCC/HCP), Lacaze & Sundman 1990
+                             39    - GFSM, generic (hybrid) fluid solution model.
                              40    - Silicate fluid (MRK)
                              41    - COH fluid (hybrid MRK)
                              42    - FeS liquid, Saxena & Eriksson 2015 with ECRG corrections
@@ -5562,17 +5562,11 @@ begin_model
                                       necessary before using this model.
 
                                       ====================================================
-                                      Modified to use pure water at P and T standard
-                                      state (the H2O endmember) as opposed to the h2oGL
-                                      endmember of Ghiorso et al. (2003), which so far
-                                      as I understand should  be equivalent.
-
-                                      NOTE: Use of H2O as an endmember requires the user
-                                      specify an equation of state for H2O when running
-                                      BUILD. To be strictly consistent with Ghiorso et al
-                                      the Sterner and Pitzer EoS for water should be used
-                                      for this purpose, but it is not presently included
-                                      in perplex.
+                                      Modified to use the pure water (H2O) endmember instead
+                                      of the Ghiorso et al. (2003) h2oGL endmember. My 
+                                      understanding is H2O and h2oGL are essentially equivalent. 
+                                      Ghiorso et al. base h2oGL on the Sterner and Pitzer 
+                                      EoS.
 
                                       JADC May 23, 2004.
 
@@ -6216,8 +6210,29 @@ ideal                             | the ideal tag indicates excess properties ar
 end_of_model
                     --------------------------------------------------------
 begin_model
+                                 | Aranovich et al. (2010) H2O-CO2-NaCl fluid model.
 
-F(salt)                    | H2O-CO2-NaCl Fluid from andreas's thesis
+                                 | This model calls the HCNEOS subroutine and uses
+                                 | CORK for H2O and CO2. HCNEOS was programmed in 
+                                 | 2004 with incorrect pressure dependence on mixing 
+                                 | parameters w3, w4, and w5 (the pressure dependence
+                                 | was off by a factor of 100). The parameters were 
+                                 | corrected courtesy of Alexander Koltsoz, RAS, 10/24.
+
+                                 | The corrected version of HCNEOS is implemented in
+                                 | Perple_X release 7.1.9+. JADC, 10/24.
+
+                                 | Because the use of CORK is hardwired into HCNEOS
+                                 | it is possible that conflicts may arise between
+                                 | the HCNEOS and GFSM EoS assignments. To avoid 
+                                 | such conflicts set
+
+                                   hybrid_EoS_H2O  2 | [4] 0-2, 4-5 => 0 - MRK, 1 HSMRK, 2 - CORK ...
+                                   hybrid_EoS_CO2  2 | [4] 0-4 => 0 - MRK, 1 HSMRK, 2 - CORK ...
+
+                                 | in perplex_option.dat.
+
+F(salt)
 abbreviation F
 full_name    fluid
 

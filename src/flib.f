@@ -4443,18 +4443,15 @@ c                                 these routines return volume cm3/mol
       p = pbar/1d3
 
       w2 = 906.12d0 - 57.277d0 * p
-      w3 = 101788d0 - 2916d0 * p
-      w4 = 38007d0  + 2445d0 * p
-      w5 = -37371d0 + 916d0 * p
+c                                 pressure coefficients reduced by a factor
+c                                 of 100. correction courtesy of Alexander 
+c                                 Koltsoz, RAS, 10/24
+      w3 = 101788d0 - 29.16d0 * p
+      w4 = 38007d0  + 24.45d0 * p
+      w5 = -37371d0 +  9.16d0 * p
 
       alpha = dexp(4.04d0 - 0.1611d0*v1) - 134.2d0 * p/t
 
-      if (alpha.lt.0d0) then 
-         alpha = 0d0
-      else if (alpha.gt.1d0) then 
-         alpha = 1d0
-      end if 
-         
       a1 = 1d0 + alpha
 
       sid = 0d0
@@ -4463,13 +4460,13 @@ c                                 these routines return volume cm3/mol
       vid = sid
 
       if (x1.gt.0d0) sid = x1*dlog(x1)
-      if (x2.gt.0d0) sid = sid + x2*dlog(x2)  
+      if (x2.gt.0d0) sid = sid + x2*dlog(x2)
       if (x3.gt.0d0) then
          sid = sid + x3*dlog(x3)
          rid = x3/(x1+x3)
          vid = x3*(    a1 * dlog(a1/(1d0+alpha*rid))
      *            + alpha * dlog(rid))
-     *         -x1*dlog(1d0+alpha*rid)
+     *           - x1*dlog(1d0+alpha*rid)
       end if 
 
       if (x2+x3.gt.0d0) uid = (x2*w3+x3*w4)/(x2+x3)
@@ -4500,7 +4497,7 @@ c                                 JADC, 4/27/04.
 c----------------------------------------------------------------------
       implicit none 
 
-      double precision pbar,t,xco2,u1,u2,tr,pr,r,ps,alpha,w1,
+      double precision pbar,t,xco2,u1,u2,tr,pr,r,ps,alphp1,w1,
      *                 w2,w3,w4,w5,x1,x2,x3,t0,t1,p,v1,v2,rt,xt,
      *                 wh2o,wco2,wnacl,nh2o,nco2,nnacl,ntot
 
@@ -4515,6 +4512,7 @@ c----------------------------------------------------------------------
 c                                 molar weights
       save wh2o,wco2,wnacl
       data wh2o,wco2,wnacl/18.016,44.01,58.446/
+c----------------------------------------------------------------------
 c                                 convert xco2 and elag to
 c                                 mole appropriate mole fractions:
       if (ibuf.eq.1) then
@@ -4562,18 +4560,14 @@ c                                 return volume in cm3/mol
 
       w1 = 202046.4d0
       w2 = 906.12d0 - 57.277d0 * p
-      w3 = 101788d0 - 2916d0 * p
-      w4 = 38007d0  +  2445d0 * p
-      w5 = -37371d0 + 916d0 * p
+c                                 pressure coefficients reduced by a factor
+c                                 of 100. correction courtesy of Alexander 
+c                                 Koltsoz, RAS, 10/24
+      w3 = 101788d0 - 29.16d0 * p
+      w4 = 38007d0  + 24.45d0 * p
+      w5 = -37371d0 +  9.16d0 * p
 
-      alpha = dexp(4.04d0 - 0.1611d0*v1) - 134.2d0 * p/t
-c                                 modified 6/6/05 to restict
-c                                 alpha to physical values. JADC
-      if (alpha.lt.0d0) then 
-         alpha = 0d0
-      else if (alpha.gt.1d0) then 
-         alpha = 1d0
-      end if 
+      alphp1 = 1d0 + dexp(4.04d0 - 0.1611d0*v1) - 134.2d0 * p/t
 
       t0 = (v1*x1+v2*x2)**2
       t1 = x2 + x3
@@ -4582,7 +4576,11 @@ c                                 this is ln(fH2O)
          fh2o = fh2o + ( w2*x3*t1 - w5*x2*(x1-x2-x3)*x3
      *        - x2*x3*(w3*x2+w4*x3)/t1
      *        + w1*x2*(v1*x1**2*x3+v2*x2*(x1+x2+x1*x3))/t0)/rt
-     *        + dlog(x1*(x1+x3)/(1d0+x3*alpha))
+c                                 prior to 13/10/2024:
+c    *        + dlog(x1*(x1+x3)/(1d0+x3*alpha))
+c                                 corrected 13/10/24 by Mikhail V Ivanov (SPBU) to:
+     *        + dlog(x1*(x1+x3)/(x1+x3*alphp1))
+
       else 
          fh2o = dlog(p*1d4)
       end if 

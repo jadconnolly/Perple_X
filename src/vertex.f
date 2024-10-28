@@ -348,6 +348,9 @@ c-----------------------------------------------------------------------
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
 
+      integer jfct,jmct,jprct,jmuct
+      common/ cst307 /jfct,jmct,jprct,jmuct
+
       integer fmode,ifrct,ifr
       logical gone
       common/ frct1 /fmode,ifrct,ifr(k23),gone(k5)
@@ -401,6 +404,8 @@ c                                 file, else analytical path function
             read (n8,*,iostat=ier) (v(jv(i)), i = 1, ipot)
 c                                 echo to scratch
             write (n0-1,*) v
+
+            if (jmct.gt.0) call subinc
 
             if (ier.ne.0) exit
 
