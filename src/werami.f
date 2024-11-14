@@ -1907,6 +1907,11 @@ c----------------------------------------------------------------------
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
 
+      logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
+      integer ncol, nrow
+      common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
+     *                usecmp, colcmp
+
       integer ivar,ind
       common/ cst83 /ivar,ind
 c----------------------------------------------------------------------
@@ -1925,15 +1930,15 @@ c                                 icopt = 7, 5 = independent potential
 
          ipts = iopt(36) + 1
 
-      else if (icopt.eq.5) then
+      else if (icopt.eq.5.or.(icopt.eq.7.and..not.fileio)) then
 c                                  1d gridded minimization on multilevel 
-c                                  grid
-         write(*,1040)
+c                                  grid or fractionation
+         write (*,1040)
 
          if (readyn()) then
 
             do
-
+ 
 30             write (*,1060) vnm(1),vmn(1),vmx(1)
                read (*,*,err=30) xmn,xmx
 
@@ -1945,6 +1950,7 @@ c                                  grid
  
                      write (*,1010) vnm(1),vmn(1),vmx(1)
                      ok = .false. 
+
                   end if
 
                else
@@ -1960,10 +1966,13 @@ c                                  grid
 
             end do
 
-            if ((xmn.ne.vmn(1).or.xmx.ne.vmx(i)).and.lopt(48)) then 
+            if ((xmn.ne.vmn(1).or.xmx.ne.vmx(1)).and.lopt(48)) then 
+
                write (*,'(/,a,/)') '**warning ver084** sample_on_grid'
-     *                        //' is disabled for arbitrary limits'
+     *                           //' is disabled for arbitrary limits'
+
                lopt(48) = .false.
+
             end if
 
          end if
@@ -1977,7 +1986,12 @@ c                                  grid
          ipts = (loopy - 1)/ 2**(jlev-i) + 1
          dy = (vmx(ind)-vmn(ind))/dfloat(ipts-1)
 
-      else if (icopt.eq.5) then
+      else if (lopt(48).and.icopt.eq.7) then
+
+         ipts = loopy
+         dy = (vmx(ind)-vmn(ind))/dfloat(ipts-1)
+
+      else if (icopt.eq.5.or.icopt.eq.7) then
 
          write (*,1080) 
          read (*,*) ipts
