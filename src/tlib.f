@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.10a Nov 14, 2024.',
+     *     'Perple_X release 7.1.10c Dec 13, 2024.',
 
      *     'Copyright (C) 1986-2024 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -99,7 +99,7 @@ c    sort -u
 c )
 c
 c nopt: (x = unused; max i10)
-c  1  2  x  4  5  6  7  8  9 10
+c  1  2  3  4  5  6  7  8  9 10
 c 11 12 13 14 15 16 17 18 19 20
 c 21  x  x  x 25 26 27 28 29 30
 c 31 32 33 34 35 36 37 38  x 40
@@ -270,6 +270,8 @@ c                                 reserved for temporary use:
 c                                 -------------------------------------
 c                                 liquidus_resolution
       nopt(2) = 1d0
+c                                 quench pressure (bar)
+      nopt(3) = 0d0
 c                                 minimum replicate label distance
       nopt(4) = 0.025
 c                                 speciation_factor
@@ -1286,6 +1288,10 @@ c                                 default autorefine relative increment
                valu(16) = val
             end if
 
+         else if (key.eq.'P_stop') then 
+c                                 equilibrium cutoff P (bar)
+            read (strg,*) nopt(3)
+
          else if (key.eq.'T_stop') then 
 c                                 equilibrium cutoff T (K)    
             read (strg,*) nopt(12)
@@ -1905,7 +1911,7 @@ c                                 generic subdivision parameters:
      *                     lopt(38),valu(13),lopt(39)
          end if 
 c                                 generic thermo parameters:
-         write (n,1012) nval1,
+         write (n,1012) nopt(3), nval1,
      *                  nopt(12),nopt(20),lopt(8),lopt(4),lopt(68),
      *                  nopt(5),iopt(21),nopt(10),
      *                  iopt(25),iopt(26),iopt(27),
@@ -2045,6 +2051,7 @@ c                                 lopt(80)
      *        4x,'pc_perturbation        ',f6.4,5x,'[5d-3]')
 c                                 generic thermo options
 1012  format (/,2x,'Thermodynamic options:',//,
+     *        4x,'P_stop (bar)           ',g7.1E1,4x,'[0]',/,
      *        4x,'solvus_tolerance        ',a7,3x,          
      *           '[aut] or 0->1; aut = automatic, 0 => ',
      *           'p=c pseudocompounds, 1 => homogenize',/,
@@ -2160,7 +2167,7 @@ c                                 thermo options for frendly
      *        '[y] m: y => mol fraction, m => molality',/,
      *        4x,'aq_solute_composition   ',a3,7x,
      *        'y [m]: y => mol fraction, m => molality',/,
-     *        4x,'spreadsheet             ',l1,9x,'[F] T',/,
+     *        4x,'spreadsheet             ',l1,9x,'[T] F',/,
      *        4x,'logarithmic_p           ',l1,9x,'[F] T',/,
      *        4x,'logarithmic_X           ',l1,9x,'[F] T',/,
      *        4x,'bad_number         ',f7.1,8x,'[NaN]',/,

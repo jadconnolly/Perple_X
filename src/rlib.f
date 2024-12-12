@@ -4689,7 +4689,7 @@ c---------------------------------------------------------------------
 
       logical first, ok, found
 
-      character missin(m4)*8, temp*8
+      character missin(m4)*8
 
       integer imiss, im, ids, i, j, h, ineg, ipos, nblen
 

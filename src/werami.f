@@ -1687,6 +1687,8 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       node = .false.
       dim = 1
+c                                 initialize relict point counters
+      k = 0
 c                                 set up path information
       icurve = 0 
 c                                 ask if non-linear path
@@ -2557,6 +2559,7 @@ c                                 ind ne 1.
          do i = 1, iprop
             dy(i) = -1d30
             yl(i) = -1d30
+            xl(i) = 0d0
          end do 
 c                                 read the data to get the range  
          do           
@@ -2600,10 +2603,16 @@ c                                 check for NaN badnumber value
                         mzero = prop(i-1)
                      end if 
 
-                     if (prop(i)-mzero.gt.dy(i)) then
-                        dy(i) = prop(i) - mzero
-                        yl(i) = (prop(i) + mzero)/2d0 
-                        xl(i) = x(ind)
+                     if (bdnum(prop(i))) then
+
+                     else
+
+                        if (prop(i)-mzero.gt.dy(i)) then
+                           dy(i) = prop(i) - mzero
+                           yl(i) = (prop(i) + mzero)/2d0 
+                           xl(i) = x(ind)
+                        end if
+
                      end if
  
                   end if 

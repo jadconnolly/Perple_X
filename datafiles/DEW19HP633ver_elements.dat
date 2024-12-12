@@ -37,6 +37,8 @@ Cr       51.9958     25.5430
 S2       64.1300     64.1000
 F2       37.9968    202.7900
 N2       28.0130    191.6100
+Au       196.967    47.405
+As       74.9216    35.146
 end_components
 
  
@@ -125,7 +127,7 @@ DQF(J/mol) = 0
 fatg = 1 atg - 16 ta + 16 fta
 DQF(J/mol) = 0
  
-atgts = 4 clin + 9/17 atg - 24/17 br      | Tshermaks antigorite for Atg(PN) model (Padr�n-Navarta et al., 2013, Lithos)
+atgts = 4 clin + 9/17 atg - 24/17 br      | Tshermaks antigorite for Atg(PN) model (Padr n-Navarta et al., 2013, Lithos)
 DQF = -2e3 + 46.1*T_K
  
 | ettore's makes:
@@ -3792,6 +3794,13 @@ a1 = 7.21406  a2 = 5076.437  a3 = -22.32283  a4 = -137259.3  c1 = 320.4233  c2 =
 end
 
 
+|S3-      EoS = 16 | Gf =    55061. S3(-)  Pokroviski et al., 2015 EPSL 
+|S2(1.5) 
+|G0 = 55061.44  S0 = 119.6624  w = 334720  q = -1  
+|a1 = 1.046  a2 = 8326.16  a3 = 38.4928  a4 = -150624  c1 = 210.0368  c2 = 401664  
+|end
+
+
 S3-2     EoS = 16 | Gf =    73638. S3(-2)  Shock & Helgeson (1988) revised with new predicted a1 for ions 
 S2(1.5) 
 G0 = 73638.4  S0 = 66.1072  w = 1244698.  q = -2  
@@ -3887,4 +3896,125 @@ UREA,AQ  EoS = 16 | Gf =  -203844. CH4N2O  Revised Feb. 2015 by Dimitri: c1, c2,
 C(1)H2(2)O2(1)N2(1) 
 G0 = -203844.5  S0 = 176.9832  w = 33053.6  
 a1 = 4.22584  a2 = 2246.808  a3 = 1.393272  a4 = -125520  c1 = 128.4488  c2 = -184932.8  
+end
+
+
+GOLD      EoS = 1  |  G0 = 0
+Au(1)
+G0 = 0   S0 = 47.490   V0 = 1.0215  
+c1 = 41.9700    c2 = -1.7700E-2    c3 = 0
+end
+
+
+Au+ EoS = 16 | Gf =  163176 Au(+)  Pokroviski (2014) 
+Au(1) 
+G0 = 163176  S0 = 69.036  w = 58157.6  q = 1
+a1 = 2.559  a2 = 2992.3968  a3 = 12.2964  a4 = -128645.448  c1 = 32.5365  c2 = -121997.072  
+end
+
+
+
+Au+3 EoS = 16 | Gf =  433462.4 Au(+3)  DEW model 
+Au(1) 
+G0 = 433462.4  S0 = -242.25  w = 1027300  q = 3
+a1 = -1.279  a2 = -6378.508  a3 = 49.128  a4 = -89905.792  c1 = 31.683  c2 = -435490  
+end
+
+
+AuHS,aq EoS = 16 | Gf =  34911.296 AuHS  Pokroviski (2014) 
+Au(1)H2(.5)S2(.5) 
+G0 = 34911.296  S0 = 212.7982   
+a1 = 3.97334  a2 = 6027.34  a3 = -1.277  a4 = -131624  c1 = -159.5594  c2 = 822256  
+end
+
+
+Au(HS)2- EoS = 16 | Gf =  14589.608 AuHS2(-)  Pokroviski (2014) 
+Au(1)H2(1)S2(1) 
+G0 = 14589.6083  S0 = 324.0926  w = 321040  q = -1
+a1 = 5.16193  a2 = 9347.9346  a3 = 12.6846  a4 = -154916.784  c1 = -224.27  c2 = 1313901.52  
+end
+
+
+Au(OH)2- EoS = 16 | Gf =  -278457.752 Au(OH)2(-)  Pokroviski (2014) 
+Au(1)O2(1)H2(1) 
+G0 = -278457.752  S0 = 53.9736  w = 354175.6  q = -1
+a1 = 2.282  a2 = 2315.3419  a3 = 14.9574  a4 = -125846.352  c1 = -23.0501  c2 = -409073.864  
+end
+
+
+AuOH,aq EoS = 16 | Gf =  -136883.744 AuOH  Pokroviski (2014) 
+Au(1)O2(.5)H2(.5) 
+G0 = -136883.744  S0 = 91.59  
+a1 = 2.591  a2 = 3071.68  a3 = 11.984  a4 = -128971.8  c1 = -12.707  c2 = -165832.84  
+end
+
+
+AuCl,aq EoS = 16 | Gf =  -13321.856 AuCl  Pokroviski (2014) 
+Au(1)Cl2(.5) 
+G0 = -13321.856  S0 = 174.5983  
+a1 = 3.778  a2 = 5968.64  a3 = 0.598  a4 = -140946.408  c1 = -11.294  c2 = -255901.81  
+end
+
+
+AuCl2- EoS = 16 | Gf =  -152022.71 AuCl2(-)  Rauchenstein-Martinek (2014) Chemical Geology
+Au(1)Cl2(1) 
+G0 = -152022.71  S0 = 365.51  w = 413362.76  q = -1
+a1 = 2.572  a2 = 3022.03  a3 = 12.196  a4 = -128844.58  c1 = -308.648  c2 = -1420648.2  
+end
+
+
+Apy      EoS = 1  |   Arsenopyrite   FeAsS    Perfetti et al.(2008) revised
+Fe(1)As(1)S2(0.5)
+G0 = -136450   S0 = 68.5   V0 = 2.627  
+c1 = 75.51  c2 = .478E-2   c3 = -754300
+end
+
+
+Loe      EoS = 1  |    Loellingite   FeAs2    Perfetti et al.(2008) revised
+Fe(1)As(2)
+G0 = -80230   S0 = 80.1   V0 = 2.744  
+c1 = 76.69  c2 = .310E-2   c3 = -603000
+end
+
+
+Wes      EoS = 1  |    Westerveldite   FeAs    Perfetti et al.(2008) revised
+Fe(1)As(1)
+G0 = -43360   S0 = 62.5   V0 = 1.664  
+c1 = 27.95  c2 = 4.650E-2   c3 = 760000
+end
+
+
+H2AsO3-   EoS = 16 | Gf =  -587140.72  H2AsO3(-)  Shock & Helgeson (1988) 
+H2(1)As(1)O2(1.5) 
+G0 = -587140.72  S0 = 110.4576  w = 514841.2  q = -1  
+a1 = 2.424  a2 = 2662.94864  a3 = 13.591724  a4 = -127281.464  c1 = 66.120  c2 = -151682.552  
+end
+
+
+H2AsO4-   EoS = 16 | Gf =  -753161.84  H2AsO4(-)  Shock & Helgeson (1988) 
+H2(1)As(1)O2(2) 
+G0 = -753161.84  S0 = 117.152  w = 504381.2  q = -1  
+a1 = 2.918  a2 = 3870.57  a3 = 8.844976  a4 = -132272.976  c1 = 70.55  c2 = -132934.048 
+end
+
+
+HAsO4-2   EoS = 16 | Gf =  -753161.84  HAsO4(-2)  Shock & Helgeson (1988) 
+H2(.5)As(1)O2(2) 
+G0 = -753161.84  S0 = -1.6736  w = 1347122.48  q = -2  
+a1 = 1.938  a2 = 1476.44992  a3 = 18.2547  a4 = -122377.816  c1 = 22.890664  c2 = -568450.792
+end
+
+
+As(OH)3,aq   EoS = 16 | Gf =  -639800  As(OH)3  Perfetti et al.(2008) revised 
+As(1)O2(1.5)H2(1.5) 
+G0 = -639800  S0 = 212.4  w = 52000   
+a1 = 45.2  a2 = 1610  a3 = 43.7  a4 = -180000  c1 = 186.2  c2 = -477000
+end
+
+
+
+AsO(OH)3,aq   EoS = 16 | Gf =  -766300  AsO(OH)3  Perfetti et al.(2008) revised 
+As(1)O2(2)H2(1.5) 
+G0 = -766300  S0 = 198.3  w = 100000   
+a1 = 48.1  a2 = 1170  a3 = 54.4  a4 = -126000  c1 = 198.7  c2 = -421000
 end

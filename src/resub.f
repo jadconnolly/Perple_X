@@ -69,12 +69,19 @@ c-----------------------------------------------------------------------
       oldt = t
       oldp = p
       oldx = xco2
-c                                logarithmic_p option
-      if (lopt(14)) p = 1d1**p
 c                                logarithmic_X option
       if (lopt(37)) xco2 = 1d1**xco2
-c                                t_stop option
-      if (t.lt.nopt(12)) t = nopt(12)
+c                                t_stop/p_stop options
+      if (t.lt.nopt(12).and.nopt(3).eq.0d0) then
+         t = nopt(12)
+      else if (p.lt.nopt(3).and.nopt(12).eq.0d0) then
+         p = nopt(3)
+      else if (t.le.nopt(12).and.p.le.nopt(3)) then
+         t = nopt(12)
+         p = nopt(3)
+      end if
+c                                logarithmic_p option
+      if (lopt(14)) p = 1d1**p
 
       if (lopt(61)) call begtim (1)
 

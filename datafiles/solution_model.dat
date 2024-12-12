@@ -2286,8 +2286,6 @@ begin_model
 
                       JADC 4/19
 
-                      WoL DQF corrected, Debaditya Bandyopadhyay, 5/6/19.
-
                       This model requires the following make definitions in the
                       thermodynamic data file make_definitions section:
 
@@ -2313,7 +2311,7 @@ begin_model
                       make_definition section at the end of this model:
 
                       dqf(silL) = 6.72d3  -0.313*Pbar
-                      dqf(woL)  = -0.22d3  -0.12*Pbar
+                      dqf(woL)  = 0.22d3  -0.12*Pbar
 
                       For (nonsensical, but common) positive DFQ's this approach may lead to
                       interference between the phase relations of the solution model and the
@@ -2327,6 +2325,15 @@ begin_model
 
                       WARNING 1: The h2oL melt endmember may destabilize Aqfl, see:
                       www.perplex.ethz.ch/perplex/examples/example_holland_et_al_2018_melt_model/hp633_water_versus_h2oL.pdf
+
+
+                      Corrections:
+
+                      woL DQF corrected, Debaditya Bandyopadhyay, 5/6/19.
+
+                      dqf(woL)  = -0.22d3  -0.12*Pbar corrected to dqf(woL)  = 0.22d3  -0.12*Pbar, JADC 11/27/2024
+
+                      Add water vacancy site, JADC 11/27/2024
 
 Aqfl(HGP)
 abbreviation F
@@ -2349,16 +2356,16 @@ tiWL     qWL      H2O
                                     | see commentary in the header of this file for explanation of
                                     | endmember flags and subdivision schemes
 
-1d-4 .2   .2  1                     | range and resolution of X(fo)
-1d-4 .2   .2  1                     | range and resolution of X(fa)
-1d-4 .2   .2  1                     | range and resolution of X(jd)
-1d-4 .2   .2  1                     | range and resolution of X(sil)
-1d-4 .2   .2  1                     | range and resolution of X(kj)
-1d-4 .2   .2  1                     | range and resolution of X(wo)
-1d-4 .2   .2  1                     | range and resolution of X(ek)
-1d-4 .2   .2  1                     | range and resolution of X(hm)
-1d-4 .2   .2  1                     | range and resolution of X(ti)
-1d-4 .2   .2  1                     | range and resolution of X(q)
+1d-4 .2   .2  0                     | range and resolution of X(fo)
+1d-4 .2   .2  0                     | range and resolution of X(fa)
+1d-4 .2   .2  0                     | range and resolution of X(jd)
+1d-4 .2   .2  0                     | range and resolution of X(sil)
+1d-4 .2   .2  0                     | range and resolution of X(kj)
+1d-4 .2   .2  0                     | range and resolution of X(wo)
+1d-4 .2   .2  0                     | range and resolution of X(ek)
+1d-4 .2   .2  0                     | range and resolution of X(hm)
+1d-4 .2   .2  0                     | range and resolution of X(ti)
+1d-4 .2   .2  0                     | range and resolution of X(q)
 
 begin_excess_function
 W(qWL  H2O)   59d3     0  -0.82
@@ -2373,8 +2380,9 @@ W(tiWL H2O)   75d3     0  -0.67
 W(kWL  H2O)   44.9d3   0  -1.19
 end_excess_function
 
-1                                   | molecular entropy model
-11 1
+2                                 | 2 sites
+
+11 1                              | molecular site
 z(foWL) = 1 foWL
 z(faWL) = 1 faWL
 z(jdWL) = 1 jdWL
@@ -2386,12 +2394,14 @@ z(hmL)  = 1 hmWL
 z(tiL)  = 1 tiWL
 z(qWL)  = 1 qWL
 
+2 1                                 | water-vacancy site
+z(H) = 1 H2O
+
 begin_dqf_corrections
 dqf(silL) =  6.72d3  -0.313*Pbar
-dqf(woL)  = -0.22d3  -0.12 *Pbar
+dqf(woL)  =  0.22d3  -0.12 *Pbar
 end_dqf_corrections
 
-reach_increment 0
 
 end_of_model
                            --------------------------------------------------------
