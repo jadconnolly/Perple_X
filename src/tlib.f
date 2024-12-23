@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.10c Dec 13, 2024.',
+     *     'Perple_X release 7.1.10 Dec 21, 2024.',
 
      *     'Copyright (C) 1986-2024 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -145,8 +145,8 @@ c----------------------------------------------------------------------
 
       logical output, readyn
 
-      character*3 key*22, val, nval1*12, nval2*12,
-     *            nval3*12,opname*100,strg*40,strg1*40
+      character key*22, val*3, nval1*12, nval2*12,
+     *          nval3*12,opname*100,strg*40,strg1*40
 
       double precision r2, dnan
 
@@ -270,7 +270,7 @@ c                                 reserved for temporary use:
 c                                 -------------------------------------
 c                                 liquidus_resolution
       nopt(2) = 1d0
-c                                 quench pressure (bar)
+c                                 P_stop quench pressure (bar)
       nopt(3) = 0d0
 c                                 minimum replicate label distance
       nopt(4) = 0.025
@@ -534,6 +534,8 @@ c                                 aq_ion_H+
       lopt(44) = .true.
 c                                 fancy_cumulative_modes
       lopt(45) = .false.
+c                                 PT_freeze
+      lopt(46) = .false.
 c                                 sample_on_grid 
       lopt(48) = .true.
 c                                 seismic_data_file
@@ -1287,6 +1289,10 @@ c                                 default autorefine relative increment
                lopt(3) = .true.
                valu(16) = val
             end if
+            
+         else if (key.eq.'PT_freeze') then
+
+            if (val.ne.'F') lopt(46) = .true.
 
          else if (key.eq.'P_stop') then 
 c                                 equilibrium cutoff P (bar)
@@ -1546,7 +1552,14 @@ c                                 computational options this is redundant
 c                                 -------------------------------------
 c                                 dependent parameters and error traps:
 c                                 fractionation theshold flag
-      if (nopt(33).gt.nopt(32)) lopt(35) = .true. 
+      if (nopt(33).gt.nopt(32)) lopt(35) = .true.
+c                                 PT_freeze error trap:
+      if (lopt(46)) then
+         if (nopt(3).eq.0d0.or.nopt(12).eq.0d0) then
+            call errdbg ('PT_freeze option requires P_stop & T_stop '//
+     *                   'values > 0')
+         end if
+      end if
 
       if (iopt(31).gt.k5+2.or.iopt(31).lt.1) then 
          write (*,1090) icp + 2
@@ -1911,12 +1924,12 @@ c                                 generic subdivision parameters:
      *                     lopt(38),valu(13),lopt(39)
          end if 
 c                                 generic thermo parameters:
-         write (n,1012) nopt(3), nval1,
-     *                  nopt(12),nopt(20),lopt(8),lopt(4),lopt(68),
-     *                  nopt(5),iopt(21),nopt(10),
-     *                  iopt(25),iopt(26),iopt(27),
-     *                  lopt(32),lopt(67),lopt(44),lopt(36),
-     *                  nopt(38),nopt(34)
+         write (n,1012) nopt(3), lopt(46), nval1,
+     *                  nopt(12), nopt(20), lopt(8), lopt(4), lopt(68),
+     *                  nopt(5), iopt(21), nopt(10),
+     *                  iopt(25), iopt(26), iopt(27),
+     *                  lopt(32), lopt(67), lopt(44), lopt(36),
+     *                  nopt(38), nopt(34)
 c                                 for meemum add fd stuff
          if (iam.eq.2) write (n,1017) nopt(31),nopt(26),nopt(27)
 
@@ -2052,6 +2065,7 @@ c                                 lopt(80)
 c                                 generic thermo options
 1012  format (/,2x,'Thermodynamic options:',//,
      *        4x,'P_stop (bar)           ',g7.1E1,4x,'[0]',/,
+     *        4x,'PT_freeze               ',l1,9x,'[T] F',/,
      *        4x,'solvus_tolerance        ',a7,3x,          
      *           '[aut] or 0->1; aut = automatic, 0 => ',
      *           'p=c pseudocompounds, 1 => homogenize',/,

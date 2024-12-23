@@ -241,7 +241,7 @@ kho = 1 py - 1 gr + 1 andr
 dilm = 1 ilm_nol  
       | 1993  -2.1 0 => the TC DQF coeffecients, the values below are
       | oilm + {DH,R*ln(4),0} 
-       15789.27763 -12.19977769  .1836386612d-1
+       15790.2 -12.2  .18362d-1
                                 | made definitions for Sapphirine, O/D non-ideal, Taylor-Jones & Powell 
                                 | JMG 2010, 28:615-633. JADC, 6/26/2013.
 | ospr = 1 spr4 - 1 jd + 1 acm
@@ -1675,6 +1675,7 @@ m0 = 910000 m1 = 1.7 m2 = -170
 transition = 1 type = 4 t1  = 1900 t2  = 11 t3  = .2E-1  
 end
 
+
 ilm_nol  EoS = 2 | created from ilm for Ilm(WPH) by suppressing the Landau model                                                                
 TIO2(1)FEO(1)
 G0 = -1154702 S0 = 108.9 V0 = 3.169  
@@ -1682,6 +1683,7 @@ c1 = 138.9 c2 = .5081E-2 c3 = -1288800 c5 = -463.7
 b1 = .495E-4 b5 = -.495E-3 b6 = 1770000. b7 = -265.5 b8 = 4  
 m0 = 910000 m1 = 1.7 m2 = -170  
 end
+
  
 bdy      EoS = 2 | H= -1101310.                                                                   
 ZRO2(1)

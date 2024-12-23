@@ -219,17 +219,18 @@ ma_dqf = 1 ma
                                 | Make definition for the White et al (JMG, 2005) garnet, Gt(WPPH), JADC, 10/24/11.
 kho = 1 py - 1 gr + 1 andr
       DQF(J/mol) = 40d3 0 0  
-                                | Make definitions for the White et al (JMG, 2000) ilmenite, Ilm(WHP), JADC, 10/29/11.
-                                | Corrected coeffiecients for TC un-landau, formerly, the TC DQF was used without
-                                | modification. NOTE: the ilm and ilm_nol endmembers must be excluded from calculations 
-                                | with the Ilm(WPH) model and the ilm_nol, oilm and dilm must be excluded from calculations 
-                                | without the Ilm(WPH) model. JADC, 6/19/11.
+|                                | Make definitions for the White et al (JMG, 2000) ilmenite, Ilm(WHP), JADC, 10/29/11.
+|                                | Corrected coeffiecients for TC un-landau, formerly, the TC DQF was used without
+|                                | modification. NOTE: the ilm and ilm_nol endmembers must be excluded from calculations 
+|                                | with the Ilm(WPH) model and the ilm_nol, oilm and dilm must be excluded from calculations 
+|                                | without the Ilm(WPH) model. JADC, 6/19/11.
 dilm = 1 ilm_nol  
-                                | 1993  -2.1 0 => the TC DQF coeffecients, the values below are
-                                | oilm + {DH,R*ln(4),0}, where oilm is
-                                | -13608 9.426 0 => the TC DQF coeffecients added to
-                                | smax*tc0*(q0^2-1/3*q0^6), -smax*q0^2, vmax*q0^2 (unlandauing iml_nol)
-       DQF(J/mol) = 17043.57559 -13.11797099 .1836386612e-1
+                                 | 1993  -2.1 0 => the TC DQF coeffecients, the values below are
+                                 | oilm + {DH,R*ln(4),0}, where oilm is
+                                 | -13608 9.426 0 => the TC DQF coeffecients added to
+                                 | smax*tc0*(q0^2-1/3*q0^6), -smax*q0^2, vmax*q0^2 (unlandauing iml_nol)
+       DQF(J/mol) = 17043.57559 -13.11797099 * T_K +.1836386612e-1 * P_bar
+
 dhem = 1 hem_nol
        DQF(J/mol)   = 9.5228d3   -12.9377 T_K
 
@@ -1971,16 +1972,24 @@ c1 = 151  c3 = -1890400  c5 = -652.2
 b1 = .215E-4  b5 = 502.6465  b6 = 1700000  b7 = -.49E-5  b8 = 8.3  
 end
 
- 
+| original d622 ilmenite
+
+|ilm       EoS = 8 | H=  -1230450.  
+|TiO2(1)FeO(1)
+|GH = -1263097  S0 = 109.5  V0 = 3.169  
+|c1 = 138.9  c2 = .5081E-2  c3 = -1288800  c5 = -463.7  
+|b1 = .24E-4  b5 = 375.2999  b6 = 1700000  b7 = -.49E-5  b8 = 8.3
+|transition = 1  type = 4  t1 = 1900  t2 = 12  t3 = .2E-1  
+|end
+
 ilm       EoS = 8 | H=  -1230450.  
 TiO2(1)FeO(1)
 GH = -1263097  S0 = 109.5  V0 = 3.169  
 c1 = 138.9  c2 = .5081E-2  c3 = -1288800  c5 = -463.7  
-b1 = .24E-4  b5 = 375.2999  b6 = 1700000  b7 = -.49E-5  b8 = 8.3
-transition = 1  type = 4  t1 = 1900  t2 = 12  t3 = .2E-1  
+b1 = .24E-4  b5 = 375.2999  b6 = 1700000  b7 = -.49E-5  b8 = 8.3 
 end
+  
 
- 
 bdy       EoS = 8 | H=  -1100340.  
 ZrO2(1)
 GH = -1115367  S0 = 50.4  V0 = 2.115  
@@ -2529,14 +2538,6 @@ b1 = .67E-4  b5 = 639.1827  b6 = 175000  b7 = -.394E-4  b8 = 7
 end
 
 
-ilm_nol   EoS = 8 | H= -1230460.  Ilmenite with landau transition suppressed for Ilm(WPH) model.                 
-TiO2(1)FeO(1)
-GH = -1263097  S0 = 109.5  V0 = 3.169  
-c1 = 138.9  c2 = .5081E-2  c3 = -1288800  c5 = -463.7  
-b1 = .24E-4  b5 = 375.2999  b6 = 1700000  b7 = -.49E-5  b8 = 8.3
-end
-
-
 fran     EoS = 8 | HSC data for Ni olivine, volume = fa - 0.2 J/bar 
 SiO2(1)NiO(2)
 GH = -1436.24550636556d3 S0 = 110.038861980792 V0 = 4.431  
@@ -2590,5 +2591,54 @@ c1 = 646.9  c3 = -4525800  c5 = -4452.8
 b1 = .227E-4  b5 = 458.3495  b6 = 1740000  b7 = -.38E-5  b8 = 6.68  
 end
 
+| ___________________________________________________________________________________________________________________________
+
+| Data for Bio(D) solution model from supplementary information of: 
+
+| Edgar Dachs and Artur Benisek (2024): "A new activity model for biotite and its application". 
+| Contributions to Mineralogy and Petrology (2024) 179:93
+| https://doi.org/10.1007/s00410-024-02173-6
+
+| ___________________________________________________________________________________________________________________________
+
+| Supplementary Table 1a: Thermodynamic data of phl, ann, east, tbio and fbio to be inserted into Perple_X thermodynamic data file <hp62ver.dat>
+
+phlD       EoS = 8 | H=  -6209867.  from Dachs and Benisek (2019)
+MgO(3)Al2O3(.5)SiO2(3)K2O(.5)H2O(1)
+GH = -6308534  S0 = 330.93  V0 = 14.964  
+c1 = 920.883  c2 = -.8451119E-1  c3 = 2105320  c5 = -9802.57  
+b1 = .38E-4  b5 = 500.325  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
+end
+
+annD       EoS = 8 | H=  -5131546  from Dachs and Benisek (2021)
+Al2O3(.5)SiO2(3)K2O(.5)FeO(3)H2O(1)
+GH = -5257643  S0 = 422.93  V0 = 15.48  
+c1 = 748.96  c2 = -.0581675E-1  c3 = -921630  c5 = -6095.58  
+b1 = .38E-4  b5 = 416.5931  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
+end
 
 
+eastD      EoS = 8 | H=  -6352012 from Dachs and Benisek (2019)  
+MgO(2)Al2O3(1.5)SiO2(2)K2O(.5)H2O(1)
+GH = -6439816  S0 = 294.5  V0 = 14.65  
+c1 = 852.5  c2 = -.586602E-1  c3 = -404300  c5 = -8426.84  
+b1 = .38E-4  b5 = 509.0324  b6 = 530000  b7 = -.143E-4  b8 = 7.33  
+end
+
+
+tbioD       EoS = 8 | tbioD: H=  -6131113 from exp. data of Douce et al. 1993; S, V, Cp, bm from DFT: Dachs and Benisek (2024)
+Al2O3(.5)SiO2(3)K2O(.5)MgO(2)TiO2(1)
+GH = -6228924  S0 = 328.06  V0 = 14.808  
+c1 = 798.37  c2 = -.597056E-1  c3 = 58239.6  c5 = -7792.34  
+b1 = .38E-4  b5 = 416.5931  b6 = 632800  b7 = -.143E-4  b8 = 9.08  
+end
+
+
+fbioD       EoS = 8 | H=  -5933628 from Williams & Grambling (Fe3+ ideal); S, V and Cp from DFT: Dachs and Benisek (2024)
+Al2O3(1)SiO2(2)K2O(.5)MgO(2)FeO(1)H2O(1)O2(.25)
+GH = -6023579  S0 = 301.693  V0 = 15.414  
+c1 = 777.684  c2 = -.396494E-1  c3 = -2838850  c5 = -6422.47  
+b1 = .38E-4  b5 = 416.5931  b6 = 513000  b7 = -.143E-4  b8 = 7.33  
+end
+
+| ___________________________________________________________________________________________________________________________

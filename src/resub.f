@@ -72,7 +72,11 @@ c-----------------------------------------------------------------------
 c                                logarithmic_X option
       if (lopt(37)) xco2 = 1d1**xco2
 c                                t_stop/p_stop options
-      if (t.lt.nopt(12).and.nopt(3).eq.0d0) then
+      if (lopt(46)) then
+c                                pt_freeze
+         t = nopt(12)
+         p = nopt(3)
+      else if (t.lt.nopt(12).and.nopt(3).eq.0d0) then
          t = nopt(12)
       else if (p.lt.nopt(3).and.nopt(12).eq.0d0) then
          p = nopt(3)

@@ -5029,7 +5029,7 @@ begin_model
                                       Site:           M1      M2       T1     H
                                                      ____________________________
 
-                                      Mutliplicity    1       2        2      2       
+                                      Mutliplicity    1       2        2      2
 
                                     endmember        ____________________________   type
                                     _________                                       _________
@@ -5058,7 +5058,7 @@ full_name    biotite
  
 2                                  | number of polytopes
                                    | polytope names and composite composition space subdivision schemes 
-[Mn][Mn]  0   .5   .1   0
+[Mn]      0   .5   .1   0
 [M,T][M]  by difference
                                    | ----------------------------
                                    | Polytope 1 - 1 simplex
@@ -5075,7 +5075,7 @@ sdph      east
 ftbit     tbit
 ann       phl
                                    | First 2-simplex
-X_Mg    0    1   .1  0             | X(1,1) is bulk Fe/M
+X_Mg    0    1   .1  0             | X(1,1) is bulk Mg/M
 X_Fe    by difference
 
                                    | Second 4-simplex
@@ -5136,6 +5136,153 @@ end_of_model
                     --------------------------------------------------------
 begin_model
 
+| Edgar Dachs and Artur Benisek (2024): "A new activity model for biotite and its application". 
+| Contributions to Mineralogy and Petrology (2024) 179:93 doi.org/10.1007/s00410-024-02173-6
+
+                            Fe-Mg-Al(Ts)-Al(ex)-Ti-Fe3+-Mn Biotite: Dachs and Benisek (2024)
+                            with Fe-Mg ordering as in literature, without Mg-Al ordering. 
+
+                            688 format and testing, E. Dachs  Dez/2023.
+                            Notation and ranges modified, JADC, 12/20/24
+
+                            Polytope 1 = [Mn,A]
+                            Polytope 2 = [M,T][M]
+
+                            where 
+
+                            T = Al,Ti,Fe3 on M1, A = Al on M2
+                            M = Mg, Fe
+
+                                                      A         M1        M2        T1        H
+                                                     ____________________________________________
+
+                                      Mutliplicity    1         1         2         2         2 
+                                                     ____________________________________________
+
+                                    endmember                                                      type
+                                    _________                                                      ________
+
+                      polytope 1:   1: pyp           V          V        AlAl      SiSi      OH    orphan
+                                       mnbi          K          Mn       MnMn      AlSi      OH    orphan
+ 
+                      polytope 2:   2: ffbio         K         Fe3       FeFe      AlAl      OH    dependent
+                                    3: fbio          K         Fe3       MgMg      AlAl      OH
+
+                                    4: sid           K         Al        FeFe      AlAl      OH    dependent
+                                    5: east          K         Al        MgMg      AlAl      OH
+ 
+                                    6: ftbio         K         Fe        FeTi      AlSi      O     dependent
+                                    7: tbio          K         Mg        MgTi      AlSi      O
+
+                                    8: ann           K         Fe        FeFe      AlSi      OH
+                                    9: phl           K         Mg        MgMg      AlSi      OH
+
+                  ordered species: 10: obi           K         Fe        MgMg      AlSi      OH    ordered
+ 
+
+Bio(D)                             | model name
+abbreviation Bio
+full_name    biotite
+
+688                                | model type: 688 format standard model
+
+2                                  | number of polytopes
+                                   | polytope names and composite composition space subdivision schemes
+[Mn,A]    0   0.5   .1   0
+[M,T][M]  by difference
+                                   | ----------------------------
+                                   | Polytope 1 - 1 simplex
+1                                  | number of simplices
+2                                  | number of vertices on each simplex
+prl      mnbi                      | endmembers on the vertices
+
+X_Mn    0    1   .1  0             | X(1,1) is Mn/(Mn+A) on M2
+X_Prl   by difference
+                                   | ----------------------------
+                                   | Polytope 2 - 2x4 simplices
+2                                  | number of simplices
+2  4                               | number of vertices on each simplex
+                                   | endmembers on the vertices
+ffbio    fbioD
+sid      eastD
+ftbio    tbioD
+annD     phlD
+                                   | First 2-simplex
+X_Mg    0    1   .1  0             | X(1,1) is bulk Mg/M
+X_Fe    by difference
+                                   | Second 2-simplex
+X_FeTs  0    1   .1  0             | X(2,1) is Fe3/[T+M] on M1, M on M2
+X_AlTs  0    1   .1  0             | X(2,2) is Al/[T+M]  on M1, M on M2
+X_TiTs  0    1   .1  0             | X(2,3) is MTi/[M+MTi] on M2, M on M1
+X_MBio  by difference
+
+begin_ordered_endmembers
+obi  = 2/3 phlD + 1/3 annD    enthalpy_of_ordering = -2d3
+end_ordered_endmembers
+
+begin_dependent_endmembers
+sid     = 1 annD + 1 eastD - 1 obi
+ftbio   = 1 tbioD + 1/2 annD  + 1/2 obi - 1 phlD
+ffbio   = 1 fbioD + 1 annD    - 1 obi
+end_dependent_endmembers
+
+
+begin_excess_function
+W(phlD annD annD)    -8800    | excess parameters from Dachs and Benisek (2021, 2024)
+W(phlD phlD annD)    14300
+W(phlD eastD)        19000
+W(phlD obi)           -100
+W(phlD prl)         116800
+W(annD eastD)        -5000
+W(annD obi)           -400
+W(annD prl)         108200
+W(annD tbioD)       -30000
+W(eastD obi)         -5000
+W(eastD prl)        120000
+W(obi prl)          120000
+W(prl tbioD)        120000
+W(prl fbioD)        120000
+end_excess_function 
+
+5                                   | number of identisites in configurational entropy model
+A
+2 1 1
+z(K,A) = 1 phlD + 1 eastD + 1 annD + 1 obi + 1 tbioD + 1 fbioD + 1 mnbi
+z(Vac,A) = 1 prl
+
+M1                                  | site name
+6 1 1                               | number of species, effective multiplicity, true multiplicity
+z(Al,M1)   = 1 eastD
+z(Mg,M1)   = 1 phlD + 1 tbioD
+z(Fe3,M1) = 1 fbioD
+z(Mn,M1)   = 1 mnbi 
+z(Fe,M1)   = 1 annD + 1 obi
+z(Vac,M1)  = 1 prl
+
+M2                                  | site name
+5 2 2                               | number of species, effective multiplicity, true multiplicity
+z(Fe,M2)   = 1 annD
+z(Al,M2)   = 1 prl
+z(Ti,M2)   = 1/2 tbioD
+z(Mn,M2)   = 1 mnbi
+z(Mg,M2)   = 1 eastD + 1 obi + 1 phlD + 1/2 tbioD + 1 fbioD
+
+T1                                  | site name
+2 2 2                               | number of species, effective multiplicity, true multiplicity
+z(Si,T1)   = 1/2 phlD + 1/2 annD + 1/2 obi + 1 prl + 1/2 tbioD + 1/2 mnbi
+z(Al,T1)   = 1 eastD + 1/2 phlD + 1/2 annD + 1/2 obi + 1/2 tbioD + 1 fbioD + 1/2 mnbi
+
+OH                                  | site name
+2 2 2                               | 2 species on H, 2 site per formula unit.
+z(O,OH)     = 1 tbioD
+z(OH,OH)    = 1 eastD + 1 phlD + 1 annD + 1 obi + 1 prl + 1 fbioD + 1 mnbi
+
+[Si2O10(OH)2]                       | formula suffix, enter "none" for no suffix.
+
+end_of_model
+                    --------------------------------------------------------
+begin_model
+
                                   Ti-Biotite model after White, Powell & Holland (JMG, 2007)
 
                                   Model entered by Lucie Tajcmanova, May 11, 2007.
@@ -5145,7 +5292,6 @@ begin_model
                                   NOTE: this model requires make defintions for fbi and tbi
                                   in the thermodynamic data file.
 
-                                                      1       2      3      4
                                                       M1      M2     T1     H
                                                      ____________________________
 
@@ -11789,7 +11935,7 @@ begin_model
                                                       ___________________________________
 
                         Ordered Cpd:  5 om            Na     Ca     Al     Mg
-                                      6 cfm           Ca     Ca     Mg     Fe
+                                      6 cfm           Ca     Ca     Mg     Fe2+
                                       7 jac           Na     Na     Fe3+   Al
 
 Omph(GHP)
@@ -11857,10 +12003,10 @@ z(Al,M1a)   = 1 jd + 1 om
 
 M1b
 4  .5  .5                           | 4 species on m1b, mult = 1/2
-z(Al,m1b)   = 1 jd  + 1 jac
-z(Fe,m1b)   = 1 hed + 1 cfm
-z(Fe3,m1b)  = 1 acm_dqf
-z(Mg,m1b)   = 1 di  + 1 om
+z(Al,m1b)    = 1 jd  + 1 jac
+z(Fe2+,m1b)  = 1 hed + 1 cfm
+z(Fe3+,m1b)  = 1 acm_dqf
+z(Mg,m1b)    = 1 di  + 1 om
 
 M2a
 2  .5  .5                           | 2 species on m2a, mutiplicity = 1/2
@@ -13152,8 +13298,8 @@ oilm = 1 dilm   delta_g_of_ordering  = -15600 + 11.52565132 T_K
 
 0 0 0  0                   | endmember flags
 
-0    .5  .1 0              | subdivision range, X(pnt)
-0    .5  .1 0              | subdivision range, X(geik)
+0     1  .1 0              | subdivision range, X(pnt)
+0     1  .1 0              | subdivision range, X(geik)
 0     1  .1 0              | subdivision range, X(hem)
 
 begin_excess_function
@@ -13210,7 +13356,7 @@ begin_model
                      Previously present as a brute force model which did not allow the anti-ordered
                      ilmenite configuration. Re-formulated as standard o/d model to remove this
                      limitation; however, the model has been parameterized so that the ordered and
-                     antiordered states are energetucally equivalent. JADC Jan 14, 2017.
+                     antiordered states are energetically equivalent. JADC Jan 14, 2017.
 
                                   NOTES:
 
@@ -13220,8 +13366,8 @@ begin_model
                                   the thermodynamic data file:
 
                                   dilm = 1 ilm_nol
-                                        | 1993  -2.1 0 => the TC DQF coeffecients, the values below are
-                                        | smax*tc0*(q0^2-1/3*q0^6), -smax*q0^2, vmax*q0^2 + {DH,R*ln(4),0}
+                                        | TC_DQF = {1993,-2.1,0} => the TC DQF coeffecients, the values below are
+                                        | smax*tc0*(q0^2-1/3*q0^6), -smax*q0^2, vmax*q0^2 + TC_DQF
                                         DQF(J/mol) = 15789.27763 -12.19977769 * T_K  .1836386612d-1 * P_bar
 
                                   dhem = 1 hem_nol
@@ -13268,12 +13414,12 @@ dilm
 
 1                            | 1 ordered species:
 
-oilm = 1 dilm   delta_g_of_ordering  = -15600 + 11.52565132 T_K
+oilm = 1 dilm   delta_g_of_ordering  = -15600 + 11.61 T_K
 
 0 0 0  0                   | endmember flags
 
-1d-3 .5  .1 1              | subdivision range, X(pnt)
-1d-3 .2  .1 1              | subdivision range, X(geik)
+0     1  .1 0              | subdivision range, X(pnt)
+0     1  .1 0              | subdivision range, X(geik)
 0     1  .1 0              | subdivision range, X(hem)
 
 begin_excess_function

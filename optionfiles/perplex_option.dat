@@ -1,6 +1,6 @@
 |----------------------------------------------------------------------
 
-        | Run-time Perple_X 7.1.8 options:
+        | Run-time Perple_X 7.1.10 options:
 
         | For option documentation refer to: www.perplex.ethz.ch/perplex_options.html
 
@@ -83,6 +83,7 @@ fractionation_hi_limit    default | [0.] 0-1, upper fractionation threshold, mas
 fractionation_lo_limit    default | [0.] 0-1, lower fractionation threshold, mass fraction
 function_tolerance_exp    default | [0.8] > 0.5, < 0.9, exponent (nopt(10)) used to set function tolerance (nopt(51)) from machine precision
 
+GFSM                      default | [F] T => default to GFSM and suppress saturated phase component constraint
 grid_levels               default | [1 4] exploratory and auto-refine (grid parameters keyword group)
 
 hard_limits               default | [off] on or off; on => strictly impose compositional limits specified in solution model
@@ -124,6 +125,8 @@ poisson_ratio             default | [on 0.35] value 1: on, off or all; value 2: 
 poisson_test              default | [F] T => use poisson ratio to check for valid results
 proportions               default | [vol] vol, wt, or mol; volume, weight (mass), or molar phase proportions
 pseudocompound_file       default | [F] T => echo static pseudocompound compositions to my_project_pseudocompound_list.txt
+P_stop                    default | [0.] equilibration pressure (bar) cut off
+PT_freeze                 default | [F] T => calculate mineralogy at P_stop/T_stop, caloric/elastic properties at P/T
 
 reaction_format           default | [minimum] minimum, full, stoich, S+V, or everything
 reaction_list             default | [off] on or off
@@ -147,7 +150,7 @@ speciation_max_it         default | [100] maximum number of iterations permitted
 speciation_precision      default | [1d-5] precision for non-GFSM fluid speciation calculations
 species_output            default | [T] T => output phase speciation in MEEMUM/WERAMI mode 1 output
 species_Gibbs_energies    default | [F] T => output species Gibbs energies in MEEMUM/WERAMI mode 1 output
-spreadsheet               default | [F] T => include independent variable values in WERAMI tab output files 
+spreadsheet               default | [T] F => include independent variable values in WERAMI tab output files 
 stretch_factor            default | [2d-3] >0, <1; controls degree of assymmetry for non-linear subdivision (1 => linear, 0 => logarithmic)
 structural_formulae       default | [T] T => MEEMUM/WERAMI output structural formula for 688 type solution models, lopt(51)
 subdivision_override      default | [off] off, linear, or stretch; overrides subdivision mode specified in solution models
@@ -163,7 +166,7 @@ vrh/hs_weighting          default | [0.5] 0->1, weighting factor for the stiff a
 warning_ver637            default | [T] T => warn and cease interpolation in WERAMI when immiscible solutions are present, lopt(31)
 warn_interactive          default | [F] T => overrides interactive y/n warnings by setting the y answer, lopt(56)
 
-x_nodes                   80 80 default | [20 40] exploratory and auto-refine (grid parameters keyword group), lowest-level x grid resolution 
-y_nodes                   80 80 default | [20 40] exploratory and auto-refine (grid parameters keyword group), lowest-level y grid resolution
+x_nodes                   default | [20 40] exploratory and auto-refine (grid parameters keyword group), lowest-level x grid resolution 
+y_nodes                   default | [20 40] exploratory and auto-refine (grid parameters keyword group), lowest-level y grid resolution
 
 zero_mode                 default | [1e-6] 0->1, threshold below which the molar mode of a phase is set to 0; defaults to zero for fractionation calculations
