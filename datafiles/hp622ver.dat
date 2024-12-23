@@ -2164,7 +2164,15 @@ b1 = .24E-4 b5 = 380.6729 b6 = 1700000 b7 = -.49E-5 b8 = 8.3
 transition = 1 type = 4 t1  = 1900 t2  = 12 t3  = .2E-1  
 end
 
- 
+
+ilm_nol   EoS = 8 | H= -1230460.  Ilmenite with landau transition suppressed for Ilm(WPH) model.                 
+TiO2(1)FeO(1)
+GH = -1264471 S0 = 107.5 V0 = 3.169  
+c1 = 138.9 c2 = .5081E-2 c3 = -1288800 c5 = -463.7  
+b1 = .24E-4 b5 = 380.6729 b6 = 1700000 b7 = -.49E-5 b8 = 8.3
+end
+
+
 bdy      EoS = 8 | H= -1100310. 
 ZrO2(1)
 GH = -1115337 S0 = 50.4 V0 = 2.115  
@@ -2730,16 +2738,6 @@ GH = -3098861 S0 = 102 V0 = 8.59
 c1 = 287  
 b1 = .67E-4 b5 = 639.1827 b6 = 175000 b7 = -.394E-4 b8 = 7  
 end
-
-
-
-ilm_nol   EoS = 8 | H= -1230460.  Ilmenite with landau transition suppressed for Ilm(WPH) model.                 
-TiO2(1)FeO(1)
-GH = -1264471 S0 = 107.5 V0 = 3.169  
-c1 = 138.9 c2 = .5081E-2 c3 = -1288800 c5 = -463.7  
-b1 = .24E-4 b5 = 380.6729 b6 = 1700000 b7 = -.49E-5 b8 = 8.3
-end
-
 
 
 fran     EoS = 8 | HSC data for Ni olivine, volume = fa - 0.2 J/bar 
