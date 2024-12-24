@@ -69,59 +69,57 @@ clean:
 #  
 #
 MC_fit: MC_fit.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) convex.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 convex: convex.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) convex.o $(LIBRARY) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 meemum: meemum.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) meemum.o $(LIBRARY) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 vertex: vertex.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) vertex.o $(LIBRARY) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 werami: werami.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 pssect: psect.o cont_lib.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) psect.o $(LIBRARY) cont_lib.o -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) psect.o $(LIBRARY) cont_lib.o -o $@$(EXT)
 
 pstable: pstable.o $(LIBRARY_PS)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
 
 pspts: pspts.o $(LIBRARY_PS) 
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
 
 psvdraw: psvdraw.o $(LIBRARY_PS)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
 
 pt2curv: pt2curv.o $(LIBRARY_PS)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
 
 actcor: actcor.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 build: build.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 fluids: fluids.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 ctransf: ctransf.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 DEW_2_ver: DEW_2_ver.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 frendly: frendly.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@
+	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
 #hptover: hptover.o
 #	$(COMP77) $(FFLAGS) $@.o -o $@
-
 #htog: htog.o
 #	$(COMP77) $(FFLAGS) $@.o -o $@
-
 # targets missing from '07:
 #rk: rk.o flib.o tlib.o
 #	$(COMP77) $(FFLAGS) $@.o tlib.o flib.o -o $@
@@ -139,63 +137,64 @@ frendly: frendly.o $(LIBRARY)
 
 actcor.o: actcor.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c actcor.f
+blas2lib.o: blas2lib.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c blas2lib.f
 build.o: build.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c build.f
-DEW_2_ver.o: DEW_2_ver.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c DEW_2_ver.f
-fluids.o: fluids.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c fluids.f
 convex.o: convex.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c convex.f
 cont_lib.o: cont_lib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c cont_lib.f
 ctransf.o: ctransf.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c ctransf.f
+DEW_2_ver.o: DEW_2_ver.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c DEW_2_ver.f
+flib.o: flib.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c flib.f
+fluids.o: fluids.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c fluids.f
 frendly.o: frendly.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c frendly.f
+MC_fit.o: MC_fit.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c MC_fit.f
+meemum.o: meemum.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c meemum.f
+minime_blas.o: minime_blas.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c minime_blas.f
+olib.o: olib.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c olib.f
+pscom.o: pscom.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c pscom.f
+psect.o: psect.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c psect.f
+pslib.o: pslib.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c pslib.f
+pspts.o: pspts.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c pspts.f
+psvdraw.o: psvdraw.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c psvdraw.f
+pstable.o: pstable.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c pstable.f
+pt2curv.o: pt2curv.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c pt2curv.f
+resub.o: resub.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c resub.f
+rlib.o: rlib.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c rlib.f
+tlib.o: tlib.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c tlib.f
+vertex.o: vertex.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c vertex.f
+werami.o: werami.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c werami.f
+
+
 #ge0pt.o: ge0pt.f
 #	$(COMP77) $(FFLAGS) -c ge0pt.f
 #hptover.o: hptover.f
 #	$(COMP77) $(FFLAGS) -c hptover.f
 #htog.o: htog.f
 #	$(COMP77) $(FFLAGS) -c htog.f
-psect.o: psect.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c psect.f
-psvdraw.o: psvdraw.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c psvdraw.f
-pscom.o: pscom.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c pscom.f
-pspts.o: pspts.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c pspts.f
-pstable.o: pstable.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c pstable.f
-
-# NEXT LINE MODIFIED BY pappel (PA@MIN.UNI-KIEL.DE) 2010SEPT08: CHANGED ptcurv.o TO pt2curv.o
-
-pt2curv.o: pt2curv.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c pt2curv.f
-werami.o: werami.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c werami.f
-flib.o: flib.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c flib.f
-pslib.o: pslib.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c pslib.f
-vertex.o: vertex.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c vertex.f
-meemum.o: meemum.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c meemum.f
-resub.o: resub.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c resub.f
-tlib.o: tlib.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c tlib.f
-olib.o: olib.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c olib.f
-rlib.o: rlib.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c rlib.f
-blas2lib.o: blas2lib.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c blas2lib.f
-minime_blas.o: minime_blas.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c minime_blas.f
 
 # WFM 2007Sep05
 .c.o:
