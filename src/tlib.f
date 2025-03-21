@@ -5221,6 +5221,8 @@ c                                 =====================================
 c                                 enthalpic uncertainty
       if (delh) then 
          write (lun,'(a,g12.6)') 'dH = ',dh
+      else if (uncrty) then
+         write (lun,'(a,g12.6)') 'dH = ',deltah(id)
       end if
 c                                 =====================================
 c                                 shear/bulk modulus
@@ -6382,6 +6384,13 @@ c                                 echo formatted header data for ctransf/actcor:
 
          write (n8,'(a,g6.1E1,a,/)') 'tolerance  ',dtol,
      *         '  |<= DTOL for unconstrained minimization, energy units'
+
+         if (uncrty) then
+
+            write (n8,'(a,/)') 'uncertainty_enabled |<= tag indicati'
+     *                       //'ng uncertainty data is present'
+
+         end if
 
          if (hscon) then
             write (n8,'(a,//,a)') 'HSC_conversion |<= tag enabling HSC '
