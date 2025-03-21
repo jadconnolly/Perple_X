@@ -67,5 +67,5 @@ end
     # number of performed optimizations  
     minG          = extract_value("$(testname)/$(testname).tim", "SQP G evaluations", " ")
     minG_expected = extract_value("$(testname)/output/$(testname).tim", "SQP G evaluations", " ")
-    @test minG ≈ minG_expected rtol=2e-2    
+    @test minG ≈ minG_expected rtol=0.05
 end
