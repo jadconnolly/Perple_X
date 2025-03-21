@@ -1,4 +1,5 @@
-function [] = function_for_extract_o_bat (x,y,a,xname,yname,zname,nvar,mvar,nrow,dnames,titl)
+function [] = function_for_extract_o_bat (x,y,a,xname,yname,zname,nvar, ...
+    mvar,nrow,dnames,titl,type)
 %Generic function to make 2- and 3-d plots from Perple_X tab format files
 %
 

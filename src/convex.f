@@ -66,18 +66,12 @@ c-----------------------------------------------------------------------
       integer jtest,jpot
       common/ debug /jtest,jpot
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
 
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
-
-      integer eos
-      common/ cst303 /eos(k10)
 
       integer iam
       common/ cst4 /iam
@@ -323,12 +317,6 @@ c-------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c-----------------------------------------------------------------------
 c                             output independent potential variable
 c                             constraints:
@@ -407,9 +395,6 @@ c-----------------------------------------------------------------------
       character*162 title
       common/ csta8 /title(4)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
@@ -422,12 +407,6 @@ c-----------------------------------------------------------------------
 
       integer ikp
       common/ cst61 /ikp(k1)
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c-----------------------------------------------------------------------
 c                             number of components, phase counters,
 c                             assemblage counter, fluid saturation flag,
@@ -469,12 +448,6 @@ c-----------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
@@ -531,9 +504,6 @@ c---------------------------------------------------------------------
       integer h,id
       common/ cst52 /h,id(k7)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
       call abload (*99)
 
       if (icp.gt.5) then 
@@ -580,12 +550,6 @@ c-----------------------------------------------------------------------
 
       double precision div
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
-      integer ivfl
-      common/ cst102 /ivfl
-
       integer jok,kok,index
       double precision vt,vti
       common/ cst65 /vt(j9),vti(j9),jok(j9),kok(j9),index
@@ -613,9 +577,6 @@ c-----------------------------------------------------------------------
 
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer ismax,igot
       double precision value
@@ -845,9 +806,6 @@ c-----------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
 
@@ -975,9 +933,6 @@ c-----------------------------------------------------------------------
       integer ipvt,idv,iophi,idphi,iiphi,iflg1
       common/ cst23  /a(k8,k8),b(k8),ipvt(k8),idv(k8),iophi,idphi,
      *                iiphi,iflg1
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 c-----------------------------------------------------------------------
 c                                 determine chemical potentials
       iflag = 0
@@ -1302,10 +1257,6 @@ c-----------------------------------------------------------------------
 
       double precision a(k8,k8),b(k8)
 
-      integer iffr,isr
-      double precision vuf,vus
-      common/ cst201 /vuf(2),vus(h5),iffr,isr
-
       integer is
       double precision cp, bbb, ccc
       common/ cst313 /cp(k5,k1),bbb(k5),ccc(k1),is(k1+k5)
@@ -1313,12 +1264,6 @@ c-----------------------------------------------------------------------
       integer idr,ivct
       double precision vnu
       common/ cst25 /vnu(k7),idr(k7),ivct
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer ivarrx,ivarip,isudo,ivar
       common/ cst62 /ivarrx(k2),ivarip(k2),isudo,ivar
@@ -1423,9 +1368,6 @@ c----------------------------------------------------------------------------
 
       integer jtest,jpot
       common/ debug /jtest,jpot
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
@@ -1594,10 +1536,7 @@ c-----------------------------------------------------------------------
       common/ cst52 /ht,id(k7)
 
       integer idcf,icfct
-      common/ cst96 /idcf(k5,j9),icfct 
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
+      common/ cst96 /idcf(k5,j9),icfct
 
       integer jtest,jpot
       common/ debug /jtest,jpot
@@ -1774,9 +1713,6 @@ c-----------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
@@ -2125,9 +2061,6 @@ c-----------------------------------------------------------------------
       common/ cst23 /a(k8,k8),b(k8),ipvt(k8),idv(k8),
      *               iophi,idphi,iiphi,iflg1
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
 
@@ -2249,25 +2182,12 @@ c-----------------------------------------------------------------------
 
       integer i
 
-      integer iffr,isr
-      double precision vuf,vus
-      common/ cst201 /vuf(2),vus(h5),iffr,isr
-
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
 
       integer jds,ifr
       double precision du,dv
       common/ cst21 /du(2),dv(2),jds(h5),ifr
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       save exten 
 c                                 this is a bullshit trick and
@@ -2321,18 +2241,11 @@ c-----------------------------------------------------------------------
 
       double precision og,gval
 
-      integer ivfl
-      common/ cst102 /ivfl
-
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
       double precision delt,dtol,utol,ptol
       common/ cst87 /delt(l2),dtol,utol,ptol
-
-      integer iffr,isr
-      double precision vuf,vus
-      common/ cst201 /vuf(2),vus(h5),iffr,isr
 
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
@@ -2340,9 +2253,6 @@ c-----------------------------------------------------------------------
       integer is
       double precision cp, bbb, ccc
       common/ cst313 /cp(k5,k1),bbb(k5),ccc(k1),is(k1+k5)
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       integer jds,ifr
       double precision du,dv
@@ -2355,12 +2265,6 @@ c-----------------------------------------------------------------------
       integer irct,ird
       double precision vn
       common/ cst31 /vn(k2,k7),irct,ird
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
@@ -2506,15 +2410,6 @@ c-----------------------------------------------------------------------
 
       integer ikp
       common/ cst61 /ikp(k1)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c-----------------------------------------------------------------------
 c                              value to be read as icopt
       write (n4,*) icopt
@@ -2591,9 +2486,6 @@ c-----------------------------------------------------------------------
       double precision a,b
       common/ cst23 /a(k8,k8),b(k8),ipvt(k8),idv(k8),
      *               iophi,idphi,iiphi,iflg1
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 c-----------------------------------------------------------------------
       call uproj
 
@@ -2664,9 +2556,6 @@ c-----------------------------------------------------------------------
      *        ipos,i,j,ineg,idphi,jtic,k,ivd,ivi,iste
      
       double precision b(k8)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 c-----------------------------------------------------------------------
 c                                 initialize counter:
       ipos = 0
@@ -3349,9 +3238,6 @@ c-----------------------------------------------------------------------
 
       integer iflag
       common/ cst7 /iflag
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 c-----------------------------------------------------------------------
 c                                 compute energies:
       igo = 0
@@ -3415,9 +3301,6 @@ c--------------------------------------------------------------------
       double precision a,b
       common/ cst23 /a(k8,k8),b(k8),ipvt(k8),idv(k8),
      *               iophi,idphi,iiphi,iflg1
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 c--------------------------------------------------------------------
 c                              calculate pivots for the matrix 'a'
       do k = 1, icp
@@ -3462,9 +3345,6 @@ c-----------------------------------------------------------------------
 
       integer iflag
       common/ cst7 /iflag
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 c-----------------------------------------------------------------------
 c                                 determine chemical potentials
       iflag = 0
@@ -3521,9 +3401,6 @@ c-----------------------------------------------------------------------
 
       double precision blim, ulim, dg
       common/ cxt62 /blim(l2),ulim(l2),dg
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 
       integer ipvt,idv,iophi,idphi,iiphi,iflg1
       double precision a,b
@@ -3614,9 +3491,6 @@ c----------------------------------------------------------------------
 
       integer ipot,jv,iv1,iv2,iv3,iv4,iv5
       common/ cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
@@ -4062,12 +3936,6 @@ c----------------------------------------------------------------------
 
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c-----------------------------------------------------------------------
       jchk = 0 
       icp3 = icp + 3
@@ -4309,9 +4177,6 @@ c----------------------------------------------------------------------
       integer ird, irend, ier, irends(k2), j, jct
 
       double precision rends(2,16,k2), dx, dy, x, y, xx, yy
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer irv
       common/ cst35 /irv(k2)
@@ -4735,15 +4600,8 @@ c-----------------------------------------------------------------------
       character rxnstr*(kd2)
       common/ cst104 /rxnstr(k2)
 
-      integer iffr,isr
-      double precision vuf,vus
-      common/ cst201 /vuf(2),vus(h5),iffr,isr
-
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       integer idr,ivct
       double precision vnu
@@ -4759,9 +4617,6 @@ c-----------------------------------------------------------------------
 
       integer ikp
       common/ cst61 /ikp(k1)
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       save exten 
 c                                 this will cause errors if someone
@@ -4903,19 +4758,12 @@ c-----------------------------------------------------------------------
 
       character*8 rname(k8), exten(2)
 
-      integer iffr,isr
-      double precision vuf,vus
-      common/ cst201 /vuf(2),vus(h5),iffr,isr
-
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
 
       integer jds,ifr
       double precision du,dv
       common/ cst21 /du(2),dv(2),jds(h5),ifr
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       integer idr,ivct
       double precision vnu
@@ -4927,9 +4775,6 @@ c-----------------------------------------------------------------------
 
       integer ivarrx,ivarip,isudo,ivar
       common/ cst62 /ivarrx(k2),ivarip(k2),isudo,ivar
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       save exten 
 c                                 this is a bullshit trick and
@@ -5043,9 +4888,6 @@ c----------------------------------------------------------------------
       integer is
       double precision cp, bbb, ccc
       common/ cst313 /cp(k5,k1),bbb(k5),ccc(k1),is(k1+k5)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 c----------------------------------------------------------------------
       ier = 0
 c                                load the transpose of the
@@ -5131,9 +4973,6 @@ c-----------------------------------------------------------------------
 
       integer h,id
       common/ cst52 /h,id(k7)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 c                              optional routine for testing
 c                              for metastable g-x planes.
       ier = 0
@@ -5194,9 +5033,6 @@ c----------------------------------------------------------------------
       integer is
       double precision cp, bbb, ccc
       common/ cst313 /cp(k5,k1),bbb(k5),ccc(k1),is(k1+k5)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
@@ -5273,9 +5109,6 @@ c----------------------------------------------------------------------
 
       integer hcp,id
       common / cst52 /hcp,id(k7)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 c----------------------------------------------------------------------
 c                           istabl = 1 if the original
 c                           assemblage was metastable, istable = 0
@@ -5328,9 +5161,6 @@ c-----------------------------------------------------------------------
       integer is
       double precision cp, bbb, ccc
       common/ cst313 /cp(k5,k1),bbb(k5),ccc(k1),is(k1+k5)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
  
       dg = g(ld)
 
@@ -5670,9 +5500,6 @@ c----------------------------------------------------------------------
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
       integer ivarrx,ivarip,isudo,ivar
       common/ cst62 /ivarrx(k2),ivarip(k2),isudo,ivar
 
@@ -5743,9 +5570,6 @@ c-----------------------------------------------------------------------
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
 
@@ -5812,9 +5636,6 @@ c----------------------------------------------------------------------------
 
       integer i,j
 
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp   
-
       double precision g
       common/ cst2 /g(k1)
 
@@ -5859,9 +5680,6 @@ c---------------------------------------------------------------------
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer tphct
       double precision g2, cp2, c2tot
       common/ cxt12 /g2(k21),cp2(k5,k21),c2tot(k21),tphct
@@ -5885,9 +5703,6 @@ c-----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i, id1, id2, ids
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
 
       integer is
       double precision cp, bbb, ccc

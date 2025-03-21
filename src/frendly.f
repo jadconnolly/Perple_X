@@ -29,9 +29,6 @@ c------------------------------------------------------------------------
 
       external gcpd, readyn
 
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
@@ -1098,9 +1095,6 @@ c-----------------------------------------------------------------------
       double precision vnu
       common/ cst25 /vnu(k7),idr(k7),ivct
 
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
       integer ipt2
       double precision ptx
       common/ cst32 /ptx(l5),ipt2
@@ -1152,23 +1146,9 @@ c---------------------------------------------------------------------
       double precision tm,td
       common/ cst202 /tm(m7,m6),td(m8),ilam,jlam,idiso,lamin,idsin
 
-      integer idf
-      double precision act
-      common/ cst205 /act(k7),idf(3)
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
       integer idr,ivct
       double precision vnu
       common/ cst25 /vnu(k7),idr(k7),ivct
-
-      integer iffr,isr
-      double precision vuf,vus
-      common/ cst201 /vuf(2),vus(h5),iffr,isr
 
       integer ltyp,lct,lmda,idis
       common/ cst204 /ltyp(k10),lct(k10),lmda(k10),idis(k10)
@@ -1182,9 +1162,6 @@ c---------------------------------------------------------------------
       character*2 strgs*3, mstrg, dstrg, tstrg*3, wstrg*3, e16st*3
       common/ cst56 /strgs(32),mstrg(6),dstrg(m8),tstrg(11),wstrg(m16),
      *               e16st(12)
-
-      integer eos
-      common/ cst303 /eos(k10)
 c-----------------------------------------------------------------------
       write (*,1110)
 
@@ -1237,7 +1214,7 @@ c                                 add in activity correction
             thermo(2,id) = thermo(2,id) - r * dlog (act(id))
  
             call append (n2)
-            call outdat (n2,id,2)
+            call outdat (n2,id,2,0d0)
 c                                 reset data
             thermo(1,id) = thermo(1,k10) 
             thermo(2,id) = thermo(2,k10) 
@@ -1401,7 +1378,7 @@ c                                 add in activity correction
             end do 
 c                                 output the data 
             call append (n2)
-            call outdat (n2,id,2)
+            call outdat (n2,id,2,0d0)
 c                                 reset data
             thermo(1,id) = thermo(1,k10) 
             thermo(2,id) = thermo(2,k10)  
@@ -1458,7 +1435,7 @@ c                                 add in activity correction
      *                            - r * dlog (act(id))
  
                      call append (n2)
-                     call outdat (n2,id,2)
+                     call outdat (n2,id,2,0d0)
 
                      thermo(1,id) = thermo(1,k10) 
                      thermo(2,id) = thermo(2,k10) 
@@ -1620,15 +1597,9 @@ c----------------------------------------------------------------------
 
       external readyn
 
-      integer eos
-      common/ cst303 /eos(k10)
-
       integer cl
       character cmpnt*5, dname*80
       common/ csta5 /cl(k0),cmpnt(k0),dname
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
 
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
@@ -1698,7 +1669,7 @@ c                                 normal polynomial vdp term:
  
          call append (n2)
 
-         call outdat (n2,k10,0)
+         call outdat (n2,k10,0,0d0)
  
          write (*,1110)
 
@@ -1769,20 +1740,9 @@ c----------------------------------------------------------------------
       logical eof, first, match, readyn
 
       integer inames, jcmpn, i, j, k, l, ier, jc(2),
-     *        isct, jj, itic, jphct, mkst, mkend
+     *        jsct, jj, itic, jphct, mkst, mkend
 
       external readyn
-
-      integer idf
-      double precision act
-      common/ cst205 /act(k7),idf(3)
-
-      integer iffr,isr
-      double precision vuf,vus
-      common/ cst201 /vuf(2),vus(h5),iffr,isr
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 
       character*8 name
       common/ csta6 /name
@@ -1820,9 +1780,6 @@ c----------------------------------------------------------------------
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       save first, inames, mnames
       data first/.true./
@@ -1933,7 +1890,7 @@ c                               initialization for k10 endnmembers
  
          rxny='y'
 5002     write (*,4010)
-         read (*,*,iostat=ier) isct
+         read (*,*,iostat=ier) jsct
          call rerror (ier,*5002)
  
       else if (icopt.lt.8) then
@@ -1943,20 +1900,20 @@ c                               initialization for k10 endnmembers
  
          if (rxny.eq.'y'.or.rxny.eq.'y') then
 5007        write (*,4010)
-            read (*,*,iostat=ier) isct
+            read (*,*,iostat=ier) jsct
             call rerror (ier,*5007)
          else
-            isct = 1
+            jsct = 1
          end if
 
       end if
 c                               jj is the pointer to the reaction props
-      jj = isct+1
+      jj = jsct+1
 c                               initialize fluid counter outside loop, 9/18/20
       ifct = 0 
 c                               get composition vectors for entities
 c                               defined by a make definition:
-      do i = 1, isct
+      do i = 1, jsct
 
 30       match = .false.
 
@@ -2189,20 +2146,9 @@ c----------------------------------------------------------------------
 
       integer i,ier,id
 
-      integer idf
-      double precision act
-      common/ cst205 /act(k7),idf(3)
-
       integer idr,ivct
       double precision vnu
       common/ cst25 /vnu(k7),idr(k7),ivct
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
-      integer iffr,isr
-      double precision vuf,vus
-      common/ cst201 /vuf(2),vus(h5),iffr,isr
 c-----------------------------------------------------------------------
       ier = 0
 20    write (*,1000) (i,names(i),vnu(i),i=1,iphct)
@@ -2244,9 +2190,6 @@ c----------------------------------------------------------------------
       integer i
 
       logical sick(i8), ssick, ppois, bulkg, bsick
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
 
       integer idr,ivct
       double precision vnu

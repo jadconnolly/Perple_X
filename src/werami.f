@@ -1272,9 +1272,6 @@ c-------------------------------------------------------------------
       integer javg,jdsol
       common/ cxt5 /javg,jdsol(k5)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision r,tr,pr,ps,p,t,xco2,u1,u2
       common/ cst5   /p,t,xco2,u1,u2,tr,pr,r,ps
 
@@ -2227,9 +2224,6 @@ c-------------------------------------------------------------------
       integer jdsol(k5), index, isol, i, j
 
       double precision x(k5), ntot
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 c----------------------------------------------------------------------
 c                                 average immiscible compositions
 c                                 get mole fractions
@@ -2711,9 +2705,6 @@ c----------------------------------------------------------------
       integer ivar,ind
       common/ cst83 /ivar,ind
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       logical mus
       double precision mu
       common/ cst330 /mu(k8),mus
@@ -3094,9 +3085,6 @@ c----------------------------------------------------------------
       character propty(kprop)*60, char10*10
 
       external readyn
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer jtest,jpot
       common/ debug /jtest,jpot
@@ -3930,9 +3918,6 @@ c----------------------------------------------------------------
       integer isp, ins
       common/ cxt33 /isp,ins(nsp),specie(nsp)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
       character*14 tname
       integer kop,kcx,k2c,iprop
       logical kfl, first
@@ -4053,9 +4038,6 @@ c-----------------------------------------------------------------------
 
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
       common/ cst337 /nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa

@@ -1,4 +1,5 @@
-function [x,y,a,xname,yname,zname,nvar,mvar,nrow,dnames,titl] = function_to_get_perple_x_file
+function [x,y,a,symb,xname,yname,zname,nvar,mvar,nrow,dnames,titl] ...
+    = function_to_get_perple_x_file
 
 % MatLab script to read Perple_X tab files see:
 %    perplex.ethz.ch/faq/Perple_X_tab_file_format.txt
@@ -23,15 +24,15 @@ ok = 0;
 
 while ok == 0;
 
-    [filename, pathname] = uigetfile('*.tab', 'Select a Perple_X tab file');
+    [filename, pathname, indx] = uigetfile({'*.tab';'*.pts'}, 'Select a Perple_X tab or pts file');
 
-    data_file=fullfile(pathname, filename);
+    data_file = fullfile(pathname, filename);
 
     fid = fopen(data_file, 'rt');
 
     fmt = fgetl(fid); % read revision tag
 
-    if strcmp(fmt,'|6.6.6')     % valid revision
+    if strcmp(fmt,'|6.6.6') & indx == 1    % valid tab file revision
 
         ok = 1;
 
@@ -121,6 +122,22 @@ while ok == 0;
             errordlg(['The input data is ',nvar,'-dimensional, this script is only configured for 1-2d']);
 
         end
+
+    elseif indx == 2; % *.pts file
+
+        T = readtable(data_file,"FileType","delimitedtext");
+        ans = T.Properties.DimensionNames
+        A = table2array(T)
+        ans = size (A)
+        rows = ans(1)
+        cols = ans(2)
+
+        vname(1) = "symbol code";
+        for i = 2:cols-1;vname(i) = ['parameter_',num2str(i-1)];end
+        vname(cols) = "score"   
+
+        [dvar, ok] = listdlg('PromptString','Select the dependent variable:','ListSize',[200 400],'SelectionMode','single','ListString',dnames{1});
+        if ok == 0, errordlg(['You did not choose a variable, I quit!']), end
 
     else
 

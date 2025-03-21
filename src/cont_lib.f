@@ -32,7 +32,7 @@ C----------------------------------------------------------------
 
       logical readyn 
 
-      external readyn
+      external readyn, errdbg
 
       integer ix,iy,mvar
       double precision z,zt 

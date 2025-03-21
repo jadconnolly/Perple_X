@@ -21,9 +21,6 @@ c Please do not distribute any part of this source.
 
       external readyn, nblen
 
-      integer iphct
-      common/ ln4 /iphct
-
       integer iam
       common/ cst4 /iam
 c----------------------------------------------------------------------- 
@@ -147,12 +144,6 @@ c----------------------------------------------------------------------
       logical readyn
 
       external readyn
-
-      integer iphct
-      common/ ln4 /iphct
-
-      integer isat
-      common/ wee /isat
 c---------------------------------------------------------------
       iop2 = 0
       iop3 = 0
@@ -357,9 +348,9 @@ c pschem - subroutine to output ternary chemographies.
  
       double precision x3(3),y3(3),xx(j9),yy(j9),style,x1,y1,y,dyt,yt,xt
  
-      integer iperm(2,3),i,j,iflag,isat,iop1,kvert,id,nchar
+      integer iperm(2,3),i,j,iflag,iop1,kvert,id,nchar
 
-      integer icp,istct,ifct,ipot,jas,jd
+      integer ipot,jas,jd
 
       logical vline, tlbl, readyn
 
@@ -383,12 +374,9 @@ c pschem - subroutine to output ternary chemographies.
       integer ikp
       common/ phase /ikp(k1)
       
-      integer idf,ib,iasmbl,ivchk
+      integer jdf,ib,iasmbl,ivchk
       double precision x
-      common/ asmbl /x(2,k1),idf(3,k2),ib,iasmbl(k2),ivchk(k1)
- 
-      integer iphct
-      common/ ln4 /iphct
+      common/ asmbl /x(2,k1),jdf(3,k2),ib,iasmbl(k2),ivchk(k1)
 c----------------------------------------------------------------------
       iflag = 0
 c                                  read header information 
@@ -455,7 +443,7 @@ c                                  read simple variables
          read (n4,*,end=99) (vmn(i), i = 1, ipot)
          read (n4,*) ib
 c                                  read phase configurations   
-         read (n4,*) ((idf(j,i),j = 1, icp), i = 1, ib)
+         read (n4,*) ((jdf(j,i),j = 1, icp), i = 1, ib)
  
          do i = 1, iphct
             ivchk(i) = 0 
@@ -501,7 +489,7 @@ c                                  last invariant
             do i = 1, ib                      
                if (iasmbl(i).eq.0) then
                   do j = 1, 3
-                     id = idf(j,i)
+                     id = jdf(j,i)
                      ivchk(id) = 1
                      xx(j) = x(1,id) 
                      yy(j) = x(2,id) 
@@ -517,7 +505,7 @@ c                                  old mode, draw tielines:
                jas = iasmbl(i)
  
                do j = 1, 3
-                  id = idf(j,i)
+                  id = jdf(j,i)
                   if (jas.eq.0.or.id.le.ipoint) ivchk(id) = 1
                   xx(j) = x(1,id) 
                   yy(j) = x(2,id) 
@@ -544,8 +532,8 @@ c                                           univariant
                      call pspygn  (xx,yy,3,0d0,0d0,3)
 c                                 draw a thin line between same phase
                      do j = 1, 3
-                        id = idf(iperm(1,j),i)
-                        jd = idf(iperm(2,j),i)
+                        id = jdf(iperm(1,j),i)
+                        jd = jdf(iperm(2,j),i)
 c                                           draw the line:
                         if (ikp(jd).eq.ikp(id)) call psline 
      *                     (xx(iperm(1,j)),yy(iperm(1,j)),
@@ -629,9 +617,9 @@ c                                       sectioning constraints
       integer iperm(2,3),idv(j9),idp(3),jdv(3),jas,i,kvert,j,id,
      *                   kas,k,l,jvert,kp,kp2,ll1,ll2,ll3
 
-      integer idf,ib,iasmbl,ivchk
+      integer jdf,ib,iasmbl,ivchk
       double precision x
-      common/ asmbl /x(2,k1),idf(3,k2),ib,iasmbl(k2),ivchk(k1)
+      common/ asmbl /x(2,k1),jdf(3,k2),ib,iasmbl(k2),ivchk(k1)
 
       integer ikp
       common/ phase /ikp(k1)
@@ -642,7 +630,7 @@ c                                    load first part into polygon:
 
       do j = 1, 3
 
-         id = idf(j,i)
+         id = jdf(j,i)
          idv(j) = id
 c                                    identify the phases
          if (ikp(id).ne.0) then 
@@ -671,7 +659,7 @@ c                                    no match, reject:
             if (kas.ne.jas.or.j.eq.i) cycle
 
             do 30 k = 1, 3
-               id = idf(k,j)
+               id = jdf(k,j)
                jdv(k) = id
 c                                    check if the phases match: 
                if (ikp(id).ne.0) then 
@@ -1155,11 +1143,11 @@ c psmixd - subroutine to draw binary mixed variable diagrams
 
       include 'perplex_parameters.h'
 
-      integer icp,ifct,isat,ipot,i,ird,ivar
+      integer ipot, i ,ird, ivar
 
       character*8 title*162, string*(lchar), tname(5)
 
-      integer idf(3),jphi(k1),igo,jop0,iop1,iop2,iop3,jb,
+      integer jdf(3),jphi(k1),igo,jop0,iop1,iop2,iop3,jb,
      *        jplus,jminus,isum,idif,j,i1,id1,it,i2,id2,jt,itot,
      *        i00,imis,itoc,j1,iend
 
@@ -1186,17 +1174,14 @@ c psmixd - subroutine to draw binary mixed variable diagrams
       integer ikp
       common/ phase /ikp(k1)
 
-      integer iphi,ivph,ib,istct
+      integer iphi,ivph,ib
       double precision x
-      common/ tx /x(k1),iphi(k1),ivph(k1),ib,istct
+      common/ tx /x(k1),iphi(k1),ivph(k1),ib
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
 
-      integer iphct
-      common/ ln4 /iphct
-
-      data idf,igo/4*0/
+      data jdf,igo/4*0/
 c----------------------------------------------------------------------
 c                                  start-of-header
 c                                  ------------------------------
@@ -1313,10 +1298,10 @@ c                              get the variance of each compound:
             if (ikp(idr(i)).ne.0) then
                isum = isum + 1
                do j = 1, idif
-                  if (idf(j).eq.ikp(idr(i))) goto 50
+                  if (jdf(j).eq.ikp(idr(i))) goto 50
                end do 
                idif = idif + 1
-               idf(idif) = ikp(idr(i))
+               jdf(idif) = ikp(idr(i))
             end if 
 50       continue 
 c                              consider different cases:
@@ -1637,9 +1622,9 @@ c     if igo = 1 skip miscibility test
       integer ikp
       common/ phase /ikp(k1)      
 
-      integer iphi,ivph,ib,istct
+      integer iphi,ivph,ib
       double precision x
-      common/ tx /x(k1),iphi(k1),ivph(k1),ib,istct
+      common/ tx /x(k1),iphi(k1),ivph(k1),ib
 
       if (i.eq.1.or.i.eq.ib) then 
          ivph(i) = 1
@@ -1690,12 +1675,9 @@ c imis = 1 => solvus between solution(ids) compositions x1 and x2
       integer ikp
       common/ phase /ikp(k1)
 
-      integer iphi,ivph,ib,istct
+      integer iphi,ivph,ib,pstct
       double precision x
-      common/ tx /x(k1),iphi(k1),ivph(k1),ib,istct
-
-      integer iphct
-      common/ ln4 /iphct
+      common/ tx /x(k1),iphi(k1),ivph(k1),ib,pstct
 
       imis = 0
 c                                igo=1, disabled cause of projections
@@ -1731,9 +1713,6 @@ c           if imatch = 0 the assemblage id matches the criteria
 
       integer ixct,iex,jex,ict
       common/ excl1 /ixct(3),iex(50,3),jex(50,3),ict(3)
-
-      integer iphct
-      common/ ln4 /iphct
 
       imatch = 0
 
@@ -1826,12 +1805,6 @@ c plinp - subroutine to read x-y plot file header.
 
       character*162 title
       common/ csta8 /title(4)
-
-      integer iphct
-      common/ ln4 /iphct
-
-      integer isat
-      common/ wee /isat
 c----------------------------------------------------------------------
       read (n4,*,iostat=ier) icopt
       if (ier.ne.0) call error (67,c0,i,'PLINP')
@@ -2060,9 +2033,6 @@ c----------------------------------------------------------------
 
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
-
-      integer iphct
-      common/ ln4 /iphct
 c----------------------------------------------------------------------
       do i = 1, isoct
          if (unnown.eq.fname(i)) then

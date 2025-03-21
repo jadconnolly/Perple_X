@@ -27,12 +27,14 @@
 %    'FontSize',14.,...
 %    'LineWidth',1.0)
 
-LineWidth = 1.0
-FontSize = 14.0
-LineSpec = '-'
-Marker = 'none'
+LineWidth = 1.0;
+FontSize = 14.0;
+LineSpec = '-';
+Marker = 'none';
 
-[x,y,a,xname,yname,zname,nvar,mvar,nrow,dnames,titl] = function_to_get_perple_x_ss_file; %open the Perple_X file
+[x,y,a,symb,xname,yname,zname,nvar,mvar,nrow,dnames,titl,type] = ...
+    function_to_get_perple_x_ss_file; %open the Perple_X file
 
-function_for_perple_x_plots (x,y,a,xname,yname,zname,nvar,mvar,nrow,dnames,LineSpec,LineWidth,Marker,FontSize,titl);
+function_for_perple_x_plots (x,y,a,symb,xname,yname,zname,nvar,mvar,nrow, ...
+    dnames,LineSpec,LineWidth,Marker,FontSize,titl,type);
 

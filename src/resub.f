@@ -44,9 +44,6 @@ c     double precision wbig(lwbig)
       double precision bl,bu
       common/ cstbup /bl(k1+k5),bu(k1+k5)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 
@@ -221,9 +218,6 @@ c-----------------------------------------------------------------------
 
       double precision x
       common/ scrtch /x(k21)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer xis
       double precision xa,b,xc
@@ -454,9 +448,6 @@ c----------------------------------------------------------------------
 
       external gsol1, badsol
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer ikp
       common/ cst61 /ikp(k1)
 
@@ -593,6 +584,8 @@ c                                 a normal solution or multicomponent solvent
 c                                 a speciated electrolytic fluid, skip
 c                                 pure 1-species solvent, this may cause
 c                                 bad warm start behavior
+               idif = jdv(kd)
+
                call savkwk (gg,0d0,swap,idif)
 
             end if
@@ -805,9 +798,6 @@ c-----------------------------------------------------------------------
 
       integer i, id1, id2, ids
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision dcp,soltol
       common/ cst57 /dcp(k5,k19),soltol
 c                                 composition and model flags
@@ -851,9 +841,6 @@ c-----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i, id1, id2
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
       common/ cst337 /nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
@@ -902,9 +889,6 @@ c----------------------------------------------------------------------
       external solvs1, solvs4
 c                                 -------------------------------------
 c                                 global variables:
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision dcp,soltol
       common/ cst57 /dcp(k5,k19),soltol
 
@@ -1442,9 +1426,6 @@ c                                 for final adaptive solution
       double precision cp3,amt
       common/ cxt15 /cp3(k0,k19),amt(k19),kkp(k19),np,ncpd,ntot
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer npt,jdv
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
@@ -1685,9 +1666,6 @@ c----------------------------------------------------------------------
       logical degen, solvus, quit, news, solvnt(k19)
 
       double precision x(*), slam(h9), clamda(*)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
@@ -1974,9 +1952,6 @@ c-----------------------------------------------------------------------
 
       integer i, id1, id2, ids
 
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
       integer is
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
@@ -2234,9 +2209,6 @@ c----------------------------------------------------------------------
       integer jphct
       double precision g2, cp2, c2tot
       common/ cxt12 /g2(k21),cp2(k5,k21),c2tot(k21),jphct
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
@@ -2588,9 +2560,6 @@ c----------------------------------------------------------------------
       double precision cp3,amt
       common/ cxt15 /cp3(k0,k19),amt(k19),kkp(k19),np,ncpd,ntot
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c----------------------------------------------------------------------
@@ -2653,9 +2622,6 @@ c----------------------------------------------------------------------
       logical abort, stic, bad
 
       double precision c(k5), scp(k5)
- 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       double precision cp
       common/ cst12 /cp(k5,k10)
@@ -2673,9 +2639,6 @@ c----------------------------------------------------------------------
 c                                 hcp is different from icp only if usv
       integer hcp,idv
       common/ cst52  /hcp,idv(k7)
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       logical mus
       double precision mu
@@ -2762,7 +2725,7 @@ c                                 amounts
 
       if (jbulk.gt.icp) then  
 c                                 get the amounts of the saturated phases:
-         do i = icp+1, jbulk
+         do i = icp1, jbulk
 c                                 corrected to use full component indexing
 c                                 in C. JADC 9/13/2023
             c(i) = cblk(i)
@@ -2778,6 +2741,15 @@ c                                 phases in the thermodynamic c-space
 c                                  cycle through the saturated phases
             npt = npt + 1
             id = idss(i-icp)
+
+            if (mcfit) then
+c                                  for mc_fit save the i'd of the saturated 
+c                                  phases
+               j = jbulk - i + 1
+               skp(j) = -id
+               xskp(j) = c(i)/cp(i,id)
+
+            end if
 c                                  set case for solution in saturated component
 c                                  space, the endmember composition is not set,
 c                                  this is gonna cause problems, at least for 
@@ -2792,13 +2764,18 @@ c                                  amount of the staurated phase
             amt(npt) = c(i)/cp(i,id)
 c                                  warn on undersaturation
             if (amt(npt).lt.nopt(9)) then 
-               if (amt(npt).lt.-nopt(9).and.tictoc.lt.1) call warn (99,
-     *             c(1),i,'the specified amount of saturated compon'//
+
+               if (amt(npt).lt.-nopt(9).and.tictoc.le.isat) 
+     *             call warn (99,c(1),i,
+     *                    'the specified amount of saturated compon'//
      *                    'ent '//cname(i)//'is inadequate to saturat'//
      *                    'e the system at all conditions of interest')
+
                npt = npt - 1
                tictoc = tictoc + 1
-               exit
+
+               cycle
+
             end if 
 c                                  remove the saturated phase from 
 c                                  the temporary bulk composition
@@ -3232,9 +3209,6 @@ c------------------------------------------------------------------------
       integer hcp,idv
       common/ cst52  /hcp,idv(k7)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer is
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
@@ -3312,9 +3286,6 @@ c----------------------------------------------------------------------
       integer npt,jdv
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 c----------------------------------------------------------------------- 
 c                                 initialization
       rxn = .false.
@@ -3382,9 +3353,6 @@ c----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       logical first, err
-
-      integer eos
-      common/ cst303 /eos(k10)
 
       character tname*10
       logical refine, lresub

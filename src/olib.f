@@ -21,9 +21,6 @@ c----------------------------------------------------------------------
  
       external gcpd, zbad
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
 
@@ -875,9 +872,6 @@ c                                 for final adaptive solution
       double precision mu
       common/ cst330 /mu(k8),mus
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
       common/ cst337 /nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
 
@@ -1256,9 +1250,6 @@ c-----------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 
-      integer eos
-      common/ cst303 /eos(k10)
-
       save dt,dp
       data dt,dp/5d0,50d0/
 c-----------------------------------------------------------------------
@@ -1580,9 +1571,6 @@ c----------------------------------------------------------------------
       integer iam
       common/ cst4 /iam
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer kkp,np,ncpd,ntot
       double precision cp3,amt
       common/ cxt15 /cp3(k0,k19),amt(k19),kkp(k19),np,ncpd,ntot
@@ -1620,9 +1608,6 @@ c----------------------------------------------------------------------
       double precision vp,vvp
       integer rooti
       common/ srkdiv /vp(3),vvp(3),rooti(3)
-
-      integer eos
-      common/ cst303 /eos(k10)
 
       integer kd, na1, na2, na3, nat
       double precision x3, caq
@@ -3193,9 +3178,6 @@ c----------------------------------------------------------------------
       double precision gtot,fbulk,gtot1,fbulk1
       common/ cxt81 /gtot,fbulk(k0),gtot1,fbulk1(k0)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer hs2p
       double precision hsb
       common/ cst84 /hsb(i8,4),hs2p(6)
@@ -3271,9 +3253,6 @@ c-----------------------------------------------------------------------
       integer i, j, k, jd, ids
 
       double precision scp(k5), xx
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       double precision cp
       common/ cst12 /cp(k5,k10)

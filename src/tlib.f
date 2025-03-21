@@ -36,9 +36,9 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.10 Dec 21, 2024.',
+     *     'Perple_X release 7.1.12 Mar 21, 2025.',
 
-     *     'Copyright (C) 1986-2024 James A D Connolly '//
+     *     'Copyright (C) 1986-2025 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
 
       end
@@ -176,9 +176,6 @@ c----------------------------------------------------------------------
       double precision mu
       common/ cst330 /mu(k8),mus
 
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
       double precision wmach
       common/ cstmch /wmach(10)
 
@@ -200,8 +197,9 @@ c                                 loop to find machine precision (mainly
 c                                 for nag)
       r1 = 1d-12
       r2 = 0d0
-
-c     write (*,*) k1, k21
+c                                 set mcfit to distinguish MC_fit from MEEMUM
+c                                 as both are using IAM = 2.
+      mcfit = .false.
 
       do
          if (1d0+r1.eq.1d0) exit
@@ -2691,7 +2689,7 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer ier, int, nblen
+      integer ier, int, nblen, l
 
       character char*(*), tag*3
 
@@ -2712,12 +2710,14 @@ c---------------------------------------------------------------------
          tag = '1st'
       end if
 
+      l = nblen(char)
+
       if (ier.eq.1.or.ier.eq.2) then 
-         write (*,1) char,int
+         write (*,1) char(1:l),int
       else if (ier.eq.3) then 
-         write (*,3) char
+         write (*,3) char(1:l)
       else if (ier.eq.4) then
-         write (*,4) char 
+         write (*,4) char(1:l)
       else if (ier.eq.5) then 
          write (*,5) int,char,j3
       else if (ier.eq.6) then 
@@ -2727,51 +2727,51 @@ c---------------------------------------------------------------------
       else if (ier.eq.8) then 
          write (*,8) 
       else if (ier.eq.9) then 
-         write (*,9) char
+         write (*,9) char(1:l)
       else if (ier.eq.10) then 
-         write (*,10) char, int
+         write (*,10) char(1:l), int
       else if (ier.eq.11) then 
-         write (*,11) char,int
+         write (*,11) char(1:l),int
       else if (ier.eq.12) then 
-         write (*,12) char
+         write (*,12) char(1:l)
       else if (ier.eq.13) then
          write (*,13) h8
       else if (ier.eq.14) then
-         write (*,14) char
+         write (*,14) char(1:l)
       else if (ier.eq.15) then
-         write (*,15) char
+         write (*,15) char(1:l)
       else if (ier.eq.16) then
          write (*,16) h5
       else if (ier.eq.17) then
          write (*,17) int
       else if (ier.eq.18) then
-         write (*,18) char
+         write (*,18) char(1:l)
       else if (ier.eq.19) then
-         write (*,19) char
+         write (*,19) char(1:l)
       else if (ier.eq.20) then
-         write (*,20) int, char
+         write (*,20) int, char(1:l)
       else if (ier.eq.21) then
-         write (*,21) char 
+         write (*,21) char(1:l)
       else if (ier.eq.22) then
          write (*,22) int, char
       else if (ier.eq.23) then
-         write (*,23) char
+         write (*,23) char(1:l)
       else if (ier.eq.24) then
          write (*,24) int
       else if (ier.eq.25) then
          write (*,25) h9
       else if (ier.eq.26) then
-         write (*,26) int, char
+         write (*,26) int, char(1:l)
       else if (ier.eq.27) then
          write (*,27) char
       else if (ier.eq.28) then 
-         write (*,28) int, char
+         write (*,28) int, char(1:l)
       else if (ier.eq.29) then 
-         write (*,29) int, char
+         write (*,29) int, char(1:l)
       else if (ier.eq.32) then 
          write (*,32)
       else if (ier.eq.33) then 
-         write (*,33) char, int
+         write (*,33) char(1:l), int
       else if (ier.eq.34) then
          write (*,34)
       else if (ier.eq.35) then
@@ -2785,7 +2785,7 @@ c---------------------------------------------------------------------
       else if (ier.eq.39) then
          write (*,39) int
       else if (ier.eq.40) then
-         write (*,40) int, char
+         write (*,40) int, char(1:l)
       else if (ier.eq.41) then
 
          write (*,41)
@@ -2798,29 +2798,29 @@ c---------------------------------------------------------------------
             write (*,*) ' are you kidding me? please report'
          end if
 
-         write (*,414) char
+         write (*,414) char(1:l)
          write (*,413)
 
       else if (ier.eq.42) then 
-         write (*,42) char
+         write (*,42) char(1:l)
       else if (ier.eq.43) then
-         write (*,43) char
+         write (*,43) char(1:l)
       else if (ier.eq.44) then 
          write (*,44) 
       else if (ier.eq.45) then 
          write (*,45) 
       else if (ier.eq.46) then 
-         write (*,46) iopt(16), int, char
+         write (*,46) iopt(16), int, char(1:l)
       else if (ier.eq.47) then 
-         write (*,47) char
+         write (*,47) char(1:l)
       else if (ier.eq.48) then 
-         write (*,48) char,int
+         write (*,48) char(1:l),int
       else if (ier.eq.49) then 
-         write (*,49) char,int
+         write (*,49) char(1:l),int
       else if (ier.eq.50) then 
-         write (*,50) realv, char, int
+         write (*,50) realv, char(1:l), int
       else if (ier.eq.51) then
-         write (*,51) char
+         write (*,51) char(1:l)
       else if (ier.eq.52) then 
          write (*,52) h9
       else if (ier.eq.53) then 
@@ -2832,46 +2832,46 @@ c---------------------------------------------------------------------
       else if (ier.eq.56) then 
          write (*,56) k17
       else if (ier.eq.57) then 
-         write (*,57) char(1:nblen(char)), char(1:nblen(char)), 
-     *                char(1:nblen(char))
+         write (*,57) char(1:l), char(1:l), 
+     *                char(1:l)
       else if (ier.eq.60) then 
-         write (*,60) k22, char
+         write (*,60) k22, char(1:l)
       else if (ier.eq.61) then 
-         write (*,61) k18, char
+         write (*,61) k18, char(1:l)
       else if (ier.eq.62) then
-         write (*,62) char, int, realv
+         write (*,62) char(1:l), int, realv
       else if (ier.eq.63) then 
-         write (*,63) char
+         write (*,63) char(1:l)
       else if (ier.eq.64) then
-         write (*,64) char
+         write (*,64) char(1:l)
       else if (ier.eq.65) then
-         write (*,65) char
+         write (*,65) char(1:l)
       else if (ier.eq.66) then
          write (*,66) 
       else if (ier.eq.67) then
-         write (*,67) char
+         write (*,67) char(1:l)
       else if (ier.eq.68) then
-         write (*,68) char
+         write (*,68) char(1:l)
       else if (ier.eq.69) then 
-         write (*,69) char
+         write (*,69) char(1:l)
       else if (ier.eq.72) then 
-         write (*,72) char
+         write (*,72) char(1:l)
       else if (ier.eq.73) then 
-         write (*,73) char
+         write (*,73) char(1:l)
       else if (ier.eq.74) then 
          write (*,74) int
       else if (ier.eq.75) then 
-         write (*,75) char
+         write (*,75) char(1:l)
       else if (ier.eq.76) then 
-         write (*,76) char, char
+         write (*,76) char(1:l), char(1:l)
       else if (ier.eq.78) then 
-         write (*,78) char,char
+         write (*,78) char(1:l),char(1:l)
       else if (ier.eq.89) then
          write (*,89) 
       else if (ier.eq.90) then
          write (*,90) l6
       else if (ier.eq.106) then
-         write (*,106) char
+         write (*,106) char(1:l)
       else if (ier.eq.107) then
          write (*,107) int
       else if (ier.eq.108) then
@@ -2883,7 +2883,7 @@ c---------------------------------------------------------------------
       else if (ier.eq.111) then
          write (*,111)
       else if (ier.eq.112) then
-         write (*,112) char
+         write (*,112) char(1:l)
       else if (ier.eq.116) then
          write (*,116)
       else if (ier.eq.117) then
@@ -2891,9 +2891,9 @@ c---------------------------------------------------------------------
       else if (ier.eq.118) then
          write (*,118)
       else if (ier.eq.120) then
-         write (*,120) char
+         write (*,120) char(1:l)
       else if (ier.eq.125) then 
-         write (*,125) char, int
+         write (*,125) char(1:l), int
       else if (ier.eq.169) then
          write (*,169) int
       else if (ier.eq.180) then
@@ -2918,9 +2918,9 @@ c                                 accordingly:
       else if (ier.eq.182) then
          write (*,182) k2
       else if (ier.eq.183) then
-         write (*,183) k2,char
+         write (*,183) k2,char(1:l)
       else if (ier.eq.197) then
-         write (*,197) int, k5, char
+         write (*,197) int, k5, char(1:l)
       else if (ier.eq.200) then
          write (*,200)
       else if (ier.eq.204) then
@@ -2928,13 +2928,13 @@ c                                 accordingly:
       else if (ier.eq.206) then
          write (*,206) int
       else if (ier.eq.207) then
-         write (*,207) realv,char
+         write (*,207) realv,char(1:l)
       else if (ier.eq.208) then
-         write (*,208) char
+         write (*,208) char(1:l)
       else if (ier.eq.227) then
-         write (*,227) char, int
+         write (*,227) char(1:l), int
       else
-         write (*,999) ier, realv, int, char
+         write (*,999) ier, realv, int, char(1:l)
       end if
  
       call errpau
@@ -3241,7 +3241,7 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
  
-      integer ier, int, nblen
+      integer ier, int, nblen, l
 
       double precision realv
  
@@ -3253,6 +3253,8 @@ c---------------------------------------------------------------------
       double precision rid 
       common/ cst327 /grid(6,2),rid(5,2)
 c----------------------------------------------------------------------
+      l = nblen(char)
+
       if (ier.eq.1) then 
          write (*,1) 
       else if (ier.eq.2) then 
@@ -3260,7 +3262,7 @@ c----------------------------------------------------------------------
       else if (ier.eq.3) then 
          write (*,3)
       else if (ier.eq.4) then 
-         write (*,4) char
+         write (*,4) char(1:l)
       else if (ier.eq.5) then
          write (*,5) 
       else if (ier.eq.6) then
@@ -3270,23 +3272,23 @@ c----------------------------------------------------------------------
       else if (ier.eq.8) then
          write (*,8) h8
       else if (ier.eq.9) then
-         write (*,9) char
+         write (*,9) char(1:l)
       else if (ier.eq.10) then
-         write (*,10) int, realv, char
+         write (*,10) int, realv, char(1:l)
       else if (ier.eq.11) then
-         write (*,11) char
+         write (*,11) char(1:l)
       else if (ier.eq.12) then
-         write (*,12) char
+         write (*,12) char(1:l)
       else if (ier.eq.13) then
-         write (*,13) char(1:nblen(char)), char(1:nblen(char))
+         write (*,13) char(1:l), char(1:l)
       else if (ier.eq.14) then
-         write (*,14) char
+         write (*,14) char(1:l)
       else if (ier.eq.15) then
          write (*,15)
       else if (ier.eq.16) then
-         write (*,16) char
+         write (*,16) char(1:l)
       else if (ier.eq.17) then
-         write (*,17) char, char
+         write (*,17) char(1:l), char(1:l)
       else if (ier.eq.18) then
          write (*,18) realv
       else if (ier.eq.19) then
@@ -3294,37 +3296,37 @@ c----------------------------------------------------------------------
       else if (ier.eq.20) then
          write (*,20)
       else if (ier.eq.21) then
-         write (*,21) realv, char
+         write (*,21) realv, char(1:l)
       else if (ier.eq.22) then
-         write (*,22) realv, char
+         write (*,22) realv, char(1:l)
       else if (ier.eq.23) then
-         write (*,23) char     
+         write (*,23) char(1:l)     
       else if (ier.eq.24) then
          write (*,24) realv
       else if (ier.eq.25) then 
-         write (*,25) int, char(1:nblen(char))
+         write (*,25) int, char(1:l)
       else if (ier.eq.26) then 
-         write (*,26) char(1:nblen(char))
+         write (*,26) char(1:l)
       else if (ier.eq.27) then 
          write (*,27) int
       else if (ier.eq.28) then
          write (*,28)
       else if (ier.eq.29) then
-         write (*,29) char
+         write (*,29) char(1:l)
       else if (ier.eq.30) then
-         write (*,30) char
+         write (*,30) char(1:l)
       else if (ier.eq.31) then 
          write (*,31)
       else if (ier.eq.32) then
-         write (*,32) char
+         write (*,32) char(1:l)
       else if (ier.eq.33) then
-         write (*,33) char
+         write (*,33) char(1:l)
       else if (ier.eq.34) then
-         write (*,34) char
+         write (*,34) char(1:l)
       else if (ier.eq.35) then
-         write (*,35) char,realv
+         write (*,35) char(1:l),realv
       else if (ier.eq.36) then 
-         write (*,36) realv, char 
+         write (*,36) realv, char(1:l) 
       else if (ier.eq.37) then
          write (*,37)  
       else if (ier.eq.38) then
@@ -3334,40 +3336,40 @@ c----------------------------------------------------------------------
       else if (ier.eq.40) then
          write (*,40)
       else if (ier.eq.41) then
-         write (*,41) char, int
+         write (*,41) char(1:l), int
          call prtptx
       else if (ier.eq.42) then
          write (*,42)
       else if (ier.eq.43) then
-         write (*,43) char
+         write (*,43) char(1:l)
       else if (ier.eq.44) then
-         write (*,44) char
+         write (*,44) char(1:l)
       else if (ier.eq.45) then
-         write (*,45) char
+         write (*,45) char(1:l)
       else if (ier.eq.46) then 
-         write (*,46) realv, char, char
+         write (*,46) realv, char(1:l), char(1:l)
       else if (ier.eq.47) then
          write (*,47) int, realv
       else if (ier.eq.48) then 
          write (*,48) 
       else if (ier.eq.49) then 
-         write (*,49) int, char
+         write (*,49) int, char(1:l)
       else if (ier.eq.50) then
-         write (*,50) char
+         write (*,50) char(1:l)
       else if (ier.eq.51) then 
-         write (*,51) char
+         write (*,51) char(1:l)
       else if (ier.eq.52) then 
-         write (*,52) char
+         write (*,52) char(1:l)
       else if (ier.eq.53) then 
          write (*,53) realv
       else if (ier.eq.54) then 
          write (*,54)
       else if (ier.eq.55) then 
-         write (*,55) char
+         write (*,55) char(1:l)
       else if (ier.eq.56) then 
-         write (*,56) char(1:nblen(char))
+         write (*,56) char(1:l)
       else if (ier.eq.57) then
-         write (*,57) char
+         write (*,57) char(1:l)
       else if (ier.eq.58) then
 
          write (*,58)
@@ -3375,7 +3377,7 @@ c----------------------------------------------------------------------
          write (*,585)
          if (lopt(32)) write (*,586)
          write (*,413)
-         write (*,580) char
+         write (*,580) char(1:l)
 
 58    format (/,'**warning ver058** exhausted memory during adaptive o',
      *       'ptimization, the result will',/,'be reported as a failed',
@@ -3396,18 +3398,18 @@ c----------------------------------------------------------------------
       else if (ier.eq.589) then
          write (*,589)
       else if (ier.eq.59) then
-         write (*,59) char
+         write (*,59) char(1:l)
       else if (ier.eq.60) then
-         write (*,60) char, realv
+         write (*,60) char(1:l), realv
          if (int.eq.1) then 
-            write (*,601) char
+            write (*,601) char(1:l)
          else 
             write (*,602)
          end if
       else if (ier.eq.61) then
-         write (*,61) char
+         write (*,61) char(1:l)
       else if (ier.eq.62) then
-         write (*,62) char
+         write (*,62) char(1:l)
       else if (ier.eq.63) then
          write (*,63)
       else if (ier.eq.64) then
@@ -3416,13 +3418,13 @@ c----------------------------------------------------------------------
          write (*,68)
       else if (ier.eq.72) then
 c                                 generic warning, also 99
-         write (*,72) char
+         write (*,72) char(1:l)
       else if (ier.eq.73) then
-         write (*,73) char, realv, int
+         write (*,73) char(1:l), realv, int
       else if (ier.eq.74) then
          write (*,74)
       else if (ier.eq.79) then
-         write (*,79) char
+         write (*,79) char(1:l)
       else if (ier.eq.87) then
          write (*,87)
       else if (ier.eq.88) then
@@ -3434,13 +3436,13 @@ c                                 generic warning, also 99
       else if (ier.eq.91) then
          write (*,91)
       else if (ier.eq.92) then 
-         write (*,92) int, l7, char, (l7 - 1)/2**(grid(3,2)-1) + 1
+         write (*,92) int, l7, char(1:l), (l7 - 1)/2**(grid(3,2)-1) + 1
       else if (ier.eq.99) then
-         write (*,99) char
+         write (*,99) char(1:l)
       else if (ier.eq.100) then
-         write (*,100) int, char
+         write (*,100) int, char(1:l)
       else if (ier.eq.106) then
-         write (*,106) char
+         write (*,106) char(1:l)
       else if (ier.eq.108) then
          write (*,108)
       else if (ier.eq.109) then
@@ -3454,18 +3456,18 @@ c                                 generic warning, also 99
       else if (ier.eq.173) then
          write (*,173) 
       else if (ier.eq.175) then
-         write (*,175) char,ier,realv
+         write (*,175) char(1:l),ier,realv
       else if (ier.eq.176) then
-         write (*,176) char, iopt(21)
+         write (*,176) char(1:l), iopt(21)
       else if (ier.eq.177) then
          write (*,177) nopt(5)
       else if (ier.eq.205) then
          write (*,205) int
          write (*,900)
       else if (ier.eq.228) then 
-         write (*,228) char, realv, int, char
+         write (*,228) char(1:l), realv, int, char(1:l)
       else
-         write (*,999) ier, char, realv, int
+         write (*,999) ier, char(1:l), realv, int
       end if
 
 1     format (/,'**warning ver001** the amount of a saturated phase is'
@@ -4432,6 +4434,17 @@ c                                 on the off chance of a loose end keyword
 c                                 EoS
          read (nval2,*,iostat=ier) ieos
          if (ier.ne.0) exit
+c                                 check for obsolete internal EoS flag.
+         if (ieos.eq.201.or.ieos.eq.202) then 
+
+            write (*,1010) n2name(1:nblen(n2name)),name(1:nblen(name)),
+     *                     name(1:nblen(name)),ieos,ieos - 100
+
+            call errdbg ('Read the preceding text, it is likely that '//
+     *                   'this error will occur for a second entry '//
+     *                   'with 200 < Eos < 202')
+
+         end if 
 c                                 look for comments
          j = index(card,'|')
          commnt = ' '
@@ -4501,10 +4514,14 @@ c                                 inappropriate EoS
       end do
 
 1000  format (/,'**error ver967** ',a,' is a name reserved for fluid ',
-     *        'species but the EoS flag',/,'specified for this entity ',
+     *        'species but the',/,'EoS flag specified for this entity ',
      *        'in ',a,' is not a fluid EoS. Remedies:',//,
      *        4x,'1 - rename/delete the entity',/,
      *        4x,'2 - update/correct the EoS flag of the entity')
+
+1010  format ('Data file: ',a,' invokes an out-of-date EoS code for ',a,
+     *      '. To update the file edit the',/,'entry for ',a,
+     *      ' replacing EoS = ',i3,' with Eos = ',i3)
 
       end
 
@@ -4548,9 +4565,6 @@ c----------------------------------------------------------------------
 
       integer ic
       common/ cst42 /ic(k0)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
 
       integer iam
       common/ cst4 /iam
@@ -4676,11 +4690,19 @@ c                                 DEW/HKF aqueous data
             else 
 c                                 generic thermo data 
                do i = 1, 21
-
+c                                 this is stupid, but i'm lazy.
                   if (key.eq.strgs(i)) then 
 
                      read (values,*,iostat=ier) thermo(i,k10)
                      if (ier.ne.0) call error (23,tot,ier,strg) 
+                     ok = .true.
+                     exit
+
+                  else if (key.eq.'dH') then
+c                                  enthalpic uncertainty
+                     read (values,*,iostat=ier) deltah(k10)
+                     if (ier.ne.0) call error (23,tot,ier,strg)
+
                      ok = .true.
                      exit
 
@@ -4970,7 +4992,7 @@ c                                 identify the component
 
       end 
 
-      subroutine outdat (lun,id,option)
+      subroutine outdat (lun,id,option,dh)
 c----------------------------------------------------------------------
 c lun    - output LUN
 c id     - phase pointer
@@ -4987,16 +5009,19 @@ c if option = 1 then formula for entity id created from the
 c    composition array cp and name array cmpnt via pointer ic.
 c if option = 2  then formula for entity id created from the 
 c    composition array cp0 and name array cmpnt.
+c if option = 3  act as with option 0 but output dh (enthalpic error)
 c----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
 
+      logical delh
+
       integer lun, i, j, ibeg, iend, id, option, jcomp, siz, nblen
 
       character text(14)*1
 
-      double precision var, dg
+      double precision var, dg, dh
 
       external nblen
 
@@ -5011,9 +5036,6 @@ c----------------------------------------------------------------------
 
       integer ic
       common/ cst42 /ic(k0)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
 
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
@@ -5034,9 +5056,6 @@ c----------------------------------------------------------------------
       integer ltyp,lct,lmda,idis
       common/ cst204 /ltyp(k10),lct(k10),lmda(k10),idis(k10)
 
-      integer eos
-      common/ cst303 /eos(k10)
-
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5  /p,t,xco2,u1,u2,tr,pr,r,ps
 
@@ -5047,6 +5066,11 @@ c----------------------------------------------------------------------
       common/ cst56 /strgs(32),mstrg(6),dstrg(m8),tstrg(m7),wstrg(m16),
      *               e16st(13)
 c-----------------------------------------------------------------------
+      if (option.eq.3) then
+         delh = .true.
+      else
+         delh = .false.
+      end if
 c                                 =====================================
 c                                 name & EoS
       write (lun,*) 
@@ -5083,7 +5107,7 @@ c                                 formula
 
       do i = 1, jcomp
 
-         if (option.eq.0) then
+         if (option.eq.0.or.option.eq.3) then
             var = comp(i)
          else if (option.eq.1) then 
             var = cp(i,id)
@@ -5192,7 +5216,12 @@ c                                 b1->b10 of thermo data
 c                                 write b1->b8, c8
          if (ibeg.gt.1) write (lun,'(400a)') chars(1:ibeg)
 
-      end if 
+      end if
+c                                 =====================================
+c                                 enthalpic uncertainty
+      if (delh) then 
+         write (lun,'(a,g12.6)') 'dH = ',dh
+      end if
 c                                 =====================================
 c                                 shear/bulk modulus
       ibeg = 1
@@ -6163,6 +6192,7 @@ c                                 ptol must be > 2*-dtol
 
       hscon = .false.
       oxchg = .false.
+      uncrty = .false.
 
       do i = 1, k0
          sel(i) = 0d0
@@ -6180,6 +6210,10 @@ c                                 look for optional HSC_conversion key
          else if (key.eq.'reference_oxidation_st') then
 
             oxchg = .true.
+
+         else if (key.eq.'uncertainty_enabled') then
+
+            uncrty = .true.
 
          else if (key.eq.'begin_components') then 
 
@@ -7308,12 +7342,6 @@ c-----------------------------------------------------------------------
 
       logical stx, notstx, lstx, lmake
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
-      integer eos
-      common/ cst303 /eos(k10)
-
       integer ifp
       logical fp
       common/ cxt32 /ifp(k10), fp(h9)
@@ -7936,9 +7964,6 @@ c----------------------------------------------------------------
 
       external readyn
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
@@ -8091,7 +8116,7 @@ c                                show the user the composition:
                write (*,1070)   
 
                if (spec(jcomp)) then
-                  write (text,1120) a0(jcomp,1),(rcps(i,jcomp),
+                  write (text,1130) a0(jcomp,1),(rcps(i,jcomp),
      *                               spnams(icps(i,jcomp),ids),
      *                               i = 1, jcx(jcomp))
                else           
@@ -8327,7 +8352,7 @@ c----------------------------------------------------------------------
 
       end
 
-      subroutine conwrn (jd,eos)
+      subroutine conwrn (jd,ceos)
 c----------------------------------------------------------------------
 c write warning messages when numeric PVT EoS fail to converge
 c   jd - action on fail
@@ -8348,11 +8373,11 @@ c----------------------------------------------------------------------
       double precision yf,g,v
       common/ cstcoh /yf(nsp),g(nsp),v(nsp)
 
-      character eos*(*)
+      character ceos*(*)
 c----------------------------------------------------------------------
       if (jd.lt.100) then
 c                                 volume EoS
-         write (*,1000) eos, p, t
+         write (*,1000) ceos, p, t
 
          if (jd.eq.1) then
             write (*,1020)
@@ -8368,7 +8393,7 @@ c                                 volume EoS
 
       else if (jd.lt.200) then
 c                                 speciation calcs
-         write (*,2000) eos, p, t
+         write (*,2000) ceos, p, t
 
          if (jd.eq.101) then
             write (*,2020)
@@ -8548,7 +8573,7 @@ c                                 triggered by reopt/resub, aq_error_ver103
       else if (idead.eq.104.and.iwarn04.le.iopt(1)) then
 c                                 triggered by reopt/resub, aq_error_ver103
          call warn (100,c,104,'failed to recalculate speciation.'//
-     *           'Probable cause undersaturated solute component'//
+     *           'nProbable cause undersaturated solute component'//
      *           'To output result set aq_error_ver104 to F.')
 
          call prtptx
@@ -8852,7 +8877,7 @@ c                                 open print/plot files if requested
 c                                 plt output file
             io4 = 0
             call mertxt (name,prject,'.plt',0)
-            if (iam.ne.13) write (*,1180) name(1:nblen(name))
+            if (iam.ne.13) write (*,1190) name(1:nblen(name))
 
             open (n4, file = name, iostat = ier, status = 'new')
             if (ier.ne.0) then 
@@ -9326,9 +9351,6 @@ c-----------------------------------------------------------------------
       double precision buf
       common/ cst112 /buf(5)
 
-      integer ivfl
-      common/ cst102 /ivfl
-
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
 
@@ -9347,17 +9369,8 @@ c-----------------------------------------------------------------------
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
       integer ixct,ifact
       common/ cst37 /ixct,ifact
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer ivarrx,ivarip,isudo,ivar
       common/ cst62 /ivarrx(k2),ivarip(k2),isudo,ivar
@@ -10072,9 +10085,6 @@ c----------------------------------------------------------------------
  
       include 'perplex_parameters.h'
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 c---------------------------------------------------------------------- 
@@ -10115,15 +10125,6 @@ c-----------------------------------------------------------------------
 
       character*162 title
       common/ csta8 /title(4)
-
-      integer ivfl
-      common/ cst102 /ivfl
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp  
 c-----------------------------------------------------------------------
       do i = 2, 4
          title(i) = ' '
@@ -10165,9 +10166,6 @@ c-----------------------------------------------------------------------
 
       character*100 name
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
 
@@ -10196,9 +10194,6 @@ c-----------------------------------------------------------------------
       integer ncol, nrow
       common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
      *                usecmp, colcmp
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c-----------------------------------------------------------------------
 c                                 look for input data from a file 
 c                                 of type aux
@@ -11861,20 +11856,11 @@ c-----------------------------------------------------------------------
       integer iam
       common/ cst4 /iam
 
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
       integer ic
       common/ cst42 /ic(k0)
 
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       integer ixct,ifact
       common/ cst37 /ixct,ifact

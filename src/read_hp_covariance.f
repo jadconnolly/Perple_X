@@ -6,29 +6,44 @@ c   rewrite_2010.f). hp2010tover.f has no dependencies. JADC, 10/2022
 
       program trans
 
-      open (9, file='tc-ds622.txt', status= 'old')
-      open (10,file='junk.dat')
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      write (*,'(a)') 'enter file name root'
+      read (*,'(a)') prject
+
+      call mertxt (n1name,prject,'.txt',0)
+      open (9, file=n1name, status= 'old')
+      call mertxt (n2name,prject,'.dat',0)
+      open (10,file=n2name)
+
+      write (*,'(a,a)') 'writing output to :',n2name
 
       call rdin
+
       end
 
       subroutine rdin
-      
+
       implicit none
+
+      include 'perplex_parameters.h'
 
 c   this subroutine reads part of the H&P data
 
 
       character     text(132)*1, name*8, cnum*80, gnum*80, twod*80 
-      character     snum*80, vnum*80, names(1000)*8
+      character     snum*80, vnum*80
       logical aq
       double precision rnum, comp(19), rgib, g, reas, s, reav,sfe,
-     *                 tr,b1,b5,b6,b7,b8,dsf,atoms,l4,l5,l6,w1(300*300),
-     *                 catoms(19),patoms,lam,kp,kpp,dkdt, wbig(300,300)
-      double precision v, a, b, c, e, newa, k298, l1, l2, l3,szr,smn
+     *                 tr,b1,b5,b6,b7,b8,dsf,atoms,ll4,ll5,ll6,
+     *                 w1(300*300),
+     *                 catoms(19),patoms,lam,kp,kpp,dkdt, zbig(300,300)
+      double precision v, a, b, c, e, newa, k298, ll1, ll2, ll3,szr,smn
       double precision ctoj,sk,sna,sca,sc,sti,sal,ssi,smg,so,sh,scl,sni
       integer       index, igst, igen, isst, isen, ivst, iven, nphase
-      integer       ihptov(19),i,inen,nst,j,inst,icomp,ilam,itype,ict
+      integer       ihptov(19),i,inen,nst,j,inst,ilam,itype,ict
 c     hp ind      1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
       data ihptov/4,7,3,9,2,8,6,1,5,13,14,15,12,19,10,11,18,16,17/                2016
       data catoms/3.,2.,5.,3.,3.,2.,3.,2.,2.,2.,3.,2.,2.,3.,3.,2.,5.,2.,
@@ -58,6 +73,7 @@ c s2                 17           18       17
 c electron           14           19       14 
 
 1000  format(132a1)
+1010  format(a,1x,g12.6,1x,i4)
 2000  format(a8,4(i2),' H= ',g14.7)
 2002  format(6(g14.7,1x))
 2001  format(20(f5.2,1x))
@@ -100,7 +116,8 @@ c   the phase name is then written to the variable name
 
 10    if (inst.eq.0) then 
 c                          found the blank preceding the covariance matrix
-         open (19,file='hp622ver.cov')
+         call mertxt (n2name,prject,'.cov',0)
+         open (19,file=n2name)
 c                          for some reason the covariance matrix 
 c                          elements are preceded by a number, so read
 c                          the extra number and offset the counter
@@ -113,15 +130,21 @@ c                          the extra number and offset the counter
 
         ict = 1
 
+         call mertxt (n2name,prject,'.dia',0)
+         open (19,file=n2name)
+
          do i = 1, nphase
             do j = i, nphase
                ict = ict + 1
-               wbig(i,j) = w1(ict)
+               zbig(i,j) = w1(ict)
                if (i.eq.j) then 
-                  write (*,*) i,names(i),wbig(i,i)
+                  write (*,*) i,names(i),zbig(i,i)
+                  write (19,1010) names(i),zbig(i,i)*1d3,i
                end if
             end do
          end do
+
+         close (19)
 
          stop
 
@@ -245,7 +268,7 @@ c   fortran way
 
          backspace(9)
          read(9,*) newa, k298, kp, kpp, lam, 
-     *             l1, l2, l3
+     *             ll1, ll2, ll3
          if (lam.eq.1) then 
 c                             distinguish type by landau entropy 
             write (*,*) 'landau ',name
@@ -253,10 +276,11 @@ c                             distinguish type by landau entropy
          else if (lam.eq.2) then 
 
             backspace (9)
-            read(9,*) newa, k298, kp, kpp, lam, l1, l2, l3,l4,l5,l6
+            read(9,*) newa, k298, kp, kpp, lam, ll1, ll2, ll3,ll4,
+     *                  ll5,ll6
             write (*,*) 'bragg ',name
 c                             correction for -fac
-            if (l6.lt.0d0) l6 = (-l6*l5 + 1d0)/(l5 + 1d0)
+            if (ll6.lt.0d0) ll6 = (-ll6*ll5 + 1d0)/(ll5 + 1d0)
 
          else 
 
@@ -368,19 +392,25 @@ c          write (10,*) 'correct stoich of:',name
 
        if (aq) then 
        write (10,2002) g,s,v,c,b,-comp(19),
-     *                 0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.
+     *                 0,0,0,0,0,0,0,0,0,0,0,0
        else 
-       write (10,2002) g,s,v,a,b,c,0.,e,0.,0.,b1,0.,0.,0.,b5,b6,b7,b8
+       write (10,2002) g,s,v,a,b,c,0,e,0,0,b1,0,0,0,b5,b6,b7,b8
        end if 
       if (lam.eq.1d0) then
-         write (10,2002) l1,l2*1d3,l3,0.,0.,0.,0.,0.,0.,0.
+         write (10,2002) ll1,ll2*1d3,ll3,0,0,0,0,0,0,0
       else if (lam.eq.2) then 
-         write (10,2002) l1*1d3,l2,l3*1d3,l4,l5,l6,0.,0.,0.,0.
+         write (10,2002) ll1*1d3,ll2,ll3*1d3,ll4,ll5,ll6,0,0,0,0
       end if 
 
        do i = 1, 19
-          comp(i) = 0.
-       end do 
+          comp(i) = 0
+       end do
+c                                ds636+ read empty line after each entry
+       read (9,'(a)') name
+       if (name.ne.' ') then 
+          write (*,*) 'not 636+ format',name
+          backspace (9)
+       end if
 
        goto 5
 

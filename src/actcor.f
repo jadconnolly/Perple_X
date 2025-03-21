@@ -125,7 +125,7 @@ c----------------------------------------------------------------------
 
       integer i
 
-      double precision xmole, xmix, act
+      double precision xmole, xmix, activy
 
       logical readyn
 
@@ -134,9 +134,6 @@ c----------------------------------------------------------------------
       integer cl
       character cmpnt*5, dname*80
       common/ csta5 /cl(k0),cmpnt(k0),dname
-
-      integer eos
-      common/ cst303 /eos(k10)
 
       integer ilam,jlam,idiso,lamin,idsin
       double precision tm,td
@@ -176,16 +173,16 @@ c
             write (*,1110) name
             read (*,*) xmix
 
-            act = xmole**xmix   
+            activy = xmole**xmix   
 
          else   
             write (*,1120) name
-            read (*,*) act
+            read (*,*) activy
          end if 
 
-         write (*,1130) name,blank8,act 
-         thermo(1,k10) = thermo(1,k10) + t * 8.314413 * dlog(act)
-         thermo(2,k10) = thermo(2,k10) - 8.314413 * dlog(act)
+         write (*,1130) name,blank8,activy
+         thermo(1,k10) = thermo(1,k10) + t * 8.314413 * dlog(activy)
+         thermo(2,k10) = thermo(2,k10) - 8.314413 * dlog(activy)
          name = blank8
 
       end if 
@@ -200,7 +197,7 @@ c
 
       idis(k10) = idiso
 
-      call outdat (n8,k10,0)
+      call outdat (n8,k10,0,0d0)
 
 1000  format (a)
 1040  format (13(f5.2,1x))       

@@ -12,9 +12,6 @@ c----------------------------------------------------------------------
 
       logical eof
 
-      integer eos
-      common/ cst303 /eos(k10)
-
       character specie*4
       integer ins, isp
       common/ cxt33 /isp,ins(nsp),specie(nsp)
@@ -35,9 +32,6 @@ c----------------------------------------------------------------------
 
       integer iam
       common/ cst4 /iam
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 6
@@ -50,6 +44,8 @@ c                                 version info
       write (*,1000)
 c                                 assign data files
       call sopen 
+
+      write (*,1030)
 c                                 Read THERMODYNAMIC DATA file (N2):
 c                                 read the data base header
       call topn2 (5)
@@ -87,7 +83,7 @@ c                                  7.1.8 archaic trap
             cycle
          end if 
 c                                 output new data
-         call outdat (n8,k10,0)
+         call outdat (n8,k10,0,0d0)
 
       end do 
 
@@ -98,6 +94,8 @@ c                                 output new data
      *          'format data',/,'the data for ',a,' will not be ',
      *          'written to ctransf.dat',//)
 1020  format (/,'The transformed dataset has been written to file: ',
-     *          'ctransf.dat')
+     *          'ctransf.dat',/)
+1030  format (/,'The transformed dataset will be written to file: ',
+     *          'ctransf.dat',/)
 
       end

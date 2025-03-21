@@ -64,9 +64,6 @@ c-----------------------------------------------------------------------
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
 
@@ -321,9 +318,6 @@ c-----------------------------------------------------------------------
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
@@ -558,9 +552,6 @@ c-----------------------------------------------------------------------
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
@@ -692,12 +683,6 @@ c-----------------------------------------------------------------------
       integer npt,jdv
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
@@ -1499,9 +1484,6 @@ c------------------------------------------------------------------------
       integer hcp,idv
       common/ cst52  /hcp,idv(k7)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer is
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
@@ -1561,9 +1543,6 @@ c-----------------------------------------------------------------------
 
       double precision g
       common/ cst2 /g(k1)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
 
       integer hcp,idv
       common/ cst52 /hcp,idv(k7)
@@ -1835,9 +1814,6 @@ c---------------------------------------------------------------------
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer ipot,jv,iv1,iv2,iv3,iv4,iv5
       common/ cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
@@ -2137,7 +2113,6 @@ c                             now switch new and old hot list
 
       init = .false.
 
-1030  format (f5.1,'% done with low level grid.')
 1040  format (2(i4,1x),a,a)
 1050  format (/,3(a,1x),'refinement ',
      *        'to +/-',f6.2,1x,a,1x,'tolerance.',/)
@@ -2148,7 +2123,7 @@ c                             now switch new and old hot list
      *             ' minimizations')
 1080  format (i6,' minimizations required of the ',
      *        'theoretical limit of ',i6)
-1090  format (a,7x,'...working (',i6,' minimizations done)',$)
+1090  format (a,7x,'...working (',i6,' minimizations done)',a,$)
 
       end 
 
@@ -2415,7 +2390,7 @@ c                                 be for electrolytic fluids
 
 1020  format (/,'**Unable to define',2(1x,a),' assemblage: ind.',
      *        2(1x,i5))
-1090  format (a,7x,'...working (',i6,' minimizations done)',$)
+1090  format (a,7x,'...working (',i6,' minimizations done)')
 
       end
 
@@ -2734,28 +2709,22 @@ c                               first level:
          call warn (92,v(iv1),loopy,'y_node')
          klow = (l7 - 1)/2**(jlev-1)
          loopy = klow * 2**(jlev-1) + 1 
-      end if          
+      end if
 
       if (loopx.gt.l7) then
          call warn (92,v(iv1),loopx,'x_node')
          klow = (l7 - 1)/2**(jlev-1)
          loopx = klow * 2**(jlev-1) + 1 
-      end if  
+      end if
 c                               initialize igrd (this is critical 
 c                               for auto_refine).
-      do j = 1, loopy
-         do i = 1, loopx
-            igrd(i,j) = 0
-         end do 
-      end do 
+      igrd = 0
 c                               could check here if loopx*loopy, the
 c                               theoretical max number of assemblages
 c                               is > k2, but in practice the number of
 c                               assemblages << k2, so only test when 
 c                               actually set.
-      do j = 1, k2
-         iap(j) = 0 
-      end do 
+      iap = 0
 c                               increments at each level
       do j = 1, jlev
          jinc(j) = 2**(jlev-j)
@@ -2918,7 +2887,7 @@ c                                compute assemblage at cell nodes
                            do ll = 1, 4
                               iil = ii + iind(ll)*kinc
                               jjl = jj + jind(ll)*kinc
-                              if (igrd(iil,jjl).eq.0) then              
+                              if (igrd(iil,jjl).eq.0) then
                                  call setvr0 (iil,jjl)
                                  call lpopt (iil,jjl,idead)
                                  jtic = jtic + 1
@@ -2947,7 +2916,7 @@ c                                fill hot cells
             end do 
          
             if (htic.gt.500) then 
-               write (*,1090) jtic
+               write (*,1090) jtic, char(13)
                htic = 0 
             end if
  
@@ -2981,7 +2950,7 @@ c                                 ouput grid data
      *        ' minimizations')
 1080  format (i6,' minimizations required of the ',
      *        'theoretical limit of ',i7)
-1090  format (7x,'...working (',i6,' minimizations done)')
+1090  format (7x,'...working (',i6,' minimizations done)',a,$)
 
       end 
 

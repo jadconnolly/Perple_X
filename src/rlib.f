@@ -191,9 +191,6 @@ c---------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 
-      integer eos
-      common/ cst303 /eos(k10)
-
       integer ifp
       logical fp
       common/ cxt32 /ifp(k10), fp(h9)
@@ -271,6 +268,10 @@ c                                 -sdt
      *      - t * (thermo(5,id) + (thermo(7,id) - thermo(24,id)*t) * t))
      *      - (thermo(6,id) + thermo(10,id) / t) / t
      *      + thermo(8,id) * dsqrt(t) + thermo(9,id)*dlog(t)
+c                                  MC_fit thermo data uncertainty analysis
+      if (mcfit.and.invprt) then
+        gval = gval + hinc(id)
+      end if
 c                                 vdp-ndu term:
       if (eos(id).eq.8) then
 c                                 HP Tait EoS, einstein thermal pressure
@@ -646,9 +647,6 @@ c---------------------------------------------------------------------
       double precision cp0
       common/ cst71 /cp0(k0,k5)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
       character*8 name
       common/ csta6 /name
 
@@ -676,15 +674,9 @@ c---------------------------------------------------------------------
       logical fp
       common/ cxt32 /ifp(k10), fp(h9)
 
-      integer eos
-      common/ cst303 /eos(k10)
-
       integer cl
       character cmpnt*5, dname*80
       common/ csta5 /cl(k0),cmpnt(k0),dname
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       integer junk
       double precision del, rand
@@ -869,10 +861,12 @@ c                               etc..
       do i = 1, k4
          thermo(i,id) = thermo(i,k10)
       end do
-c                               load errors for MC calculations
+c                               load errors for MC calculations, stixrude version
       do i = 1, 11
          del(i,id) = delta(i)
       end do
+c                               load errors for MC calculations, h&p version
+      deltah(id) = deltah(k10)
 
       call conver (
 c                               g0, s0, v0
@@ -1298,17 +1292,6 @@ c----------------------------------------------------------------------
 
       external gphase, gproj
 
-      integer iffr,isr
-      double precision vuf,vus
-      common/ cst201 /vuf(2),vus(h5),iffr,isr
-
-      integer idf
-      double precision act
-      common/ cst205 /act(k7),idf(3)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
       integer idr,ivct
       double precision vnu
       common/ cst25 /vnu(k7),idr(k7),ivct
@@ -1476,9 +1459,6 @@ c---------------------------------------------------------------------
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
-
-      integer eos
-      common/ cst303 /eos(k10)
 c-----------------------------------------------------------------------
       if (ltyp(id).eq.0) return
 
@@ -3767,9 +3747,6 @@ c----------------------------------------------------------------------
       character name*8
       common/ csta6 /name
 
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
       integer ic
       common/ cst42 /ic(k0)
 
@@ -3780,12 +3757,6 @@ c----------------------------------------------------------------------
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 c-----------------------------------------------------------------------
 
       good = .false.
@@ -3821,7 +3792,7 @@ c                               the saturated component idc:
                iphct = iphct + 1
                if (iphct.gt.k1) call error (72,1d0,k1,
      *                            'SATTST increase parameter k1')
-               ids(j,isct(j)) = iphct
+               sids(j,isct(j)) = iphct
                call loadit (iphct,lmake,.true.)
 c                                set ltemp1 if a GFSM endmember
                if (ieos.gt.100.and.ieos.lt.200) ltemp1 = .true.
@@ -3853,8 +3824,6 @@ c-----------------------------------------------------------------------
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
-
-
 c-----------------------------------------------------------------------
 
       jd = make(id)
@@ -4699,9 +4668,6 @@ c---------------------------------------------------------------------
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
 
-      integer eos
-      common/ cst303 /eos(k10)
-
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
@@ -4728,14 +4694,8 @@ c---------------------------------------------------------------------
       integer ixct,ifact
       common/ cst37 /ixct,ifact
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer nq,nn,ns
       common/ cxt337 /nq,nn,ns
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       character specie*4
       integer isp, ins
@@ -5633,15 +5593,6 @@ c-----------------------------------------------------------------------
 
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       double precision cp
       common/ cst12 /cp(k5,k10)
@@ -6739,14 +6690,8 @@ c---------------------------------------------------------------------
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision dcp,soltol
       common/ cst57 /dcp(k5,k19),soltol
-
-      integer eos
-      common/ cst303 /eos(k10)
 
       integer nsub,nterm
       double precision acoef
@@ -7435,6 +7380,8 @@ c                                 obsolete test 7.1.8+
      *'3) Choosing a different solution model',/)
 
                call errpau
+
+               k = k - 200
 
             else if (k.gt.100) then
                k = k - 100
@@ -8640,9 +8587,6 @@ c----------------------------------------------------------------------
       logical pin
       common/ cyt2 /pin(j3)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer ideps,icase,nrct
       common/ cxt3i /ideps(j4,j3,h9),icase(h9),nrct(j3,h9)
 
@@ -9607,12 +9551,6 @@ c-----------------------------------------------------------------------
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
       integer jend
       common/ cxt23 /jend(h9,m14+2)
 
@@ -9938,16 +9876,10 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer j,idc
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
+      integer j, idc
 
       double precision cp
       common/ cst12 /cp(k5,k10)
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       do j = isat, 1, -1
          idc = icp + j
@@ -9956,7 +9888,7 @@ c---------------------------------------------------------------------
             if (isct(j).gt.h6) call error (17,cp(1,1),h6,'SATSRT')
             if (iphct.gt.k1) call error (72,cp(1,1),k1,
      *                                  'SATSRT increase parameter k1')
-            ids(j,isct(j)) = iphct
+            sids(j,isct(j)) = iphct
             exit
          end if
       end do
@@ -10005,9 +9937,6 @@ c--------------------------------------------------------------------------
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer ikp
       common/ cst61 /ikp(k1)
@@ -10320,9 +10249,6 @@ c-----------------------------------------------------------------------
 
       integer ikp
       common/ cst61 /ikp(k1)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer jphct,istart
       common/ cst111 /jphct,istart
@@ -10692,9 +10618,6 @@ c---------------------------------------------------------------------
 
       double precision vmax,vmin,dv
       common/ cst9 /vmax(l2),vmin(l2),dv(l2)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer jphct,istart
       common/ cst111 /jphct,istart
@@ -12687,9 +12610,6 @@ c-----------------------------------------------------------------------
       logical laq
       common/ cxt3 /idaq,jdaq,laq
 
-      integer eos
-      common/ cst303 /eos(k10)
-
       character specie*4
       integer ins, isp
       common/ cxt33 /isp,ins(nsp),specie(nsp)
@@ -12700,12 +12620,6 @@ c-----------------------------------------------------------------------
       integer jnd
       double precision aqg,q2,rt
       common/ cxt2 /aqg(m4),q2(m4),rt,jnd(m4)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       double precision cp
       common/ cst12 /cp(k5,k10)
@@ -12970,20 +12884,11 @@ c-----------------------------------------------------------------------
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
 
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
       integer iam
       common/ cst4 /iam
 
       integer ipot,jv,iv1,iv2,iv3,iv4,iv5
       common/ cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c                                 solution model names
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
@@ -13062,7 +12967,7 @@ c                          saturation composant phases
       do i = 1, isat
 
          write (n3,'(/,3a,/)') ' for component ', cname(i+icp),':'
-         write (n3,'(7(1x,a,1x))') (names(ids(i,j)), j = 1, isct(i))
+         write (n3,'(7(1x,a,1x))') (names(sids(i,j)), j = 1, isct(i))
 
       end do
 c                          excluded phases
@@ -13368,15 +13273,6 @@ c----------------------------------------------------------------------
       double precision mu
       common/ cst330 /mu(k8),mus
 
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
 c-----------------------------------------------------------------------
@@ -13394,7 +13290,7 @@ c                                 and the corresponding chemical potentials
 
          do j = 1, ict
 
-            k = ids(i,j)
+            k = sids(i,j)
             gph = gphase (k)
 
             if (ifct.gt.0) then
@@ -13441,14 +13337,14 @@ c                           now find stable "composant":
             end do
          end if
 c                               save the id of the stable composant.
-         idss(i) = ids(i,id)
+         idss(i) = sids(i,id)
 c                               and its chemical potential.
          mu(icp+i) = u
 c                               in case a phase in the component
 c                               saturation space is an endmember of
 c                               a solution transform the endmember G's:
          do j = 1, ict
-            k = ids(i,j)
+            k = sids(i,j)
             g(k) = g(k) - cp(icp+i,k)*u
          end do
 
@@ -13477,9 +13373,6 @@ c-----------------------------------------------------------------------
       external gerk, gzero, gex, gfesi, gfesic, gproj, ghybrid, gexces,
      *         gcpd, gfes, gmech, omega, gdqf
 
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
-
       double precision g
       common/ cst2 /g(k1)
 
@@ -13489,12 +13382,6 @@ c-----------------------------------------------------------------------
 
       double precision cp
       common/ cst12 /cp(k5,k10)
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer jend
       common/ cxt23 /jend(h9,m14+2)
@@ -13799,9 +13686,6 @@ c----------------------------------------------------------------------
 
       double precision f
       common/ cst11 /f(3)
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 c-----------------------------------------------------------------------
 c                           compute the chemical potentials of
 c                           fluid components in fluid saturated
@@ -13858,9 +13742,6 @@ c----------------------------------------------------------------------
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
-
-      integer eos
-      common/ cst303 /eos(k10)
 
       integer ltyp,lct,lmda,idis
       common/ cst204 /ltyp(k10),lct(k10),lmda(k10),idis(k10)
@@ -13932,9 +13813,6 @@ c                                 local variables:
 c                                 -------------------------------------
       double precision goodc, badc
       common/ cst20 /goodc(3),badc(3)
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 c                                 solution model names
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
@@ -14566,9 +14444,6 @@ c                                 adaptive coordinates
       double precision cp
       common/ cst12 /cp(k5,k10)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       logical mus
       double precision mu
       common/ cst330 /mu(k8),mus
@@ -14601,9 +14476,6 @@ c                                 adaptive coordinates
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c                                 solution model names
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
@@ -14837,9 +14709,6 @@ c-----------------------------------------------------------------------
       integer isp, ins
       common/ cxt33 /isp,ins(nsp),specie(nsp)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision yf,gmrk,v
       common/ cstcoh /yf(nsp),gmrk(nsp),v(nsp)
 
@@ -14921,7 +14790,7 @@ c                                 g(i) = gs0(i) + RT ln x(i).
       else
 c                                  solvent is pure water
          pa(1) = 1d0
-         ysp(1,id) = 1d0
+         if (whysp) ysp(1,id) = 1d0
 
          call slvnt0 (gso(1),dum)
 
@@ -15030,7 +14899,7 @@ c                                 this check is necessary because lp may
 c                                 give a zero-amount solution for the chemical
 c                                 potential of an absent component. the test
 c                                 cannot be made with oxide components.
-                  if (aqcp(j,i).ne.0d0.and.j.le.jbulk) then
+                  if (aqcp(j,i).ne.0d0.and.j.le.icp) then
                      kill = .true.
                      exit
                   end if
@@ -15548,18 +15417,8 @@ c-----------------------------------------------------------------------
       double precision fh2o,fco2,funk
       common/ cst11 /fh2o,fco2,funk
 
-      integer idf
-      double precision act
-      common/ cst205 /act(k7),idf(3)
-
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
-
-      integer eos
-      common/ cst303 /eos(k10)
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 c-----------------------------------------------------------------------
 
       gee = gcpd (id,.false.) + r * t * dlog(act(id))
@@ -18309,9 +18168,6 @@ c-----------------------------------------------------------------------
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 c-----------------------------------------------------------------------
       iphct = iphct + 1
       ipop = pop1(ids)
@@ -18548,9 +18404,6 @@ c-----------------------------------------------------------------------
 
       double precision xc(*), ntot
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision z, pa, p0a, x, w, y, wl, pp
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
@@ -18589,9 +18442,6 @@ c-----------------------------------------------------------------------
       integer i, j, k, jd, ids
 
       double precision scp(*), scptot, xx
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       double precision cp
       common/ cst12 /cp(k5,k10)
@@ -18741,14 +18591,8 @@ c----------------------------------------------------------------------
 
       external nblen
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       character name*8
       common/ csta6 /name
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       integer ic
       common/ cst42 /ic(k0)
@@ -18768,9 +18612,6 @@ c----------------------------------------------------------------------
       double precision tm,td
       common/ cst202 /tm(m7,m6),td(m8),ilam,jlam,idiso,lamin,idsin
 
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
       integer ixct,ifact
       common/ cst37 /ixct,ifact 
 
@@ -18780,9 +18621,6 @@ c----------------------------------------------------------------------
 
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
-
-      integer eos
-      common/ cst303 /eos(k10)
 
       integer ikp
       common/ cst61 /ikp(k1)
@@ -19081,7 +18919,7 @@ c                                 for each saturation constraint
             do k = 1, isct(i), 6
                l = k + 5
                if (l.gt.isct(i)) l = isct(i)
-               write (*,1050) (names(ids(i,j)), j = k, l)
+               write (*,1050) (names(sids(i,j)), j = k, l)
             end do 
          end do
 
@@ -19217,7 +19055,21 @@ c                                 store thermodynamic parameters:
 
          end do
 
-      end do 
+      end do
+c                                locate end of real make data for MC error analysis
+      imkend = iphct
+c                                if an entity required for a make definition is also
+c                                in the real data list then make a pointer to the 
+c                                equivalent real data for MC error analysis
+      mkptr = 0
+
+      do i = 1, jphct
+         do j = jphct + 1, iphct
+            if (names(i).eq.names(j)) then
+               mkptr(j) = i
+            end if
+         end do
+      end do
 
       do i = 1, nmak
 c                                remake pointer array for makes 
@@ -19661,10 +19513,6 @@ c----------------------------------------------------------------------
       integer jxco, kxco, i, j, ids, ier
 c                                 -------------------------------------
 c                                 global variables
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer iam
       common/ cst4 /iam
 
@@ -20087,9 +19935,6 @@ c----------------------------------------------------------------------
 
       integer i, ids, jd, ld
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer jend
       common/ cxt23 /jend(h9,m14+2)
 
@@ -20454,9 +20299,6 @@ c---------------------------------------------------------------------
       integer ids, ind, i, j, k, l, ntot, nvar
 
       character tname*(*), reason*20
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 c                                 configurational entropy variables:
       integer lterm, ksub
       common/ cxt1i /lterm(m11,m10,h9),ksub(m0,m11,m10,h9)
@@ -21022,9 +20864,6 @@ c----------------------------------------------------------------------
 
       integer i, j, k, l, id
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision ayc
       common/ csty2c /ayc(h9,k5,m4)
 
@@ -21082,9 +20921,6 @@ c----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i, j, id
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 c----------------------------------------------------------------------
 
       do j = 1, nstot(id)
@@ -22205,9 +22041,6 @@ c----------------------------------------------------------------------
      *                 dg1, dg2
 
       external gmags, lamla2, stxhil
-
-      integer eos
-      common/ cst303 /eos(k10)
 
       integer ltyp,lct,lmda,idis
       common/ cst204 /ltyp(k10),lct(k10),lmda(k10),idis(k10)

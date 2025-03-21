@@ -48,14 +48,8 @@ c-----------------------------------------------------------------------
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
 
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
       character*8 name
       common/ csta6 /name
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
@@ -68,9 +62,6 @@ c-----------------------------------------------------------------------
       double precision ctrans
       common/ cst207 /ctrans(k0,k0),ictr(k0),itrans
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
@@ -79,9 +70,6 @@ c-----------------------------------------------------------------------
 
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
-
-      integer eos
-      common/ cst303 /eos(k10)
 
       double precision buf
       common/ cst112 /buf(5)
@@ -1220,9 +1208,6 @@ c---------------------------------------------------------------------------
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
 
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
@@ -1232,12 +1217,6 @@ c---------------------------------------------------------------------------
 
       character*8 name
       common/ csta6 /name
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer cl
       character cmpnt*5, dname*80
@@ -1285,7 +1264,7 @@ c                                 count component
                   if (ifct.eq.2) then 
                      write (*,*)
                      exit 
-                  end if   
+                  end if
 
                else
 c                                 blank input 
@@ -1296,8 +1275,14 @@ c                                 blank input
             end do 
 
             if (ifct.ne.0) then
+
                iv(3) = 3
                ivct = 3
+
+            else
+
+               write (*,1060)
+
             end if
 
          end if
@@ -1691,6 +1676,9 @@ c                                 component pointers for chkphi
      *          'specify special components. Saturated phase',/,
      *          'constraints are NOT equivalent to saturated component',
      *          ' constraints.')
+1060  format (/,'**warning ver615** no saturated phase constraint will',
+     *          ' be implemented because',/,'no saturated phase compon',
+     *          'ents have been specified.')
 1070  format ('Ok, but don''t say i didn''t warn you.')
 1080  format ('Wise move, choose another component.')
 1190  format (/,'**warning ver064** in general it is wise to exclude ',
@@ -1752,15 +1740,6 @@ c---------------------------------------------------------------------------
       double precision c(0:4)
 
       external readyn, nblen
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
@@ -2418,12 +2397,6 @@ c----------------------------------------------------------------------
       integer j, ivct, ier, ix, jc, jvct, jcont, nblen
 
       external nblen
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
-
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)

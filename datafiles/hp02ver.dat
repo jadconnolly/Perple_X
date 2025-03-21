@@ -204,9 +204,11 @@ grun_dqf = 1 grun
        DQF(J/mol) = -5000
 
                                 | make definition for coma of the unpublished
-                                | thermocalc scapolite model
+                                | thermocalc scapolite model, koma added 2/2025 JADC
 coma = 3 ab + 1 cc
-25000. 0. 0. 
+       DQF(J/mol) = 25000 
+koma = 3 san + 1 cc
+       DQF(J/mol) = 20000
                                 | titano-clinohumite to fit weiss experiments. JADC, 2/08.
  | tichum = 4 fo + 1/2 br + 1/2 ru
  | -33581. 32. 0.
@@ -1916,7 +1918,7 @@ m0 = 457000 m1 = .8829 m2 = -143.88
 end
 
  
-H2O      EoS = 201 | H= -241810.                                                                    
+H2O      EoS = 101 | H= -241810.                                                                    
 H2O(1)
 G0 = -228542.3 S0 = 188.8  
 c1 = 40.1 c2 = .8656001E-2 c3 = 487500 c5 = -251.2  
@@ -1924,7 +1926,7 @@ m0 = .1E-15
 end
 
  
-CO2      EoS = 202 | H= -393510.                                                                    
+CO2      EoS = 102 | H= -393510.                                                                    
 CO2(1)
 G0 = -394332.9 S0 = 213.7  
 c1 = 87.8 c2 = -.2644E-2 c3 = 706400 c5 = -998.9  

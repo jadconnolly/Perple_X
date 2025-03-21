@@ -104,9 +104,6 @@ c psdplt - subroutine to plot gridded minimization sections
 
       external readyn
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       logical oned
       common/ cst82 /oned
 c---------------------------------------------------------------
@@ -300,18 +297,12 @@ c----------------------------------------------------------------------
       integer ixct, iex, ict, jex
       common/ excl1 /ixct(3),iex(50,3),jex(50,3),ict(3)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
 
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c----------------------------------------------------------------------
       hfill = 0
 c                                 set up variance based fills:
@@ -919,18 +910,12 @@ c psgrd1 - subprogram draw 1d gridded minimization diagrams.
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
 
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 c----------------------------------------------------------------------
       hfill = 0 
 c                                default fill mode by variance:   
@@ -1145,9 +1130,6 @@ c                                 to store integer workspace?
       integer ixct, iex, ict, jex
       common/ excl1 /ixct(3),iex(50,3),jex(50,3),ict(3)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
 
@@ -1159,9 +1141,6 @@ c                                 to store integer workspace?
 
       integer jend
       common/ cxt23 /jend(h9,m14+2)
-
-      integer ids,isct,icp1,isat,io2
-      common/ cst40 /ids(h5,h6),isct(h5),icp1,isat,io2
 
       integer jvar
       double precision var,dvr,vmn,vmx

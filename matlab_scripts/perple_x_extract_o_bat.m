@@ -14,7 +14,9 @@
 
 clear all; clf;
 
-[x,y,a,xname,yname,zname,nvar,mvar,nrow,dnames,titl] = function_to_get_perple_x_file; %open the Perple_X file
+[x,y,a,symb,xname,yname,zname,nvar,mvar,nrow,dnames,titl] = ...
+    function_to_get_perple_x_file; %open the Perple_X file
 
-function_for_extract_o_bat (x,y,a,xname,yname,zname,nvar,mvar,nrow,dnames,titl);
+function_for_extract_o_bat (x,y,a,xname,yname,zname,nvar,mvar,nrow, ...
+    dnames,titl,type);
 

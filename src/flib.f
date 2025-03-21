@@ -110,9 +110,6 @@ c---------------------------------------------------------------------
       double precision buf
       common/ cst112 /buf(5)
 
-      integer icomp,istct,iphct,icp
-      common/ cst6  /icomp,istct,iphct,icp
-
       integer ibuf,hu,hv,hw,hx   
       double precision dlnfo2,elag,gz,gy,gx
       common/ cst100 /dlnfo2,elag,gz,gy,gx,ibuf,hu,hv,hw,hx
@@ -122,9 +119,6 @@ c---------------------------------------------------------------------
 
       integer iam
       common/ cst4 /iam
-
-      integer ifct,idfl
-      common/ cst208 /ifct,idfl
 
       integer cl
       character cmpnt*5, dname*80
@@ -365,13 +359,21 @@ c                                 specify "saturated phase" eos.
          write (*,1005)
       end if
 
+      err = .true.
+
       do i = 0, nrk
          if (i.eq.4.or.i.eq.6.or.i.eq.9.or.i.eq.18.or.i.eq.21.or.    
      *       i.eq.3.or.i.eq.22.or.i.eq.23.or.i.eq.7.or.i.eq.11) cycle 
 
-         if (eosok(i)) write (*,1070) i,rkname(i)
+         if (eosok(i)) then 
+            write (*,1070) i,rkname(i)
+            err = .false.
+         end if
 
-      end do 
+      end do
+
+      if (err) call errdbg ('there is no valid internal fluid EoS for'//
+     *                      ' your choice of components')
 c                                 write hybrid eos blurb
       call hybout (-1,6)
 
@@ -6148,18 +6150,17 @@ c                                 MRK dispersion term for CO2
          else if (i.eq.5) then 
 c                                 MRK fit to NIS table for H2 at 10 kbar
 c                                 400-1000 K.
-c            b(5) = 12.81508162d0
-c            a(5) = 0.391950132949994654D8 
-c     *           + t * (-0.881231157499978144D5) 
-c     *           + t**2 * 0.890185987380923081D2 
-c     *           + t**3 * (-0.286881183333320412D-1)
+            b(5) = 12.81508162d0
+            a(5) = 0.391950132949994654D8 
+     *           + t * (-0.881231157499978144D5) 
+     *           + t**2 * 0.890185987380923081D2 
+     *           + t**3 * (-0.286881183333320412D-1)
 c           CSRK parameters for H2 fitting data of Presnall (1969)
-            tc = 41.2d0
-            pc = 21.1d0
-            b(5) = 1.533943d0 * tc/pc * (tc/t)**(3d0/18d0)
-            a(5) = (10.2277d0*tc + 10.7632d0*t - 561.2307d0*tc**2/t) *
-     *             tc**1.5/pc
-
+c           tc = 41.2d0
+c           pc = 21.1d0
+c           b(5) = 1.533943d0 * tc/pc * (tc/t)**(3d0/18d0)
+c           a(5) = (10.2277d0*tc + 10.7632d0*t - 561.2307d0*tc**2/t) *
+c    *             tc**1.5/pc
 
          else if (i.eq.14) then 
 c                                 MRK dispersion term for SiO2, from
