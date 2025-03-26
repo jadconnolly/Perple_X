@@ -1925,11 +1925,7 @@ c                                 select properties:
 c                                 assume only two cases:
 c                                 icopt = 12 = nodal coordinates
 c                                 icopt = 7, 5 = independent potential
-      if (icopt.eq.12) then
-
-         ipts = iopt(36) + 1
-
-      else if (icopt.eq.5.or.(icopt.eq.7.and..not.fileio)) then
+      if (icopt.eq.5.or.(icopt.eq.7.and..not.fileio)) then
 c                                  1d gridded minimization on multilevel 
 c                                  grid or fractionation
          write (*,1040)
@@ -1996,6 +1992,11 @@ c                                  grid or fractionation
          read (*,*) ipts
 
          dy = (xmx-xmn)/dfloat(ipts-1)
+
+      else if (icopt.eq.12) then
+
+         ipts = iopt(36) + 1
+         dy = (vmx(ind)-vmn(ind))/dfloat(ipts-1)
 
       end if
 c                                 name and open plot file, write header
