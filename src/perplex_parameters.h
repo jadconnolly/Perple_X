@@ -587,9 +587,9 @@ c                                 MC_fit common block:
 
       double precision xptpt, xptblk, xptc, xpte, cprng, sprng, wcomp, 
      *                 wextra, wmiss, oktol, scores, plow, pdelta, 
-     *                 cmpmin, cmpmax, xskp
+     *                 cmpmin, cmpmax, xskp, pdqf
 
-      common/ cst68 /xptpt(l11,l2), xptblk(l11,k5), xskp(h5),
+      common/ cst68 /xptpt(l11,l2), xptblk(l11,k5), xskp(h5), pdqf,
      *               xptc(k5*l11), xpte(k5*l11), xpterr(l11),
      *               cprng(k5,3,3),sprng(k5,m1,m3,3), wcomp, wextra,
      *               wmiss, oktol, scores(l11), plow(l2 + k5), 

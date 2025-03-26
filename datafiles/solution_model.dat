@@ -6419,6 +6419,7 @@ begin_model
 
                                       1 me            Ca      Al       Al     independent
                             Species:  2 coma          Na3Ca   Si       Si     independent
+                                      3 koma          K3Ca    Si       Si
                                       _____________________________________
 
                                       3 mizz          NaCa3   Si       Al     ordered
@@ -6427,33 +6428,38 @@ begin_model
                             rather than the incorrect enthalpy that follows
                             from table 6.4. JADC, Dec 30, 2013.
 
-Scap                       | solution name
+Scap(RP)                       | solution name
 abbreviation Scp
 full_name    scapolite
 
 6                          | model type: compound formation
 
-2                          | 2 endmembers
+3                          | 2 endmembers
 me
 coma
+koma
 
 1                          | ordered species definition
 
 mizz = 2/3 me + 1/3 coma   delta_g_of_ordering  = -29000
 
-0 0                        | endmember flags
+0 0 0| endmember flags
+0   1   .1  0
 0   1   .1  0
 
 begin_excess_function
 w(me coma)   20000.
 w(me mizz)   20000.
 w(coma mizz) 30000.
+w(me koma)   20000.
+w(koma mizz) 30000.
 end_excess_function
 3                          | 3 site (M1, T2a, T2b) conigurational entropy model
 
-2 4.                       | 2 species on M, 4 sites per formula unit.
+3 4.                       | 2 species on M, 4 sites per formula unit.
 
 z(m,na) = 1/4 mizz  +  3/4 coma
+z(m,k) =  3/4 koma
 
 2 1                        | 2 species on T2a, 1 site per formula unit.
 
@@ -6461,7 +6467,56 @@ z(t2a,al) = 1 me
 
 2 2.                       | 2 species on T2b, 1 site per formula unit.
 
-z(t1a,si) = 1 coma
+z(t1a,si) = 1 coma + 1 koma
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                             Scapolite. Presumably from Barbara Kuhn's thesis.
+
+                                                      M       T2a       T2b
+                                                     ______________________
+
+                                      Mutliplicity    4       2         1
+                                                     ______________________
+
+                                      1 me            Ca      Al       Al     independent
+                                      3 miz           NaCa3   Si       Al     ordered
+                                      3 kmiz          KCa3    Si       Al     ordered
+
+                            enthalpy of ordering changed to match thermocalc phase eq,
+                            rather than the incorrect enthalpy that follows
+                            from table 6.4. JADC, Dec 30, 2013.
+
+Scap(KA)                       | solution name
+abbreviation Scp
+full_name    scapolite
+
+2                          | model type: compound formation
+
+3                          | 2 endmembers
+me
+miz
+kmiz
+
+0 0 0  | endmember flags
+0   1   .1  0
+0   1   .1  0
+
+begin_excess_function
+end_excess_function
+
+2                          | 3 site (M1, T2a, T2b) conigurational entropy model
+
+3 4.                       | 2 species on M, 4 sites per formula unit.
+
+z(m,na) = 1/4 miz   
+z(m,k) =  1/4 kmiz
+
+2 1                        | 2 species on T2a, 2 sites per formula unit.
+
+z(t2a,al) = 1 me
+
 
 end_of_model
                       --------------------------------------------------------
@@ -7056,8 +7111,6 @@ z(t,al) = 1/2 mu + 1/2 pa
 
 2 1                        | 2 species on A, 1 site per formula unit.
 z(a,k) = 1 mu + 1 cel + 1 fcel
-
-reach_increment 0 3
 
 end_of_model
                       --------------------------------------------------------

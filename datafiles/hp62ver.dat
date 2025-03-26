@@ -37,9 +37,9 @@ end_standard_variables
 
 tolerance  -.1E-2    |<= DTOL for unconstrained minimization, energy units
 
-HSC_conversion       |<= tag enabling HSC to SUP apparent energy conversion, requires elemental entropies in the component list below
-
 uncertainty_enabled  |<= tag undicating uncertainty data is present
+
+HSC_conversion       |<= tag enabling HSC to SUP apparent energy conversion, requires elemental entropies in the component list below
 
 begin_components | < 6 chars, molar mass (g),  elemental entropy (R)
 Na2O     61.9790    205.1750
@@ -205,9 +205,19 @@ ged_dqf   = 1 ged
  
                                 | make definition for coma of the unpublished
                                 | thermocalc scapolite model
-coma = 3 ab + 1 cc
-       DQF(J/mol) = 25000.
- 
+|coma = 3 ab + 1 cc
+|       DQF(J/mol) = -100000
+
+|koma = 3 san + 1 cc
+|       DQF(J/mol) = 25000
+
+
+miz   = 2/3 me + 1 abh  + 1/3 cc
+        DQF(J/mol) = -50000
+
+kmiz   = 2/3 me + 1 san  + 1/3 cc
+        DQF(J/mol) =  10000
+
 tbit = 1 phl - 1 br + 1 ru      |Ti-Fe3+ Biotite after Tajcmanova et al. (2009)
        DQF(J/mol) = 84e3 -11.5 0                    |Model entered by Lucie Tajcmanova, September, 2008.
  

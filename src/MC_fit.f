@@ -985,10 +985,6 @@ c                                  got a legitimate result
                nogood = .false.
 
             end if 
-c                                 write all successful results to 
-c                                 *_central.pts file
-            if (.not.invprt) write (n0,1025) 3, (x(j),j=1,nparm), objf
-
 c                                 count and check if model improved
 c                                 bstlik - best likelihood objective f value
 c                                 bstlx  - best likelihood x
@@ -999,6 +995,15 @@ c                                 bstbx0 - ... initial x
 c                                 bay    - current bayesian objective f
             call savbst (x,objf,bstlik,bstlx,bay,ssp,x0,bstlx0,bstbx0,
      *                   bstbay,bstbx,n,i,ibest,jbest,igood)
+c                                 write all successful results to 
+c                                 *_central.pts file
+            if (.not.invprt) then
+               if (bayes) then 
+                  write (n0,1025) 3, (x(j),j=1,nparm), bay
+               else 
+                  write (n0,1025) 3, (x(j),j=1,nparm), objf
+               end if
+            end if
 
             improv = i.eq.ibest.or.i.eq.jbest
 
@@ -2069,7 +2074,7 @@ c                                 don't bother with unmeasured components
 c-----------------------------------------------------------------------
 c read compositional data and uncertainities between begin_\\tag/end_\\tag 
 c keywords. converts mass units to molar units if lmass.
-c if randm perturn composition within uncertainty.
+c if randm perturbs composition within uncertainty.
 c returns bad if the composition includes a component not specified in
 c the problem definition file. 
 c-----------------------------------------------------------------------
@@ -2084,7 +2089,7 @@ c-----------------------------------------------------------------------
       character key*22, val*3, nval1*12, nval2*12, nval3*12,
      *          strg*40, strg1*40, tag*(*)
 
-      double precision tot, comp(*), ecomp(*), pertrb
+      double precision tot, comp(*), ecomp(*), pertrb, chk
 
       external pertrb
 c----------------------------------------------------------------------
@@ -2143,7 +2148,18 @@ c                                output molar composition and errors
             if (lmass.and.kiso) 
      *                 write (*,1000) cname(i), comp(i), ecomp(i)
 c                                 perturb data
-            if (randm) comp(i) = pertrb (comp(i),ecomp(i))
+            if (randm) then
+
+               chk = pertrb (comp(i),ecomp(i))
+c                                 hack to prevent negative compositions.
+               if (chk.lt.0d0) then
+                  chk = comp(i)/(comp(i) - chk)
+                  comp(i) = chk * comp(i)
+               else 
+                  comp(i) = chk
+               end if
+
+            end if
 
          end if
 
@@ -2345,7 +2361,7 @@ c                                 compositional var pointer
             do j = 1, kbulk
                cblk(j) = cblk(j) + x(k) * xptc(cxpt+j)
                if (cblk(j).lt.0d0) then 
-                  write (*,*) 'lt 0'
+                  write (*,*) 'lt 0 ',k,j,x(k),cblk(j)
                end if
             end do
 
