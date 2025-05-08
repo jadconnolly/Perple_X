@@ -1,0 +1,101 @@
+# MacOS-friendly makefile for Perple_X 6.9.2 and higher
+#
+# To compile the Perple_X programs with this file first edit the compiler
+# variables so that they are consistent with the fortran installation on 
+# your system. Then type the command
+#
+#                 make -f <filename>
+#
+# where <filename> is the name of this file, e.g., OSX_makefile2.
+#
+# JADC, April 14, 2021   
+#
+# Adapted to use Homebrew gfortran and dynamic linking on macOS
+# Bob Myhill, May 7, 2025
+
+##################### COMPILER VARIABLES #####################
+# the name of the local Fortran compiler
+COMP77 = gfortran
+
+# compiler flags: safe optimization and legacy compatibility
+FFLAGS = -O2 -fallow-argument-mismatch -fno-second-underscore
+
+# linker flags: leave empty to use dynamic system libraries
+FLINK =
+
+# optional: include Homebrew GCC runtime path (uncomment if needed)
+# BREW_GFORTRAN_PATH := $(shell brew --prefix gcc)/lib/gcc/current
+# FFLAGS += -L$(BREW_GFORTRAN_PATH)
+
+# file extension for executables (empty on macOS)
+EXT =
+
+# object programs
+MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit
+
+# common libraries
+LIBRARY = pscom.o pslib.o rlib.o tlib.o flib.o olib.o resub.o minime_blas.o blas2lib.o
+LIBRARY_PS = cont_lib.o pscom.o pslib.o flib.o tlib.o
+
+all: $(MYOBJ)
+
+clean:
+	rm -f *.o $(MYOBJ)
+
+##################### TARGETS FOR 692+ PROGRAMS #####################
+MC_fit: MC_fit.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) MC_fit.o $(LIBRARY) -o $@$(EXT)
+
+convex: convex.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) convex.o $(LIBRARY) -o $@$(EXT)
+
+meemum: meemum.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) meemum.o $(LIBRARY) -o $@$(EXT)
+
+vertex: vertex.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) vertex.o $(LIBRARY) -o $@$(EXT)
+
+werami: werami.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) werami.o $(LIBRARY) -o $@$(EXT)
+
+pssect: psect.o cont_lib.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) psect.o cont_lib.o $(LIBRARY) -o $@$(EXT)
+
+pstable: pstable.o $(LIBRARY_PS)
+	$(COMP77) $(FFLAGS) $(FLINK) pstable.o $(LIBRARY_PS) -o $@$(EXT)
+
+pspts: pspts.o $(LIBRARY_PS)
+	$(COMP77) $(FFLAGS) $(FLINK) pspts.o $(LIBRARY_PS) -o $@$(EXT)
+
+psvdraw: psvdraw.o $(LIBRARY_PS)
+	$(COMP77) $(FFLAGS) $(FLINK) psvdraw.o $(LIBRARY_PS) -o $@$(EXT)
+
+pt2curv: pt2curv.o $(LIBRARY_PS)
+	$(COMP77) $(FFLAGS) $(FLINK) pt2curv.o $(LIBRARY_PS) -o $@$(EXT)
+
+actcor: actcor.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) actcor.o $(LIBRARY) -o $@$(EXT)
+
+build: build.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) build.o $(LIBRARY) -o $@$(EXT)
+
+fluids: fluids.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) fluids.o $(LIBRARY) -o $@$(EXT)
+
+ctransf: ctransf.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) ctransf.o $(LIBRARY) -o $@$(EXT)
+
+DEW_2_ver: DEW_2_ver.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) DEW_2_ver.o $(LIBRARY) -o $@$(EXT)
+
+frendly: frendly.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK) frendly.o $(LIBRARY) -o $@$(EXT)
+
+##################### OBJECT RULES #####################
+# Explicit .f.o compilation to ensure Fortran flags are used
+.f.o:
+	$(COMP77) $(FFLAGS) -c $<
+
+# C object compilation (if needed)
+.c.o:
+	$(CC) $(CFLAGS) $(INCL) -c $<
