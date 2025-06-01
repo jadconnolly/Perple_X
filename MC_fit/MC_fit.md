@@ -1,17 +1,12 @@
 # MC_fit
 
-#Table 1
+# Table 1
 
+| Method | Local Eq | Bulk-Eq | Missing Components | Misfit | Bayes |
+|-------:|--|---------|--------------------|--------|-------|
 | Method | Local Eq | Bulk Eq | Missing Components | Misfit | Bayes |
-|-----:|---------------|
-|MC_fit|               |
-|Bubonic Plague|               |
-|Salmonella|               |
-
-[![Build Status](https://github.com/jadconnolly/Perple_X/workflows/CI/badge.svg)](https://github.com/jadconnolly/Perple_X/actions)
 
 
-This repository contains the latest source codes of [Perple_X](https://www.perplex.ethz.ch), which is a collection of Fortran77 programs for calculating phase diagrams, manipulating thermodynamic data, and modeling equilibrium phase fractionation and reactive transport. 
 More information can be found on the [Perple_X](https://www.perplex.ethz.ch) webpage.
 
 We also provide precompiled binaries for all modern operating systems, which can be downloaded through the julia package manager.
