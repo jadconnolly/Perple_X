@@ -4,7 +4,7 @@
       integer j3,j4,j5,j6,j9
       integer k0,k1,k2,k3,k4,k5,k7,k8,k9,k10,k13,k14,k15
       integer k16,k17,k18,k19,k20,k21,k22,k23,k24,kd2,k25
-      integer l2,l3,l5,l6,l7,l8,l9,l10,l11,lchar
+      integer l2,l3,l5,l6,l7,l8,l9,l10,l11,l12,lchar
       integer m0,m1,m2,m3,m4,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15
       integer m16,m17,m18,m19,m20,m21,m22,m23,m24,m25
       integer msp,mst,mdim,ms1
@@ -120,7 +120,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       parameter (k0=25,k2=100000,k3=2000,k4=32,k5=14)
       parameter (k7=k5+1,k8=k5+2,k17=8,k19=3*k5)
-      parameter (k9=50,k10=500,k14=18,k15=6,k16=150)
+      parameter (k9=50,k10=700,k14=18,k15=6,k16=150)
       parameter (k22=mdim*mst*h4*k19,k23=25)
 !                                 l2 - max number of independent potential variables
 !                                 l3 - max number of variables for gridded min and graphics (l2+2)
@@ -136,10 +136,11 @@ c----------------------------------------------------------------------
 !                                 l9 - max number of aqueous solute species in minimization programs.         
 !                                l10 - max number of parameters stored in caq for each phase.
 !                                l11 - max number of observations for MC inversion
+!                                l12 - max number of inversion parameters
 !                                nsp - max number of species in fluid speciation routines 
 
       parameter (l2=5,l3=l2+2,l5=1000,l6=500,l7=2048,l8=10,l9=150,
-     *           nsp=18,l10=nsp+l9+4,l11=400)
+     *           nsp=18,l10=nsp+l9+4,l11=400,l12=l2+k5)
 !                                 m0 - max number of terms for a species site fraction?
 !                                 m1 - max number of terms in excess function
 !                                 m2 - max order of term in excess function
@@ -569,44 +570,46 @@ c                                 project name, temporary file name
       character prject*100,tfname*100
       common/ cst228 /prject,tfname
 c                                 -------------------------------------
-      double precision pmode, emode
-      common/ cst67 /pmode(k5), emode(k5)
-c                                 -------------------------------------
 c                                 MC_fit common block:
       logical mcpert, mcflag, oprt, grh, invxpt, fprint, grdsch, seed, 
      *        mcgrid, grhobj, bayes, vital, consol, mcbulk, newstt,
-     *        relerr, mchot, lmass, nomiss, missng, nogood, kiso, mcfit
+     *        relerr, mchot, lmass, nomiss, missng, nogood, kiso, 
+     *        mcfit, ptonly, mcfrst, nmcov, unplus, mcmode
 
       integer mxpt, cxpt, random, cextra, optct, idxtra, ptry, unmeas,
      *        xptids, xptptr, xptnph, xpterr, mccpd, mcsol, mcid, 
      *        mcids, msloc, msolct, nparm, nunc, mcpct, mcpid, mctrm,
      *        mcj, mccoef, mccoid, lsqchi, blkptr, bstout, uncomp,
-     *        skp
+     *        skp, jkdiag
 
       character xptnam*18
 
       double precision xptpt, xptblk, xptc, xpte, cprng, sprng, wcomp, 
-     *                 wextra, wmiss, oktol, scores, plow, pdelta, 
-     *                 cmpmin, cmpmax, xskp, pdqf
+     *                 wextra, wmiss, oktol, scores, plow, pdelta,
+     *                 cmpmin, cmpmax, xskp, pdqf, ra2zs, un2ft, covar,
+     *                 pmode, emode, wmode, bstlco, bstbco
 
       common/ cst68 /xptpt(l11,l2), xptblk(l11,k5), xskp(h5), pdqf,
-     *               xptc(k5*l11), xpte(k5*l11), xpterr(l11),
+     *               xptc(k5*l11), xpte(k5*l11), xpterr(l11), ra2zs,
      *               cprng(k5,3,3),sprng(k5,m1,m3,3), wcomp, wextra,
-     *               wmiss, oktol, scores(l11), plow(l2 + k5), 
-     *               pdelta(l2 + k5), cmpmin(k5,k5), cmpmax(k5,k5), 
+     *               wmiss, oktol, scores(l11), plow(l12), un2ft,
+     *               pdelta(l12), cmpmin(k5,k5), cmpmax(k5,k5), wmode,
+     *               covar(l12**2), pmode(l11,k5), emode(l11,k5), 
+     *               bstlco(l12** 2), bstbco(l12** 2),
 c                                 integer
      *               mccpd, mcsol, mxpt, cxpt, nparm, nunc(2), unmeas,
      *               mctrm(k5), cextra, optct, idxtra, lsqchi,
      *               xptids(l11,k5), xptptr(l11,k5), xptnph(l11),
      *               mcid(k5), mcids(k5), msolct(l11,h9), ptry,
-     *               msloc(l11,k5), mcpct(k5), mcpid(k5,3),
+     *               msloc(l11,k5), mcpct(k5), mcpid(k5,3), skp(h5),
      *               mccoef(k5,m1), mcj(k5,m1), mccoid(k5,m1,m3),
-     *               blkptr(l11), bstout, uncomp(k5), skp(h5),
+     *               blkptr(l11), bstout, uncomp(k5), jkdiag(l12),
 c                                 logical
      *               mcpert, oprt, mcflag(h9), random(3), grh, invxpt,
      *               fprint, grdsch, seed, mcgrid, grhobj, bayes,
      *               vital, consol, mcbulk, newstt, kiso, mcfit,
      *               relerr, mchot, lmass, nomiss, missng, nogood,
+     *               ptonly, mcfrst, nmcov, unplus, mcmode(l11),
 c                                 character
      *               xptnam(l11)
 c                                 -------------------------------------
@@ -748,3 +751,8 @@ c                                 io2  - special pointer to O2, for GCOH interna
       integer eos
       common/ cst303 /eos(k10)
 
+      character vnm*8
+      common/ cxt18a /vnm(l12)
+
+      logical oned
+      common/ cst82 /oned

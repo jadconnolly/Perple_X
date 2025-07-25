@@ -18,7 +18,7 @@ function [] = function_for_perple_x_plots (x,y,a,symb,xname,yname,zname, ...
 
 figure(1);
 
-%set(gcf, 'color', 'none');   
+%set(gcf, 'color', 'none');
 %set(gca, 'color', 'none');
 
 choices2d = {'3D Surface','3D Auto-Contour','3D Manual-Contour','2D Color-Filled Contour'};
@@ -122,13 +122,17 @@ elseif type == 3 % 2d pts file plots
     jct(3) = size(j,1);
     indx(3,1:size(j,1)) = j;
 
-    if indx(2,1) > 0
-    %                               best perturbed model
-        j = find(min(a(indx(2,1:jct(2)))))
+    if indx(2,1) > 0 & indx(1,1) > 0
+        %                               best perturbed model
+        j = find(a(:) == min(a(:)))
+
         if j ~= indx(1,1)
-        jct(4) = 1;
-        indx(4,1) = j;
+            jct(4) = 1;
+            indx(4,1) = j;
+        else
+            jct(4) = 0;
         end
+
     end
 
     j = find(symb>=4);
@@ -154,48 +158,49 @@ elseif type == 3 % 2d pts file plots
                 plot3 (x(indx(i,1)),y(indx(i,1)),a(indx(i,1)),['o'], ...
                     'MarkerFaceColor',"#EDB120",...
                     'MarkerEdgeColor','k',...
-                    'MarkerSize',20);
+                    'MarkerSize',25);
 
-                strg = "Best central model" + ...
+                strg = "Best Central" + ...
                     newline + ...
-                    ['  ',xname,' = ',num2str(x(indx(i,1)))] + ...
+                    [xname,' = ',num2str(x(indx(i,1)))] + ...
                     newline + ...
-                    ['  ',yname,' = ',num2str(y(indx(i,1)))];
+                    [yname,' = ',num2str(y(indx(i,1)))];
 
-                t(iplot) = cellstr(strg);
+                t(i) = cellstr(strg);
 
             elseif i == 2 || i == 3
 
-                isymb = symb(indx(i,1))
+                isymb = symb(indx(i,1));
                 fc = sc(isymb);
                 sz = 6;
 
                 plot3 (x(indx(i,1:jct(i))),y(indx(i,1:jct(i))),...
                     a(indx(i,1:jct(i))),[fc,mt(isymb)], ...
-                    'MarkerFaceColor',fc,'MarkerSize',sz);
+                    'MarkerFaceColor',fc,...
+                    'MarkerEdgeColor','none',...
+                    'MarkerSize',sz);
 
                 if isymb == 3
-                    t(iplot) = cellstr('Central model tries');
+                    t(i) = cellstr('Central model tries');
                 else
-                    t(iplot) = cellstr('Central model perturbations');
+                    t(i) = cellstr('Perturbations');
+                    jplot = i
                 end
-
-                jplot = iplot;
 
             elseif i == 4
 
                 plot3 (x(indx(i,1)),y(indx(i,1)),a(indx(i,1)),['o'], ...
                     'MarkerFaceColor',"#0072BD",...
                     'MarkerEdgeColor','none',...
-                    'MarkerSize',12);
+                    'MarkerSize',25);
 
-                strg = "Best perturbed central model" + ...
+                strg = "Best Overall" + ...
                     newline + ...
-                    ['  ',xname,' = ',num2str(x(indx(i,1)))] + ...
+                    [xname,' = ',num2str(x(indx(i,1)))] + ...
                     newline + ...
-                    ['  ',yname,' = ',num2str(y(indx(i,1)))];
+                    [yname,' = ',num2str(y(indx(i,1)))];
 
-                t(iplot) = cellstr(strg);
+                t(i) = cellstr(strg);
 
             end
         end
@@ -203,16 +208,20 @@ elseif type == 3 % 2d pts file plots
 
     hold off
 
-    choice = questdlg('Fit a surface to the points','Spline fit','Yes','No','Yes');
+    fig1a = figure(1)
 
-    switch choice
-        case 'Yes'
-            hold on
-            ok = 0;
+    % choice = questdlg('Fit a surface to the points','Spline fit','Yes','No','Yes');
+    % 
+    % switch choice
+    %     case 'Yes'
+    %         hold on
+    %         ok = 0;
+    % 
+    %     case 'No'
+    %         ok = 1;
+    % end
 
-        case 'No'
-            ok = 1;
-    end
+    ok = 1;
 
     if ok == 0
 
@@ -269,27 +278,69 @@ elseif type == 3 % 2d pts file plots
     switch choice
         case 'Yes'
             hold on
-            [avg,covariance] = function_to_plot_covariance_ellipse([x y]);
+            % zcoor = max(a);
+            % % filter out NaNs if user has restricted data range
+            % xnans = isnan(x);
+            % ynans = isnan(y);
+            % anans = isnan(a);
+            % npts = 0;
+            % dim = size(x);
+            % mpts = dim(1);
+            % 
+            % for i = 1:mpts
+            %     if xnans(i) == 0 && ynans(i) ==0 && anans(i) == 0
+            %         npts = npts + 1;
+            %         xnum(npts) = x(i);
+            %         ynum(npts) = y(i);
+            %     end
+            % end
 
+            %[avg,covariance] = function_to_plot_covariance_ellipse([xnum ynum],zcoor);
+            [avg,covariance] = function_to_plot_covariance_ellipse([x y]);
             if jplot ~= 0
-                strg = string(t(jplot)) + newline + ...
-                    ['  \mu_{',xname,'} = ',num2str(avg(1)),...
-                ' \pm ',num2str(sqrt(covariance(1,1)))] + ...
-                newline + ['  \mu_{',yname,'} = ',num2str(avg(2)),...
-                ' \pm ',num2str(sqrt(covariance(2,2)))];
+                % strg = string(t(jplot)) + newline + ...
+                %     ['  \mu_{',xname,'} = ',num2str(avg(1)),...
+                %     ' \pm ',num2str(sqrt(covariance(1,1)))] + ...
+                %     newline + ['  \mu_{',yname,'} = ',num2str(avg(2)),...
+                %     ' \pm ',num2str(sqrt(covariance(2,2)))];
+
+                strg = string (['\sigma_{\itT\rm}=\pm',num2str(sqrt(covariance(1,1)))])
+                strg = string(strg) + newline ...
+                    + ['\sigma_{\itP\rm}=\pm',num2str(sqrt(covariance(2,2)))];
                 t(jplot) = cellstr(strg);
+                t(6) = {""}; % cellstr('Covariance');
             end
 
         case 'No'
             ok = 1;
     end
 
-    if iplot > 0, legend (t); end
     xlabel(xname);
     ylabel(yname);
     zlabel(zname);
+    %zscale('log')
     axis square;
     box;
+
+    fig1b = figure(1)
+
+    if iplot > 0, 
+        if jplot > 0,
+            if jct(4) == 1, 
+                legend ([t(1) t(2) t(4)]);
+            else
+                legend ([t(1) t(2)]);
+            end
+        else
+            legend ([t(1) t(3)]); 
+        end
+    end
+
+
+    %view(0,0) % XZ
+    %view(0,90) % XY
+    %view(90,0) % YZ
+    %view(0,0)  % XZ
     %legend('boxoff')
 
 end

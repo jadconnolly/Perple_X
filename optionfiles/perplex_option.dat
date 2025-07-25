@@ -169,4 +169,5 @@ warn_interactive          default | [F] T => overrides interactive y/n warnings 
 x_nodes                   default | [20 40] exploratory and auto-refine (grid parameters keyword group), lowest-level x grid resolution 
 y_nodes                   default | [20 40] exploratory and auto-refine (grid parameters keyword group), lowest-level y grid resolution
 
-zero_mode                 default | [1e-6] 0->1, threshold below which the molar mode of a phase is set to 0; defaults to zero for fractionation calculations
+zero_mode                 default | [1e-6] 0->1, threshold below which the molar mode of a phase is set to 0; defaults to sqrt(eps) for fractionation calculations
+zero_bulk                 default | [1e-6] 0->1, threshold below which the molar amount of a component is set to 0 during fractionation calculations

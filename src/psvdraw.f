@@ -365,9 +365,6 @@ c pschem - subroutine to output ternary chemographies.
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
-      character vnm*8
-      common/ cxt18a /vnm(l3)
-
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
@@ -1161,9 +1158,6 @@ c psmixd - subroutine to draw binary mixed variable diagrams
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
-      character vnm*8
-      common/ cxt18a /vnm(l3)
-
       integer ivct,iplus,iminus,idr
       double precision vnu
       common/ rxn /vnu(k7),idr(k7),ivct,iplus(k7),iminus(k7)
@@ -1793,9 +1787,6 @@ c plinp - subroutine to read x-y plot file header.
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
-
-      character vnm*8
-      common/ cxt18a /vnm(l3)  
 
       integer ikp
       common/ phase /ikp(k1)

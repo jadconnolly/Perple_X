@@ -669,13 +669,13 @@ c-----------------------------------------------------------------------
       character n6name*100, n5name*100, tmp*8
 
       integer i,j,k,l,m,idead,two(2),lun,iox,itop(lay),
-     *        layer(maxbox),ibot,minus, ier
+     *        layer(maxbox),ibot,minus, ier, nblen
 
       double precision gblk(maxbox,k5),cdcomp(k5,lay),vox(k5),rho,zbox,
      *                 tot,lcomp(k5,lay),cmass(k5),cfmass(k5),area,
      *                 imass(k5),errr(k5),icerr(k5),ccerr(k5),cccomp(k5)
 
-      external readyn
+      external readyn, nblen
 
       double precision x, y
       common/ cxt46 /x, y
@@ -730,9 +730,6 @@ c-----------------------------------------------------------------------
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
-      double precision units, r13, r23, r43, r59, zero, one, r1
-      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
-
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
 
@@ -783,7 +780,8 @@ c          end if
          end if
 c                                 work out the oxide stoichiometries for excess O 
 c                                 computation
-         iox = 0 
+         iox = 0
+         vox = 0d0
 
          do i = 1, icp
             if (cname(i).eq.'C') then 
@@ -932,7 +930,8 @@ c                                 number of variables in table
       
       do j = 1, icp
          write (dname(j),'(a14)') cname(j)
-         write (dname(j+icp1),'(a14)') cname(j)//'_{cum}'
+         write (dname(j+icp1),'(a14)') cname(j)(1:nblen(cname(j)))
+     *                                                      //'_{cum}'
       end do
 
       do j = 1, icp1
@@ -1006,7 +1005,7 @@ c                                 get total moles to compute mole fractions
             do i = 1, icp1
                dcomp(i) = 0d0
                cblk(i) = gblk(k,i)
-               if (cblk(i).lt.zero) cblk(i) = 0d0
+               if (cblk(i).lt.nopt(11)) cblk(i) = 0d0
                ctotal = ctotal + cblk(i)
             end do
 
@@ -1095,7 +1094,14 @@ c                                 local mass
             end if
 
          end if
-c                                 end of annealling section.
+c                                 end of annealling = T section.
+      else if (flsh) then
+c                                 not annealing and doing titrate, set the 
+c                                 aliquot to whatever the user specified
+         do i = 1, icp 
+            dblk(1,i) = iblk(ilay+1,i)
+         end do
+
       end if
 c                                 get total mass for conservation test
       do k = 1, ncol
@@ -1145,7 +1151,7 @@ c                                 get total moles to compute mole fractions
 c                                 apply the zero_bulk filter only to the working 
 c                                 composition, this allows near zero components to 
 c                                 accumulate without destabilizing the optimization
-               if (cblk(i).lt.zero) cblk(i) = 0d0
+               if (cblk(i).lt.nopt(11)) cblk(i) = 0d0
 
                ctotal = ctotal + cblk(i)
 
@@ -1249,7 +1255,7 @@ c                                 cumulative change
 c                                 mass being lost from the column
                if (k.eq.ncol) cfmass(i) = cfmass(i) + dcomp(i)
 
-               if (errr(i).gt.zero) then 
+               if (errr(i).gt.nopt(11)) then 
 c                                 instantaneous fractionated column mass error
                   icerr(i) = icerr(i) + errr(i)
                end if 
@@ -1404,16 +1410,6 @@ c-----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i, j, idead
-
-      integer is
-      double precision a,b,c
-      common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
-
-      integer hcp,idv
-      common/ cst52  /hcp,idv(k7)
-
-      double precision units, r13, r23, r43, r59, zero, one, r1
-      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c-----------------------------------------------------------------------
 c                                 check for positive bulk, this
 c                                 is for icont = 2 with closed
@@ -1559,9 +1555,6 @@ c-----------------------------------------------------------------------
 
       double precision bl,bu
       common/ cstbup /bl(k1+k5),bu(k1+k5)
-
-      double precision units, r13, r23, r43, r59, zero, one, r1
-      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 
       save ax, x, clamda
 c-----------------------------------------------------------------------
@@ -1817,9 +1810,6 @@ c---------------------------------------------------------------------
 
       integer ipot,jv,iv1,iv2,iv3,iv4,iv5
       common/ cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
-
-      character vnm*8
-      common/ cxt18a /vnm(l3)  
 
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
@@ -3405,9 +3395,6 @@ c-----------------------------------------------------------------------
       integer kkp,np,ncpd,ntot
       double precision cp3,amt
       common/ cxt15 /cp3(k0,k19),amt(k19),kkp(k19),np,ncpd,ntot
-
-      double precision units, r13, r23, r43, r59, zero, one, r1
-      common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c----------------------------------------------------------------------- 
 c                                 fractionation effects:
       do i = 1, jbulk
@@ -3623,7 +3610,7 @@ c                                 warn on complete depletion of a component
 
          cblk(i) = cblk(i) - dcomp(i)
 
-         if (cblk(i).le.zero) then 
+         if (cblk(i).le.nopt(11)) then 
 
             if (.not.gone(i)) then
                warn = .true.
@@ -3631,7 +3618,7 @@ c                                 warn on complete depletion of a component
                write (*,1000) cname(i)
             end if 
 
-            if (cblk(i).lt.zero) cblk(i) = 0d0
+            if (cblk(i).lt.nopt(11)) cblk(i) = 0d0
 
          end if 
 

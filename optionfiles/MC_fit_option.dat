@@ -1,0 +1,68 @@
+|----------------------------------------------------------------------
+
+        | Run-time MC_fit 7.1.15 options:
+
+        | MC_fit reads options from both perplex_option.dat and MC_fit_option.dat
+
+        |-------------------------------------------------------------
+        | NOTE: to avoid accidental option settings, create personalized and/or
+        | problem specific option files (e.g., my_problem_option.dat) that specify 
+        | only those options that have non-default values. 
+        |-------------------------------------------------------------
+
+        | Comments must be preceeded by the "|" character.
+
+        | 0) All keywords accept the default value, in which case the keyword is assigned its default attributes.
+        | 1) Keywords and values are case sensitive.
+        | 2) Keywords that take the value T (true) or F (false) are always binary.
+        | 3) Keywords that take the value on, always may take the value off, but may accept other values as indicated below.
+        | 4) Default keyword values are indicated in square brackets in the comment following each keyword.
+
+        | To change the value of an option from "default" the word "default" 
+        | must be replaced with the desired value. For example, to change the molar_composition_input 
+        | option from its default value of T (true) to F (false), the keyword value must be changed from 
+
+        | molar_compostion_input    default | ...
+
+        |   to 
+
+        | molar_composition_input     F     | ...
+
+|----------------------------------------------------------------------
+
+molar_composition_input       default | [T] T => input compositions are in molar units; F => mass (wt) units (~lmass)
+kiso                          default | [F] T => convert molar compositions to mass units and terminate (kiso)
+thermobarometry               default | [T] F => invert observational data for thermodynamic parameters (~invxpt)
+MINIM_algorithm               default | [T] T => use MINIM (Nelder-Mead) algorithm to find best fit model; F => use grid search (~mcgrid)
+Bayes                         default | [F] F => minimize misfit to select best model; T => use maximum Bayes score (bayes)
+perturbation_hot_start        default | [F] T => do perturbation analysis around user specified inversion coordinate (mchot)
+GRH                           default | [F] T => use George's normalizations, etc. (GRH)
+model_output                  default | [all] improved or best => which sucessful models are output (bstout)
+vital_sign                    default | [T] T => output objective function counter (vital)
+seed                          default | [F] F => don't seed random number generator (seed)
+no_missing_phases             default | [T] T => do not accept models that fail to predict all observed phases (nomiss)
+relative_error                default | [T] T => input uncertainties are relative error; F => absolute error (relerr)
+best_central_model            default | [T] T => use best central model for uncertainty analysis (~newstt)
+uncertainties                 default | [all] analytical or thermodynamic => which components of the uncertainty are evaluated (invunc)
+Nelder-Mead_covariance        default | [T] T => include Nelder-Meade covariance matrix in model output ()
+uncertainty_plus              default | [T] T => add Nelder-Meade covariance to perturbation analysis uncertainty
+composition_scoring           default | [Chi] LSQ or wChi => compositional scoring used in the objective function (lsqchi)
+max_OBJF_value                default | [1d5] => maximum acceptable value of the objective function, larger values trigger an error (oktol)
+convergence_threshold         default | [1d-4] => maximum variance of the objective function for MINIM convergence (invtol)
+w_composition                 default | [1d0] => weighting factor for the composition term of the objective function (wcomp)
+w_extra                       default | [1d4] => weighting factor for the extraneous phase term of the objective function (wextra)
+w_missing                     default | [1d3] => weighting factor for the missing phase term of the objective function (wmiss)
+
+number_of_tries               default | [100] => number of tries during search for the best central model (mtry)
+number_of_perturbations       default | [100] => number of perturbations for the uncertainty analysis (nunc(1))
+number_of_perturbation_tries  default | [100] => number of tries for each perturbation if ~best_central_model (ptry)
+expansion_criterion           default | [1d-4] => criterion to decide if final simplex should be expanded prior to quadratic fitting (simplx)
+step_size                     default | [0.1] => fractional step size (frac)
+convergence_testing           default | [10] => frequency of testing for convergence (conchk)
+print_level                   default | [0], 0 => normal, < 0 => silent, > 0 => verbose (jprint)
+quadratic_fitting             default | [F] T => use quadratic surface fitting to improve location of the minimum
+max_OBJF_evaluations          default | [1000] => maximum number of objective function evaluations permitted for a try (kcount)
+
+prior_probability_PT_only     default | [T] T => for Bayes scoring, base prior probabilities only on inital pressure-temperature range; F => use all parameters
+range_to_standard_error       default | [2.0] => for Bayes scoring, parameter_range/2/standard_error
+uncertainty_multiplier        default | [2.0] => for fit criterion, observational data must fit within uncertainty * uncertainty_multiplier 

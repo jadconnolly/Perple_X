@@ -141,9 +141,6 @@ c---------------------------------------------------------------------
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
-      character vnm*8
-      common/ cxt18a /vnm(l3)
-
       integer ix,iy,mvar
       double precision z,zt 
       common/ dim   /z(nx,ny),ix,iy,mvar
@@ -298,9 +295,6 @@ c---------------------------------------------------------------------
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
-
-      character vnm*8
-      common/ cxt18a /vnm(l3)
 
       integer ix,iy,mvar
       double precision z

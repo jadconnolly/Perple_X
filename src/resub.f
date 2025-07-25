@@ -94,12 +94,12 @@ c                                logarithmic_p option
          c(k) = g(k+inc)/ctot(k+inc)
       end do
 c                                 load the adaptive refinement cpd g's
-      do k = 1, jpoint
-         g2(k) = c(k)
-      end do 
+      g2(1:jpoint) = c(1:jpoint)
 c                                 load the bulk into the constraint array
       bl(jphct+1:jphct+icp) = b(1:icp)
       bu(jphct+1:jphct+icp) = b(1:icp)
+c                                 set quack to .true. for all static cpds
+      quack(1:jphct) = .true.
 
       lpprob = 2
       tol = wmach(4)
@@ -148,25 +148,6 @@ c                                 reoptimize with refinement
 c                                 final processing, .false. indicates dynamic
                call rebulk (abort,.false.)
 
-               if (abort.or.abort1) then
-
-                  if (abort) then 
-c                                 abort is set for bad lagged speciation 
-c                                 solutions in avrger when pure and impure 
-c                                 phases with same solvent composition coexist
-                     idead = 102
-
-                  else
-c                                 gaqlagd couldn't speciate a previously 
-c                                 speciated composition
-                     idead = 104
-
-                  end if
-
-                  call lpwarn (idead,'LPOPT0')
-
-               end if
-
             else if (idead.eq.-1) then
 c                                 hail mary
                jphct = lphct
@@ -175,11 +156,32 @@ c                                 hail mary
                call yclos0 (x,is,jphct) 
                call rebulk (abort,.true.)
 
-            end if 
+            end if
 
          end if 
 
-      end if 
+      end if
+
+      if (idead.eq.0.and.(abort.or.abort1)) then
+c                                 optimization suceeded, but lagged speciation
+c                                 failed.
+         if (abort) then 
+c                                 abort is set for bad lagged speciation 
+c                                 solutions in avrger when pure and impure 
+c                                 phases with same solvent composition coexist
+            idead = 102
+
+         else
+c                                 gaqlagd couldn't speciate a previously 
+c                                 speciated composition; this error probably 
+c                                 doesn't occur, see comment in avrger on abort1
+            idead = 104
+
+         end if
+
+         call lpwarn (idead,'LPOPT0')
+
+      end if
 
       t = oldt
       p = oldp
@@ -981,7 +983,10 @@ c                                 loaded into caq(i,1:ns+aqct)
                end do
 
                if (quack(jdv(i))) then 
-c                                 pure solvent phase
+c                                 pure solvent phase, if lopt(74) this is 
+c                                 to be reported as a failed optimization.
+                  if (lopt(74)) abort1 = .true.
+
                   msol = 0d0
 
                   do k = 1, ns
@@ -1006,6 +1011,12 @@ c                                 ximp is a dummy
                   call gaqlgd (ximp,i,.true.)
 
                   if (rkwak.and.lopt(74)) then
+c                                 it probably ONLY happened when no chemical
+c                                 potentials were obtained after the initial 
+c                                 optimization, so lagged speciation wasn't
+c                                 possible and rkwak wasn't initialized. this
+c                                 case was corrected May 21, 2025 (7.1.13+)
+
 c                                 how/why this happens isn't clear to 
 c                                 me, since the present aqlgd calculation
 c                                 should be identical to one used to generate
@@ -1801,6 +1812,8 @@ c                                 save compound amts for starting guess
       end do
 c                                 amt < 0
       if (npt.gt.icp) call reject (is,1,solvnt)
+c                                 amt = 0
+      if (npt.gt.icp) call reject (is,0,solvnt)
 c                                 amt < featol
       if (npt.gt.icp) call reject (is,2,solvnt)
 c                                 is = 4
@@ -2365,6 +2378,8 @@ c                                 keep the least metastable point
       end do
 c                                 amt < 0
       if (npt.gt.icp) call reject (is,1,solvnt)
+c                                 amt = 0
+      if (npt.gt.icp) call reject (is,0,solvnt)
 c                                 amt < featol
       if (npt.gt.icp) call reject (is,2,solvnt)
 c                                 is = 4
@@ -2538,6 +2553,7 @@ c                                 check zero modes the amounts
 c----------------------------------------------------------------------
 c subroutine to reject bad results from lpopt by one of 3 criteria:
 c  icrit = 1 -> amt(i) < 0
+c  icrit = 0 -> amt(i) = 0
 c  icrit = 2 -> amt(i) < featol
 c  icrit = 3 -> is(i) = 4, weak solution
 c cases 1 & 2 should be, but are not, flagged by the NAG version of 
@@ -2568,7 +2584,8 @@ c----------------------------------------------------------------------
 
       do i = 1, npt
 
-         if (icrit.eq.1.and.amt(i).lt.0d0.or.
+         if (icrit.eq.0.and.amt(i).eq.0d0.or.
+     *       icrit.eq.1.and.amt(i).lt.0d0.or.
      *       icrit.eq.2.and.amt(i).lt.zero.or.
      *       icrit.eq.3.and.is(jdv(i)).eq.4) then 
 
@@ -2709,8 +2726,13 @@ c                                 save endmember fractions
 c                                 get and save the composition
 c                                 getscp uses the jdv pointer
 c                                 only for lagged speciation
-c DEBUG rkwak
-            rkwak = .false.
+
+c DEBUG rkwak, prior to May 21, 2025 this DEBUG code set rkwak
+c to .false. (meaning speciated), regardless of static/dynamic
+c all satic compounds are not speciated, ergo it's not clear to 
+c me why this did not cause problems. I doubt this is necessary.
+
+            if (.not.stic) rkwak = .false.
 
             call getscp (scp,cptot(i),jds,jdv(i))
 
@@ -2768,7 +2790,7 @@ c                                  warn on undersaturation
                if (amt(npt).lt.-nopt(9).and.tictoc.le.isat) 
      *             call warn (99,c(1),i,
      *                    'the specified amount of saturated compon'//
-     *                    'ent '//cname(i)//'is inadequate to saturat'//
+     *                   'ent '//cname(i)//' is inadequate to saturat'//
      *                    'e the system at all conditions of interest')
 
                npt = npt - 1

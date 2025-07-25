@@ -1031,7 +1031,6 @@ c                                 write notice and stats to console
 c                                 write details of scoring to *.out console and n6
             if (.not.randm) then 
               fprint = .true.
-              x(1:n) = ox(1:n)
               call mcobj2 (x,objf,bad)
               fprint = .false.
             end if
@@ -1300,7 +1299,7 @@ c                                 read optional effective bulk
       end if
 c                                 read the assemblage data
       call gtassmb (comp,ecomp,randm,'assemblage',bad)
-
+c KA hack
       if (mxpt.eq.1) then
          mxpt = mxpt + 1
          goto 10
@@ -2108,7 +2107,7 @@ c-----------------------------------------------------------------------
       character key*22, val*3, nval1*12, nval2*12, nval3*12,
      *          strg*40, strg1*40, tag*(*)
 
-      double precision tot, comp(*), ecomp(*), pertrb
+      double precision tot, comp(*), ecomp(*), pertrb, chk, min
 
       external pertrb
 c----------------------------------------------------------------------
@@ -2167,7 +2166,24 @@ c                                output molar composition and errors
             if (lmass.and.kiso) 
      *                 write (*,1000) cname(i), comp(i), ecomp(i)
 c                                 perturb data
-            if (randm) comp(i) = pertrb (comp(i),ecomp(i))
+            if (randm) then
+
+               chk = pertrb (comp(i),ecomp(i))
+c                                 hack to prevent negative compositions.
+c                                 the largest negative perturbation
+               min = comp(i) * (1d0 - ecomp(i))
+
+               if (min.lt.0d0.and.chk.lt.comp(i)) then
+c                                 the perturbed value chk is on the low
+c                                 side of comp(i), rescale so that it's
+c                                 between 0 and comp(i)
+                  comp(i) = comp(i) * (comp(i) - chk)/(comp(i) - min)
+
+               else 
+                  comp(i) = chk
+               end if
+
+            end if
 
          end if
 
@@ -2315,7 +2331,7 @@ c                                 to the normal variables:
       end do
 
       end 
-
+c KA hack
       subroutine mcsetb (x,ixpt)
 c-----------------------------------------------------------------------
 c set bulk composition for MC thermobarometry, assumes normalized 
@@ -2346,6 +2362,7 @@ c-----------------------------------------------------------------------
       if (mcbulk) then
 c                                 use effective bulk
 c                                 composition pointer
+c KA hack
          cxpt = blkptr(ixpt)
 
          do j = 1, kbulk
@@ -2359,8 +2376,10 @@ c                                 ctotal here is the sum of the
 c                                 independent x's
          ctotal = 0d0
 c                                 compute bulk from phase simplex
+c KA hack
          do i = 1, xptnph(ixpt)
 c                                 composition pointer
+c KA hack
             cxpt = xptptr(ixpt,i)
 c                                 compositional var pointer
             k = ipot + i
@@ -2389,7 +2408,7 @@ c
                cmin = cmin + cblk(j)*cmpmin(l,j)
                cmax = cmax + cblk(j)*cmpmax(l,j)
             end do
-
+c KA hack
             cblk(uncomp(l)) = cmin + (cmax - cmin) * x(ipot+l+(ixpt-1))
 
          end do
@@ -4399,13 +4418,15 @@ c----------------------------------------------------------------------
       integer i, ii, n, j, k, igood, ibest, jbest, lu, nblen, jcount, 
      *        icount
 
-      double precision objf, x(*), bstlik, ssp,x0(*), sx(*),
+      double precision objf, x(*), bstlik, ssp,x0(*), sx(*), ox(l2+k5),
      *                 bay, bstbx(*), bstbay, bstlx(*), xxx
 
       external nblen
 c----------------------------------------------------------------------
 c                                 write notice and stats to console
             lu = 6
+
+            ox(1:n) = x(1:n)
 
             do j = 1, 4
 
@@ -4439,7 +4460,7 @@ c                                 loop to write to console, *.lik, *.bay
                write (lu,1130) ssp, bay, bstbay, jbest
                write (lu,1080) sx(1:n)
                write (lu,1085) x0(1:n)
-               write (lu,1030) x(1:n)
+               write (lu,1030) ox(1:n)
 
                if (j.eq.4) exit
 
@@ -4451,7 +4472,7 @@ c                                 *.lik file
                      xxx = bstlik
 c KA hack
                      do ii = 1, mxpt
-                     call mcsetb (x,i)
+                     call mcsetb (x,ii)
                      end do
 
                   else if (lu.eq.n9) then
@@ -4460,7 +4481,7 @@ c                                 *.bay file
                      xxx = bstbay
 c KA hack
                      do ii = 1, mxpt
-                     call mcsetb (x,i)
+                     call mcsetb (x,ii)
                      end do
 
                   end if
@@ -4482,6 +4503,9 @@ c KA hack
                end if
 
              end do
+c                                 reset x, just in case
+      x(1:n) = ox(1:n)
+
 
 1000  format (a,1x,20(1pg13.6,1x),a)
 1030  format ('Final coordinates: ',20(1pg13.6,1x))

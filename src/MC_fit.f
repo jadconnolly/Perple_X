@@ -40,251 +40,21 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical tictoc
-
-      character key*22, val*3, nval1*12, nval2*12, nval3*12,
-     *          strg*40, strg1*40
-
       integer i, j, ier, noerr(k10)
-
-      save tictoc
-
-      data tictoc/.true./
 c----------------------------------------------------------------------- 
 c                                 open inversion problem file
       call mertxt (tfname,prject,'.imc',0)
       open (n8,file=tfname,status='old',iostat=ier)
 
       if (ier.ne.0) call errdbg 
-     *   ('can''t open assemblage composition file: '//tfname)
+     *   ('can''t open the inversion input file: '//tfname)
 c                                 rewind in case, n8 hasn't been closed
-c                                 by mccomp (e.g., thermo-only error
-c                                 analysis)
+c                                 by mccomp (e.g., thermo-only error analysis)
       rewind (n8)
-c----------------------------------------------------------------------- 
-c                                 IMC file input Section 1
-c                                 read compositional input units
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'molar'.or.key.eq.'mass') then
-
-         if (key.eq.'molar') then
-            lmass = .false.
-         else
-            lmass = .true.
-         end if
-
-         if (key.eq.'mass'.and.val.eq.'kis') then 
-            kiso = .true.
-         else
-            kiso = .false.
-         end if 
-
-      else
-
-         call errdbg ('expecting mass or molar tag, found: '
-     *               //key)
-
-      end if
-c                                 read problem type flag
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'invptx'.or.key.eq.'invxpt') then
-
-         if (key.eq.'invxpt') then
-            invxpt = .true.
-         else
-            invxpt = .false.
-         end if
-
-      else
-
-         call errdbg ('expecting invxpt or invptx tag, found: '
-     *               //key)
-
-      end if
-c                                 read algorithm flag
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'minim'.or.key.eq.'grid') then
-
-         if (key.eq.'minim') then
-            mcgrid =  .false.
-         else
-            mcgrid = .true.
-         end if
-
-         if (mcgrid.and..not.invxpt) call errdbg ('grid search not '
-     *                                          //'allowed with invptx')
-
-      else
-
-         call errdbg ('expecting minim or grid tag, found: '//key)
-
-      end if
-c                                 best model criterion (both output, but
-c                                 choice selects the scores output to 
-c                                 n6). 
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'likelihood'.or.key.eq.'bayes') then
-
-         if (key.eq.'bayes') then
-            bayes =  .true.
-         else
-            bayes = .false.
-         end if
-
-      else
-
-         call errdbg ('expecting likelihood or bayes tag, found: '
-     *               //key)
-
-      end if
-c                                 do uncertainty around a user specified
-c                                 model or directly around the best model
-c                                 result 
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'cold'.or.key.eq.'hot') then
-
-         if (key.eq.'cold') then
-            mchot = .false.
-         else
-            mchot = .true.
-         end if
-
-      else
-
-         call errdbg ('expecting cold or hot tag, found: '//key)
-
-      end if
-
-c                                 george's normalization, etc
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'JADC'.or.key.eq.'GRH') then
-
-         if (key.eq.'GRH') then
-            GRH =  .true.
-         else
-            GRH = .false.
-         end if
-
-      else
-
-         call errdbg ('expecting GRH or JADC tag, found: '
-     *               //key)
-
-      end if
-c                                 output only improved results
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'better'.or.key.eq.'all'.or.key.eq.'best') then
-
-         if (key.eq.'all') then
-            bstout =  0
-         else if (key.eq.'better') then
-            bstout = 1
-         else 
-            bstout = 2
-         end if
-
-      else
-
-         call errdbg ('expecting best, better, or all tag, found: '
-     *               //key)
-
-      end if
-c                                 output optimization counter
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'vital_sign'.or.key.eq.'quiet') then
-
-         if (key.eq.'vital_sign') then
-            vital =  .true.
-         else
-            vital = .false.
-         end if
-
-      else
-
-         call errdbg ('expecting vital_sign or quiet tag, found: '
-     *               //key)
-
-      end if
-c                                 make new seed for random number generator
-c                                 george's normalization, etc
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'seed'.or.key.eq.'no_seed') then
-
-         if (key.eq.'seed') then
-            seed =  .true.
-         else
-            seed = .false.
-         end if
-
-      else
-
-         call errdbg ('expecting seed or no_seed tag, found: '
-     *               //key)
-
-      end if
-c                                 allow models that fail to predict
-c                                 all observed phases
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'no_miss'.or.key.eq.'miss_ok') then
-
-         if (key.eq.'no_miss') then
-            nomiss =  .true.
-         else
-            nomiss = .false.
-         end if
-
-      else
-
-         call errdbg ('expecting no_miss or miss_ok tag, found: '
-     *               //key)
-
-      end if
-c                                 compositional uncertainties
-c                                 are relative or absolute
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'rel_err'.or.key.eq.'abs_err') then
-
-         if (key.eq.'rel_err') then
-            relerr =  .true.
-         else
-            relerr = .false.
-         end if
-
-      else
-
-         call errdbg ('expecting rel_err or abs_err tag, found: '
-     *               //key)
-
-      end if
-c                                 uncertainty analysis starting 
-c                 
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'use_central'.or.key.eq.'new_start') then
-
-         if (key.eq.'new_start') then
-            newstt =  .true.
-         else
-            newstt = .false.
-         end if
-
-      else
-
-         call errdbg ('expecting use_central or new_start tag, found: '
-     *               //key)
-
-      end if
+c                                 first execution, read options
+      call mcopts
+c                                 consitency checks on options:
+c                                 -------------------------------------
 c                                 uncertainty analysis error sources, sets jnvrnd :
 c                                 invunc = 1 = > perturb all data
 c                                 invunc = 2 = > perturb analytical data only
@@ -293,177 +63,51 @@ c
 c                                 works in concert with invrnd set in subroutine bstmod
 c                                 invprt = F = > not uncertainty analysis(no pertrubations)
 c                                 invprt = T = > uncertainty analysis
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
+      if (.not.uncrty.and.(invunc.eq.1.or.invunc.eq.3)) then
 
-      if (key.eq.'all_unc'.or.key.eq.'analytical'.or.
-     *                        key.eq.'thermodynamic') then
+         call errdbg ('uncertainty option values all and thermodynami'//
+     *      'c require a thermodynamic data file with uncertainty data')
 
-         if (key.eq.'all_unc') then
-            invunc = 1
-         else if (key.eq.'analytical') then
-            invunc = 2
-         else
-            invunc = 3
-         end if
+      else if (mcfrst.and.(invunc.eq.1.or.invunc.eq.3)) then
 
-         if (.not.uncrty.and.(invunc.eq.1.or.invunc.eq.3)) then
+         j = 0
 
-            call errdbg ('all_unc or thermodynamic *.imc file options'//
-     *       ' require a thermodynamic data file with uncertainty data')
+         do i = 1, imkend
 
-         else if (tictoc.and.(invunc.eq.1.or.invunc.eq.3)) then
-
-            j = 0
-
-            tictoc = .false.
-
-            do i = 1, imkend
-
-               if (make(i).ne.0) then
-                  cycle
-               else if (mkptr(i).eq.0) then
-                  if (deltah(i).eq.0d0) then
-                     j = j + 1
-                     noerr(j) = i
-                   end if
-               else if (deltah(mkptr(i)).eq.0d0) then
+            if (make(i).ne.0) then
+               cycle
+            else if (mkptr(i).eq.0) then
+               if (deltah(i).eq.0d0) then
                   j = j + 1
                   noerr(j) = i
                end if
-
-            end do
-
-            if (j.gt.0) then
-               write (*,1000)
-               write (*,1010) (names(noerr(i)), i = 1,j)
-               write (*,'(/)')
-               call wrnstp
+            else if (deltah(mkptr(i)).eq.0d0) then
+               j = j + 1
+               noerr(j) = i
             end if
 
+         end do
+
+         if (j.gt.0) then
+            write (*,1000)
+            write (*,1010) (names(noerr(i)), i = 1,j)
+            write (*,'(/)')
+            call wrnstp
          end if
 
-      else
-
-         call errdbg ('expecting all_unc, analytical or thermodynamic'//
-     *                ' tag, found: '//key)
-
       end if
-c----------------------------------------------------------------------- 
-c                                 IMC file input Section 
-c                                 composition scoring function choice
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'LSQ'.or.key.eq.'Chi'.or.key.eq.'wChi') then
-
-         if (key.eq.'LSQ') then
-            lsqchi = 1
-         else if (key.eq.'Chi') then 
-            lsqchi = 2
-         else 
-            lsqchi = 3
-         end if
-
-      else
-
-         call errdbg ('expecting LSQ, Chi, or wChi tag, found: '//key)
-
-      end if
-c                                 quadratic/linear objective function
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-      if (key.eq.'quadratic'.or.key.eq.'linear') then
-
-         if (key.eq.'linear') then
-            grhobj =  .true.
-         else
-            grhobj = .false.
-         end if
-
-      else
-
-         call errdbg ('expecting quadratic or linear tag, found: '//key)
-
-      end if
-
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) oktol
-
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) invtol
-
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) wcomp
-
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) wextra
-
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) wmiss
-c----------------------------------------------------------------------- 
-c                                 IMC file input Section 3
-c                                 Monte-Carlo logistical variables:
-
-
-c     call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-
-c     ier = index('TtFfGg',key(1:1))
-c     if (ier.eq.0) stop '***Bad problem type, check random value'
-c     random(1) = (ier-1)/2
-
-c     if (val.ne.' ') then
-c        ier = index('TtFf',val(1:1))
-c        if (ier.eq.0) stop '***Bad problem type, check random value'
-c        ier = (ier-1)/2
-c        random(1) = random(1) + 10*ier
-c     end if
-c                                 number of starting guesses used for each
-c                                 Nelder-Meade inverse problem, George also
-c                                 somehow converts his input to mtry
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) mtry
-c                                 error evaluation loop counter
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) nunc(1)
-c                                 georges additional parameter
-      if (val.ne.' ') then
-         read (val,*) nunc(2)
-         if (nunc(2).gt.5) then
-            write(*,'(2a,/,a)')
-     *     '**warning** 2nd nunc value in MC inversion parameter',
-     *     ' is probably too big -','  will slow search; set to 5'
-           nunc(2) = 5
-         end if
-      else
-         nunc(2) = 0
-      end if
-c                                 error evaluation loop counter
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) ptry
-
+c                                 override ptry if using best central 
+c                                 model for perturbation analysis initial 
+c                                 condition.
       if (.not.newstt) ptry = 1
-c----------------------------------------------------------------------- 
-c                                 IMC file input Section 4
-c                                 Nelder-Meade parameters
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) simplx
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) frac
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) conchk
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) jprint
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) iquad
-      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
-      read (key,*) kcount
-
+c                                 george's conditions:
       if (wmiss.gt.oktol .or.wextra.gt.oktol .or.wcomp.gt.oktol) then
          write(*,'(2a,/,a)')
      *     '**warning** oktol value in MC inversion parameters',
      *     ' is probably too small -','  check wcomp, wextra, wmiss'
       end if
 
-1000  format (/,'**warning ver503** the following entitities have no ',
+1000  format (/,'**warning ver503** the following entities have no ',
      *          'associated thermodynamic uncertainty:',/)
 1010  format (8(a,1x))
 
@@ -479,8 +123,8 @@ c----------------------------------------------------------------------
 
       logical randm
 
-      double precision bstx(l2+k5), x(200,l2+k5), sx(l2+k5), ss(l2+k5), 
-     *                 bstobj
+      double precision bstx(l12), x(200,l12), sx(l12), ss(l12), 
+     *                 bstobj, bstcov(l12**2)
 c----------------------------------------------------------------------- 
 c                                 output summary files, output to these files 
 c                                 is dependent on bayes/liklihood, best/better/all,
@@ -514,12 +158,13 @@ c                                 in case the user has set print, detach the fil
 c                                 initialize drand
       if (seed) call random_seed
 
-      if (mchot) then 
+      if (.not.mchot) then 
 c                                 get best model, 1st argument sets 
 c                                 random perturbation off, 2nd sets 
 c                                 output of all sucessful optimizations
 c                                 arguments: init, uncert, randm, n6out, x
-         call bstmod (.false.,.false.,.false.,.true., bstx, bstobj, 1)
+         call bstmod (.false.,.false.,.false.,.true., bstx, bstobj, 
+     *                bstcov, 1)
 
          write (n0,1020) 1, (bstx(j),j=1,nparm), bstobj
 
@@ -528,15 +173,16 @@ c                                 arguments: init, uncert, randm, n6out, x
       else
 c                                 this call is just doing initialization.
 c                                 arguments: init, uncert, randm, n6out, x
-         call bstmod (.true.,.false.,.false.,.false., bstx, bstobj, 1)
+         call bstmod (.true.,.false.,.false.,.false., bstx, bstobj, 
+     *                bstcov, 1)
 
          if (nunc(1).eq.0) call errdbg ('the value of NUNC in the '//
      *                         'must be > 0 for uncertainty analysis')
 
-         write (*,1000) 'Enter the ',nparm,' coordinates of the model'
-     *             //' you want uncertainties for:'
+         write (*,1000) 'Enter the ',nparm,' coordinates and OBJ of the'
+     *                //' model you want uncertainties for:'
 
-         read (*,*) (x(1,j),j=1,nparm)
+         read (*,*) (x(1,j),j=1,nparm), bstobj
 
       end if
 
@@ -565,7 +211,8 @@ c                                 set number of attempts
 
          bstx(1:nparm) = x(1,1:nparm)
 c                                 arguments: init, uncert, randm, n6out, x
-         call bstmod (.false.,.true.,randm,.false.,bstx, bstobj, i)
+         call bstmod (.false.,.true.,randm,.false.,bstx, bstobj, 
+     *                bstcov, i)
 
          if (nogood) then 
 
@@ -627,21 +274,32 @@ c                                 standard deviation
 
             write (lu,'(80(''-''))')
             write (lu,1080) m
-            write (lu,1030) 'Central model parameter and OBJF values: ',
+            write (lu,1025) (vnm(k), k = 1, nparm)
+
+            write (lu,1030) 'Central model parameters:',
      *                       (x(1,k), k = 1, nparm)
 c           write (lu,1030) 'Peturbed central model parameter and OBJF'
 c    *                      //' values: ',
 c    *                       (x(m,k), k = 1, nparm)
-            write (lu,1030) 'Mean peturbed parameter values: ',
+
+            write (lu,1030) 'Mean peturbed parameters:',
      *                       (sx(k)/m, k = 1, nparm)
             if (m.gt.1) then
 
-               write (lu,1030) 'Parameter standard errors: ',
+               write (lu,1030) 'Parameter standard deviation:',
      *                       (ss(k), k = 1, nparm)
+
 c              write (lu,1030) 'Standard errors on the mean parameter v'
 c    *                         //'alues: ',(ss(k)/(m-1d0), k = 1, nparm)
-            end if 
 
+               if (nmcov.and.bstcov(1).ne.0d0) then
+
+                  write (lu,1030) 'Nelder-Mead standard deviation:',
+     *                          (dsqrt(covar(jkdiag(k))), k = 1, nparm)
+
+               end if
+
+            end if
             lu = n13
 
          end do
@@ -661,9 +319,10 @@ c    *                         //'alues: ',(ss(k)/(m-1d0), k = 1, nparm)
 1000  format (/,a,i4,a,/)
 1010  format (20(1pg12.6,1x))
 1020  format (i1,2x,20(1pg12.6,1x))
-1030  format (a,20(1pg12.6,1x))
+1025  format (t40,20(2x,a8,3x))
+1030  format (a,t40,20(1pg12.6,1x))
 1040  format (2(80('-'),/),'Starting uncertainty evaluation loop ',
-     *       'iteration ',i3,' of ',i3,' requested.',/)
+     *       'iteration ',i3,' of ',i4,' requested.',/)
 1050  format (/,80('-'),/,
      *       'The results have been written to *.prn, *.bst, *.bay, an',
      *       'd *.pts files. The *.prn ',/,'file documents the central'
@@ -682,7 +341,8 @@ c    *                         //'alues: ',(ss(k)/(m-1d0), k = 1, nparm)
 
       end 
 
-      subroutine bstmod (init, uncert, randm, n6out, x, objf, ipert)
+      subroutine bstmod (init, uncert, randm, n6out, x, objf, bstcov, 
+     *                   ipert)
 c----------------------------------------------------------------------
 c init   -> just initialize and return
 c uncert -> use x as starting guess
@@ -695,15 +355,15 @@ c-----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i, n, icount, ifault, jcount, nfree, lu, nblen,
-     *        j, k, igood, ibest, jbest, pnum(l2+k5), ipert
+     *        j, k, igood, ibest, jbest, pnum(l12), ipert, ii
 
       logical readyn, bad, randm, n6out, improv, init, uncert
 
-      double precision objf, sx(l2+k5), point5, var(l2+k5),
-     *                 x0(l2+k5), step(l2+k5), x(*), ssp, 
-     *                 ox(l2+k5), bstlx(l2+k5), bstlik, bstlx0(l2+k5),
-     *                 bstbx0(l2+k5), bay, bstbx(l2+k5), bstbay, pertrb
-      
+      double precision objf, sx(l12), point5, bstcov(*),
+     *                 x0(l12), step(l12), x(*), ssp, 
+     *                 bstlx(l12), bstlik, bstlx0(l12),
+     *                 bstbx0(l12), bay, bstbx(l12), bstbay, pertrb
+
       character strg*35, strg1*120
 
       external readyn, mcobj2, nblen, pertrb
@@ -733,6 +393,7 @@ c                                 randm -> uncertainty analysis
 
       if (randm) then 
          write (strg,'(a,i3)') 'Central model peturbation ',ipert
+c        write (*,1030) strg//'central values:',x(1:6)
       else          
          write (strg,'(a,i3)') 'Central model '
       end if
@@ -805,16 +466,24 @@ c                                 read phase compositions
             call mccomp (invprt)
 
          end if
+
+         mcfrst = .false.
 c                                 set george's "weight"
-         xptpt(1,5) = 1d0
+c KA hack
+         do i = 1, mxpt
+            xptpt(i,5) = 1d0
+         end do
 c                                 for phase simplex and bulk cases, the first 
 c                                 ipot variables are the same
          nfree = ipot
          n = ipot
 c                                 phase simplex case
+c!!!!!!!!!!!!!!!!!!!! need a local counter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          if (.not.mcbulk) n = ipot + xptnph(1)
 
          if (unmeas.gt.0) n = n + unmeas
+c KA hack
+c        if (unmeas.gt.0) n = n + 2 * unmeas + 1
 
          do k = 1, n
             if (k.le.ipot) then
@@ -851,44 +520,18 @@ c                                 unscale step size for search
       igood = 0
       ifault = 0
       bstlik = 1d99
-      bstbay = 1d99
+      bstbay = 0d0
       jbest = 0
       point5 = 0.5d0
-c------------------------------------------------------------------------------------------------------
-c     x(1) = 15616.2     
-c     x(2) =  756.562  
-c     x(3) =  0.541329 
-c     x(4) =     0.702942  
-c     x(5) =     0.773550 
-c     x(6) =      0.830524E-02
-c     x(7) =   0.689348   
-c     x(8) =  0.601786  
-c     x(9) = 0.456933      
-c     x(10) = 0.586190
+c                                 save indices of diagonal elements
+c                                 of the nelder-mead covariance matrix
+      k = 0
 
+      do j = 1, nparm
+         jkdiag(j) = k + j
+         k = k + nparm
+      end do
 
-c   11727.2       752.816      0.569036      0.874363      0.412340E-01  0.455304E-02
-c  0.979959      0.712777      0.859474      0.616171
-c     x(1) = 11727.2     
-c     x(2) =  752.816 
-c     x(3) =  0.569036
-c     x(4) =   0.874363 
-c     x(5) =    0.412340E-01
-c     x(6) = 0.455304E-02 
-c     x(7) = 0.979959  
-c     x(8) = 0.712777
-c     x(9) =   0.859474 
-c     x(10) =  0.616171
-
-
-c        do j = 1, n
-c           sx(j) = (x(j) - plow(j))/pdelta(j) 
-c        end do
-
-c            fprint = .true.
-c             call mcobj2 (x,objf,bad)
-c             fprint = .false.
-c-----------------------------------------------------------------------------------------------------
       if (init) return
 
       do i = 1, mtry
@@ -920,6 +563,7 @@ c                                  random starting guesses.
          end if 
 c                                 save starting coordinate
          x0(1:n) = x(1:n)
+c        if(randm) write (*,1030) 'perturbed central values:',x(1:n)
 
          if (mcgrid) then
 c                                 grid seach:
@@ -931,14 +575,14 @@ c                                 initialize icount in case of failure
             icount = 0
 
             call minim (x, step, n, objf, kcount, jprint, invtol, 
-     *                  conchk, iquad, simplx, var, mcobj2, icount, 
+     *                  conchk, iquad, simplx, covar, mcobj2, icount, 
      *                  jcount, ifault, oktol, nfree)
 
          end if
 
          if (ifault.gt.2.or.(ifault.gt.0.and.objf.gt.oktol)) then
 c                                 write failure 
-            write (strg1,'(a,a,i4,a,i4,a)') strg,', Try ',i,
+            write (strg1,'(a,a,i5,a,i5,a)') strg,', Try ',i,
      *            ' did not converge after ',icount,
      *            ' objective function evaluations.'
 
@@ -949,6 +593,8 @@ c                                 write failure
             do 
                write (lu,'(80(''-''))')
                write (lu,'(a)') strg1(1:nblen(strg1))
+               write (lu,1080) igood
+               write (lu,'(80(''-''))')
                if (lu.eq.n6) exit
                lu = n6
             end do 
@@ -984,17 +630,32 @@ c                                  got a legitimate result
 
                nogood = .false.
 
-            end if 
+            end if
+
+            if (nmcov.and.ifault.eq.2.and..not.randm) then
+c                                 warn about failed covariance matrix
+c                                 if doing central models
+               lu = 6
+
+               do
+                  write (lu,1100)
+                  if (lu.eq.n6) exit
+                  lu = n6
+               end do
+
+            end if
 c                                 count and check if model improved
-c                                 bstlik - best likelihood objective f value
-c                                 bstlx  - best likelihood x
-c                                 bstlx0 - ... initial x
-c                                 bstbay - best bayesian ojective f value
-c                                 bstbx  - best bayesian x
-c                                 bstbx0 - ... initial x
-c                                 bay    - current bayesian objective f
-            call savbst (x,objf,bstlik,bstlx,bay,ssp,x0,bstlx0,bstbx0,
-     *                   bstbay,bstbx,n,i,ibest,jbest,igood)
+c                                 bstlik - minimum misfit
+c                                 bstlx  - minimum misfit model x
+c                                 bstlx0 - initial x of min misfit model
+c                                 bstlco - min misfit covariance/correlation matrix
+c                                 bstbay - maximum bayesian probability
+c                                 bstbx  - maximum bayesian x
+c                                 bstbx0 - initial x of max bayesian
+c                                 bstbco - max bayesian covariance/correlation matrix
+c                                 bay    - current bayesian probability
+            call savbst (x,objf,bstlik,bstlx,bay,ssp,x0,bstlx0,
+     *                   bstbx0,bstbay,bstbx,n,i,ibest,jbest,igood)
 c                                 write all successful results to 
 c                                 *_central.pts file
             if (.not.invprt) then
@@ -1016,17 +677,14 @@ c                                 handles only the first two cases writes
 c                                 to n6 (*.out), n7 (*.bst), n9 (*.bay), n11 (*.pts)
          if (((improv.and.bstout.eq.1).or.bstout.eq.0)
      *                                  .and..not.randm) then
-c                                 call to mcbulk can change the x values, save a
-c                                 copy for subsequent score output/computation
-            ox(1:n) = x(1:n)
-c                                 write notice and stats to console
+c                                 call to prtsum may change cblk (bulk composition)
+c                                 but keeps original x
             call prtsum (x,objf,bstlik,bstlx,bay,ssp,x0,
      *                   bstbay,bstbx,sx,n,i,ibest,jbest,igood,jcount,
      *                   icount,strg1)
 c                                 write details of scoring to *.out console and n6
             if (.not.randm) then 
               fprint = .true.
-              x(1:n) = ox(1:n)
               call mcobj2 (x,objf,bad)
               fprint = .false.
             end if
@@ -1064,17 +722,25 @@ c                               write best model to *.bst and *.bay
          do j = 1, 2
 
             if (j.eq.1) then
+
                lu = n7
-               x(1:n) = bstlx(1:n)
                x0(1:n) = bstlx0(1:n)
                objf = bstlik
-               call mcsetb (x)
+c KA hack
+               do ii = 1, mxpt
+                  call mcsetb (x,ii)
+               end do
+
             else
+
                lu = n9
-               x(1:n) = bstbx(1:n)
                x0(1:n) = bstbx0(1:n)
                objf = bstbay
-               call mcsetb (x)
+c KA hack
+               do ii = 1, mxpt
+                  call mcsetb (x,ii)
+               end do
+
             end if
 c                                 loop to write to console, *.bst, *.bay, *.out (partial)
 c                                 write notice and stats to console
@@ -1089,9 +755,11 @@ c                                 set choice for statistics computation
 c                                 on return to invers
       if (bayes) then
          x(1:n) = bstbx(1:n)
+         bstcov(1:n**2) = bstbco(1:n**2)
          objf = bstbay
       else
          x(1:n) = bstlx(1:n)
+         bstcov(1:n**2) = bstlco(1:n**2)
          objf = bstlik
       end if
 
@@ -1107,20 +775,25 @@ c                                 write details of scoring to *.out console and 
 1020  format (80('-'),/,'Search FAILED, ifault = ',i3,', icount = ',
      *       i4,', igood = ',i4,', mtry = ',i7,/,80('-'))
 1025  format (i1,2x,20(1pg12.6,1x))
+1030  format (a,2x,20(1pg12.6,1x))
 1060  format (/,'No good solutions found for your unperturbed observat',
      *          'ional data execution will',/,'be terminated. Possible',
      *          ' remedies:',//,
      *       2x,'1 - double MTRY (*.imc file)')
 1070  format (2x,'2 - change no_miss to miss_ok (*.imc file)')
-
+1080  format (i4,' tries have converged so far.')
 1090  format ('rejected because one or more observed ',
      *        'phases are not predicted. To use such',/,
      *        'results change no_miss to ',
      *        'miss_ok in the *.imc file',/,80('-'))
+1100  format (/,'**warning ver505** quadratic surface fitting failed. ',
+     *        'The Nelder Mead Covariance',/,'and correlation matrices',
+     *        ' will not be avalilable for this result. Increasing',/,
+     *        'expansion_criterion may remedy this problem.',/)
 2000  format (/,'Try ',i5,' has converged at:',/)
-2010  format (/,'Likelihood score for this Try: ',g12.6)
-2020  format ('This is the best likelihood score obtained so far.')
-2030  format ('Best likelihood score (',g12.6,
+2010  format (/,'Misfit for this Try: ',g12.6)
+2020  format ('This is the minimum Misfit obtained so far.')
+2030  format ('The minimum Misfit (',g12.6,
      *        ') so far was obtained on Try',i5)
 2040  format (/,'Bayesian score for this Try: ',g12.6)
 2050  format ('This is the best Bayesian score obtained so far.')
@@ -1129,7 +802,6 @@ c                                 write details of scoring to *.out console and 
 2070  format (29x,a8,' = ',g12.6)
 
       end
-
 
       subroutine mccomp (randm)
 c-----------------------------------------------------------------------
@@ -1166,24 +838,14 @@ c                                observation (mxpt = 1).
 c                                 number of phase compositions
       cxpt = 0
 c                                 unmeasured component counter
+c KA hack
+c10    unmeas = 0
       unmeas = 0
 c                                 effect bulk specification
       mcbulk = .false.
-c                                 look for thermobarometry problem in
-c                                 my_project.imc
-c     call mertxt (tfname,prject,'.imc',0)
-c     open (n8,file=tfname,status='old',iostat=ier)
 
-c     if (ier.ne.0) call errdbg 
-c    *   ('can''t open assemblage composition file: '//
-c    *   tfname(1:nblen(tfname)))
-
-c     if (random(1).ge.2) call errdbg
-c    *   ('can''t use grid search option (yet)')
-c                                 this subroutine has been hacked for 
-c                                 invptx, since mccomp may be called 
-c                                 multiple times, rewind and find the
-c                                 begin_assemblage tag
+      vnm(1) = 'P_bar'
+      vnm(2) = 'T_K'
 c                                 -------------------------------------
 c                                 IMC file input Section 5
       call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
@@ -1203,7 +865,7 @@ c                                 pressure range
       if (key.eq.'pressure_range') then
 
          read (strg1,*) vmin(1), vmax(1)
-         write (*,'(a)') 'read pressure range'
+         if (mcfrst) write (*,'(a)') 'read pressure range'
 
       else
 
@@ -1217,7 +879,7 @@ c                                 temperature range
       if (key.eq.'temperature_range') then
 
          read (strg1,*) vmin(2), vmax(2)
-         write (*,'(a)') 'read temperature range'
+         if (mcfrst) write (*,'(a)') 'read temperature range'
 
       else
 
@@ -1233,19 +895,29 @@ c                                 read optional unmeasured components
          if (key.eq.'redox_component'.or.key.eq.'unmeasured_component') 
      *                                                             then
 
-            write (*,'(a)') 'reading '//key
+            if (mcfrst) write (*,'(a)') 'reading '//key
 
             unmeas = unmeas + 1
 
+            uncomp(unmeas) = 0
+
             do i = 1, kbulk
-               if (val.eq.cname(i)) uncomp(unmeas) = i
+               if (val.eq.cname(i)) then
+                  uncomp(unmeas) = i
+                  exit
+               end if
             end do
+
+            if (uncomp(unmeas).eq.0) call errdbg (key//' is an invalid'/
+     *                               /' component name')
+
+            vnm(unmeas+2) = 'C_'//val
 
             call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
 c                                 look for limiting components
             if (key.eq.'begin_limits') then
 
-               write (*,'(a)') 'reading limiting components'
+               if (mcfrst) write (*,'(a)') 'reading limiting components'
 
                call gtcomp (comp,ecomp,.false.,'limits',bad,.false.)
 
@@ -1287,9 +959,39 @@ c                                 read optional effective bulk
 c                                 read the assemblage data
       call gtassmb (comp,ecomp,randm,'assemblage',bad)
 
+c KA hack
+c     if (mxpt.eq.1) then
+c         mxpt = mxpt + 1
+c        goto 10
+c     end if
+
       close (n8)
 
       end
+
+      double precision function stink (x0,xinc,i,nfree)
+c-----------------------------------------------------------------------
+c a hack to adjust the increments for bound variables in minim
+c-----------------------------------------------------------------------
+      implicit none
+
+      double precision x0, xinc, zap
+
+      integer i, nfree
+c
+      zap = x0 + xinc
+
+      if (i.gt.nfree.and.zap.gt.1d0) then 
+         zap = (1d0 - x0) * (1d0 - x0)/(zap - x0)
+      else if (i.gt.nfree.and.zap.lt.0d0) then
+         zap = -x0 * (x0 /(x0 - zap))
+      else 
+         zap = xinc
+      end if
+
+      stink = zap
+
+      end 
 
       double precision function pertrb (num,err)
 c-----------------------------------------------------------------------
@@ -1863,9 +1565,12 @@ c-----------------------------------------------------------------------
       character key*22, val*3, nval1*12, nval2*12, nval3*12,
      *          strg*40, strg1*40, tag*(*)
 
-      double precision comp(*), ecomp(*), pertrb
+      double precision comp(*), ecomp(*), repurb, tot
 
-      external pertrb, nblen
+      external repurb, nblen
+
+      character fname*10, aname*6, lname*22
+      common/ csta7 /fname(h9),aname(h9),lname(h9)
 
       double precision cp
       common/ cst12 /cp(k5,k10)
@@ -1878,8 +1583,9 @@ c----------------------------------------------------------------------
       ok = .true.
       absent = .true.
       msolct(mxpt,1:isoct) = 0
+      mcmode(mxpt) = .false.
 
-      write (*,'(a)') 'reading assemblage data'
+      if (mcfrst) write (*,'(a)') 'reading assemblage data'
 c                                 optional bulk composition
       call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
 
@@ -1887,9 +1593,14 @@ c                                 optional bulk composition
 
          mcbulk = .true.
 
-         write (*,'(a)') 'reading [effective] bulk composition'
+         if (mcfrst) 
+     *         write (*,'(a)') 'reading [effective] bulk composition'
+
+         if (kiso) write (*,1030) 
 c                                 get bulk composition
          call gtcomp (comp,ecomp,randm,'bulk',bad,.true.)
+
+         if (kiso) write (*,'(/)')
 
          if (bad) call errdbg ('error reading bulk composition')
 
@@ -1926,7 +1637,7 @@ c                                 now read phase data
 c                                 phase name
          read (strg,'(a)') tname
 
-         write (*,'(a,a)') 'reading data for ',tname
+         if (mcfrst) write (*,'(a,a)') 'reading data for ',tname
 
          nph = nph + 1
 c                                 check name
@@ -1952,24 +1663,38 @@ c                                 composant
                   end if
                end do
             end do
-
          end if
 c                                 all clear, save id
          xptids(mxpt,nph) = ids
+c                                 and name:
+         if (ids.lt.0) then 
+            vnm(unmeas+2+nph) = tname
+         else 
+            vnm(unmeas+2+nph) = aname(ids)
+         end if
 c                                 look for optional modal data, only 
 c                                 invptx, so 1d arrays
          call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
 
          if (key.eq.'phase_mode') then
 c                                 modal data
-            read (nval1,*) pmode(nph)
-            read (nval2,*) emode(nph)
+            read (strg,*) pmode(mxpt,nph)
+            read (nval1,*) emode(mxpt,nph)
+            mcmode(mxpt) = .true.
+
+            if (randm.and.(invunc.eq.1.or.invunc.eq.2)) then
+c                                 perturb modes if doing uncertainty
+c                                 analysis
+
+            end if
 
          else
 c                                 no modal data, initialize
             backspace (n8)
-            pmode(nph) = -1d0
-            emode(nph) = 1d0
+            if (mcmode(mxpt)) call errdbg ('no modal data for '//
+     *                                    tname(1:nblen(tname))//
+     *                        ' if modal data is provided, it '//
+     *                        'must be provided for all phases.')
 
          end if
 c                                 if compound don't read composition
@@ -2005,6 +1730,8 @@ c                                write phase name for molar composition output
 
          call gtcomp (comp,ecomp,randm,'comp',bad,.true.)
 
+         if (kiso) write (*,'(/)')
+
          do i = 1, kbulk
 c                               check for non-zero components
             if (comp(i).ne.0d0) absent(i) = .false.
@@ -2020,6 +1747,56 @@ c                                 increment composition pointer
          if (.not.bad) cxpt = cxpt + kbulk
 
       end do
+
+      if (kiso) stop
+
+      if (mcmode(mxpt)) then
+c                                 modes have been provided
+         tot = 0d0
+
+         do i = 1, nph
+            tot = tot + pmode(mxpt,i)
+         end do
+
+         if (tot.gt.1d0+nopt(9).or.tot.lt.1d0-nopt(9)) then
+
+            if (mcfrst) 
+     *         write (*,1040) xptnam(mxpt)(1:nblen(xptnam(mxpt))),tot
+
+            do i = 1, nph
+               pmode(mxpt,i) = pmode(mxpt,i)/tot
+               if (.not.relerr) emode(mxpt,i) = emode(mxpt,i)/tot
+            end do
+
+         end if
+
+         if (isat.gt.0) then
+c                                 saturated components being used with modal
+c                                 data warning:
+            write (*,1050)
+            call wrnstp
+
+         end if
+
+         if (.not.relerr) then
+c                                 convert absolute modal error to relative error
+            do i = 1, nph
+               emode(mxpt,i) = emode(mxpt,i)/pmode(mxpt,i)
+            end do
+
+         end if
+
+         if (randm) then
+
+            do i = 1, nph
+c                                 doing uncertainty analysis, perturb the modes
+               pmode(mxpt,i) = repurb (pmode(mxpt,i),emode(mxpt,i))
+
+            end do
+
+         end if
+
+      end if
 
       if (invxpt) then
 
@@ -2060,13 +1837,48 @@ c                                 don't bother with unmeasured components
      *        'ies a component (',a,') that',/,'is absent from the obs',
      *        'erved phase assemblage specified in the *.imc file. To',/
      *       ,'avoid bad practice delete the absent component.')
-1010  format (/,'molar composition of ',a,
-     *          'follow, with RELATIVE error:',/)
+1010  format (/,'Converted molar composition of ',a,
+     *          ' follows, with RELATIVE error:',/)
 1020  format (/,'**error ver778** the stability of ',a,' is determined',
      *          ' by the saturated component',/,'constraint on ',a,' ei'
      *         ,'ther eliminate the constraint from the *.dat file or',
      *        /,'remove ',a,' from the list of observed phases in the ',
      *          '*.imc file.',/)
+1030  format (/,'Converted bulk molar composition of follows, with ',
+     *          'RELATIVE error:',/)
+1040  format (/,'**warning ver779** the phase modes for ',a,' sum to ',
+     *        f10.6,' they will be renormalized.',/)
+1050  format (/,'**warning ver780** using modal data when one or more ',
+     *          'components is saturated is bad practice.')
+
+      end 
+
+      double precision function repurb (x,xerr)
+c-----------------------------------------------------------------------
+c hack to prevent negative perturbed values generated by pertrb, a better
+c alternative would be to assume a log-normal distribution.
+c-----------------------------------------------------------------------
+      implicit none
+
+      double precision min, chk, x, xerr, pertrb
+
+       external pertrb
+c-----------------------------------------------------------------------
+      chk = pertrb (x,xerr)
+c                                 the largest negative perturbation
+      min = x * (1d0 - xerr)
+
+      if (min.lt.0d0.and.chk.lt.x) then
+c                                 the perturbed value chk is on the low
+c                                 side of comp(i), rescale so that it's
+c                                 between 0 and comp(i)
+         repurb = x * (x - chk)/(x - min)
+
+      else
+
+         repurb = chk
+
+      end if
 
       end 
 
@@ -2089,12 +1901,13 @@ c-----------------------------------------------------------------------
       character key*22, val*3, nval1*12, nval2*12, nval3*12,
      *          strg*40, strg1*40, tag*(*)
 
-      double precision tot, comp(*), ecomp(*), pertrb, chk
+      double precision tot, comp(*), ecomp(*), repurb
 
-      external pertrb
+      external repurb
 c----------------------------------------------------------------------
       comp(1:kbulk) = 0d0
       ecomp(1:kbulk) = 1d0
+      bad = .false.
 c                                 limits tag signals that the component 
 c                                 names are followed by two molar stoichiometric
 c                                 coefficients, tag is also used to shut off
@@ -2148,18 +1961,7 @@ c                                output molar composition and errors
             if (lmass.and.kiso) 
      *                 write (*,1000) cname(i), comp(i), ecomp(i)
 c                                 perturb data
-            if (randm) then
-
-               chk = pertrb (comp(i),ecomp(i))
-c                                 hack to prevent negative compositions.
-               if (chk.lt.0d0) then
-                  chk = comp(i)/(comp(i) - chk)
-                  comp(i) = chk * comp(i)
-               else 
-                  comp(i) = chk
-               end if
-
-            end if
+            if (randm) comp(i) = repurb (comp(i), ecomp(i))
 
          end if
 
@@ -2307,8 +2109,8 @@ c                                 to the normal variables:
       end do
 
       end 
-
-      subroutine mcsetb (x)
+c KA hack
+      subroutine mcsetb (x,ixpt)
 c-----------------------------------------------------------------------
 c set bulk composition for MC thermobarometry, assumes normalized 
 c compositions
@@ -2319,7 +2121,7 @@ c-----------------------------------------------------------------------
 
       double precision x(*), cmax, cmin
 
-      integer i, j, k, l
+      integer i, j, k, l, ixpt
 
       integer npt,jdv
       double precision cptot,ctotal
@@ -2338,7 +2140,8 @@ c-----------------------------------------------------------------------
       if (mcbulk) then
 c                                 use effective bulk
 c                                 composition pointer
-         cxpt = blkptr(1)
+c KA hack
+         cxpt = blkptr(ixpt)
 
          do j = 1, kbulk
             cblk(j) = xptc(cxpt+j)
@@ -2351,9 +2154,11 @@ c                                 ctotal here is the sum of the
 c                                 independent x's
          ctotal = 0d0
 c                                 compute bulk from phase simplex
-         do i = 1, xptnph(1)
+c KA hack
+         do i = 1, xptnph(ixpt)
 c                                 composition pointer
-            cxpt = xptptr(1,i)
+c KA hack
+            cxpt = xptptr(ixpt,i)
 c                                 compositional var pointer
             k = ipot + i
             if (unmeas.gt.0) k = k + unmeas
@@ -2381,6 +2186,8 @@ c
                cmin = cmin + cblk(j)*cmpmin(l,j)
                cmax = cmax + cblk(j)*cmpmax(l,j)
             end do
+c KA hack
+c           cblk(uncomp(l)) = cmin + (cmax - cmin) * x(ipot+l+(ixpt-1))
 
             cblk(uncomp(l)) = cmin + (cmax - cmin) * x(ipot+l)
 
@@ -2448,7 +2255,7 @@ c                                 ***WARNING***
       end
 
       subroutine minim (p,step,nop,func,max,jprint,stopcr,nloop,iquad,
-     *                  simp,var,functn,neval,meval,ifault,oktol,nfree)
+     *              simp,covar,functn,neval,meval,ifault,oktol,nfree)
 c----------------------------------------------------------------------
 c     a program for function minimization using the simplex method.
 c     the minimum found will often be a local, not a global, minimum.
@@ -2537,15 +2344,18 @@ c                                 original code used implicit typing
 
       integer nop, lout, jprint, ifault, nloop, nap, loop, iflag, i, 
      *        irow, j, np1, imax, imin, iquad, neval, max, i1, i2, j1, 
-     *        k, l, ii, ij, nullty, irank, jj, ijk, meval, nfree
+     *        k, l, ii, ij, nullty, irank, jj, meval, nfree
 
       double precision zero, one, two, three, half, a, b, c, func, 
      *                 fnap, fnp1, savemn, test, simp, a0, stopcr,
      *                 rmax, ymin, hmax, hmin, hstar, hstst, hstd, 
-     *                 hmean, p(nop),step(nop),var(nop), oktol
+     *                 hmean, p(nop),step(nop),oktol, stink
 
       double precision g(21,20),h(21),pbar(20),pstar(20),pstst(20),
-     *                 aval(20),bmat(210),pmin(20),vc(210),temp(20)
+     *                 aval(20),bmat(210),pmin(20),vc(210),temp(20),
+     *                 covar(*)
+
+      external stink
 
       data zero/0.d0/, one/1.d0/, two/2.d0/, three/3.d0/, half/0.5d0/
 c
@@ -2586,7 +2396,11 @@ c     if nap = 0 evaluate function at the starting point and return
       if(nap.gt.0) go to 30
 
       call functn(p,func,bad)
-      if (bad) ifault = 99
+
+      if (bad) then
+         ifault = 99
+      end if
+
       return
 
 c     set up the initial simplex
@@ -2604,8 +2418,22 @@ c     set up the initial simplex
         do j=1,nop
            g(irow,j)=p(j)
         end do
+c                                 don't let bound variables jump their limits:
+c        zap = p(i)+step(i)
 
+c        if (i.gt.nfree.and.zap.gt.1d0) then 
+c           zap = (1d0 - p(i)) * (1d0 - p(i))/(zap - p(i))
+c        else if (i.gt.nfree.and.zap.lt.0d0) then
+c           zap = -p(i) * (p(i) /(p(i) - zap))
+c        else 
+c            zap = step(i)
+c        end if
+
+c       g(irow,i)= p(i) + stink (p(i),step(i),i,nfree)
+c stink causes the pertrubations to hang on the min values of x(1:nfree)
         g(irow,i)=p(i)+step(i)
+
+
         irow=irow+1
 
       end do
@@ -2669,9 +2497,27 @@ c     find the centroid of the vertices other than p(imax)
 
       do i=1,np1
          if(i.eq.imax) cycle
+
          do j=1,nop
-            pbar(j)=pbar(j)+g(i,j)
+c bound variable hack
+c            zap = g(i,j) + pbar(j)
+
+c           if (j.gt.nfree.and.zap.gt.1d0) then
+c              zap = (1d0 - pbar(j)) * (1d0 - pbar(j))/(zap - pbar(j))
+c           else if (j.gt.nfree.and.zap.lt.0d0) then
+c              zap = -pbar(j) * (pbar(j)) /(pbar(j) - zap)
+c           else 
+c              zap = g(i,j)
+c           end if
+
+c            pbar(j) = pbar(j) + stink(pbar(j),g(i,j),j,nfree)
+c
+c stink causes it to hang on min(x(1:nfree)
+             pbar(j)=pbar(j)+g(i,j)
+
+
          end do 
+
       end do
 
       do j=1,nop
@@ -2683,17 +2529,31 @@ c     reflect maximum through pbar to pstar,
 c     hstar = function value at pstar.
 
       do i = 1, nop
+c bound variable hack
+c        zap = a*(pbar(i)-g(imax,i)) + pbar(i)
 
-         pstar(i)=a*(pbar(i)-g(imax,i))+pbar(i)
+c        if (i.gt.nfree.and.zap.gt.1d0) then 
+c           zap = (1d0 - pbar(i)) * (1d0 - pbar(i))/(zap - pbar(i))
+c        else if (i.gt.nfree.and.zap.lt.0d0) then
+c           zap = -pbar(i) * (pbar(i)) /(pbar(i) - zap)
+c        else 
+c           zap = a*(pbar(i)-g(imax,i))
+c        end if
 
-         if ((i.gt.nfree.and.pstar(i).gt.1d0).or.
-     *       (i.gt.nfree.and.pstar(i).lt.0d0)) then 
+c         pstar(i)= pbar(i) + zap
+c infinite loop?
+c        pstar(i) = stink (pbar(i),a*(pbar(i)-g(imax,i)),i,nfree)
+
+         pstar(i) = a*(pbar(i)-g(imax,i)) + pbar(i)
+
+         if ((i.gt.nfree.and.pstar(i).ge.1d0).or.
+     *       (i.gt.nfree.and.pstar(i).le.0d0)) then 
             
-            if (pstar(i).gt.1d0.and.pbar(i).lt.1d0) then
+            if (pstar(i).gt.1d0.and.pbar(i).le.1d0) then
                pstar(i) = 1d0
-            else if (pstar(i).lt.0d0.and.pbar(i).gt.0d0) then
+            else if (pstar(i).lt.0d0.and.pbar(i).ge.0d0) then
                pstar(i) = 0d0               
-            else 
+            else
               ifault = 99
               return
             end if 
@@ -2706,7 +2566,8 @@ c     hstar = function value at pstar.
 
       neval=neval+1
 
-        if (bad) then 
+        if (bad) then
+c stink doesn't help
            ifault = 99
            return
         end if
@@ -2723,13 +2584,16 @@ c     hstst = function value at pstst.
       do i = 1, nop
 
          pstst(i)=c*(pstar(i)-pbar(i))+pbar(i)
+c infinite loop?
+c        pstst(i) = pbar(i) + stink (pbar(i),
+c    *                               c*(pstar(i)-pbar(i)),i,nfree)
 
-         if ((i.gt.nfree.and.pstst(i).gt.1d0).or.
-     *       (i.gt.nfree.and.pstst(i).lt.0d0)) then 
+         if ((i.gt.nfree.and.pstst(i).ge.1d0).or.
+     *       (i.gt.nfree.and.pstst(i).le.0d0)) then 
 
-            if (pstst(i).gt.1d0.and.pbar(i).lt.1d0) then
+            if (pstst(i).gt.1d0.and.pbar(i).le.1d0) then
                pstst(i) = 1d0
-            else if (pstst(i).lt.0d0.and.pbar(i).gt.0d0) then
+            else if (pstst(i).lt.0d0.and.pbar(i).ge.0d0) then
                pstst(i) = 0d0               
             else 
               ifault = 99
@@ -2931,14 +2795,19 @@ c     overrun; if so, exit with ifault = 1.
       ifault=1
       if(jprint.lt.0) return
       write(lout,1020) max
- 1020 format(' no. of function evaluations exceeds ',i5)
       write(lout,1030) hstd
- 1030 format(' rms of function values of last simplex =',g14.6)
       write(lout,1040)(p(i),i=1,nop)
- 1040 format(' centroid of last simplex =',4(/1x,1p6g13.5))
       write(lout,1050) func
- 1050 format(' function value at centroid =',g14.6)
-      return
+
+1020  format(' no. of function evaluations exceeds ',i5)
+1030  format(' rms of function values of last simplex =',g14.6)
+1040  format(' centroid of last simplex =',4(/1x,1p6g13.5))
+1050  format(' function value at centroid =',g14.6)
+1060  format(/' evidence of convergence')
+1070  format(//' minimum found after ',i5,' function evaluations')
+1080  format(' minimum at',4(/1x,1p6g13.6))
+1090  format(' function value at minimum =',g14.6)
+1110  format(/' quadratic surface fitting about supposed minimum'/)
 
 c     convergence criterion satisfied.
 c     if iflag = 0, set iflag & save hmean.
@@ -2946,7 +2815,6 @@ c     if iflag = 1 & change in hmean <= stopcr then search is complete.
 
   420 if(jprint.lt.0) go to 430
       write(lout,1060)
- 1060 format(/' evidence of convergence')
       write(lout,1040)(p(i),i=1,nop)
       write(lout,1050) func
   430 if(iflag.gt.0) go to 450
@@ -2957,18 +2825,15 @@ c     if iflag = 1 & change in hmean <= stopcr then search is complete.
   450 if(abs(savemn-hmean).ge.stopcr) go to 440
       if(jprint.lt.0) go to 460
       write(lout,1070) neval
- 1070 format(//' minimum found after ',i5,' function evaluations')
+
       write(lout,1080)(p(i),i=1,nop)
- 1080 format(' minimum at',4(/1x,1p6g13.6))
       write(lout,1090) func
- 1090 format(' function value at minimum =',g14.6)
   460 if(iquad.le.0) return
 c-------------------------------------------------------------------
 
 c     quadratic surface fitting
 
       if(jprint.ge.0) write(lout,1110)
- 1110 format(/' quadratic surface fitting about supposed minimum'/)
 
 c     expand the final simplex, if necessary, to overcome rounding
 c     errors.
@@ -2980,9 +2845,12 @@ c     errors.
         if(test.ge.simp) cycle
 
         if (func.gt.oktol) then
-           write (*,'(a,1x,g12.6)') 'Aborting, bad objf: ',func
+           write (*,'(a,1x,g12.6)') 'Abort during quad fit, bad objf: ',
+     *                              func
            ifault = 2
+
            return
+
         end if
 
         do j=1,nop
@@ -2993,8 +2861,10 @@ c     errors.
 
            if (isnan(g(i,j))) then
 
-              write (*,'(a,1x,g12.6)') 'Aborting, bad coord: ',g(i,j)
+              write (*,'(a,1x,g12.6)') 
+     *              'Aborting during quad fit, bad coord: ',g(i,j)
               ifault = 2
+
               return
 
            end if
@@ -3003,13 +2873,14 @@ c     errors.
 
         call functn(pstst,h(i),bad)
 
-        if (bad) then 
+        if (bad) then
+           write (*,'(a,1x,g12.6)') 'Abort during quad, bad opt'
            ifault = 99
            return
         end if
 
         if (h(i).gt.oktol) then
-           write (*,'(a,1x,g12.6)') 'Aborting, bad objf: ',h(i)
+           write (*,'(a,1x,g12.6)') 'Aborting quad, bad objf: ',h(i)
            ifault = 2
            return
         end if
@@ -3045,7 +2916,7 @@ c     function values are calculated at an additional nap points.
          end if
 
          if (aval(i).gt.oktol) then
-            write (*,'(a,1x,g12.6)') 'Aborting, bad objf: ',h(i)
+            write (*,'(a,1x,g12.6)') 'Abort quad, bad objf: ',h(i)
             ifault = 2
             return
          end if
@@ -3074,7 +2945,7 @@ c
         end if
 
         if (hstst.gt.oktol) then
-           write (*,'(a,1x,g12.6)') 'Aborting, bad objf: ',h(i)
+           write (*,'(a,1x,g12.6)') 'Abort quad, bad objf: ',h(i)
            ifault = 2
            return
         end if
@@ -3201,42 +3072,28 @@ c
   740     vc(l)=vc(l)+h(k)*g(k,j)
   750   continue
   760 continue
+c                                 covariance matrix, use func as estimator of the RSS
+      k = 0
+      l = 1
 
-c     the diagonal elements of vc are copied into var.
+      do i = 1, nop
 
-      j=0
-      do 770 i=1,nop
-        j=j+i
-        var(i)=vc(j)
-  770    continue
-      if(jprint.lt.0) return
-      write(lout,1160) irank
- 1160 format(' rank of information matrix =',i3/
-     1  ' generalized inverse of information matrix:-')
-      ijk=1
-      go to 880
-  790 continue
-      write(lout,1170)
- 1170 format(/' if the function minimized was -log(likelihood),'/
-     1  ' this is the covariance matrix of the parameters'/
-     2  ' if the function was a sum of squares of residuals'/
-     3  ' this matrix must be multiplied by twice the estimated',
-     4  1x'residual variance'/' to obtain the covariance matrix.'/)
+         do j = 1+(i-1)*nop, l+(i-1)*nop
+            k = k + 1
+            covar(j) = func*vc(k)
+         end do
+
+         l = l + 1
+
+      end do
+
+c                                 compute the information matrix, inv(covariance)
       call syminv(vc,nap,bmat,temp,nullty,ifault,rmax)
-c
-c     bmat now contains the information matrix
-c
-      write(lout,1190)
- 1190 format(' information matrix:-'/)
-      ijk=3
-      go to 880
-c
-c     calculate correlations of parameter estimates, put into vc.
-c
-  800 ijk=2
+c                                 compute the correlation matrix
       ii=0
       ij=0
-      do 840 i=1,nop
+
+      do i=1,nop
         ii=ii+i
 
         if(vc(ii).gt.zero) then
@@ -3246,45 +3103,29 @@ c
         end if
 
         jj=0
-        do 830 j=1,i-1
+
+        do j=1,i-1
           jj=jj+j
           ij=ij+1
           vc(ij)=vc(ij)*vc(ii)*vc(jj)
-  830   continue
+        end do
+
         ij=ij+1
-  840 continue
-      write(lout,1200)
- 1200 format(/' correlation matrix:-')
-      ii=0
-      do 850 i=1,nop
-        ii=ii+i
-        if(vc(ii).ne.zero) vc(ii)=one
-  850 continue
-      go to 880
-  860 write(lout,1210) meval
- 1210 format(/' a further',i4,' function evaluations have been used'/)
-      return
 
-c     pseudo-subroutine to print vc if ijk = 1 or 2, or
-c     bmat if ijk = 3.
+      end do
+c                                 correlation matrix:
+c                                 vc stores the elements in the lower diagonal
+c                                 put them in the upper diagonal of covmat
+      k = 0
 
-  880 l=1
-  890 if(l.gt.nop) go to (790,860,800),ijk
-      ii=l*(l-1)/2
-      do 910 i=l,nop
-        i1=ii+l
-        ii=ii+i
-        i2=min(ii,i1+5)
-        if(ijk.eq.3) go to 900
-        write(lout,1230)(vc(j),j=i1,i2)
-        go to 910
-  900   write(lout,1230)(bmat(j),j=i1,i2)
-  910 continue
- 1230 format(1x,6g13.5)
-      write(lout,1240)
- 1240 format(/)
-      l=l+6
-      go to 890
+      do i = 1, nop
+         do j = 1, i
+            k = k + 1
+            if (i.eq.j) cycle
+            covar((j-1)*nop+i) = vc(k)
+         end do
+      end do
+
       end
 
       subroutine syminv(a,n,c,w,nullty,ifault,rmax)
@@ -3522,11 +3363,9 @@ c                                 skip unmeasured components
 
             term = dabs(pcomp(l,kd)/total - xptc(k))
 
-            if (term.gt.2d0*xpte(k)) then
-               fit = .false.
-            end if
+            if (term.gt.un2ft*xpte(k)) fit = .false.
 
-            if (.not.grhobj) then
+            if (.not.GRH) then
 
                if (lsqchi.eq.1) then 
 c                                 LSQ compositional obj
@@ -3584,6 +3423,51 @@ c                                 to it, calculate weighted residual
          end do
 
       end if
+
+      end
+
+      double precision function mscore (kd,id,j,fit)
+c-----------------------------------------------------------------------
+c a function to evaluate the distance between oberved and candidate 
+c modes for MC, parameters are:
+c     kd - predicted phase pointer
+c     id - experiment number
+c     j  - phase number in experiment
+c     fit - true if model fits within error
+c-----------------------------------------------------------------------
+      include 'perplex_parameters.h'
+
+      integer id, kd, j
+
+      logical fit
+
+      double precision term, mode
+c-----------------------------------------------------------------------
+c                                 predicted volumetric mode:
+      mode = props(1,kd)*props(16,kd)/psys(1)
+c                                 calculate residual
+      term = dabs(mode - pmode(id,j))
+
+      if (term.gt.un2ft*emode(id,j)) fit = .false.
+
+      if (lsqchi.eq.1) then 
+c                                 LSQ modal obj
+         term = term**2
+ 
+      else if (lsqchi.eq.2) then 
+c                                 Chi-square modal obj
+         term = term**2 / mode
+
+      else if (lsqchi.eq.3) then 
+c                                 weighted Chi-square modal obj
+c                                 this case arises if someone doesn't 
+c                                 put a value for a component that exists
+c                                 in the solution model
+         term = (term / (emode(id,j)*pmode(id,j)))**2
+
+      end if
+
+      mscore = term
 
       end
 
@@ -3711,8 +3595,8 @@ c                                 set the potentials
          do i = 1, ipot
             v(i) = x(i)
          end do
-c                                 set the bulk composition
-         call mcsetb (x)
+c KA hack, moves mcsetb below
+c        pdqf = x(nparm) * 8d4
 
       end if
 
@@ -3720,7 +3604,12 @@ c                                 set the bulk composition
 c                                 loop through observations
       do id = 1, mxpt
 c                                 set p, t, bulk
-         if (invxpt) call mcstb2 (id,0,0,neg)
+         if (invxpt) then 
+            call mcstb2 (id,0,0,neg)
+         else 
+c                                 set the bulk composition
+            call mcsetb (x,id)
+         end if
 c                                 do the optimization and via getloc compute
 c                                 system and derivative properties; these
 c                                 computations are costly and can be streamlined
@@ -3790,12 +3679,13 @@ c-----------------------------------------------------------------------
 
       integer id, jd, ids, i, j, k, kct(k5), ksol(k5,k5), ibest, mpred,
      *        idextr(k5), jmin(k5), mextra, jdbest, kd, lu, kmin(k5), l,
-     *        nmiss, jj, jbest, jds(h5), istsat, nblen
+     *        nmiss, jj, jbest, jds(h5), istsat, nblen, ld
 
       double precision score, best, res, mode, tot, extra, comp, miss, 
-     *                 cscor(k5), x(*), sres(k5)
+     *                 cscor(k5), x(*), sres(k5), scmode, mscor(k5), 
+     *                 mscore
 
-      external score, nblen
+      external score, nblen, mscore
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
@@ -3874,6 +3764,7 @@ c           outnph(j) = .false.
       extra = 0d0
       comp = 0d0
       miss = 0d0
+      scmode = 0d0
       mpred = 0
       mextra = 0
 c                                 potential target phases:
@@ -3898,10 +3789,18 @@ c                                 observed list pointer
             jmin(mpred) = j
 c                                 predicted list pointer
             kmin(mpred) = jd
-
+c                                 compute composition score
             cscor(mpred) = score (jd,id,j,fit)
 c                                 compute and add residual
             comp = comp + wcomp * cscor(mpred)
+
+            if (mcmode(id)) then 
+c                                 scoring on modes as well
+               mscor(mpred) = mscore (jd,id,j,fit)
+c
+               scmode = scmode + wmode * mscor(mpred)
+
+            end if
 c                                 flag that the phase has been used in the predicted list
             used(jd) = .true.
 
@@ -3954,6 +3853,15 @@ c                                 assemblage
 
                comp = comp + wcomp * best
 
+               if (mcmode(id)) then 
+c                                 scoring on modes as well
+                  mscor(mpred) = mscore (jdbest,id,j,fit)
+c
+                  scmode = scmode + wmode * mscor(mpred)
+
+               end if
+
+
             else
 c                                  the number of observed versions of the solution is
 c                                  less than the number of predicted versions
@@ -3985,6 +3893,14 @@ c                                 in the observed phase list
 c                                 kmin(i) points to the phase in the
 c                                 predicted assemblage list
             kmin(mpred) = jd
+
+            if (mcmode(id)) then 
+c                                 scoring on modes as well
+               mscor(mpred) = mscore (jd,id,k,fit)
+c
+               scmode = scmode + wmode * mscor(mpred)
+
+            end if
 
             used(jd) = .true.
 
@@ -4089,7 +4005,7 @@ c                                  penalty is wextra * mass_fraction^2
 c                                 missing phase residual
       miss = wmiss * (1d0 - dble(mpred)/xptnph(id))
 c                                 accumulate scores
-      xptscr = miss + extra + comp
+      xptscr = miss + extra + comp + scmode
 
       if (nomiss.and.miss.gt.0d0) then
 
@@ -4115,7 +4031,7 @@ c                                 or central models
 c                                 output any model that fits within error to *.fit
          write (n12,1140) i, (x(k), k = 1, nparm), 
      *                    (cblk(k), k = 1, kbulk),
-     *                    miss, extra, comp, xptscr
+     *                    miss, extra, comp, scmode, xptscr
 
       end if
 
@@ -4139,6 +4055,11 @@ c                                 for inverse thermo-barometry
 c                                 ------------------------------------
             if (fit) write (lu,1150)
             write (lu,1100) comp, extra, miss
+            if (mcmode(id)) then
+               write (lu,1105) scmode
+            else
+               write (lu,'(/)')
+            end if
 
             if (mpred.gt.0) then 
 c                                 phases observed and predicted
@@ -4146,10 +4067,12 @@ c                                 phases observed and predicted
                write (lu,1020) (cname(k), k = 1, kbulk)
 
                do j = 1, mpred
-c                                 kmin points to the predicted assemblage
+c                                 jd/kmin points to the phase in the predicted assemblage
                   jd = kmin(j)
-c                                 jmin points to the observed assemblage
-                  kd = xptptr(1,jmin(j))
+c                                 ld/jmin points to the phase in the observed assemblage
+                  ld = jmin(j)
+
+                  kd = xptptr(id,ld)
 
                   mode = props(1,jd)*props(16,jd)/psys(1)*1d2
 
@@ -4170,18 +4093,42 @@ c                                 calculate individual component residuals
 
                      write (lu,1030) 'predicted*', mode, 
      *                               (pcomp(k,jd)/tot, k = 1, kbulk)
-                     write (lu,1035) 'observed* ', (xptc(kd+k), 
+
+                     if (mcmode(id)) then
+                        write (lu,1030) 'observed* ', pmode(id,ld)*1d2,
+     *                               (xptc(kd+k), k = 1, kbulk)
+                        write (lu,1030) 'residual  ',
+     *                                          pmode(id,ld)*1d2 - mode,
+     *                                          (sres(k), k = 1, kbulk)
+                     else
+                        write (lu,1035) 'observed* ', (xptc(kd+k), 
      *                                                    k = 1, kbulk)
-                     write (lu,1035) 'residual  ', 
-     *                               (sres(k), k = 1, kbulk)
-                     write (lu,1025) 'composition score:', cscor(j), 
-     *                               'low is good' 
+                        write (lu,1035) 'residual  ', 
+     *                                          (sres(k), k = 1, kbulk)
+                     end if
+
+
+                     if (mcmode(id)) then
+                        write (lu,1055) 'Mode Misfit:', mscor(j), 
+     *                                  'Composition Misfit:', cscor(j)
+                     else
+                        write (lu,1025) 'Composition Misfit:', cscor(j)
+                     end if
 
                   else
 c                                 a compound
-                     write (lu,1030) 'predicted', mode
-                     write (lu,1025) 
-     *                        'composition score perfect by definition'
+                     write (lu,1030) 'predicted ', mode
+
+                     if (mcmode(id)) then
+                        write (lu,1030) 'observed  ', pmode(id,ld)*1d2
+                        write (lu,1030) 'residual  ',
+     *                                          pmode(id,ld)*1d2 - mode
+                        write (lu,1055) 'Mode Misfit:', mscor(j),
+     *                        'Composition Misfit zero by definition.'
+                     else
+                        write (lu,1025) 
+     *                        'Composition Misfit zero by definition.'
+                     end if
 
                   end if
 c                                 end of mpred loop
@@ -4276,7 +4223,29 @@ c                                 phases observed but not predicted
 
             write (lu,1010)
 
-            write (lu,1110) x(1:nparm)
+            write (lu,1110) (vnm(j), j = 1, nparm)
+            write (lu,1120) x(1:nparm)
+
+            if (nmcov.and.covar(1).ne.0d0) then
+c                                 write covariance/correlation matrix
+               write (lu,1180) (vnm(j), j = 1, nparm)
+
+               k = 0
+
+               do j = 1, nparm
+                  write (lu,1190) vnm(j),covar(k+1:k+nparm)
+                  k = k + nparm
+               end do
+
+               write (lu,1200) (dsqrt(covar(jkdiag(j))), j = 1, nparm)
+
+               write (lu,1210)
+
+            else if (nmcov) then
+c                                 covariance matrix calculation failed
+               write (lu,1220)
+
+            end if
 
             write (lu,'(/,80(''-''))')
 c                                 end double unit print loop
@@ -4285,7 +4254,7 @@ c                                 end double unit print loop
       end if
 
       if (.not.fprint)  write (*,'(a,g16.10,1x,i6,a,$)')
-     *                  'Score: ', miss + extra + comp, optct, char(13)
+     *         'Misfit: ', miss + extra + comp + scmode, optct, char(13)
 
 1000  format (/,'The following observed phases are predicted:',/)
 1010  format (/,'*normalized molar units')
@@ -4296,18 +4265,20 @@ c                                 end double unit print loop
 1040  format (/,'The following predicted phases are not observed:',/)
 1045  format (2x,a,13x,20(f7.3,1x))
 1050  format (a,t15,f7.3,3x,20(f7.4,1x))
+1055  format (2x,a,3x,g12.6,8x,a,3x,g12.6)
 1060  format (/,'The following observed phases are not predicted:',//,
      *           10(2x,a))
 1080  format (/,5x,'       Effective Bulk*      ',
      *            '  Chemical Potentials (J/mol)')
 1090  format (a5,10x,f8.3,20x,g13.6)
-1100  format (/,'Components of the Likelihood Score',//,5x,
+1100  format (/,'Components of the Misfit Score',//,5x,
      *          'Predicted compositions:      ',g14.8,/,5x,
      *          'Extraneous predicted phases: ',g14.8,/,5x,
-     *          'Missed observed phases: ',g14.8,/)
-1110  format (/,'Inversion coordinates for uncertainty analysis:',//,
-     *        6(2x,g12.6))
-1120  format (29x,a8,' = ',g12.6)
+     *          'Missed observed phases: ',g14.8)
+1105  format (5x,'Predicted modes: ',g14.8,/)
+1110  format (/,'Inversion coordinates for uncertainty analysis:',/,
+     *        10x,20(4x,a8,2x))
+1120  format (10x,20(2x,g12.6))
 1130  format (/,'Converged but because the predicted assemblage was in',
      *          'complete the model will not',/,'be counted. To includ',
      *          'e incomplete predictions set no_miss to miss_ok',//,
@@ -4320,61 +4291,84 @@ c                                 end double unit print loop
      *          'turation constraints:',/)
 1170  format (/,'*The indicated phase is stable but undersaturated wit',
      *          'h respect to the effective bulk composition.')
-
+1180  format (/,'Misfit covariance and correlation matrices* and ',
+     *          'standard deviations:',/,
+     *        10x,20(4x,a8,2x))
+1190  format (2x,a8,20(2x,g12.6))
+1200  format (/,2x,'std_dev ',20(2x,g12.6))
+1210  format (/,
+     *        '*Covariance elements are on and below the left diagonal',
+     *        ', corellation elements are',/,'above the diagonal, on-d',
+     *        'iagonal correlations are 1 by definition.')
+1220  format (/,'**warning ver504** covariance matrix calculation fai',
+     *       'led, increase expansion_criterion',/,'or set print_leve',
+     *       'l > 0 for additional diagnostic information')
       end
 
-      subroutine savbst (x,objf,bstlik,bstlx,bay,ssp,x0,bstlx0,bstbx0,
-     *                   bstbay,bstbx,n,i,ibest,jbest,igood)
+      subroutine savbst (x,objf,bstlik,bstlx,bay,ppb,x0,bstlx0,
+     *                   bstbx0,bstbay,bstbx, n,i,ibest,jbest,igood)
 c----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
 
-      integer i, n, j, igood, ibest, jbest
+      integer i, n, m, j, igood, ibest, jbest
 
-      double precision objf, x(*), bstlik, ssp,x0(*), bstlx0(*),
+      double precision objf, x(*), bstlik, ppb, x0(*), bstlx0(*),
      *                 bstbx0(*), bay, bstbx(*), bstbay, bstlx(*)
 c----------------------------------------------------------------------
       igood = igood + 1
 c                                 compute ss of parameter deviations
-      ssp = 1d0
+      ppb = 0d0
 
-            do j = 1, n
+      if (ptonly) then 
+         m = 2
+      else
+         m = n
+      end if
+
+      do j = 1, m
 c                                 center "bayesian" score in interval
-               if (pdelta(j).ne.0d0) then
-                  ssp = ssp +
-     *               ((2*(x(j) - plow(j) - pdelta(j)/2))/pdelta(j))**2
-               end if
+         if (pdelta(j).ne.0d0) ppb = ppb 
+     *            + ( (ra2zs*(x(j) - plow(j) - pdelta(j)/2d0)) / 
+     *                pdelta(j) )**2 
 
-            end do
+      end do
+c                                 prior probability
+      ppb = exp(-ppb/2d0)
 c                                 best "bayesian" score
-            bay = ssp * objf
+            
+      bay = exp(-objf) * ppb
 
-            if (bay.lt.bstbay) then
+      if (bay.gt.bstbay) then
 
-               jbest = i
-               bstbay = bay
-               bstbx(1:n) = x(1:n)
-               bstbx0(1:n) = x0(1:n)
+         jbest = i
+         bstbay = bay
+         bstbx(1:n) = x(1:n)
+         bstbx0(1:n) = x0(1:n)
+         bstbco = covar
 
-            end if 
-c                                 save max likelihood result
-            if (objf.lt.bstlik) then
+      end if 
+c                                 save min misfit result
+      if (objf.lt.bstlik) then
 
-               ibest = i
-               bstlik = objf
-               bstlx(1:n) = x(1:n)
-               bstlx0(1:n) = x0(1:n)
+         ibest = i
+         bstlik = objf
+         bstlx(1:n) = x(1:n)
+         bstlx0(1:n) = x0(1:n)
+         bstlco = covar
 
-            end if
+      end if
 
       end
 
-      subroutine prtsum (x,objf,bstlik,bstlx,bay,ssp,x0,
+      subroutine prtsum (x,objf,bstlik,bstlx,bay,ppb,x0,
      *                   bstbay,bstbx,sx,n,i,ibest,jbest,igood,jcount,
      *                   icount,strg1)
 c----------------------------------------------------------------------
 c print simple summary of converged model to: console, n6 (out), n7 (lik), n9 (bay)
+c
+c x,objf - should be current model final coordinates
 c----------------------------------------------------------------------
       implicit none
 
@@ -4382,15 +4376,18 @@ c----------------------------------------------------------------------
 
       character strg1*(*)
 
-      integer i, n, j, k, igood, ibest, jbest, lu, nblen, jcount, icount
+      integer i, n, j, k, igood, ibest, jbest, lu, nblen, jcount, ii, 
+     *        icount
 
-      double precision objf, x(*), bstlik, ssp,x0(*), sx(*),
+      double precision objf, x(*), bstlik, ppb,x0(*), sx(*), ox(l12),
      *                 bay, bstbx(*), bstbay, bstlx(*), xxx
 
       external nblen
 c----------------------------------------------------------------------
 c                                 write notice and stats to console
             lu = 6
+
+            ox(1:n) = x(1:n)
 
             do j = 1, 4
 
@@ -4421,10 +4418,10 @@ c                                 loop to write to console, *.lik, *.bay
                   write (lu,1120) i, igood, icount, objf, bstlik, ibest
                end if
 
-               write (lu,1130) ssp, bay, bstbay, jbest
+               write (lu,1130) ppb, bay, bstbay, jbest
                write (lu,1080) sx(1:n)
                write (lu,1085) x0(1:n)
-               write (lu,1030) x(1:n)
+               write (lu,1030) ox(1:n)
 
                if (j.eq.4) exit
 
@@ -4434,18 +4431,27 @@ c                                 loop to write to console, *.lik, *.bay
 c                                 *.lik file
                      x(1:n) = bstlx(1:n)
                      xxx = bstlik
-                     call mcsetb (x)
+c KA hack
+                     do ii = 1, mxpt
+                        call mcsetb (x,ii)
+                     end do
+
                   else if (lu.eq.n9) then
 c                                 *.bay file
                      x(1:n) = bstbx(1:n)
                      xxx = bstbay
-                     call mcsetb (x)
-                  end if
+c KA hack
+                     do ii = 1, mxpt
+                        call mcsetb (x,ii)
+                     end do
 
-                 write (lu,1000) 
+                  end if
+c                                 this, after the above mod of x,
+c                                 is only for n7,n9
+                  write (lu,1000) 
      *                'parameters and objective function value:',
      *                (x(k), k = 1, n), xxx
-                 write (lu,1000) 'effective molar bulk composition:',
+                  write (lu,1000) 'effective molar bulk composition:',
      *                (cblk(k), k = 1, kbulk)
 
                end if
@@ -4459,6 +4465,8 @@ c                                 *.bay file
                end if
 
              end do
+c                                 reset x, just in case
+      x(1:n) = ox(1:n)
 
 1000  format (a,1x,20(1pg13.6,1x),a)
 1030  format ('Final coordinates: ',20(1pg13.6,1x))
@@ -4467,20 +4475,449 @@ c                                 *.bay file
 1085  format ('Initial coordinates: ',20(1pg13.6,1x))
 1120  format (/,'Try ',i7,', successes so far = ',i7,/,
      *          'Objective function evaluations this try = ',i5,//,
-     *          'Objective function value this try OBJ = ',g12.6,/,
-     *          'Best OBJ so far = ',g12.6,
+     *          'Misfit this try = ',g12.6,/,
+     *          'Best Misfit so far = ',g12.6,
      *          ' obtained on try ',i7)
 
 1125  format (/,'Try ',i7,', successes so far = ',i7,/,
-     *          'Objective function evaluations this Try = ',i5,//,
+     *          'Objective function evaluations this Try = ',i5,/,
      *          ' + ',i4,' evaluations for quadratic surface fitting',/,
-     *          'Objective function value this Try OBJ = ',g12.6,/,
-     *          'Best OBJ so far = ',g12.6,
-     *          ' obtained on Try ',i7)
+     *          'Misfit this Try = ',g12.6,/,
+     *          'Best Misfit so far = ',g12.6,' obtained on Try ',i7)
 
-1130  format (/,'Scaled parameter SSP = ',g12.6,/,
-     *          'Bayes score SSP * OBJF = ',g12.6,/,
+1130  format (/,'Prior probability, PP = ',g12.6,/,
+     *          'Bayes score, PP * exp(-Misfit) = ',g12.6,/,
      *          'Best Bayes score so far = ',g12.6,
      *          ' obtained on Try ',i7,/)
 
       end
+
+      subroutine mcopts
+c----------------------------------------------------------------------
+c set default parameters for MC_fit and read option file
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer ier, i, nblen, oquad
+
+      logical inum, rnum
+
+      character key*28, val*3, nval1*12, nval2*12,
+     *          nval3*12, strg*40, strg1*40
+
+      double precision x
+
+      external nblen
+
+      save oquad
+c----------------------------------------------------------------------
+c                                 set all parameters to their defaults
+c                                 -------------------------------------
+c                                 formerly imc file section 1 variables:
+c                                 -------------------------------------
+c                                 molar_composition:
+c                                 T - assume molar units for input compositions
+c                                 F - assume molar units for input compositions
+      lmass = .false.
+c                                 kiso:
+c                                 T - convert mass input to molar and output, terminate before inversion.
+c                                 F - do nothing
+      kiso  = .false.
+c                                 thermobarometry = .not.invxpt, invxpt:
+c                                 T - invert experimental data
+c                                 F - thermobarometric inversion
+      invxpt = .false.
+c                                 MINIM_algorithm = .not.mcgrid, mcgrid:
+c                                 T - grid search algoirthm
+c                                 F - minim algorithm
+      mcgrid = .false.
+c                                 Bayes:
+c                                 T - pseudo-bayesian best model criterion
+c                                 F - misfit best model criterion
+      bayes = .false.
+c                                 prior_probability_PT_only
+c                                 T - assume prior probabilities are known only for P and T
+c                                 F - assume all ranges are based on prior probabilities
+      ptonly = .true.
+c                                 ra2zs:
+c                                 half-width of the range in terms of the parameter standard deviation
+      ra2zs = 2d0
+c                                 un2ft:
+c                                 multiplier on uncertainty for assessing whether a model fits within error
+      un2ft = 2d0
+c                                 hot_start:
+c                                 F - do uncertainty analysis around best central model
+c                                 T - do uncertainty analysis around a user specified model coordinate
+      mchot = .false.
+c                                 GRH:
+c                                 T - use georges normalizations, etc
+c                                 F - use my normalization
+      GRH = .false.
+c                                 model_output:
+c                                 0 - output all converged models
+c                                 1 - output only improved models
+c                                 2 - output only the best model
+      bstout = 0
+c                                 vital_sign:
+c                                 T - output optimization counter
+c                                 F - quiet
+      vital = .true.
+c                                 seed:
+c                                 T - seed random number generator => succesive runs of MC_fit will generate different results
+c                                 F - don't seed random number generator => succesive runs of MC_fit will yield the same result
+      seed = .false.
+c                                 no_missing_phases:
+c                                 T - reject models that fail to predict an observed phase
+c                                 F - accept models regardless of whether they predict the observed phases
+      nomiss = .true.
+c                                 relative_error:
+c                                 T - assume input uncertainties are relative error
+c                                 F - assume input uncertainties are absolute error
+      relerr = .true.
+c                                 T - use central model for uncertainty analysis
+c                                 F - use random initial guesses for uncertainty analysis
+      newstt = .false.
+c                                 1 - total uncertainty
+c                                 2 - analytical uncertainty only
+c                                 3 - thermodynamic uncertainty only
+      invunc = 1
+c                                 Nelder-Meade covariance matrix
+      nmcov = .true.
+c                                 add central model Nelder-Meade variance to 
+c                                 perturbation analysis variance
+      unplus = .true.
+c                                 -------------------------------------
+c                                 formerly imc file section 2:
+c                                 Objective function mode, tolerances, and weights
+c                                 -------------------------------------
+c                                 1 - least square compositional scoring
+c                                 2 - Chi square scoring
+c                                 3 - weighted Chi square
+      lsqchi = 2
+c                                 maximum acceptable value of the objective function, 
+c                                 larger values trigger an error (do they?)
+      oktol = 1d5
+c                                 the variance of the objective function for an acceptable
+c                                 solution
+      invtol = 1d-4
+c                                 weighting factor for the compositional term of the 
+c                                 objective function
+      wcomp = 1d0
+c                                 weighting factor for the modal term of the 
+c                                 objective function
+      wmode = 1d0
+c                                 weighting factor for the extraneous phase term of the 
+c                                 objective function
+      wextra = 1d4
+c                                 weighting factor for the missing phase term of the 
+c                                 objective function
+      wmiss = 1d3
+c                                 -------------------------------------
+c                                 formerly imc file section 3:
+c                                 Monte-Carlo logistical variables
+c                                 -------------------------------------
+c                                 number of starting guesses used to find the best fit central model
+      mtry = 100
+c                                 number of perturbations used to evaluate uncertainty of central model
+      nunc(1) = 100
+c                                 george's extra grid search parameter
+      nunc(2) = 5
+c                                 number of tries for each perturbation
+      ptry = 1
+c                                 -------------------------------------
+c                                 formerly imc file section 4:
+c                                 Nelder-Mead MINIM algorithm variables
+c                                 -------------------------------------
+c                                 criterion used to decide whether final simplex is expanded 
+c                                 before quadratic fitting, should be at least 1000 x rounding error, 
+c                                 generally a lot more. 
+      simplx = 1d-3
+c                                 fractional step size
+      frac = 0.1
+c                                 how often to check for convergence
+      conchk = 10
+c                                 print control: 0 => normal, < 0 => silent, > 0 => verbose
+      jprint = 0
+c                                 quadratic surface fitting to improve location of the minimum, 
+c                                 0 => don't fit, 1 => fit
+      iquad = 0
+      oquad = 0
+c                                 max # of objective evaluations per try, recommended nparm*1024
+      kcount = 1000
+c----------------------------------------------------------------------
+c                                 read MC_fit option file name from *.imc file (on n8)
+
+      call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
+
+      if (ier.ne.0) call errdbg ('expecting the MC_fit option file na'//
+     *              'me or ''none'', found: '//key)
+
+      if (key.eq.'none') then
+
+         if (mcfrst) write (*,1010) tfname(1:nblen(tfname))
+         return
+
+      else 
+
+         open (n9, file = key, iostat = ier, status = 'old')
+
+         if (ier.ne.0) then 
+            call errdbg ('could not find the specified MC_'//
+     *                   'fit option file: '//key)
+         else 
+            if (mcfrst) write (*,1050) key(1:nblen(key))
+         end if
+
+      end if
+c----------------------------------------------------------------------
+c                                 sift through the option file
+      do
+
+         call redcd1 (n9,ier,key,val,nval1,nval2,nval3,strg,strg1)
+c                                 ier ne 0 = eof
+         if (ier.ne.0) exit
+c                                 cycle on default specification
+         if (strg.eq.'default') cycle
+c                                 set print flags
+         inum = .false.
+         rnum = .false.
+c                                 -------------------------------------
+c                                 if here we have a keyword and value
+         if (key.eq.'molar_composition_input') then
+
+            if (val.eq.'F') lmass = .true.
+
+         else if (key.eq.'kiso') then
+
+            if (val.eq.'T') kiso = .true.
+
+         else if (key.eq.'thermobarometry') then
+
+            if (val.eq.'F') invxpt = .true.
+
+         else if (key.eq.'MINIM_algorithm') then
+
+            if (val.eq.'F') mcgrid  = .true.
+
+         else if (key.eq.'Bayes') then
+
+            if (val.eq.'T') bayes = .true.
+
+         else if (key.eq.'prior_probability_PT_only') then
+
+            if (val.eq.'F') ptonly = .false.
+
+         else if (key.eq.'range_to_z-score') then
+
+            read (strg,*) ra2zs
+            rnum = .true.
+
+         else if (key.eq.'uncertainty_multiplier') then
+
+            read (strg,*) un2ft
+            rnum = .true.
+
+         else if (key.eq.'perturbation_hot_start') then
+c                                 ~mchot => do perturbation analysis automatically after finding best central model
+c                                 mchot => do perturbation analysis around a user specified inversion coordinate
+            if (val.eq.'T') mchot = .true.
+
+         else if (key.eq.'GRH') then
+
+            if (val.eq.'T') GRH = .true.
+
+         else if (key.eq.'model_output') then
+
+            if (val.eq.'imp') then 
+
+               bstout = 1
+
+            else if (val.eq.'bes') then 
+
+               bstout = 2
+
+            end if
+
+         else if (key.eq.'vital_sign') then
+
+            if (val.eq.'F') vital = .false.
+
+         else if (key.eq.'seed') then
+
+            if (val.eq.'T') seed = .true.
+
+         else if (key.eq.'no_missing_phases') then
+
+            if (val.eq.'F') nomiss = .false.
+
+         else if (key.eq.'relative_error') then
+
+            if (val.eq.'F') relerr = .false.
+
+         else if (key.eq.'best_central_model') then
+c                                 ~newstt => do perturbation analysis around best central model
+c                                 newstt => do perturbation analysis using random starting coordinates
+            if (val.eq.'F') newstt = .true.
+
+         else if (key.eq.'uncertainties') then
+
+            if (val.eq.'ana') then
+
+               invunc = 2
+
+            else if (val.eq.'the') then
+
+               invunc = 3
+
+            end if
+
+         else if (key.eq.'Nelder-Mead_covariance') then
+
+            if (val.eq.'F') nmcov = .false.
+
+         else if (key.eq.'uncertainty_plus') then
+
+            if (val.eq.'F') unplus = .false.
+
+         else if (key.eq.'composition_scoring') then
+
+            if (val.eq.'LSQ') then
+
+               lsqchi = 1
+
+            else if (val.eq.'wCh') then
+
+               lsqchi = 3
+
+            end if
+
+         else if (key.eq.'max_OBJF_value') then
+
+            read (strg,*) oktol
+            rnum = .true.
+
+         else if (key.eq.'convergence_threshold') then
+
+            read (strg,*) invtol
+            rnum = .true.
+
+         else if (key.eq.'w_composition') then
+
+            read (strg,*) wcomp
+            rnum = .true.
+
+         else if (key.eq.'w_extra') then
+
+            read (strg,*) wextra
+            rnum = .true.
+
+         else if (key.eq.'w_missing') then
+
+            read (strg,*) wmiss
+            rnum = .true.
+
+         else if (key.eq.'number_of_tries') then
+
+            read (strg,*) mtry
+            inum = .true.
+
+         else if (key.eq.'number_of_perturbations') then
+
+            read (strg,*) nunc(1)
+            inum = .true.
+
+         else if (key.eq.'number_of_perturbation_tries') then
+
+            read (strg,*) ptry
+            inum = .true.
+
+         else if (key.eq.'expansion_criterion') then
+
+            read (strg,*) simplx
+            rnum = .true.
+
+         else if (key.eq.'step_size') then
+
+            read (strg,*) frac
+            rnum = .true.
+
+         else if (key.eq.'convergence_testing') then
+
+            read (strg,*) conchk
+            inum = .true.
+
+         else if (key.eq.'print_level') then
+
+            read (strg,*) jprint
+            inum = .true.
+
+         else if (key.eq.'quadratic_fitting') then
+
+            if (val.eq.'T') iquad = 1
+            oquad = 1
+
+         else if (key.eq.'max_OBJF_evaluations') then
+
+            read (strg,*) kcount
+            inum = .true.
+
+         else if (key.ne.'|') then
+
+            call error (72,nopt(1),iopt(1),key//' is not a valid MC_fit'
+     *                 //' option file keyword and must be deleted '
+     *                 //'or corrected.')
+
+         end if
+c                                 print modified options:
+         if (mcfrst) then
+            if (inum) then
+               read (strg,*) i
+               write (*,1030) key, i
+            else if (rnum) then 
+               read (strg,*) x
+               write (*,1040) key, x
+            else
+               write (*,1020) key, val
+            end if
+         end if
+
+      end do
+
+      close (n9)
+c                                 set dependent options
+      if (nmcov.and.mcfrst) then
+c                                 nelder-mead covariance currently 
+c                                 requires quadratic surface fitting:
+         if (iquad.eq.0) then 
+            iquad = 1
+            key = 'quadratic_fitting'
+            write (*,1070) key,'T*'
+            write (*,1060)
+         end if
+
+      else if (.not.mcfrst) then
+c                                 doing uncertainty analysis, shut
+c                                 off quadratic fitting unless it was
+c                                 explicitly set.
+         iquad = oquad
+
+      end if
+
+1000  format ('Context specific options are echoed in: ',a)
+1010  format (/,'**warning** ',a,' does not specify an MC_fit option',/,
+     *       ' all options will be set'/,'to default, refer to MC_fit_',
+     *       'option.dat for default option values',/)
+1020  format ('MC_fit option: ',a,' has been set to ',a)
+1030  format ('MC_fit option: ',a,' has been set to ',i6)
+1040  format ('MC_fit option: ',a,' has been set to ',g12.6)
+1050  format (/,'Reading MC_fit options from: ',a,/)
+1060  format (/,
+     *       2x,'*Quadratic surface fitting is costly. Do not use it ',
+     *      '(i.e., set Nelder-Mead_covariance',/,3x,'to F) unless you',
+     *      ' want the Nelder-Mead parameter correlation matrix and/or',
+     *      /,3x,'Nelder-Mead uncertainty estimates.',/,80('-'))
+1070  format ('MC_fit option: ',a,' has been automatically reset to ',a)
+
+      end 

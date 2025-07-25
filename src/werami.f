@@ -17,9 +17,6 @@ c----------------------------------------------------------------------
 
       character*100 n5name,n6name
 
-      logical oned
-      common/ cst82 /oned
-
       integer ivar,ind
       common/ cst83 /ivar,ind
 
@@ -203,9 +200,6 @@ c----------------------------------------------------------------------
 
       integer ivar,ind
       common/ cst83 /ivar,ind
-
-      character vnm*8
-      common/ cxt18a /vnm(l3)
 c----------------------------------------------------------------------
       node = .false. 
       dim = 2
@@ -366,7 +360,7 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer ind, j
+      integer ind, i, j
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
@@ -388,6 +382,10 @@ c---------------------------------------------------------------------
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
 
+      integer irct,ird
+      double precision vn
+      common/ cst31 /vn(k2,k7),irct,ird
+
       logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
       common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
@@ -404,6 +402,20 @@ c                                 only exact nodal coordinates allowed
           end do
 
           if (jmct.gt.0) call subinc
+
+      else if (icopt.eq.9.and.fileio) then
+c                                 fract2d from a coodinate file
+c                                 only exact nodal coordinates allowed
+c                                 and only p-t as nodal coordinates
+         i = idint(var(1))
+         j = idint(var(2))
+
+         v(1) = vn((i-1)*ncol + j, 1)
+         v(2) = vn((i-1)*ncol + j, 2)
+
+         do j = 1, 2
+            var(j+2) = v(j)
+         end do
 
       else if (icopt.eq.12) then 
 c                                 0-d infiltration, var(2) is the
@@ -464,12 +476,6 @@ c---------------------------------------------------------------------
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
-
-      character vnm*8
-      common/ cxt18a /vnm(l3) 
-
-      logical oned
-      common/ cst82 /oned
 c----------------------------------------------------------------------
       if (.not.oned) then
 
@@ -684,9 +690,6 @@ c----------------------------------------------------------------
 
       integer dim, i 
 
-      character vnm*8
-      common/ cxt18a /vnm(l3)   
-
       character*14 tname
       integer kop,kcx,k2c,iprop
       logical kfl, first
@@ -815,7 +818,10 @@ c getprp gets properties:
 c   aprp - true if called by allprp, false otherwise
 
 c   jd   - is the pointer to the assemblage
-c   jflu - if 1, bulk properties include fluid phase; else 0
+
+c   gflu - a fluid is present globally
+c   aflu - a fluid is present locally
+c   lflu - fluids included in aggregate properties
 
 c   lop  - flag indicating the property chosen
 c   icx  - if lop = 6, the component chosen
@@ -825,7 +831,7 @@ c   komp - if lop = 7, output pointer to the phase in assemblage
 c          if lop = 8, input pointer to component
 
 c   icps - if lop = 8, the indices of the components. 
-c   
+
 c requestable properties (indicated by lop)
 
 c 1                 Specific enthalpy (J/m3)',
@@ -909,14 +915,21 @@ c                                 include fluid
                prop = fbulk(icx)*atwt(icx)/psys(17)*1d2
             else 
                prop = fbulk(icx)/gtot*1d2
-            end if 
-         else 
+            end if
+
+         else if (psys1(1).gt.0d0) then
 c                                 exclude fluid
             if (lopt(23)) then
                prop = fbulk1(icx)*atwt(icx)/psys1(17)*1d2
             else 
                prop = fbulk1(icx)/gtot1*1d2
-            end if 
+            end if
+
+         else
+c                                 solid only prop requested but the
+c                                 system consists entirely of fluid
+           call warn (69,prop,icx,'GETPRP')
+           prop = nopt(7)
 
          end if 
       
@@ -929,7 +942,7 @@ c                                 chemical potential
          if (icx.eq.0) then 
 c                                 a system property is  requested:
 c                                 if psys1 = 0, the system is just fluid.
-            if (aflu.and.lflu.or.(.not.aflu).or.psys1(1).eq.0d0) then 
+            if (aflu.and.lflu.or.(.not.aflu)) then 
 c                                 if lflu the property is to include 
 c                                 fluid (if present), i.e, use psys/ptot array:
                if (lop.eq.1) then 
@@ -992,8 +1005,9 @@ c                                 (Vphi, Vp, Vs)_P
                else if (lop.eq.39) then 
 c                                 cp/cv
                   prop = psys(28)
-               end if 
-            else 
+               end if
+
+            else if (psys1(1).gt.0d0) then
 c                                 fluid absent system properties:
                if (lop.eq.1) then 
 c 1                               Specific enthalpy (J/m3)
@@ -1054,8 +1068,15 @@ c                                 (Vphi, Vp, Vs)_P
                else if (lop.eq.38) then 
 c                                 cp/cv
                   prop = psys1(28)
-               end if 
-            end if 
+               end if
+
+            else
+c                                 solid only prop requested but the
+c                                 system consists entirely of fluid
+               call warn (69,prop,icx,'GETPRP')
+               prop = nopt(7)
+
+            end if
 
          else 
 
@@ -1124,10 +1145,17 @@ c                                 twt is g/mol phase
                   if (aflu.and.lflu.or.(.not.aflu)) then
 c                                 total mode:
                      prop = props(16,id)*props(17,id)*1d2/psys(1)
-                  else 
+
+                  else if (psys1(1).gt.0d0) then 
 c                                 solid only mode:
                      prop = props(16,id)*props(17,id)*1d2/psys1(1)
-                  end if 
+                  else 
+c                                 solid only prop requested but the
+c                                 system consists entirely of fluid
+                     call warn (69,prop,icx,'GETPRP')
+                     prop = nopt(7)
+                  end if
+
                else if (lop.eq.21) then 
 c                                 Poisson's ratio
                   if (props(8,id).eq.0d0) then 
@@ -1176,7 +1204,7 @@ c                                 cp/cv
 
          end if 
 
-      end if                
+      end if
  
       end 
 
@@ -1676,9 +1704,6 @@ c----------------------------------------------------------------------
      *               kop(i11),kcx(i11),k2c(i11),iprop,
      *               first,kfl(i11),tname
 
-      character vnm*8
-      common/ cxt18a /vnm(l3)  
-
       integer ivar,ind
       common/ cst83 /ivar,ind
 c----------------------------------------------------------------------
@@ -1888,9 +1913,6 @@ c----------------------------------------------------------------------
 
       external readyn
 
-      character vnm*8
-      common/ cxt18a /vnm(l3) 
-
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
@@ -2057,9 +2079,6 @@ c----------------------------------------------------------------------
       common/ cst77 /prop(i11),prmx(i11),prmn(i11),
      *               kop(i11),kcx(i11),k2c(i11),iprop,
      *               first,kfl(i11),tname
-
-      logical oned
-      common/ cst82 /oned
 c----------------------------------------------------------------------
       node = .false.
       dim = 1
@@ -2295,10 +2314,8 @@ c----------------------------------------------------------------
 
       save ind, knd, stble, ksol, nsol
 c----------------------------------------------------------------------
-      do i = 1, iprop
-         prop(i) = nopt(7)
-         smode(i) = 0d0
-      end do 
+      prop = nopt(7)
+      smode = 0d0
 
       id = 0
 
@@ -2319,6 +2336,7 @@ c                               the j'th solution
 
                   call gtmode (mode,id)
                   prop(jk+k) = mode(iopt(3)+1)
+                  if (prop(jk+k).eq.nopt(7)) cycle
                   smode(j) = smode(j) + prop(jk+k)
 
                end do
@@ -2460,7 +2478,9 @@ c----------------------------------------------------------------
 
       double precision mode(*)
 c----------------------------------------------------------------
-      if (aflu.and.lflu.or.(.not.aflu).or.psys1(1).eq.0d0) then
+c                     a fluid is present (aflu) and is to be included in
+c                     aggregate props (lflu). 
+      if (aflu.and.lflu.or.(.not.aflu)) then
 c                     total mode:
 c                     volume fraction
          mode(1) = props(1,id)*props(16,id)/psys(1)*1d2
@@ -2471,10 +2491,12 @@ c                     mol fraction
 
       else 
 c                     solid only mode:
-         if (fluid(id)) then 
-            mode(1) = 0d0
-            mode(2) = 0d0
-            mode(3) = 0d0
+         if (fluid(id)) then
+
+            mode(1:3) = nopt(7)
+c                     warn if system consists entirely of fluid
+            if (psys1(1).eq.0d0) call warn (69,mode(1),id,'GTMODE')
+
          else 
 c                     volume fraction
             mode(1) = props(1,id)*props(16,id)/psys1(1)*1d2
@@ -2482,6 +2504,7 @@ c                     wt fraction
             mode(2) = props(16,id)*props(17,id)/psys1(17)*1d2
 c                     mol fraction
             mode(3) = props(16,id)/psys1(16)*1d2
+
          end if 
 
       end if 
@@ -2505,9 +2528,6 @@ c----------------------------------------------------------------
 
       double precision ymx,ymn,xl(i11),yl(i11),x(3),dx,dy(i11),xmx,xmn,
      *                 mzero
-
-      character vnm*8
-      common/ cxt18a /vnm(l3) 
 
       double precision vip
       common/ cst28 /vip(l2,k2)
@@ -2816,7 +2836,7 @@ c                                 absolute molar bulk composition
 
                end do 
 
-            else
+            else if (psys1(1).gt.0d0) then
 c                                 exclude fluid:
 c                                 normal properties
                do i = 1, i8
@@ -2827,7 +2847,16 @@ c                                 bulk composition
 
                do i = i8+4, i8+3+icomp
                   prop(i) = fbulk1(i-i8-3)
-               end do 
+               end do
+
+            else
+c                                 solid only props requested but the
+c                                 system consists entirely of fluid
+               call warn (69,prop(1),i,'GETPRP')
+
+               prop(1:i8) = nopt(7)
+               fmwt = nopt(7)
+               prop(i8+4:i8+3+icomp) = nopt(7)
 
             end if
 c                                 chemical potentials
@@ -2997,9 +3026,6 @@ c----------------------------------------------------------------
 
       integer ier
 
-      character vnm*8
-      common/ cxt18a /vnm(l3) 
-
       integer ivar,ind
       common/ cst83 /ivar,ind
 c----------------------------------------------------------------------
@@ -3079,7 +3105,7 @@ c----------------------------------------------------------------
 
       logical phluid, readyn
 
-      integer i, j, icx, kprop, ier, lop, komp, mprop
+      integer i, j, id, icx, kprop, ier, lop, komp, mprop
 
       parameter (kprop=40)
 
@@ -3318,9 +3344,10 @@ c                                 warn about fancy_cumulative_modes
 
              end if 
 c                                 ask if fluid should be included:
-             if (gflu) then 
+             if (gflu) then
 
                 write (*,1120) 
+                if (lopt(6)) write (*,1121)
 
                 if (readyn()) lflu = .true.
 
@@ -3328,12 +3355,22 @@ c                                 ask if fluid should be included:
 c                                 double loop necessary because solution 
 c                                 i may occur as j coexisting phases
              do i = 1, istab
+
+                id = idstab(i)
+c                                 added in 7.1.13+
+c               if (id.gt.0) then
+c                  if (fp(id)) cycle
+c               else if (id.lt.0) then 
+c                  if (ifp(-icx).ne.0) cycle
+c               end if
+
                 do j = 1, nstab(i)
 
                    iprop = iprop + 1
-                   call getnam (dname(iprop),idstab(i))
+                   call getnam (dname(iprop),id)
 
-                end do 
+                end do
+
              end do 
  
          else if (lop.eq.6.or.lop.eq.23) then
@@ -3369,8 +3406,8 @@ c                                 get component to be contoured
 c                                 ask if fluids included
             if (gflu.and.lop.eq.6) then 
 
-               write (*,1120) 
-
+               write (*,1120)
+               if (lopt(6)) write (*,1121)
                if (readyn()) lflu = .true. 
 
             end if 
@@ -3420,7 +3457,8 @@ c                                 get phase index
 
             if (gflu) then
 
-               write (*,1120) 
+               write (*,1120)
+               if (lopt(6)) write (*,1121)
                if (readyn()) lflu = .true.
 
             end if
@@ -3469,6 +3507,7 @@ c                                 it's a bulk property, ask if fluid
 c                                 should be included:
                   if (gflu) then 
                      write (*,1120)
+                     if (lopt(6)) write (*,1121)
                      if (readyn()) lflu = .true. 
                   end if 
 
@@ -3575,6 +3614,9 @@ c                                 it in array dname
 1110  format (/,'Calculate individual phase properties (y/n)?')
 1120  format (/,'Include fluid in computation of aggregate ', 
      *          '(or modal) properties (y/n)?')
+1121  format (/,'**warning ver908** melts are currently classified as ',
+     *        'fluids, set option',/,'melt_is_fluid to F to change thi',
+     *        's classification.')
 1130  format (/,'In this mode you may tabulate:',
      *     /,4x,'1 - properties of the system',
      *     /,4x,'2 - properties of a phase',   

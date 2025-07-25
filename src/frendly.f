@@ -391,9 +391,6 @@ c----------------------------------------------------------------------
       integer io3,io4,io9
       common/ cst41 /io3,io4,io9
 
-      logical oned
-      common/ cst82 /oned
-
       save tags
 
       data tags/      'g(J/mol)     ','h(J/mol)     ','log10[Keq]   ',

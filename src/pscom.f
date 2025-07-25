@@ -760,9 +760,6 @@ c psaxes - subroutine to output (sloppy) axes.
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
-      character vnm*8
-      common/ cxt18a /vnm(l3)
-
       integer iind, idep
       double precision c0,c1,c2,c3,c4,c5
       common/ cst316 /c0,c1,c2,c3,c4,c5,iind,idep
@@ -905,9 +902,6 @@ c psaxet - subroutine to output (sloppy) ternary diagram axes.
       integer ipot,jv,iv1,iv2,iv3,iv4,iv5
       common / cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
 
-      character vnm*8
-      common/ cxt18a /vnm(l3)   
-
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
 c----------------------------------------------------------------------
@@ -1039,9 +1033,6 @@ c psaxop - subroutine to make graphics transformation and get some options
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
-
-      character vnm*8
-      common/ cxt18a /vnm(l3)  
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
@@ -1224,9 +1215,6 @@ c----------------------------------------------------------------------
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
-
-      character vnm*8
-      common/ cxt18a /vnm(l3)  
 
       integer inv
       character dname*14, title*162

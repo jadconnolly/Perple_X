@@ -48,14 +48,19 @@ b=chisquare_val*sqrt(smallest_eigenval);
 ellipse_x_r  = a*cos( theta_grid );
 ellipse_y_r  = b*sin( theta_grid );
 
+
+
 %Define a rotation matrix
 R = [ cos(phi) sin(phi); -sin(phi) cos(phi) ];
 
 %rotate the ellipse to some angle phi
 r_ellipse = [ellipse_x_r;ellipse_y_r]' * R;
 
+dim = size (r_ellipse(:,1))
+z(1:dim(1)) = 0.9
+
 % Draw the error ellipse
-plot(r_ellipse(:,1) + X0,r_ellipse(:,2) + Y0,'-b','LineWidth',2)
+plot3 (r_ellipse(:,1) + X0,r_ellipse(:,2) + Y0,z,'-b','LineWidth',2)
 hold on;
 
 % % Plot the original data

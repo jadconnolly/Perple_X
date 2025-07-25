@@ -103,9 +103,6 @@ c psdplt - subroutine to plot gridded minimization sections
       logical readyn
 
       external readyn
-
-      logical oned
-      common/ cst82 /oned
 c---------------------------------------------------------------
       iop5 = 0
       iop6 = 0
@@ -1153,9 +1150,6 @@ c                                 working arrays
       integer kkp,np,ncpd,ntot
       double precision cp3,amt
       common/ cxt15 /cp3(k0,k19),amt(k19),kkp(k19),np,ncpd,ntot
-
-      character vnm*8
-      common/ cxt18a /vnm(l3)
 
       integer ix,iy,mvar
       double precision z,zt
@@ -2280,9 +2274,6 @@ c psax1d - subroutine to output (sloppy) 1d axes.
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
-
-      character vnm*8
-      common/ cxt18a /vnm(l3)
 
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)

@@ -39,7 +39,7 @@ c-----------------------------------------------------------------------
      *        hsmod(i9), gct(i9), gid(i9,i9), idsol, inames, nblen, 
      *        jc(2)
 
-      logical eof, good, oned, findph, first, chksol, readyn, 
+      logical eof, good, findph, first, chksol, readyn, 
      *        liqdus, inteos
 
       external chksol, findph, readyn, nblen
@@ -187,7 +187,7 @@ c                                 choose chemical components
       call compch (ivct,mname,kname,oname,uname)
 c                                 physical variable choices and ranges
 c                                 set icopt to its internal value:
-      call varich (c,ivct,iind,oned,idep,iord,jcth,amount,dtext,opname,
+      call varich (c,ivct,iind,idep,iord,jcth,amount,dtext,opname,
      *             kname,liqdus)
 c                                 warn about the use of chemical potentials
 c                                 in different types of calculations
@@ -1720,7 +1720,7 @@ c                                 component pointers for chkphi
 
       end 
 
-      subroutine varich (c,ivct,iind,oned,idep,iord,jcth,amount,dtext,
+      subroutine varich (c,ivct,iind,idep,iord,jcth,amount,dtext,
      *                   opname,kname,liqdus)
 c---------------------------------------------------------------------------
 c interatctively choose physical variables for build.
@@ -1732,7 +1732,7 @@ c---------------------------------------------------------------------------
       integer i, j, ivct, ier, iind, idep, iord, jc, icth,
      *        jcth, loopx, loopy, ind, ix, jst, jvct, nblen
 
-      logical oned, readyn, liqdus, fileio
+      logical readyn, liqdus, fileio
 
       character dtext*(*), amount*5, stext*11, nc(3)*2, 
      *          opname*(*), kname(*)*5
@@ -1907,7 +1907,7 @@ c                                 redvar uses the iv pointer for the independent
 
          else 
 c                                 otherwise allow the choice of variables:
-            call getxvr (ivct,jvct,jc,oned,'the independent')
+            call getxvr (ivct,jvct,jc,'the independent')
 c                                 get sectioning variables values:
             do j = 1, ivct
                if (iv(j).eq.jc) cycle 
@@ -1938,7 +1938,7 @@ c                                  2-d fractionation, only allow p and t
          jvct = 1
          icont = 0 
 c                                  choose the primary variable (IV(1)):
-         call getxvr (ivct,jvct,jc,oned,
+         call getxvr (ivct,jvct,jc,
      *                'the primary (usually pressure)')
 
       else if (icopt.eq.6) then 
@@ -1972,7 +1972,7 @@ c                                  gridded minimization:
             icont = 1
             icopt = 5
 c                                  Select the x variable
-            call getxvr (ivct,jvct,jc,oned,'x-axis')
+            call getxvr (ivct,jvct,jc,'x-axis')
 
             if (ivct.eq.2.and.icont.eq.1) then 
 c                                 there is no C variable and there 
@@ -2041,7 +2041,7 @@ c                                 getxvar
             icont = icp
             icp = 0
 c                                 get the independent potential
-            call getxvr (ivct,jvct,jc,oned,'independent potential')
+            call getxvr (ivct,jvct,jc,'independent potential')
 c                                 reset icp, icont
             icp = icont
             icont = 3
@@ -2091,7 +2091,7 @@ c                                  convert to internal values
 
          if (icopt.eq.1) then
 c                                  Select the x variable (IV(1)):
-            call getxvr (ivct,jvct,jc,oned,'x-axis')
+            call getxvr (ivct,jvct,jc,'x-axis')
 c                                  select the y variable (iv(2)):
             if (ivct.gt.2) then
  
@@ -2135,7 +2135,7 @@ c                                  specify sectioning variables (iv(3)):
 
          else if (icopt.eq.3) then
 c                                  select the y variable (iv(1)):
-            call getxvr (ivct,jvct,jc,oned,'y-axis')
+            call getxvr (ivct,jvct,jc,'y-axis')
 c                                  specify sectioning variable (iv(2)):
             do j = 2, ivct
                call redvar (j,2) 
@@ -2274,7 +2274,7 @@ c                                 open c-space
  
                do i = 1, icont
 
-                  do 
+                  do
                      write (*,1390) amount
                      write (*,'(12(1x,a))') (kname(j), j = 1, jcth)
                      write (*,1530) nc(i)
@@ -2316,7 +2316,7 @@ c                                 open c-space
 1380  format (/,'The amounts you enter next need not be normalized;',
      *        ' regardless of units, they',/,
      *        'define the molar amount of the system.',/)
-1390  format ('Enter the ',a,' amounts of the components:')
+1390  format (/,'Enter the ',a,' amounts of the components:')
 1410  format ('for the bulk composition of interest:')
 1420  format ('Specify component amounts by mass (Y/N)?')
 1430  format ('Constrain component ',a,' (Y/N)?')
@@ -2382,7 +2382,7 @@ c                                 open c-space
       end 
 
 
-      subroutine getxvr (ivct,jvct,jc,oned,text)
+      subroutine getxvr (ivct,jvct,jc,text)
 c----------------------------------------------------------------------
 c read primary variable 
 c----------------------------------------------------------------------
@@ -2391,8 +2391,6 @@ c----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       character text*(*)
-
-      logical oned
 
       integer j, ivct, ier, ix, jc, jvct, jcont, nblen
 

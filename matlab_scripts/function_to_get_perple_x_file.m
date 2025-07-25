@@ -21,6 +21,7 @@ function [x,y,a,symb,xname,yname,zname,nvar,mvar,nrow,dnames,titl] ...
 % format.
 
 ok = 0;
+symb = 0;
 
 while ok == 0;
 
@@ -46,16 +47,16 @@ while ok == 0;
             % variable name exceeds the length
             % specified by the format, there's
             % gotta be a better way to do this.
-            
+
             vname(i,:) = fscanf(fid, '%9c', 1);
             vmin(i)    = fscanf(fid, '%f', 1);
             dv(i)      = fscanf(fid, '%f', 1);
             inc(i)     = fscanf(fid, '%f', 1);
 
             % for 1d calculations this stuff is all moot, however
-            % prior to 7.1.10b inc(1) was not initialized and 
+            % prior to 7.1.10b inc(1) was not initialized and
             % could be output as a random number causing v() below
-            % to overflow. it's not clear if this stuff is ever 
+            % to overflow. it's not clear if this stuff is ever
             % used even for nvar = 2.
 
             if nvar == 1; inc(1) = 0; end
@@ -134,7 +135,7 @@ while ok == 0;
 
         vname(1) = "symbol code";
         for i = 2:cols-1;vname(i) = ['parameter_',num2str(i-1)];end
-        vname(cols) = "score"   
+        vname(cols) = "score"
 
         [dvar, ok] = listdlg('PromptString','Select the dependent variable:','ListSize',[200 400],'SelectionMode','single','ListString',dnames{1});
         if ok == 0, errordlg(['You did not choose a variable, I quit!']), end
@@ -153,6 +154,8 @@ while ok == 0;
         end
 
     end % end while
+
+    fclose (fid)
 
 end
 

@@ -17073,19 +17073,19 @@ begin_model
 
                                       Multiplicity      1      1     1/2 <- fake T multiplicity
                                                      ____________________________________
-           Polytope 1:                  crjd_d          Cr     Na    Si    dependent
+           Polytope 1:                  crjd_d          Cr     Na   SiSi   dependent
                                         crdi_d          Cr     Ca   AlSi   dependent
                                         ___
-                                        ness_d          Fe3    Na    Si    dependent
+                                        ness_d          Fe3    Na   SiSi   dependent
                                         cess_d (acm)    Fe3    Ca   AlSi   dependent
                                         ___
-                                        ojdTH           Al     Na    Si
+                                        ojdTH           Al     Na   SiSi
                                         ocats_d         Al     Ca   AlSi   dependent
                                         ___
-                                        mnbuf_d         MgTi   Na    Si    dependent
+                                        mnbuf_d         MgTi   Na   SiSi   dependent
                                         mcbuf_d         MgTi   Ca   AlSi   dependent
 
-                                        fnbuf_d         FeTi   Na    Si    dependent
+                                        fnbuf_d         FeTi   Na   SiSi   dependent
                                         fcbuf_d         FeTi   Ca   AlSi   dependent
                                                      ____________________________________
 
@@ -17093,7 +17093,7 @@ begin_model
                                         crfs_d          Cr     Fe   AlSi   dependent
                                         _________
 
-                                        macmTH (mess)     Fe3    Mg   AlSi
+                                        macmTH (mess)   Fe3    Mg   AlSi
                                         facm_d (fess)   Fe3    Fe   AlSi   dependent
                                         _________
 
@@ -17104,15 +17104,15 @@ begin_model
                                         obufTH          MgTi   Mg   AlSi
                                         ffbuf_d         FeTi   Fe   AlSi   dependent
                                         _________
-                                        odi             Mg     Ca    Si
-                                        hed_d           Fe     Ca    Si    dependent
+                                        odi             Mg     Ca   SiSi
+                                        hed_d           Fe     Ca   SiSi   dependent
                                         ___
-                                        en              Mg     Mg    Si
-                                        fs              Fe     Fe    Si
+                                        en              Mg     Mg   SiSi
+                                        fs              Fe     Fe   SiSi
                                                       ___________________________________
                     Ordered species:
 
-                                        fm              Mg     Fe    Si independent
+                                        fm              Mg     Fe   SiSi independent
 
                       femg-1(M2) = fm - en
                       femg-1(M1) = fs - fm
@@ -17244,19 +17244,19 @@ end_excess_function
 
 M1                                  | site name
 6 1 1                               | number of species, effective multiplicity, true multiplicity
-z(fe)   = 1 fs
-z(al)   = 1 mgts + 1 ojdTH
-z(fe3+) = 1 macmTH
-z(cr)   = 1 crenTH
-z(ti)   = 1/2 obufTH
-z(Mg)   = 1/2 obufTH + 1 odi   + 1 en + 1 fm
+z(Fe,M1)   = 1 fs
+z(Al,M1)   = 1 mgts + 1 ojdTH
+z(Fe3+,M1) = 1 macmTH
+z(Cr,M1)   = 1 crenTH
+z(Ti,M1)   = 1/2 obufTH
+z(Mg,M1)   = 1/2 obufTH + 1 odi   + 1 en + 1 fm
 
 M2                                  | site name
 4 1 1                               | number of species, effective multiplicity, true multiplicity
-z(fe)   = 1 fs + 1 fm
-z(ca)   = 1 odi  
-z(na)   = 1 ojdTH
-z(Mg)   = 1 obufTH + 1 en + 1 crenTH + 1 macmTH + 1 mgts 
+z(Fe,M2)   = 1 fs + 1 fm
+z(Ca,M2)   = 1 odi  
+z(Na,M2)   = 1 ojdTH
+z(Mg,M2)   = 1 obufTH + 1 en + 1 crenTH + 1 macmTH + 1 mgts 
 
 T                                   | site name
 2 .5 2                              | number of species, effective multiplicity, true multiplicity

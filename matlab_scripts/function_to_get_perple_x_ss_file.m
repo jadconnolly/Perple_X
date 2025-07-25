@@ -33,6 +33,7 @@ function [x,y,z,symb,xname,yname,zname,nvar,mvar,nrow,dnames,titl,type] ...
 % format.
 
 ok = 0;
+symb = 0;
 
 while ok == 0
 
@@ -140,7 +141,11 @@ while ok == 0
         %                                    name the variables
         dnames{1}{1} = 'symbol code';
         for i = 2:cols-1;dnames{1}{i} = ['parameter_',num2str(i-1)];end
-        dnames{1}{cols} = 'score';
+        dnames{1}{cols} = 'Score';
+
+        %                                    variable name hack
+        dnames{1}{3} = '\itT\rm, K'
+        dnames{1}{2} = '\itP\rm, bar'
         %                                    select the variables
         [xvar, ok] = listdlg('PromptString','Select the X-axis variable:','ListSize',[200 400],'SelectionMode','single','ListString',dnames{1});
         if ok == 0, errordlg('You did not choose a variable, I quit!'), end
@@ -191,6 +196,11 @@ if mvar > 1
         case 'No'
             ok = 1;
     end
+
+         i = find(z(:)<0);
+         z(i) = NaN;
+         i = find(z(:)>1);
+         z(i) = NaN;
 
     if ok == 0
 

@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.13 Mar 26, 2025.',
+     *     'Perple_X release 7.1.13 July 24, 2025.',
 
      *     'Copyright (C) 1986-2025 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -1559,6 +1559,9 @@ c                                 PT_freeze error trap:
          end if
       end if
 
+      if (lopt(32).and.lopt(67)) call errdbg ('aq_fractionation_simpl'//
+     *     ' and aq_lagged_speciation are inconsistent set only one T')
+
       if (iopt(31).gt.k5+2.or.iopt(31).lt.1) then 
          write (*,1090) icp + 2
          iopt(31) = icp + 2
@@ -1823,9 +1826,6 @@ c----------------------------------------------------------------------
       double precision rid 
       common/ cst327 /grid(6,2),rid(5,2)
 
-      logical oned
-      common/ cst82 /oned
-
       integer iam
       common/ cst4 /iam
 c----------------------------------------------------------------------
@@ -2014,7 +2014,7 @@ c                                 info file options
 c                                 lopt(19)
      *        4x,'pause_on_error          ',l1,9x,'[T] F',/,
 c                                 iopt(1)
-     *        4x,'max_warn_limit          ',i3,7x,'[5]',/,
+     *        4x,'max_warn_limit          ',i6,4x,'[5]',/,
 c                                 lopt(56)
      *        4x,'warn_interactive        ',l1,9x,'[T] F',/,
 c                                 lopt(70)
@@ -2074,7 +2074,7 @@ c                                 generic thermo options
      *        4x,'finite_strain_alpha     ',l1,9x,'[F] T',/,
      *        4x,'speciation_precision   ',g7.1E1,4x,
      *           '[1d-5] <1; absolute',/,
-     *        4x,'speciation_max_it      ',i4,7x,'[100]',/,
+     *        4x,'speciation_max_it      ',i6,5x,'[100]',/,
      *        4x,'function_tolerance_exp  ',f3.1,7x,
      *           '[0.8] sets x in tol = epsmch^x',/,
      *        4x,'hybrid_EoS_H2O          ',i1,9x,'[4] 0-2, 4-7',/,
@@ -2269,9 +2269,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer lun, ier, iscan, iscnlt, ibeg, iend, ist, lend
+      integer lun, ier, iscan, iscnlt, ibeg, iend, ist, lend, lkey, lval
 
-      character key*22, val*3,
+      character key*(*), val*(*),
      *          nval1*12, nval2*12, nval3*12, strg*40, strg1*40
 
       integer length,com
@@ -2280,6 +2280,9 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------    
       ier = 0 
       key = ' '
+
+      lkey = len(key)
+      lval = len(val)
 
       do 
 
@@ -2315,13 +2318,13 @@ c         ier = 1
 c         return 
 c      end if 
 
-      if (iend-ibeg.gt.21) then
-         lend = ibeg + 21
+      if (iend-ibeg.gt.lkey - 1) then
+         lend = ibeg + lkey - 1
       else 
          lend = iend
       end if 
 c                                 load chars into key
-      write (key,'(22a)') chars(ibeg:lend)
+      write (key,'(400a)') chars(ibeg:lend)
 c                                 initialize other values
       strg = ' '
       strg1 = ' '
@@ -2343,16 +2346,16 @@ c                                 save longer versions (only on first value)
 c                                 this is done in case it's long text or 
 c                                 several numbers on certain options. 
       if (iend-ibeg.gt.39) iend = ibeg+39
-      write (strg,'(40a)') chars(ibeg:iend)
-      write (strg1,'(40a)') chars(ibeg:ibeg+39)
+      write (strg,'(400a)') chars(ibeg:iend)
+      write (strg1,'(400a)') chars(ibeg:ibeg+39)
 c                                 read value:
-      if (ibeg+2.gt.iend) then 
+      if (ibeg + lval - 1 .gt.iend) then 
          ist = iend
       else 
-         ist = ibeg + 2
+         ist = ibeg + lval - 1
       end if 
 
-      write (val,'(3a)') chars(ibeg:ist)
+      write (val,'(400a)') chars(ibeg:ist)
 c                                 look for a second value
       ist = iscan (ibeg,lchar,' ')
       if (ist.gt.com) return
@@ -2362,7 +2365,7 @@ c                                 look for a second value
 
       iend = iscan (ibeg,com,' ')
       if (iend-ibeg.gt.11) iend = ibeg + 11 
-      write (nval1,'(12a)') chars(ibeg:iend)
+      write (nval1,'(400a)') chars(ibeg:iend)
 c                                 look for a third value
       ist = iscan (ibeg,lchar,' ')
       if (ist.gt.com) return 
@@ -2372,7 +2375,7 @@ c                                 look for a third value
 
       iend = iscan (ibeg,com,' ')
       if (iend-ibeg.gt.11) iend = ibeg + 11 
-      write (nval2,'(12a)') chars(ibeg:iend) 
+      write (nval2,'(400a)') chars(ibeg:iend) 
 c                                 look for a fourth value
       ist = iscan (ibeg,lchar,' ')
       if (ist.gt.com) return
@@ -2382,7 +2385,7 @@ c                                 look for a fourth value
 
       iend = iscan (ibeg,com,' ')
       if (iend-ibeg.gt.11) iend = ibeg + 11 
-      write (nval3,'(12a)') chars(ibeg:iend)
+      write (nval3,'(400a)') chars(ibeg:iend)
 
       end
 
@@ -3416,6 +3419,12 @@ c----------------------------------------------------------------------
          write (*,64) realv
       else if (ier.eq.68) then
          write (*,68)
+      else if (ier.eq.69) then
+c                                 7.1.13 system consists entirely of fluid
+         write (*,69) char
+         if (lopt(6)) write (*,691)
+         call prtptx
+
       else if (ier.eq.72) then
 c                                 generic warning, also 99
          write (*,72) char(1:l)
@@ -3712,6 +3721,12 @@ c                                 generic warning, also 99
 68    format (/,'**warning ver068** degenerate initial assemblage in ',
      *          'COFACE, this should never occur',/,'if you see this ',
      *          'message please report the problem',/)
+69    format (/,'**warning ver069** a solid or solid aggregate propert',
+     *       'y has been requested but the',/,'system consists entirel',
+     *       'y of fluid, the property will be assigned the bad_number',
+     *     /,'value at this condition (routine ',a,').')
+691   format (/,'Melts are currently classified as fluids, see the mel',
+     *       't_is_fluid option')
 72    format (/,'**warning ver072** ',a,/)
 73    format (/,'**warning ver073** an invariant point has been ',
      *          'skipped, routine: ',a,/,
@@ -4330,8 +4345,10 @@ c-----------------------------------------------------------------------
       data iff,ipt2,goodc,badc,badinv/3*0,6*0d0,h9*0,h9*0/
 c
       data mu, uf/ k8*0d0, 2*0d0/
-
-      data r/8.3144126d0/
+c                                 pr is usually read from the thermodynamic data file.
+c                                 however there is at least one program, FLUIDS, that references
+c                                 pr when evaluating the ZD09PR EoS. June 3, 2025.
+      data r, pr/8.3144126d0, 1d0/
 
       data gflu, sroot/ 2*.false./
 
@@ -4362,6 +4379,8 @@ c                                 na1 must be initalized because the
 c                                 array element caq(jd,na1) is used to test
 c                                 for aq speciation on output.
       data na1/1/
+
+      data mcfrst/.true./
 
       end
 
@@ -4587,23 +4606,15 @@ c                                 flag for just shear
 c                                 hsc conversion 
       hsc(k10) = .false.
 c                                 standard thermo parameters
-      do i = 1, k4
-         thermo(i,k10) = 0d0
-      end do 
+      thermo(1:k4,k10) = 0d0
 c                                 shear modulus
-      do i = 1, k15
-         emodu(i) = 0d0
-      end do
+      emodu = 0d0
 c                                 lamda transitions
-      do j = 1, m6
-         do i = 1, m7
-            tm(i,j) = 0d0
-         end do
-      end do
+      tm = 0d0
 c                                 t-dependent disorder
-      do i = 1, m8
-         td(i) = 0d0
-      end do 
+      td = 0d0
+
+      deltah(k10) = 0d0
 
       do 
 c                                 find a data card
@@ -7763,12 +7774,6 @@ c---------------------------------------------------------------------
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
-      character vnm*8
-      common/ cxt18a /vnm(l3)
-
-      logical oned
-      common/ cst82 /oned
-
       logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
       common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
@@ -7884,9 +7889,25 @@ c                                 vertex sets the number of y-nodes in frac2d
 c                                 pssect/werami get the number of nodes from the plt file
             loopy = ncol
 
-         end if 
+         end if
 
-         if (flsh) then
+         if (fileio) then
+c                                  flush/frac2d with fileio
+            if (flsh) then
+               vnm(1) = 'Q,node'
+            else
+               vnm(1) = 'z0,node'
+            end if
+
+            vnm(2) = 'dz,node'
+
+            vmn(1) = 1d0
+            vmx(1) = loopx
+
+            vmn(2) = 1d0
+            vmx(2) = loopy
+
+         else if (flsh) then
 c                                  flush calculations: 
             vnm(1) = 'Q,kg/m^2'
             vnm(2) = 'dz,m   '
@@ -8582,8 +8603,8 @@ c                                 triggered by reopt/resub, aq_error_ver103
       else if (idead.eq.104.and.iwarn04.le.iopt(1)) then
 c                                 triggered by reopt/resub, aq_error_ver103
          call warn (100,c,104,'failed to recalculate speciation.'//
-     *           'nProbable cause undersaturated solute component'//
-     *           'To output result set aq_error_ver104 to F.')
+     *           ' Probable cause undersaturated solute component.'//
+     *           ' To output result set aq_error_ver104 to F.')
 
          call prtptx
 
@@ -9231,9 +9252,6 @@ c----------------------------------------------------------------------
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
 
-      logical oned
-      common/ cst82 /oned
-
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
@@ -9386,9 +9404,6 @@ c-----------------------------------------------------------------------
 
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
-
-      logical oned
-      common/ cst82 /oned
 
       integer io3,io4,io9
       common / cst41 /io3,io4,io9
@@ -10266,6 +10281,9 @@ c                                 in downward coordinates, hence the sign change
 c                                 below:
 
       if (flsh) then
+c                                 pzfunc not set up for flsh
+         if (pzfunc.or.fileio) call errdbg ('TITRAT function not conf'//
+     *                                    'igured for PZFUNC or FILEIO')
 c                                 specification n t-z points to fit n-1^th order
 c                                 polynomial 
          read (n8,*) npoly
@@ -10587,9 +10605,6 @@ c----------------------------------------------------------------------
       common/ cst77 /prop(i11),prmx(i11),prmn(i11),
      *               kop(i11),kcx(i11),k2c(i11),iprop,
      *               first,kfl(i11),tname
-
-      character vnm*8
-      common/ cxt18a /vnm(l3)
 
       integer iam
       common/ cst4 /iam
@@ -14085,7 +14100,7 @@ c                                 automatically continue
      *        'ively, set warn_interactive',/,'to false.',/)
 1010  format (/,'**warning ver536** the preceding interactive warning ',
      *        'was automatically answered Y',/,'because warn_interacti',
-     *        've has been set to F, this is often bad practice',/)
+     *        've has been set to F, this is often bad practice.',/)
 
       end
 

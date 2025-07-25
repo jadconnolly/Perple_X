@@ -480,8 +480,6 @@ c                                 save the normalized g
       g2(jphct) = g/rsum
 c                                 sum scp(1:icp)
       c2tot(jphct) = rsum
-c                                 if it quacks like a duck then...
-      quack(jphct) = rkwak
 c                                 save the endmember fractions
       zco(icoz(jphct)+1:icoz(jphct)+ntot) = pa(1:ntot)
 c                                 and normalized bulk fractions if o/d

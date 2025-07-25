@@ -272,8 +272,9 @@ c                                components, this'll only be called
 c                                before the eos choice
             do i = 0, nrk
 
-               if (i.eq.4.or.i.eq.6.or.i.eq.9.or.i.eq.18.or.i.eq.21.or.i
-     *            .eq.3.or.i.eq.22.or.i.eq.23.or.i.eq.7.or.i.eq.11) then
+               if (i.eq.4.or.i.eq.6.or.i.eq.9.or.i.eq.11.or.i.eq.18.or.
+     *             i.eq.21.or.i.eq.3.or.i.eq.22.or.i.eq.23.or.i.eq.7) 
+     *         then
 
                     eosok(i) = .false.
                     cycle
@@ -362,13 +363,12 @@ c                                 specify "saturated phase" eos.
       err = .true.
 
       do i = 0, nrk
-         if (i.eq.4.or.i.eq.6.or.i.eq.9.or.i.eq.18.or.i.eq.21.or.    
-     *       i.eq.3.or.i.eq.22.or.i.eq.23.or.i.eq.7.or.i.eq.11) cycle 
 
-         if (eosok(i)) then 
-            write (*,1070) i,rkname(i)
-            err = .false.
-         end if
+         if (.not.eosok(i)) cycle 
+
+         write (*,1070) i,rkname(i)
+         err = .false.
+
 
       end do
 
@@ -378,9 +378,7 @@ c                                 write hybrid eos blurb
       call hybout (-1,6)
 
       read (*,*,iostat=ier) ifug
-      if (ifug.gt.nrk.or.ifug.eq.4.or.ifug.eq.6.or.ifug.eq.7.or.
-     *    ifug.eq.18.or.ifug.eq.21.or.ifug.eq.22.or.ifug.eq.23.or.
-     *    ifug.lt.0.or.ifug.eq.3.or.ifug.eq.9) ier = 1
+      if (ifug.gt.nrk.or..not.eosok(ifug).or.ifug.lt.0) ier = 1
 
       call rerror (ier,*10)
 
@@ -3923,6 +3921,9 @@ c                                 compute hybrid pure fluid props
       y(1) = 1d0 - xc
 
       call mrkhyb (jns, jns, 2, 2, 1)
+c                                 did not set f's prior to June 3, 2025
+      f(1) = dlog(g(1)*p*y(1))
+      f(2) = dlog(g(2)*p*y(2))
 
       vol = vol + y(1)*vh(1) + y(2)*vh(2)
 
@@ -6076,7 +6077,7 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
  
-      double precision brk(nsp), ark(nsp), tc, pc
+      double precision brk(nsp), ark(nsp)
 
       integer ins(*), isp, i, k
 
@@ -8214,8 +8215,6 @@ c                                           JADC, march 6 2018
       dvhy(j) = vol - vmrk0(j)
 
       end
-
-
 
       subroutine zd09pr (vol,lnfug,i)
 c----------------------------------------------------------------------

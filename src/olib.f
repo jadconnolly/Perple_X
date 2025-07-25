@@ -32,9 +32,6 @@ c----------------------------------------------------------------------
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
 
-      character vnm*8
-      common/ cxt18a /vnm(l3)
-
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
@@ -1056,7 +1053,7 @@ c                                 a compound:
             end if
 
             if (iam.ne.2) then 
-c                                 WERAMI, PSSECT compund:
+c                                 WERAMI, PSSECT compound:
                props(16,i) = 0d0 
 
                do l = 1, ijpt
@@ -2751,10 +2748,7 @@ c                                 if a reaction (frendly) return
       if (rxn) return
 c                                 if not solid, don't compute solid only
 c                                 properties
-      if (psys1(1).le.0d0.or..not.aflu) then 
-         solid = .false.
-         aflu = .false.
-      end if 
+      if (psys1(1).le.0d0) solid = .false.
 c                                 accumulate aggregate totals, some
 c                                 totals may be incomplete if volume or 
 c                                 shear is false for an individual phase
@@ -3395,9 +3389,6 @@ c----------------------------------------------------------------------
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
 
-      logical oned
-      common/ cst82 /oned
-
       integer iam
       common/ cst4 /iam
 
@@ -3891,14 +3882,12 @@ c coordinates
 c----------------------------------------------------------------------
       implicit none
 
+      include 'perplex_parameters.h'
+
       integer jloc, iloc
 
       logical left, ongrid
-
-      logical oned
-      common/ cst82 /oned
-
-
+c----------------------------------------------------------------------
       if (oned) then 
 c                                 get the nodal coordinate and find if the
 c                                 real coordinate lies to the left or right 

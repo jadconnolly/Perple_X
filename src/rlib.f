@@ -12666,13 +12666,6 @@ c                                 look among solutions:
             jdaq = ksmod(i)
 
             if (lopt(32)) then
-
-               do j = 1, ns
-c                                 set quack flag so the pure endmembers
-c                                 won't be speciated by aqlagd
-                  quack(jnd(j)) = .true.
-
-               end do
 c                                 identify non-solvent components
                isolc = 0
 
@@ -19362,9 +19355,6 @@ c---------------------------------------------------------------------
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
-      character vnm*8
-      common/ cxt18a /vnm(l3)  
-
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc 
 
@@ -19408,9 +19398,10 @@ c                                 for 1d calculations
 
       call incdp0
 
-      if (icopt.eq.7.and.fileio) then 
+      if ((icopt.eq.7.or.icopt.eq.9.or.icopt.eq.11).and.fileio) then 
 c                                using nodal coordinate system
          dvr(1) = 1d0
+         dvr(2) = 1d0
 
       else if (icopt.eq.9.or.icopt.eq.11) then 
 c                                using non-thermodynamic coordinate frame
