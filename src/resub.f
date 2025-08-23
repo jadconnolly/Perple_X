@@ -1,4 +1,4 @@
-c routines only called by vertex/meemum, could be combined with nlib.f
+c routines only called by vertex/meemum
 
       subroutine lpopt0 (idead)
 c-----------------------------------------------------------------------

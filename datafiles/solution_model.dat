@@ -1916,8 +1916,8 @@ fats_d   mats_d
 cfsg     cenjh
 hed_d    di
                                   | Simplex 1
-X_Fe 0  .2  .1  0                 | X(1,1) => Fe/M
-X_Mg by difference                | X(1,N) = Mg/M
+X_Fe    0  1  .1  0               | X(1,1) => Fe/M
+X_Mg    by difference             | X(1,N) = Mg/M
 
                                   | Simplex 2
 X_MTiTs 0  .1  .1  0              | X(2,1) - M-buf(MgTi)
@@ -15799,8 +15799,9 @@ facm_d   macm
 fts_d    mgts
 hed_d    odi
 fs       en
+
                                   | Simplex 1
-X_Fe    0  .2  .1  0              | X(1,1) => Fe/M
+X_Fe    0   1  .1  0              | X(1,1) => Fe/M
 X_Mg    by difference             | X(1,N) = Mg/M by difference
 
                                   | Simplex 2

@@ -17135,13 +17135,22 @@ c                                 the difference between the number
 c                                 of endmembers that do not have and
 c                                 do have each species.
 
+c                                 kosp(i,j) is the number of missing
+c                                 species on site i for endmember j
+c                                 this cannot exceed the max number of
+c                                 species (ivert(ii,i)). this limitation
+c                                 was not present until Aug 23,2025.
+
+c                                 jmsol(k,j) os the j'th prism coordinate
+c                                 (or species index) of the k'th endmember
             do k = pvptr(ii,1), pvptr(ii,2)
 
                if (kdsol(k).ne.0) then 
-
-                  do j = 1, isimp(ii)
-                     kosp(j,jmsol(k,j)) = kosp(j,jmsol(k,j)) - 1
-                  end do
+c                                 7.1.13, i can think of no reason
+c                                 for decrementing kosp
+c                 do j = 1, isimp(ii)
+c                    kosp(j,jmsol(k,j)) = kosp(j,jmsol(k,j)) - 1
+c                 end do
 
                else 
 
@@ -17149,8 +17158,14 @@ c                                 do have each species.
                   killed = .true.
 
                   do j = 1, isimp(ii)
-                     kosp(j,jmsol(k,j)) = kosp(j,jmsol(k,j)) + 1
+c                                 7.1.13, limit kosp by the number of
+c                                 species actually present:
+                     if (kosp(j,jmsol(k,j)).lt.ivert(ii,j)) then
+                        kosp(j,jmsol(k,j)) = kosp(j,jmsol(k,j)) + 1
+                     end if
+
                   end do
+
 
                end if 
 
