@@ -566,6 +566,9 @@ c                                 aq_fractionation_simpl
       lopt(67) = .false.
 c                                 finite_strain_alpha
       lopt(68) = .false.
+c                                 reject_degenerates, reject phases 
+c                                 containing a degenerate components
+      lopt(69) = .false.
 c                                 phi_d
       nopt(65) = 0.36
 c                                 initialize mus flag lagged speciation
@@ -1421,7 +1424,12 @@ c                                 handle missing shear moduli
          else if (key.eq.'finite_strain_alpha') then 
 c                                 finite strain alpha handling
             lopt(68) = 0 .ne. index('tT',val(1:1))
-          
+
+         else if (key.eq.'reject_degenerates') then 
+c                                 reject phases containing a degenerate
+c                                 component
+            if (val.eq.'T') lopt(69) = .true.
+
          else if (key.eq.'lop_28') then
 c                                 reserved values for debugging, etc
             if (val.eq.'T') lopt(28) = .true.
@@ -4493,14 +4501,14 @@ c                                 component is in the phase.
          end if
 
          if (.not.aq.and.(ieos.eq.15.or.ieos.eq.16)) cycle
+c                                 standard form with no volumetric EoS, force
+c                                 error
+         if (ieos.gt.0.and.ieos.lt.5.and.thermo(3,k10).eq.0d0) then
 
-c                                 a data writing program, don't mess
-c                                 with ieos
-         if (iam.ne.6.and.iam.ne.9) then
-c                                 standard form with no volumetric EoS, 
-c                                 reset ieos internally:
-             if (ieos.gt.0.and.ieos.lt.5.and.thermo(3,k10).eq.0d0)
-     *          ieos = 0
+            write (*,1020) ieos, name(1:nblen(name)), 
+     *                           n2name(1:nblen(n2name))
+
+            call errpau
 
          end if
 c                                 check for reserved (fluid) species names
@@ -4541,6 +4549,11 @@ c                                 inappropriate EoS
 1010  format ('Data file: ',a,' invokes an out-of-date EoS code for ',a,
      *      '. To update the file edit the',/,'entry for ',a,
      *      ' replacing EoS = ',i3,' with Eos = ',i3)
+
+1020  format ('The EoS code (',i3,') specified for entry ',a,' in data',
+     *        ' file ', a,' requires',/,'volumetric data, edit the ',
+     *        'entry to update the EoS code or provide the missing ',/,
+     *        'data')
 
       end
 

@@ -580,14 +580,14 @@ c                                 MC_fit common block:
      *        xptids, xptptr, xptnph, xpterr, mccpd, mcsol, mcid, 
      *        mcids, msloc, msolct, nparm, nunc, mcpct, mcpid, mctrm,
      *        mcj, mccoef, mccoid, lsqchi, blkptr, bstout, uncomp,
-     *        skp, jkdiag
+     *        skp, jkdiag, lsqchm
 
       character xptnam*18
 
       double precision xptpt, xptblk, xptc, xpte, cprng, sprng, wcomp, 
      *                 wextra, wmiss, oktol, scores, plow, pdelta,
      *                 cmpmin, cmpmax, xskp, pdqf, ra2zs, un2ft, covar,
-     *                 pmode, emode, wmode, bstlco, bstbco
+     *                 pmode, emode, wmode, bstlco, bstbco, mxobjf
 
       common/ cst68 /xptpt(l11,l2), xptblk(l11,k5), xskp(h5), pdqf,
      *               xptc(k5*l11), xpte(k5*l11), xpterr(l11), ra2zs,
@@ -595,10 +595,10 @@ c                                 MC_fit common block:
      *               wmiss, oktol, scores(l11), plow(l12), un2ft,
      *               pdelta(l12), cmpmin(k5,k5), cmpmax(k5,k5), wmode,
      *               covar(l12**2), pmode(l11,k5), emode(l11,k5), 
-     *               bstlco(l12** 2), bstbco(l12** 2),
+     *               bstlco(l12** 2), bstbco(l12** 2), mxobjf,
 c                                 integer
      *               mccpd, mcsol, mxpt, cxpt, nparm, nunc(2), unmeas,
-     *               mctrm(k5), cextra, optct, idxtra, lsqchi,
+     *               mctrm(k5), cextra, optct, idxtra, lsqchi, lsqchm,
      *               xptids(l11,k5), xptptr(l11,k5), xptnph(l11),
      *               mcid(k5), mcids(k5), msolct(l11,h9), ptry,
      *               msloc(l11,k5), mcpct(k5), mcpid(k5,3), skp(h5),

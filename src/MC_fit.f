@@ -611,20 +611,29 @@ c                                  got a legitimate result
 
                nogood = .false.
 
-            else if (nomiss) then
+            else if (nomiss.or.objf.gt.mxobjf) then
 
                lu = 6
 
                do
+
                   write (lu,'(80(''-''))')
                   write (lu,'(a,a,a)') 'Although ',strg1(1:nblen(strg1))
      *                                ,' the result will be' 
-                  write (lu,1090)
+                  if (objf.gt.mxobjf) then 
+                     write (lu,1091)
+                  else
+                     write (lu,1090)
+                  end if
+
                   if (lu.eq.n6) exit
                   lu = n6
+
                end do 
 
                cycle
+
+            else if (objf.gt.mxobjf) then
 
             else
 
@@ -784,8 +793,11 @@ c                                 write details of scoring to *.out console and 
 1080  format (i4,' tries have converged so far.')
 1090  format ('rejected because one or more observed ',
      *        'phases are not predicted. To use such',/,
-     *        'results change no_miss to ',
-     *        'miss_ok in the *.imc file',/,80('-'))
+     *        'results set the no_missing phases option to F in the ',
+     *        'MC_fit option file.',/,80('-'))
+1091  format ('rejected because the value of the objective function ex',
+     *        'ceeds the OBJF_filter_value',/,
+     *        'set in the MC_fit option file.',/,80('-'))
 1100  format (/,'**warning ver505** quadratic surface fitting failed. ',
      *        'The Nelder Mead Covariance',/,'and correlation matrices',
      *        ' will not be avalilable for this result. Increasing',/,
@@ -3450,15 +3462,15 @@ c                                 calculate residual
 
       if (term.gt.un2ft*emode(id,j)) fit = .false.
 
-      if (lsqchi.eq.1) then 
+      if (lsqchm.eq.1) then 
 c                                 LSQ modal obj
          term = term**2
  
-      else if (lsqchi.eq.2) then 
+      else if (lsqchm.eq.2) then 
 c                                 Chi-square modal obj
          term = term**2 / mode
 
-      else if (lsqchi.eq.3) then 
+      else if (lsqchm.eq.3) then 
 c                                 weighted Chi-square modal obj
 c                                 this case arises if someone doesn't 
 c                                 put a value for a component that exists
@@ -4595,10 +4607,14 @@ c                                 -------------------------------------
 c                                 1 - least square compositional scoring
 c                                 2 - Chi square scoring
 c                                 3 - weighted Chi square
-      lsqchi = 2
-c                                 maximum acceptable value of the objective function, 
-c                                 larger values trigger an error (do they?)
+      lsqchi = 3
+c                                 and for modes (same scheme):
+      lsqchm = 3
+c                                 maximum value of the objective function, 
+c                                 larger values trigger an error during search (or should)
       oktol = 1d5
+c                                 maximum OBJF for an acceptable result
+      mxobjf = 1d1
 c                                 the variance of the objective function for an acceptable
 c                                 solution
       invtol = 1d-4
@@ -4781,21 +4797,38 @@ c                                 newstt => do perturbation analysis using rando
 
             if (val.eq.'F') unplus = .false.
 
-         else if (key.eq.'composition_scoring') then
+         else if (key.eq.'objective_composition') then
 
             if (val.eq.'LSQ') then
 
                lsqchi = 1
 
-            else if (val.eq.'wCh') then
+            else if (val.eq.'Chi') then
 
-               lsqchi = 3
+               lsqchi = 2
+
+            end if
+
+         else if (key.eq.'objective_mode') then
+
+            if (val.eq.'LSQ') then
+
+               lsqchm = 1
+
+            else if (val.eq.'Chi') then
+
+               lsqchm = 2
 
             end if
 
          else if (key.eq.'max_OBJF_value') then
 
             read (strg,*) oktol
+            rnum = .true.
+
+         else if (key.eq.'OBJF_filter_value') then
+
+            read (strg,*) mxobjf
             rnum = .true.
 
          else if (key.eq.'convergence_threshold') then

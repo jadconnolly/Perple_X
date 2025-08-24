@@ -19423,6 +19423,9 @@ c                                using non-thermodynamic coordinate frame
          dvr(1) = (vmx(1) - vmn(1))/rloopx
          dvr(2) = (vmx(2) - vmn(2))/rloopy
 
+         if (dvr(1).eq.0) dvr(1) = 1d0
+         if (dvr(2).eq.0) dvr(2) = 1d0
+
       else if (icopt.eq.12) then 
 
          dvr(1) = nopt(36)

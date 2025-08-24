@@ -2973,10 +2973,11 @@ c                                 convert to absolute mol/mass if requested
                if (lopt(41)) then 
 
                   do i = i8+4, i8+3+icomp
+c                                 to get molar mass amount, undo percent, multiply
+c                                 by molar formula weight
+                     if (iopt(2).eq.1) prop(i) = prop(i) * prop(17) /1d2
 c                                 prop(16) is the molar amount of the phase
                      prop(i) = prop(i) * prop(16)
-c                                 mass ammount, undo percent
-                     if (iopt(2).eq.1) prop(i) = prop(i)/2d2
 
                   end do
 
@@ -3738,7 +3739,7 @@ c                                 wt% or mol component icx
 c                                 absolute mass, units hardwired here, but
 c                                 are actually determined by component formula 
 c                                 mass specified in the thermodynamic data file.
-               temp = cname(icx)//',g       '
+               temp = cname(icx)//',g,abs   '
 
             else
 c                                 mass fraction (%)
