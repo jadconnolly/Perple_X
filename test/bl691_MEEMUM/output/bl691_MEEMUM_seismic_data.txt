@@ -8,6 +8,7 @@ Seismic wavespeed computational options:
     seismic_output          som       [some] none all
     poisson_test            F         [F] T
     Anderson-Gruneisen      F         [F] T
+    finite_strain_alpha     F         [F] T
     Tisza_test              F         [F] T
     fluid_shear_modulus     T         [T] F
     phi_d                   0.36      [0.36] 0->1
@@ -193,6 +194,11 @@ Endmembers and stoichiometric compounds:
         abL           implicit    fluid                    
         neL           implicit    fluid                    
         lcL           implicit    fluid                    
+        phlD          implicit    Poisson                  
+        annD          implicit    Poisson                  
+        eastD         implicit    Poisson                  
+        tbioD         implicit    Poisson                  
+        fbioD         implicit    Poisson                  
         musp          implicit    Poisson      made entity*
         fbr           implicit    Poisson      made entity*
         fchum         implicit    Poisson      made entity*
@@ -245,8 +251,6 @@ Endmembers and stoichiometric compounds:
         ctjL          implicit    fluid        made entity*
         fojL          implicit    fluid        made entity*
         fajL          implicit    fluid        made entity*
-        foTL          implicit    fluid        made entity*
-        faTL          implicit    fluid        made entity*
         mrbG          implicit    Poisson      made entity*
         kprg          implicit    Poisson      made entity*
         tts           implicit    Poisson      made entity*
