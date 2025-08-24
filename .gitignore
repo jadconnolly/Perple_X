@@ -1,5 +1,6 @@
 
 *.ini
+*.exe
 src/*.o
 src/*.so
 src/*.mod
@@ -28,4 +29,3 @@ test/**/*.ps
 test/**/*.tim
 test/**/*.tof
 test/**/*auto_refine.txt
-test/bl691_MEEMUM/meemum.exe

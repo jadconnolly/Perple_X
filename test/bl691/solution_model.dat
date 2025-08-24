@@ -1,4 +1,4 @@
-690 DO NOT DELETE THIS LINE
+719 DO NOT DELETE THIS LINE
 
                             ---------------------------------------------------------------------------
                              FOR MODEL DEFINITIONS AND REFERENCES READ THE MODEL COMMENTARY OR REFER TO
@@ -44,10 +44,10 @@
 
                              0     - internal (fluid) EoS
                              20    - Electrolyte (charge balance) model
-                             26    - Haefner H2O-CO2-NaCl
-                             29    - BCC Fe-Si alloy, Lacaze & Sundman 1990.
-                             30-33 - FeSiC alloys (BCC/FCC/CBCC/HCP), Lacaze & Sundman 1990.
-                             39    - generic hybrid fluid EoS
+                             26    - H2O-CO2-NaCl, Aranovich et al. (2010)
+                             29    - BCC Fe-Si alloy, Lacaze & Sundman 1990
+                             30-33 - FeSiC alloys (BCC/FCC/CBCC/HCP), Lacaze & Sundman 1990
+                             39    - GFSM, generic (hybrid) fluid solution model.
                              40    - Silicate fluid (MRK)
                              41    - COH fluid (hybrid MRK)
                              42    - FeS liquid, Saxena & Eriksson 2015 with ECRG corrections
@@ -472,8 +472,6 @@ z(Al,T1) = 1/2 + 1/2 an
 z(Si,T1) = 1/2 - 1/2 an
 
 [Si2O8]                             | formula suffix, enter "none" for no suffix.
-
-reach_increment 3
 
 end_of_model
                       ---------------------------------------------------------
@@ -1918,8 +1916,8 @@ fats_d   mats_d
 cfsg     cenjh
 hed_d    di
                                   | Simplex 1
-X_Fe 0  .2  .1  0                 | X(1,1) => Fe/M
-X_Mg by difference                | X(1,N) = Mg/M
+X_Fe    0  1  .1  0               | X(1,1) => Fe/M
+X_Mg    by difference             | X(1,N) = Mg/M
 
                                   | Simplex 2
 X_MTiTs 0  .1  .1  0              | X(2,1) - M-buf(MgTi)
@@ -2281,14 +2279,12 @@ reach_increment 0
 end_of_model
                            --------------------------------------------------------
 begin_model
-                      Aqueous low density silicate fluid/melt - Holland, Green, & Powell; J Pet, 2018, 59:881–900.
+                      Aqueous low density silicate fluid/melt - Holland, Green, & Powell; J Pet, 2018, 59:881ï¿½900.
 
                       Intended to account for the solubility of silicates in water
                       at P > 1 GPa. Use with caution.
 
                       JADC 4/19
-
-                      WoL DQF corrected, Debaditya Bandyopadhyay, 5/6/19.
 
                       This model requires the following make definitions in the
                       thermodynamic data file make_definitions section:
@@ -2315,7 +2311,7 @@ begin_model
                       make_definition section at the end of this model:
 
                       dqf(silL) = 6.72d3  -0.313*Pbar
-                      dqf(woL)  = -0.22d3  -0.12*Pbar
+                      dqf(woL)  = 0.22d3  -0.12*Pbar
 
                       For (nonsensical, but common) positive DFQ's this approach may lead to
                       interference between the phase relations of the solution model and the
@@ -2329,6 +2325,15 @@ begin_model
 
                       WARNING 1: The h2oL melt endmember may destabilize Aqfl, see:
                       www.perplex.ethz.ch/perplex/examples/example_holland_et_al_2018_melt_model/hp633_water_versus_h2oL.pdf
+
+
+                      Corrections:
+
+                      woL DQF corrected, Debaditya Bandyopadhyay, 5/6/19.
+
+                      dqf(woL)  = -0.22d3  -0.12*Pbar corrected to dqf(woL)  = 0.22d3  -0.12*Pbar, JADC 11/27/2024
+
+                      Add water vacancy site, JADC 11/27/2024
 
 Aqfl(HGP)
 abbreviation F
@@ -2351,16 +2356,16 @@ tiWL     qWL      H2O
                                     | see commentary in the header of this file for explanation of
                                     | endmember flags and subdivision schemes
 
-1d-4 .2   .2  1                     | range and resolution of X(fo)
-1d-4 .2   .2  1                     | range and resolution of X(fa)
-1d-4 .2   .2  1                     | range and resolution of X(jd)
-1d-4 .2   .2  1                     | range and resolution of X(sil)
-1d-4 .2   .2  1                     | range and resolution of X(kj)
-1d-4 .2   .2  1                     | range and resolution of X(wo)
-1d-4 .2   .2  1                     | range and resolution of X(ek)
-1d-4 .2   .2  1                     | range and resolution of X(hm)
-1d-4 .2   .2  1                     | range and resolution of X(ti)
-1d-4 .2   .2  1                     | range and resolution of X(q)
+1d-4 .2   .2  0                     | range and resolution of X(fo)
+1d-4 .2   .2  0                     | range and resolution of X(fa)
+1d-4 .2   .2  0                     | range and resolution of X(jd)
+1d-4 .2   .2  0                     | range and resolution of X(sil)
+1d-4 .2   .2  0                     | range and resolution of X(kj)
+1d-4 .2   .2  0                     | range and resolution of X(wo)
+1d-4 .2   .2  0                     | range and resolution of X(ek)
+1d-4 .2   .2  0                     | range and resolution of X(hm)
+1d-4 .2   .2  0                     | range and resolution of X(ti)
+1d-4 .2   .2  0                     | range and resolution of X(q)
 
 begin_excess_function
 W(qWL  H2O)   59d3     0  -0.82
@@ -2375,8 +2380,9 @@ W(tiWL H2O)   75d3     0  -0.67
 W(kWL  H2O)   44.9d3   0  -1.19
 end_excess_function
 
-1                                   | molecular entropy model
-11 1
+2                                 | 2 sites
+
+11 1                              | molecular site
 z(foWL) = 1 foWL
 z(faWL) = 1 faWL
 z(jdWL) = 1 jdWL
@@ -2388,12 +2394,14 @@ z(hmL)  = 1 hmWL
 z(tiL)  = 1 tiWL
 z(qWL)  = 1 qWL
 
+2 1                                 | water-vacancy site
+z(H) = 1 H2O
+
 begin_dqf_corrections
 dqf(silL) =  6.72d3  -0.313*Pbar
-dqf(woL)  = -0.22d3  -0.12 *Pbar
+dqf(woL)  =  0.22d3  -0.12 *Pbar
 end_dqf_corrections
 
-reach_increment 0
 
 end_of_model
                            --------------------------------------------------------
@@ -2434,9 +2442,9 @@ begin_model
                       make_definition section at the end of this model:
 
                       dqf(silL) = 6.35d3  -0.320*Pbar
-                          updated to DQF   6.20  0  -0.318
+                          updated to DQF   6.20  -0.318
                       dqf(woL)  = -0.18d3  -0.118*Pbar
-                          updated to DQF  -0.45  0   -0.114
+                          updated to DQF  -0.45  -0.114
                       dqf(h2oL) = 3.24d3  -3.9*TK  0.00085*Pbar
 
                       dqf(CO2)   = 54355.   |based on Morizet 2010 for basalt data & rhyolite curve in  Fig. 11, JADC-CAH apr22
@@ -2647,11 +2655,11 @@ begin_model
                       This model requires the following make definitions in the
                       thermodynamic data file make_definitions section:
 
-                      foTL = 2 foL
-                         dqf = -4d3
+                      fo8L = 2 foL
+                         dqf = 0
 
-                      faTL = 2 faL
-                         dqf = -8.2d3  - 1.4 * P
+                      fa8L = 2 faL
+                         dqf = 0
 
                       q8L = 4 qL
                          dqf = 0
@@ -2683,7 +2691,7 @@ full_name    liquid
 1                                  | number of simplices
 8                                  | number of vertices (endmembers) on each simplex
 
-foTL     faTL
+fo8L     fa8L
 abL      silL     kspL
 woL      q8L      h2oL
 
@@ -2708,41 +2716,41 @@ begin_excess_function
 W(q8L abL)    =    12d3   - 0.4 * P
 W(q8L kspL)   =   -2d3    -  .5 * P
 W(q8L woL)    =   -5d3
-W(q8L foTL)   =    42d3   +   1 * P
+W(q8L fo8L)   =    42d3   +   1 * P
 W(q8L h2oL)   =    18.1d3 - 0.68 * P
 W(q8L oanL)   =   -29.5d3 -  .1 * P
 
 W(abL kspL)   =   -6d3    + 3   * P
 W(abL woL)    =   -12d3
 W(abL silL)   =    10d3
-W(abL faTL)   =   -30d3   + 0.8 * P
-W(abL foTL)   =   -47.3d3 + 0.3 * P
+W(abL fa8L)   =   -30d3   + 0.8 * P
+W(abL fo8L)   =   -47.3d3 + 0.3 * P
 W(abL h2oL)   =   -4.4d3  - 0.17 * P
 W(abL oanL)   =    8.6d3  +  0.4 * P
 
 W(kspL woL)   =   -13d3
-W(kspL faTL)  =   -11.3d3
-W(kspL foTL)  =    6.8d3
+W(kspL fa8L)  =   -11.3d3
+W(kspL fo8L)  =    6.8d3
 W(kspL h2oL)  =    10.4d3 - 0.39 * P
 W(kspL oanL)  =   -16d3   - 0.25 * P
 
 W(woL silL)   =   -1.6d3
-W(woL faTL)   =    6.5d3
-W(woL foTL)   =    4d3
+W(woL fa8L)   =    6.5d3
+W(woL fo8L)   =    4d3
 W(woL h2oL)   =    21d3
 W(woL oanL)   =    3.5d3
 
-W(silL faTL)  =    12d3
-W(silL foTL)  =    12d3
+W(silL fa8L)  =    12d3
+W(silL fo8L)  =    12d3
 W(silL h2oL)  =    11d3   -  .5 * P
 W(silL oanL)  =    6.4d3
 
-W(faTL foTL)  =    18d3
-W(faTL h2oL)  =    29d3
-W(faTL oanL)  =   -43.5d3 - 0.95 * P
+W(fa8L fo8L)  =    18d3
+W(fa8L h2oL)  =    29d3
+W(fa8L oanL)  =   -43.5d3 - 0.95 * P
 
-W(foTL h2oL)  =    29d3   -  .5 * P
-W(foTL oanL)  =   -26d3   - 0.6 * P
+W(fo8L h2oL)  =    29d3   -  .5 * P
+W(fo8L oanL)  =   -26d3   - 0.6 * P
 
 W(h2oL oanL)  =    9.75d3 -  .5 * P
 
@@ -2757,12 +2765,12 @@ end_excess_function
 OH
 2 1 1                       | water-vacancy site
 z(OH)  = 1 h2oL
-z(Vac) = 1 foTL + 1 faTL + 1 abL + 1 silL + 1 kspL + 1 woL + 1 q8L + 1 oanL
+z(Vac) = 1 fo8L + 1 fa8L + 1 abL + 1 silL + 1 kspL + 1 woL + 1 q8L + 1 oanL
 
 Ol
 2 0 0                       | Temkin olivine site
-n(Mg) = 4 foTL
-n(Fe) = 4 faTL
+n(Mg) = 4 fo8L
+n(Fe) = 4 fa8L
 
 M
 8 0 0                       | melt site, pseudo-Temkin
@@ -2772,7 +2780,7 @@ z(ab)    = 1 abL
 z(sil)   = 1 silL
 z(an)    = 1 oanL
 z(wo)    = 1 woL
-z(Ol)    = 1 faTL + 1 foTL  | this term was not counted prior to dec 12, 2018.
+z(Ol)    = 1 fa8L + 1 fo8L  | this term was not counted prior to dec 12, 2018.
 z(OH)    = 1 h2oL
 
 none                        | formula suffix, enter "none" for no suffix.
@@ -2780,13 +2788,15 @@ none                        | formula suffix, enter "none" for no suffix.
 begin_dqf_corrections
 dqf(silL) = -7800
 dqf(woL)  =  1300
+dqf(fo8L) = -4d3
+dqf(fa8L) = -8.2d3  - 1.4 * P
 end_dqf_corrections
 
 begin_flagged_endmembers
                                     | endmembers listed in this section are not associated with the
                                     | solution on output and are identified by endmember name.
-foTL     
-faTL
+fo8L     
+fa8L
 abL      
 silL     
 kspL
@@ -3711,6 +3721,110 @@ end_van_laar_sizes
 end_of_model
                               --------------------------------------------------------
 begin_model
+                                     Leonya's melt model
+Melt(A)
+abbreviation Melt
+full_name    liquid
+
+688                                | model type: 688 format standard model
+
+1                                  | number of polytopes
+1                                  | number of simplices
+3                                  | number of vertices (endmembers) on each simplex
+
+abL
+h2oL
+hltL
+
+0   1   .1 0                      | range and resolution of X(ab)
+0   1   .1 0                      | range and resolution of X(h2o)
+
+begin_excess_function
+
+ |W(abL h2oL)              -1.5d3           -0.3 * P_bar
+
+W(abL abL h2oL)    -1.5d3   -0.3 * P_bar  |Wabw*xab^2*xw 
+W(abL hltL h2oL)   -3d3     -0.6 * P_bar  |2*Wabw*xab*xhlt*xw 
+W(abL h2oL h2oL)   -1.5d3   -0.3 * P_bar  |Wabw*xab*xw^2 
+W(abL hltL hltL)  75340.63                |d*xab*xhlt^2
+W(hltL hltL h2oL)  -3560.6                |e*xhlt^2*xw 
+W(hltL hltL)      75340.63                |d*xhlt^2 
+W(hltL h2oL)       -3560.6                |e*xhlt*xw
+
+
+end_excess_function
+
+2                           | Configurational entropy: quadratic water, linear salt
+
+V
+2 1 1                        | water-vacancy site
+z(H,V)     = 1 h2oL
+z(V,V)     = 1 abL + 1 hltL
+
+M
+3 0 0                        | temkin melt site
+z(ab,M)     = 1 abL
+z(hlt,M)    = 1 hltL
+z(H,V)      = 1 h2oL
+
+none                        | formula suffix, enter "none" for no suffix. 
+
+begin_flagged_endmembers
+                                    | endmembers listed in this section are not associated with the
+                                    | solution on output and are identified by endmember name. This
+                                    | may be useful for testing purposes for systems in which the 
+                                    | the endmember compositions are not expected to be stabLe, i.e., 
+                                    | the stability of pure h2oL would alert the user to unexpected 
+                                    | behaviour. if/when endmember compositions of the solution are 
+                                    | expected, those endmembers should be removed from the list of
+                                    | flagged endmembers. 
+h2oL
+hltL
+end_flagged_endmembers
+
+begin_dqf_corrections
+dqf(hltL)  =  14072.2  + 13.85077 * T_K  -0.830043 * P_bar
+end_dqf_corrections
+
+
+end_of_model
+                              --------------------------------------------------------
+begin_model
+
+Melt(B)
+abbreviation Melt
+full_name    liquid
+
+2                                     model type: simplicial composition space.
+
+2                                     number of endmembers
+
+abL  h2oL
+
+0 0 0                                | endmember flags.
+
+0   1   .1 0                      | range and resolution of X(ab)
+
+begin_excess_function
+
+
+W(abL h2oL)              -1.5d3           -0.3 * P_bar
+
+
+end_excess_function
+
+2                           | Configurational entropy: two non-temkin sites (Water, Melt)
+
+2 1                         | water-vacancy site
+z(H)     = 1 h2oL
+
+2 0                         | melt species site, treating ksp and abl as separate species
+n(ab)    = 1 abL
+n(w)     = 1 h2oL
+
+end_of_model
+                              --------------------------------------------------------
+begin_model
                                       Melt, White et al., JMG 32:261-286, 2014.
 
                                       JADC 4/14
@@ -3721,16 +3835,16 @@ begin_model
                                       thermodynamic data file make_definitions section:
 
                                       sil8L = 8/5 silL
-                                      -23d3 0 0
+                                      0
 
                                       fo8L = 2 foL
-                                      -10d3 0 0
+                                      0
 
                                       fa8L = 2 faL
-                                      -9d3 0 -1.3
+                                      0
 
                                       q8L = 4 qL
-                                      0 0 0
+                                      0
 
                                       WARNING 3: the (stabilizing) dqf corrections made
                                       to the fo8L, fa8L, and sil8L enedmembers make the
@@ -3760,13 +3874,13 @@ kspL     q8L      h2oL
 
 0 0 0 0 0 0 0 0 0                   | endmember flags.
 
-2d-3  .1   .1 1                      | range and resolution of X(fo),  1 => asymmetric subdivision
-2d-3  .1   .1 1                      | range and resolution of X(fa),  1 => asymmetric subdivision
-0    0.4   .1 0                      | range and resolution of X(ab),  0 => cartesian subdivision
-2d-3  .1   .1 1                      | range and resolution of X(sil), 1 => asymmetric subdivision
-2d-3  .2   .1 1                      | range and resolution of X(an),  1 => asymmetric subdivision
-0     .5   .1 0                      | range and resolution of X(ksp), 0 => cartesian subdivision
-0    0.6   .1 0                      | range and resolution of X(q),   0 => cartesian subdivision
+0      1   .1 0                      | range and resolution of X(fo),  1 => asymmetric subdivision
+0      1   .1 0                      | range and resolution of X(fa),  1 => asymmetric subdivision
+0      1   .1 0                      | range and resolution of X(ab),  0 => cartesian subdivision
+0      1   .1 0                      | range and resolution of X(sil), 1 => asymmetric subdivision
+0      1   .1 0                      | range and resolution of X(an),  1 => asymmetric subdivision
+0      1   .1 0                      | range and resolution of X(ksp), 0 => cartesian subdivision
+0      1   .1 0                      | range and resolution of X(q),   0 => cartesian subdivision
 
 begin_excess_function
 
@@ -3815,6 +3929,12 @@ n(sil)   = 1 sil8L
 n(an)    = 1 anL
 n(ol)    = 1 fo8L + 1 fa8L  | this term was not counted prior to dec 2018.
 n(w)     = 1 h2oL
+
+begin_dqf_corrections
+DQF(sil8L) = -23d3
+DQF(fo8L) = -10d3
+DQF(fa8L) = -9d3 -1.3*P_bar
+end_dqf_corrrections
 
 end_of_model
                       --------------------------------------------------------
@@ -4704,7 +4824,7 @@ end_dqf_corrections
 end_of_model
                       --------------------------------------------------------
 begin_model
-                            Sapphirine, O/D non-ideal, Wheller & Powell (JMG, 32, 287–299, 2014)
+                            Sapphirine, O/D non-ideal, Wheller & Powell (JMG, 32, 287ï¿½299, 2014)
 
                             Modified JADC model entered by Tim Johnson, 7 April 2014.
 
@@ -4909,7 +5029,7 @@ begin_model
                                       Site:           M1      M2       T1     H
                                                      ____________________________
 
-                                      Mutliplicity    1       2        2      2       
+                                      Mutliplicity    1       2        2      2
 
                                     endmember        ____________________________   type
                                     _________                                       _________
@@ -4938,7 +5058,7 @@ full_name    biotite
  
 2                                  | number of polytopes
                                    | polytope names and composite composition space subdivision schemes 
-[Mn][Mn]  0   .5   .1   0
+[Mn]      0   .5   .1   0
 [M,T][M]  by difference
                                    | ----------------------------
                                    | Polytope 1 - 1 simplex
@@ -4955,7 +5075,7 @@ sdph      east
 ftbit     tbit
 ann       phl
                                    | First 2-simplex
-X_Mg    0    1   .1  0             | X(1,1) is bulk Fe/M
+X_Mg    0    1   .1  0             | X(1,1) is bulk Mg/M
 X_Fe    by difference
 
                                    | Second 4-simplex
@@ -5016,6 +5136,153 @@ end_of_model
                     --------------------------------------------------------
 begin_model
 
+| Edgar Dachs and Artur Benisek (2024): "A new activity model for biotite and its application". 
+| Contributions to Mineralogy and Petrology (2024) 179:93 doi.org/10.1007/s00410-024-02173-6
+
+                            Fe-Mg-Al(Ts)-Al(ex)-Ti-Fe3+-Mn Biotite: Dachs and Benisek (2024)
+                            with Fe-Mg ordering as in literature, without Mg-Al ordering. 
+
+                            688 format and testing, E. Dachs  Dez/2023.
+                            Notation and ranges modified, JADC, 12/20/24
+
+                            Polytope 1 = [Mn,A]
+                            Polytope 2 = [M,T][M]
+
+                            where 
+
+                            T = Al,Ti,Fe3 on M1, A = Al on M2
+                            M = Mg, Fe
+
+                                                      A         M1        M2        T1        H
+                                                     ____________________________________________
+
+                                      Mutliplicity    1         1         2         2         2 
+                                                     ____________________________________________
+
+                                    endmember                                                      type
+                                    _________                                                      ________
+
+                      polytope 1:   1: pyp           V          V        AlAl      SiSi      OH    orphan
+                                       mnbi          K          Mn       MnMn      AlSi      OH    orphan
+ 
+                      polytope 2:   2: ffbio         K         Fe3       FeFe      AlAl      OH    dependent
+                                    3: fbio          K         Fe3       MgMg      AlAl      OH
+
+                                    4: sid           K         Al        FeFe      AlAl      OH    dependent
+                                    5: east          K         Al        MgMg      AlAl      OH
+ 
+                                    6: ftbio         K         Fe        FeTi      AlSi      O     dependent
+                                    7: tbio          K         Mg        MgTi      AlSi      O
+
+                                    8: ann           K         Fe        FeFe      AlSi      OH
+                                    9: phl           K         Mg        MgMg      AlSi      OH
+
+                  ordered species: 10: obi           K         Fe        MgMg      AlSi      OH    ordered
+ 
+
+Bio(D)                             | model name
+abbreviation Bio
+full_name    biotite
+
+688                                | model type: 688 format standard model
+
+2                                  | number of polytopes
+                                   | polytope names and composite composition space subdivision schemes
+[Mn,A]    0   0.5   .1   0
+[M,T][M]  by difference
+                                   | ----------------------------
+                                   | Polytope 1 - 1 simplex
+1                                  | number of simplices
+2                                  | number of vertices on each simplex
+prl      mnbi                      | endmembers on the vertices
+
+X_Mn    0    1   .1  0             | X(1,1) is Mn/(Mn+A) on M2
+X_Prl   by difference
+                                   | ----------------------------
+                                   | Polytope 2 - 2x4 simplices
+2                                  | number of simplices
+2  4                               | number of vertices on each simplex
+                                   | endmembers on the vertices
+ffbio    fbioD
+sid      eastD
+ftbio    tbioD
+annD     phlD
+                                   | First 2-simplex
+X_Mg    0    1   .1  0             | X(1,1) is bulk Mg/M
+X_Fe    by difference
+                                   | Second 2-simplex
+X_FeTs  0    1   .1  0             | X(2,1) is Fe3/[T+M] on M1, M on M2
+X_AlTs  0    1   .1  0             | X(2,2) is Al/[T+M]  on M1, M on M2
+X_TiTs  0    1   .1  0             | X(2,3) is MTi/[M+MTi] on M2, M on M1
+X_MBio  by difference
+
+begin_ordered_endmembers
+obi  = 2/3 phlD + 1/3 annD    enthalpy_of_ordering = -2d3
+end_ordered_endmembers
+
+begin_dependent_endmembers
+sid     = 1 annD + 1 eastD - 1 obi
+ftbio   = 1 tbioD + 1/2 annD  + 1/2 obi - 1 phlD
+ffbio   = 1 fbioD + 1 annD    - 1 obi
+end_dependent_endmembers
+
+
+begin_excess_function
+W(phlD annD annD)    -8800    | excess parameters from Dachs and Benisek (2021, 2024)
+W(phlD phlD annD)    14300
+W(phlD eastD)        19000
+W(phlD obi)           -100
+W(phlD prl)         116800
+W(annD eastD)        -5000
+W(annD obi)           -400
+W(annD prl)         108200
+W(annD tbioD)       -30000
+W(eastD obi)         -5000
+W(eastD prl)        120000
+W(obi prl)          120000
+W(prl tbioD)        120000
+W(prl fbioD)        120000
+end_excess_function 
+
+5                                   | number of identisites in configurational entropy model
+A
+2 1 1
+z(K,A) = 1 phlD + 1 eastD + 1 annD + 1 obi + 1 tbioD + 1 fbioD + 1 mnbi
+z(Vac,A) = 1 prl
+
+M1                                  | site name
+6 1 1                               | number of species, effective multiplicity, true multiplicity
+z(Al,M1)   = 1 eastD
+z(Mg,M1)   = 1 phlD + 1 tbioD
+z(Fe3,M1) = 1 fbioD
+z(Mn,M1)   = 1 mnbi 
+z(Fe,M1)   = 1 annD + 1 obi
+z(Vac,M1)  = 1 prl
+
+M2                                  | site name
+5 2 2                               | number of species, effective multiplicity, true multiplicity
+z(Fe,M2)   = 1 annD
+z(Al,M2)   = 1 prl
+z(Ti,M2)   = 1/2 tbioD
+z(Mn,M2)   = 1 mnbi
+z(Mg,M2)   = 1 eastD + 1 obi + 1 phlD + 1/2 tbioD + 1 fbioD
+
+T1                                  | site name
+2 2 2                               | number of species, effective multiplicity, true multiplicity
+z(Si,T1)   = 1/2 phlD + 1/2 annD + 1/2 obi + 1 prl + 1/2 tbioD + 1/2 mnbi
+z(Al,T1)   = 1 eastD + 1/2 phlD + 1/2 annD + 1/2 obi + 1/2 tbioD + 1 fbioD + 1/2 mnbi
+
+OH                                  | site name
+2 2 2                               | 2 species on H, 2 site per formula unit.
+z(O,OH)     = 1 tbioD
+z(OH,OH)    = 1 eastD + 1 phlD + 1 annD + 1 obi + 1 prl + 1 fbioD + 1 mnbi
+
+[Si2O10(OH)2]                       | formula suffix, enter "none" for no suffix.
+
+end_of_model
+                    --------------------------------------------------------
+begin_model
+
                                   Ti-Biotite model after White, Powell & Holland (JMG, 2007)
 
                                   Model entered by Lucie Tajcmanova, May 11, 2007.
@@ -5025,7 +5292,6 @@ begin_model
                                   NOTE: this model requires make defintions for fbi and tbi
                                   in the thermodynamic data file.
 
-                                                      1       2      3      4
                                                       M1      M2     T1     H
                                                      ____________________________
 
@@ -5452,17 +5718,11 @@ begin_model
                                       necessary before using this model.
 
                                       ====================================================
-                                      Modified to use pure water at P and T standard
-                                      state (the H2O endmember) as opposed to the h2oGL
-                                      endmember of Ghiorso et al. (2003), which so far
-                                      as I understand should  be equivalent.
-
-                                      NOTE: Use of H2O as an endmember requires the user
-                                      specify an equation of state for H2O when running
-                                      BUILD. To be strictly consistent with Ghiorso et al
-                                      the Sterner and Pitzer EoS for water should be used
-                                      for this purpose, but it is not presently included
-                                      in perplex.
+                                      Modified to use the pure water (H2O) endmember instead
+                                      of the Ghiorso et al. (2003) h2oGL endmember. My 
+                                      understanding is H2O and h2oGL are essentially equivalent. 
+                                      Ghiorso et al. base h2oGL on the Sterner and Pitzer 
+                                      EoS.
 
                                       JADC May 23, 2004.
 
@@ -5619,7 +5879,7 @@ begin_model
 
                                       Added TiO2 endmember. JADC Feb 7, 2012
 
-                                      reformulated as ordinary solutiub model. JADC 12/18.
+                                      reformulated as ordinary solution model. JADC 12/18.
 
 mMELTS(G)
 abbreviation Melt
@@ -6106,8 +6366,29 @@ ideal                             | the ideal tag indicates excess properties ar
 end_of_model
                     --------------------------------------------------------
 begin_model
+                                 | Aranovich et al. (2010) H2O-CO2-NaCl fluid model.
 
-F(salt)                    | H2O-CO2-NaCl Fluid from andreas's thesis
+                                 | This model calls the HCNEOS subroutine and uses
+                                 | CORK for H2O and CO2. HCNEOS was programmed in 
+                                 | 2004 with incorrect pressure dependence on mixing 
+                                 | parameters w3, w4, and w5 (the pressure dependence
+                                 | was off by a factor of 100). The parameters were 
+                                 | corrected courtesy of Alexander Koltsoz, RAS, 10/24.
+
+                                 | The corrected version of HCNEOS is implemented in
+                                 | Perple_X release 7.1.9+. JADC, 10/24.
+
+                                 | Because the use of CORK is hardwired into HCNEOS
+                                 | it is possible that conflicts may arise between
+                                 | the HCNEOS and GFSM EoS assignments. To avoid 
+                                 | such conflicts set
+
+                                   hybrid_EoS_H2O  2 | [4] 0-2, 4-5 => 0 - MRK, 1 HSMRK, 2 - CORK ...
+                                   hybrid_EoS_CO2  2 | [4] 0-4 => 0 - MRK, 1 HSMRK, 2 - CORK ...
+
+                                 | in perplex_option.dat.
+
+F(salt)
 abbreviation F
 full_name    fluid
 
@@ -6138,6 +6419,7 @@ begin_model
 
                                       1 me            Ca      Al       Al     independent
                             Species:  2 coma          Na3Ca   Si       Si     independent
+                                      3 koma          K3Ca    Si       Si
                                       _____________________________________
 
                                       3 mizz          NaCa3   Si       Al     ordered
@@ -6146,33 +6428,38 @@ begin_model
                             rather than the incorrect enthalpy that follows
                             from table 6.4. JADC, Dec 30, 2013.
 
-Scap                       | solution name
+Scap(RP)                       | solution name
 abbreviation Scp
 full_name    scapolite
 
 6                          | model type: compound formation
 
-2                          | 2 endmembers
+3                          | 2 endmembers
 me
 coma
+koma
 
 1                          | ordered species definition
 
 mizz = 2/3 me + 1/3 coma   delta_g_of_ordering  = -29000
 
-0 0                        | endmember flags
+0 0 0| endmember flags
+0   1   .1  0
 0   1   .1  0
 
 begin_excess_function
 w(me coma)   20000.
 w(me mizz)   20000.
 w(coma mizz) 30000.
+w(me koma)   20000.
+w(koma mizz) 30000.
 end_excess_function
 3                          | 3 site (M1, T2a, T2b) conigurational entropy model
 
-2 4.                       | 2 species on M, 4 sites per formula unit.
+3 4.                       | 2 species on M, 4 sites per formula unit.
 
 z(m,na) = 1/4 mizz  +  3/4 coma
+z(m,k) =  3/4 koma
 
 2 1                        | 2 species on T2a, 1 site per formula unit.
 
@@ -6180,7 +6467,56 @@ z(t2a,al) = 1 me
 
 2 2.                       | 2 species on T2b, 1 site per formula unit.
 
-z(t1a,si) = 1 coma
+z(t1a,si) = 1 coma + 1 koma
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                             Scapolite. Presumably from Barbara Kuhn's thesis.
+
+                                                      M       T2a       T2b
+                                                     ______________________
+
+                                      Mutliplicity    4       2         1
+                                                     ______________________
+
+                                      1 me            Ca      Al       Al     independent
+                                      3 miz           NaCa3   Si       Al     ordered
+                                      3 kmiz          KCa3    Si       Al     ordered
+
+                            enthalpy of ordering changed to match thermocalc phase eq,
+                            rather than the incorrect enthalpy that follows
+                            from table 6.4. JADC, Dec 30, 2013.
+
+Scap(KA)                       | solution name
+abbreviation Scp
+full_name    scapolite
+
+2                          | model type: compound formation
+
+3                          | 2 endmembers
+me
+miz
+kmiz
+
+0 0 0  | endmember flags
+0   1   .1  0
+0   1   .1  0
+
+begin_excess_function
+end_excess_function
+
+2                          | 3 site (M1, T2a, T2b) conigurational entropy model
+
+3 4.                       | 2 species on M, 4 sites per formula unit.
+
+z(m,na) = 1/4 miz   
+z(m,k) =  1/4 kmiz
+
+2 1                        | 2 species on T2a, 2 sites per formula unit.
+
+z(t2a,al) = 1 me
+
 
 end_of_model
                       --------------------------------------------------------
@@ -6519,7 +6855,7 @@ end_excess_function
 z(Na) = 0 + 1 abh
 z(Ca) = 0 + 1 an
 
-2 2.                       | 2 species on T-site, 2. sites per formula (al-avoidance model)
+2 2                        | 2 species on T-site, 2 sites per formula (al-avoidance model)
 z(Al) = 1/2 + 1/2 an
 
 reach_increment 3
@@ -6578,11 +6914,10 @@ end_excess_function
 2 1                        | 2 species on O-site, 1 site per formula unit.
 z(Na) = 1 ab
 
-reach_increment 3
-
 end_of_model
                       --------------------------------------------------------
 begin_model
+                           | 
 
 San                        | Waldbaum and Thompson 1968.
 abbreviation San
@@ -6776,8 +7111,6 @@ z(t,al) = 1/2 mu + 1/2 pa
 
 2 1                        | 2 species on A, 1 site per formula unit.
 z(a,k) = 1 mu + 1 cel + 1 fcel
-
-reach_increment 0 3
 
 end_of_model
                       --------------------------------------------------------
@@ -8105,31 +8438,31 @@ full_name    liquid
 
 2                          | model type: macroscopic
 3                          | 3 species
-SIO2     AL2O3    CAO      | endmember names
+SiO2     Al2O3    CaO      | endmember names
   0  0  0                  | endmember flags
 0  1   .1 0                | cartesian
 0  1   .1 0
 
 begin_excess_function
-w(SIO2 AL2O3 AL2O3 AL2O3)  63617.2     -23.7400  0  term 1
-w(SIO2 SIO2 AL2O3 AL2O3)  0.164266d7 -763.870  0  term 2
-w(SIO2 SIO2 SIO2 AL2O3)   -106635.      28.1300  0  term 3
-w(SIO2 CAO CAO CAO)       -898693.      240.770  0  term 4
-w(SIO2 SIO2 CAO CAO)      -350208.     -48.6200  0  term 5
-w(SIO2 SIO2 SIO2 CAO)     -14081.8     -35.4900  0  term 6
-w(AL2O3 CAO CAO CAO)      -455634.      2.47000  0  term 7
-w(AL2O3 AL2O3 CAO CAO)    -725166.      255.390  0  term 8
-w(AL2O3 AL2O3 AL2O3 CAO)  -240215.      26.7000  0  term 9
-w(SIO2 SIO2 AL2O3 CAO)    -.284791d7  1046.35  0  term 10
-w(SIO2 AL2O3 AL2O3 CAO)   -.214904d7  641.840  0  term 11
-w(SIO2 AL2O3 CAO CAO)       209109.     -313.360  0  term 12
+w(SiO2 Al2O3 Al2O3 Al2O3)  63617.2     -23.7400  0  term 1
+w(SiO2 SiO2 Al2O3 Al2O3)  0.164266d7 -763.870  0  term 2
+w(SiO2 SiO2 SiO2 Al2O3)   -106635.      28.1300  0  term 3
+w(SiO2 CaO CaO CaO)       -898693.      240.770  0  term 4
+w(SiO2 SiO2 CaO CaO)      -350208.     -48.6200  0  term 5
+w(SiO2 SiO2 SiO2 CaO)     -14081.8     -35.4900  0  term 6
+w(Al2O3 CaO CaO CaO)      -455634.      2.47000  0  term 7
+w(Al2O3 Al2O3 CaO CaO)    -725166.      255.390  0  term 8
+w(Al2O3 Al2O3 Al2O3 CaO)  -240215.      26.7000  0  term 9
+w(SiO2 SiO2 Al2O3 CaO)    -.284791d7  1046.35  0  term 10
+w(SiO2 Al2O3 Al2O3 CaO)   -.214904d7  641.840  0  term 11
+w(SiO2 Al2O3 CaO CaO)       209109.     -313.360  0  term 12
 end_excess_function
 
 1                                     1 site molecular entropy model
 
 3 1                                   3 species, site multiplicity 1
-z(SIO2) = 1 SIO2
-z(AL2O3) = 1 AL2O3
+z(SiO2) = 1 SiO2
+z(Al2O3) = 1 Al2O3
 
 end_of_model
                       --------------------------------------------------------
@@ -8292,7 +8625,7 @@ end_excess_function
 1                            | 1 site entropy model
 3 1                          | 3 species, site multiplicity of 1
 z(Ca) = 1 an
-z(K)  = 1 san            | van laar volumes follow:
+z(K)  = 1 san
 
 
 begin_van_laar_sizes
@@ -11655,7 +11988,7 @@ begin_model
                                                       ___________________________________
 
                         Ordered Cpd:  5 om            Na     Ca     Al     Mg
-                                      6 cfm           Ca     Ca     Mg     Fe
+                                      6 cfm           Ca     Ca     Mg     Fe2+
                                       7 jac           Na     Na     Fe3+   Al
 
 Omph(GHP)
@@ -11663,7 +11996,7 @@ abbreviation Cpx
 full_name    clinopyroxene
 
 
-688                               | model type: 688 format standard model
+688                                | model type: 688 format standard model
 
 1                                  | number of polytopes
 1                                  | number of simplices
@@ -11723,10 +12056,10 @@ z(Al,M1a)   = 1 jd + 1 om
 
 M1b
 4  .5  .5                           | 4 species on m1b, mult = 1/2
-z(Al,m1b)   = 1 jd  + 1 jac
-z(Fe,m1b)   = 1 hed + 1 cfm
-z(Fe3,m1b)  = 1 acm_dqf
-z(Mg,m1b)   = 1 di  + 1 om
+z(Al,m1b)    = 1 jd  + 1 jac
+z(Fe2+,m1b)  = 1 hed + 1 cfm
+z(Fe3+,m1b)  = 1 acm_dqf
+z(Mg,m1b)    = 1 di  + 1 om
 
 M2a
 2  .5  .5                           | 2 species on m2a, mutiplicity = 1/2
@@ -11740,8 +12073,6 @@ z(Ca,M2b)   = 1 di + 1 hed + 1 om + 1 cfm
 
 
 [Si2O6]                            | formula suffix, enter "none" for no suffix.
-
-reach_increment 0
 
 end_of_model
                       --------------------------------------------------------
@@ -11766,8 +12097,6 @@ end_excess_function
 
 2 1                                   2 species, site multiplicity = 1.
 z(Fe) = 1 iron
-
-reach_increment 3
 
 end_of_model
                       --------------------------------------------------------
@@ -11931,7 +12260,7 @@ abbreviation F
 full_name    fluid
 
 39                          | model type: Generic Hybrid EoS
-11
+12
 CO2
 CH4
 H2S
@@ -11942,10 +12271,11 @@ N2
 NH3
 HF
 C2H6
+HCl
 H2O
 
 
-0 0 0 0 0 0 0 0 0 0 0      | endmember flags
+0 0 0 0 0 0 0 0 0 0 0 0      | endmember flags
 
 0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
 0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
@@ -11957,6 +12287,8 @@ H2O
 0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
 0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
 0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
+0  1   .1  0               | subdivision ranges, imod = 0 -> cartesian subdivision
+
 
 ideal                      | the fluid is non-ideal, this tag means only no excess function
 
@@ -12484,19 +12816,19 @@ end_excess_function
 z(m1,ca) =   1 cc + 1 odo + 1 oank
 z(m1,mg) =   1 mag
 
-3 0.25                                 |3 species on m2a, mult. = 1/4
+3 0.25                                |3 species on m2a, mult. = 1/4
 z(m2a,ca) =  1 cc
 z(m2a,mg) =  1 mag + 1 odo
 
-3 0.25                                 |3 species on m2b, mult. = 1/4
+3 0.25                                |3 species on m2b, mult. = 1/4
 z(m2b,ca) =  1 cc
 z(m2b,mg) =  1 mag + 1 odo + 1 oank
 
 begin_van_laar_sizes
-alpha(cc)     0.25 0.000929*T
+alpha(cc)     0.25 + 0.000929*T
 alpha(mag)    1
 alpha(odo)    0.95
-alpha(sid)    0.01 0.000666*T
+alpha(sid)    0.01 + 0.000666*T
 alpha(oank)   0.929
 end_van_laar_sizes
 
@@ -12601,7 +12933,7 @@ full_name    gas
 
 2
 
-7                                     number of endmembers
+9                                     number of endmembers
 
                                     | ENDMEMBER NAMES:
 SiO2
@@ -12610,32 +12942,32 @@ Si
 O2
 O
 MgO
-| Mg commented out so entropy model can be read without changing parameter m11
+Mg
 FeO
-| Fe
+Fe
 
 0 0 0 0 0 0 0 0 0                   | endmember flags.
 
-0    1    .1 0                      | range and resolution of X(SiO2), 0 => cartesian subdivision/1 => asymmetric subdivision
+0     1   .1 0                      | range and resolution of X(SiO2), 0 => cartesian subdivision/1 => asymmetric subdivision
 0    .5   .1 0                      | range and resolution of X(SiO)
 0    .5   .1 0                      | range and resolution of X(Si)
 0    .5   .1 0                      | range and resolution of X(O2)
 0    .5   .1 0                      | range and resolution of X(O)
 0    .5   .1 0                      | range and resolution of X(MgO)
-| 0    .5   .1 0                      | range and resolution of X(Mg)
-|0    .5   .1 0                      | range and resolution of X(FeO)
+0    .5   .1 0                      | range and resolution of X(Mg)
+0    .5   .1 0                      | range and resolution of X(FeO)
 
 ideal
 
   1                                 | molecular configurational entropy model
-7 1                                 | 6 species, multiplicity 1
+9 1                                 | 6 species, multiplicity 1
 
 z(SiO2)  = 1 SiO2
 z(SiO)   = 1 SiO
 z(O2)   = 1 O2
 z(O)   = 1 O
-| z(Mg)  = 1 Mg
-| z(Fe)  = 1 Fe
+z(Mg)  = 1 Mg
+z(Fe)  = 1 Fe
 z(FeO) = 1 FeO
 z(MgO) = 1 MgO
 
@@ -13019,8 +13351,8 @@ oilm = 1 dilm   delta_g_of_ordering  = -15600 + 11.52565132 T_K
 
 0 0 0  0                   | endmember flags
 
-0    .5  .1 0              | subdivision range, X(pnt)
-0    .5  .1 0              | subdivision range, X(geik)
+0     1  .1 0              | subdivision range, X(pnt)
+0     1  .1 0              | subdivision range, X(geik)
 0     1  .1 0              | subdivision range, X(hem)
 
 begin_excess_function
@@ -13077,7 +13409,7 @@ begin_model
                      Previously present as a brute force model which did not allow the anti-ordered
                      ilmenite configuration. Re-formulated as standard o/d model to remove this
                      limitation; however, the model has been parameterized so that the ordered and
-                     antiordered states are energetucally equivalent. JADC Jan 14, 2017.
+                     antiordered states are energetically equivalent. JADC Jan 14, 2017.
 
                                   NOTES:
 
@@ -13087,8 +13419,8 @@ begin_model
                                   the thermodynamic data file:
 
                                   dilm = 1 ilm_nol
-                                        | 1993  -2.1 0 => the TC DQF coeffecients, the values below are
-                                        | smax*tc0*(q0^2-1/3*q0^6), -smax*q0^2, vmax*q0^2 + {DH,R*ln(4),0}
+                                        | TC_DQF = {1993,-2.1,0} => the TC DQF coeffecients, the values below are
+                                        | smax*tc0*(q0^2-1/3*q0^6), -smax*q0^2, vmax*q0^2 + TC_DQF
                                         DQF(J/mol) = 15789.27763 -12.19977769 * T_K  .1836386612d-1 * P_bar
 
                                   dhem = 1 hem_nol
@@ -13135,12 +13467,12 @@ dilm
 
 1                            | 1 ordered species:
 
-oilm = 1 dilm   delta_g_of_ordering  = -15600 + 11.52565132 T_K
+oilm = 1 dilm   delta_g_of_ordering  = -15600 + 11.61 T_K
 
 0 0 0  0                   | endmember flags
 
-1d-3 .5  .1 1              | subdivision range, X(pnt)
-1d-3 .2  .1 1              | subdivision range, X(geik)
+0     1  .1 0              | subdivision range, X(pnt)
+0     1  .1 0              | subdivision range, X(geik)
 0     1  .1 0              | subdivision range, X(hem)
 
 begin_excess_function
@@ -14075,7 +14407,7 @@ z(fe,m2) = 1 fta
 end_of_model
                       --------------------------------------------------------
 begin_model
-                             Antigorite with Tschermak's substitution (Padrón-Navarta et al., 2013, Lithos)
+                             Antigorite with Tschermak's substitution (Padrï¿½n-Navarta et al., 2013, Lithos)
 
                              reformulated from relict equipartion (model type 7) to simplicial
                              composition space (model type 2).
@@ -14088,9 +14420,9 @@ begin_model
                                       Mutliplicity    44       4         8
                                                      ______________________
 
-                                      1 atg          Mg      Mg       SiSi
-                            Species:  2 fatg         Fe      Fe       SiSi
-                                      3 atgts        Mg      Al       AlSi
+                                      1 atg           Mg      Mg       SiSi
+                            Species:  2 fatg          Fe      Fe       SiSi
+                                      3 atgts         Mg      Al       AlSi
                                                       ______________________
 
 
@@ -14127,6 +14459,166 @@ z(t2,al) = 1/2 atgts
 
 z(m2,mg) = 1 atg
 z(fe,m2) = 1 fatg
+
+reach_increment 0
+
+end_of_model
+
+                      --------------------------------------------------------
+begin_model
+                             Full ferri-tschermak solid solution model for antigorite from 
+                             Eberhard et al. 2023, JPet, doi.org/10.1093/petrology/egad069
+
+                             All endmembers reformulated to match antigorite stoichiometry of 17(M0)-31(M1)-17(T0)-17(T1).
+                             DQF terms adjusted to match experiments and natural samples
+
+                             NOTE: the names of the new atigorite endmembers in Eberhard et al (2023)
+                             have been changed to prevent conflicts with the earlier solution models. 
+
+                             Converted to 688 format, JADC, 9/27/2023
+
+                             Eliminated useless ordered oatg endmember, JADC 10/1/2023
+
+                                                      M1      M0      T1
+                                                     ___________________
+
+                                      Mutliplicity    17      31      17
+                                                     ___________________
+
+                                      1 atg           Mg      Mg      Si
+                            Species:  2 atgFe2        Fe      Fe      Si
+                                      3 atgAl         Al      Mg      Al
+                                      4 atgFe3        Fe3+    Mg      Al
+                                                      ____________________
+
+                             This model requires the following make definition in the thermodynamic data file:
+
+                             atgFe2 = 1 atg - 16 ta + 16 fta
+                                  DQF(J/mol) = -350e3
+                             atgAl  = 1 atg - 17 ta + 17 tats
+                                  DQF(J/mol) = -450e3
+                             atgFe3 = 1 atg - 17 ta + 17 tats - 8.5 gr + 8.5 andr
+                                  DQF(J/mol) = -127e3 -3.4 * P_bar
+
+                             NB! the Atg(LE) and Liz(LE) models require the
+                             following make definition for ferri-clinochlore in Chl(W)
+
+                             f3clin = 1 clin - 1/2 gr + 1/2 andr
+                                  DQF(J/mol) = 40d3
+
+                             to use Atg(LE) with Chl(W) comment or modify the entry for f3clin 
+                             associated with the Chl(W) parameterization.
+
+Atg(LE)                            | solution name
+abbreviation Atg
+full_name    serpentine
+
+688                                | model type: 688 format
+
+1                                  | number of polytopes
+1                                  | number of simplices
+4                                  | number of vertices on each simplex
+
+atg  atgFe2  atgAl  atgFe3         | endmembers on the vertices
+
+0  1  .1  0                        | range and resolution for atg,    imod = 0 -> cartesian subdivision
+0  1  .1  0                        | range and resolution for atgFe2, imod = 0 -> cartesian subdivision
+0  1  .1  0                        | range and resolution for atgAl,  imod = 0 -> cartesian subdivision
+
+ideal
+
+3                                  | 3 site (M0, M1, T1) configurational entropy model
+
+M0                                 | site name
+2 31 31                            | number of species, effective multiplicity, true multiplicity
+z(Mg,M1)  = 1 atg + 1 atgFe3 + 1 atgAl
+z(Fe,M1)  = 1 atgFe2
+
+M1                                 | site name
+4 17 17                            | number of species, effective multiplicity, true multiplicity
+
+z(Mg,M1)  = 1 atg
+z(Fe,M1)  = 1 atgFe2
+z(Al,M1)  = 1 atgAl
+z(Fe3,M1) = 1 atgFe3
+
+T1                                 | site name
+2 17 17                            | number of species, effective multiplicity, true multiplicity
+
+z(Al,T1) = 1 atgAl + 1 atgFe3
+z(Si,T1) = 1 atg + 1 atgFe2
+
+[O85(OH)62]                        | formula suffix, enter "none" for no suffix.
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                             Full ferri-tschermak solid solution model for lizardite from
+                             Eberhard et al. 2023, JPet, doi.org/10.1093/petrology/egad069
+
+                             All endmembers reformulated to match stoichiometry of 1(M0)-2(M1)-1(T1).
+                             DQF terms adjusted to match experiments and natural samples
+
+                             Eliminated useless ordered oliz endmember, JADC, 10/1/2023
+
+                                                      M1      M0      T1
+                                                     _____________________
+
+                                      Mutliplicity    1       2       1
+                                                     _____________________
+
+                                      1 liz           Mg      Mg      Si
+                            Species:  2 fliz          Fe      Fe      Si
+                                      3 lizts         Al      Mg      Al
+                                      4 f3liz         Fe3+    Mg      Al
+                                                      ____________________
+
+                             This model requires the following make definition in the thermodynamic data:
+
+                             fliz = 1 liz - 1 ta + 1 fta, DQF(J/mol) = -21e3
+                             lizts = 1 liz - 1 ta + 1 tats, DQF = -37e3 +0.1 * P_bar
+                             f3liz = 1 liz - 1 ta + 1 tats - 0.5 gr + 0.5 andr, DQF = -18e3 -0.1 * P_bar
+
+
+                             NB! the Atg(LE) and Liz(LE) models require the
+                             following make definition for ferri-clinochlore in Chl(W)
+
+                             f3clin = 1 clin - 1/2 gr + 1/2 andr
+                                  DQF(J/mol) = 40d3
+
+                             to use Liz(LE) with Chl(W) comment or modify the entry for f3clin 
+                             associated with Chl(W) the parameterization.
+
+Liz(LE)                    | solution name
+abbreviation Liz
+full_name    serpentine
+
+2                             | model type: simplicial composition space
+4                             | number of endmembers
+liz  fliz  lizts  f3liz       | endmember names, this order implies:
+0 0 0 0 0                     | endmember flags, indicate if the endmember is part of the solution.
+
+0  1  .1  0                   | range and resolution for liz, imod = 0 -> cartesian subdivision
+0  1  .1  0                   | range and resolution for fliz, imod = 0 -> cartesian subdivision
+0  1  .1  0                   | range and resolution for lizts, imod = 0 -> cartesian subdivision
+
+ideal
+
+3                          | 3 site (M0, M1, T1) configurational entropy model
+
+4 1.                       | 4 species on M1, 1 sites per formula unit.
+
+z(m1,mg) = 1 liz
+z(m1,fe) = 1 fliz
+z(m1,al) = 1 lizts
+
+2 1.                       | 2 species on T1, 1 sites per formula unit.
+
+z(t1,al) = 1 lizts + 1 f3liz
+
+2 2.                       | 2 species on M0, 1 site per formula unit.
+
+z(m2,mg) = 1 liz + 1 lizts + 1 f3liz
 
 reach_increment 0
 
@@ -15091,7 +15583,7 @@ site_check_override
 end_of_model
                       --------------------------------------------------------
 begin_model
-                             Olivine - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                             Olivine - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                              Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                              JADC, April 2019.
@@ -15158,7 +15650,7 @@ z(M2,ca) = 1 mont
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Orthopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Orthopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
                       -------------------------------------------------------- 
                       W(en odi) and the odi DQF revised to destabilize Ca-rich
@@ -15307,8 +15799,9 @@ facm_d   macm
 fts_d    mgts
 hed_d    odi
 fs       en
+
                                   | Simplex 1
-X_Fe    0  .2  .1  0              | X(1,1) => Fe/M
+X_Fe    0   1  .1  0              | X(1,1) => Fe/M
 X_Mg    by difference             | X(1,N) = Mg/M by difference
 
                                   | Simplex 2
@@ -15439,7 +15932,7 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Initially coded for Perple_X by JRDC Oct 2018; reworked JADC Apr 2019.
@@ -15586,7 +16079,7 @@ end_dqf_corrections
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       JADC, April 2019
@@ -15752,15 +16245,15 @@ h2oL
                                     | Ab-H2O etc etc; these numbers seem about right
                                     | for pelite melting.
 
-0      .1    .1 0                   | range and resolution of X(fo),  0 => cartesian subdivision
-0      .2    .1 0                   | range and resolution of X(fa),  0 => cartesian subdivision
-1e-4  1e-2   .1 1                   | range and resolution of X(zrL), 1 => asymmetric subdivision
-0      .4    .1 0                   | range and resolution of X(ab),  0 => cartesian subdivision
-0      .4    .1 0                   | range and resolution of X(sil), 0 => cartesian subdivision
-0      .1    .1 0                   | range and resolution of X(an),  0 => cartesian subdivision
-0      .4    .1 0                   | range and resolution of X(ksp), 0 => cartesian subdivision
-1e-4  1e-2   .1 1                   | range and resolution of X(wiL), 1 => asymmetric subdivision
-0      .7    .1 0                   | range and resolution of X(q),   0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(fo),  0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(fa),  0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(zrL), 1 => asymmetric subdivision
+0      1    .1 0                    | range and resolution of X(ab),  0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(sil), 0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(an),  0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(ksp), 0 => cartesian subdivision
+0      1    .1 0                    | range and resolution of X(wiL), 1 => asymmetric subdivision
+0      1    .1 0                    | range and resolution of X(q),   0 => cartesian subdivision
 
 begin_excess_function
                                     | the excess parameters used for the haplo-
@@ -15840,12 +16333,9 @@ z(zr)    = 1 zr8L
 z(ol)    = 1 fo8L + 1 fa8L + 1 wi8L
 
 begin_dqf_corrections
-dqf(fo8L)  -10d3
-dqf(fa8L)  -9d3 0 -1.3
+dqf(fo8L)  -15d3
+dqf(fa8L)  -15d3
 dqf(sil8L) -10d3
-                                     | pre-white et al '07 value: dqf(fo8L)  -15d3 0 0
-                                     | pre-white et al '07 value: dqf(fa8L)  -15d3 0 0
-                                     | pre-white et al '07 value: dqf(sil8L) -10d3 0 0
 end_dqf_corrections
 
 end_of_model
@@ -16000,7 +16490,7 @@ end_of_model
 begin_model
                       Peridotite melting - Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
 
-                      Entered by DB Sept 2022. modified JADC, Oct 2022
+                      Entered by Debaditya Bandyopadhyay, Sept 2022. modified JADC, Oct 2022
 
                       This model requires the following make definitions in the
                       thermodynamic data file make_definitions section:
@@ -16258,14 +16748,14 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       as revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
 
                       Initially coded for Perple_X by JRDC Oct 2018; reworked JADC Apr 2019.
 
-                      Modified parameters entered by DB Sept 2022.
+                      Modified parameters entered by Debaditya Bandyopadhyay, Sept 2022.
 
                       NOTE: to use this model:
 
@@ -16413,12 +16903,12 @@ end_van_laar_sizes
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
 
-                      Revised parameters entered by DB Sept 2022.
+                      Revised parameters entered by Debaditya Bandyopadhyay, Sept 2022.
 
                       JADC, Oct 2022
 
@@ -16522,12 +17012,12 @@ end_van_laar_sizes
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Orthopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Orthopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
 
-                      Revised parameters entered by DB Sept 2022.
+                      Revised parameters entered by Debaditya Bandyopadhyay, Sept 2022.
 
                       JADC, Oct 2022
 
@@ -16584,19 +17074,19 @@ begin_model
 
                                       Multiplicity      1      1     1/2 <- fake T multiplicity
                                                      ____________________________________
-           Polytope 1:                  crjd_d          Cr     Na    Si    dependent
+           Polytope 1:                  crjd_d          Cr     Na   SiSi   dependent
                                         crdi_d          Cr     Ca   AlSi   dependent
                                         ___
-                                        ness_d          Fe3    Na    Si    dependent
+                                        ness_d          Fe3    Na   SiSi   dependent
                                         cess_d (acm)    Fe3    Ca   AlSi   dependent
                                         ___
-                                        ojdTH           Al     Na    Si
+                                        ojdTH           Al     Na   SiSi
                                         ocats_d         Al     Ca   AlSi   dependent
                                         ___
-                                        mnbuf_d         MgTi   Na    Si    dependent
+                                        mnbuf_d         MgTi   Na   SiSi   dependent
                                         mcbuf_d         MgTi   Ca   AlSi   dependent
 
-                                        fnbuf_d         FeTi   Na    Si    dependent
+                                        fnbuf_d         FeTi   Na   SiSi   dependent
                                         fcbuf_d         FeTi   Ca   AlSi   dependent
                                                      ____________________________________
 
@@ -16604,7 +17094,7 @@ begin_model
                                         crfs_d          Cr     Fe   AlSi   dependent
                                         _________
 
-                                        macmTH (mess)     Fe3    Mg   AlSi
+                                        macmTH (mess)   Fe3    Mg   AlSi
                                         facm_d (fess)   Fe3    Fe   AlSi   dependent
                                         _________
 
@@ -16615,15 +17105,15 @@ begin_model
                                         obufTH          MgTi   Mg   AlSi
                                         ffbuf_d         FeTi   Fe   AlSi   dependent
                                         _________
-                                        odi             Mg     Ca    Si
-                                        hed_d           Fe     Ca    Si    dependent
+                                        odi             Mg     Ca   SiSi
+                                        hed_d           Fe     Ca   SiSi   dependent
                                         ___
-                                        en              Mg     Mg    Si
-                                        fs              Fe     Fe    Si
+                                        en              Mg     Mg   SiSi
+                                        fs              Fe     Fe   SiSi
                                                       ___________________________________
                     Ordered species:
 
-                                        fm              Mg     Fe    Si independent
+                                        fm              Mg     Fe   SiSi independent
 
                       femg-1(M2) = fm - en
                       femg-1(M1) = fs - fm
@@ -16755,19 +17245,19 @@ end_excess_function
 
 M1                                  | site name
 6 1 1                               | number of species, effective multiplicity, true multiplicity
-z(fe)   = 1 fs
-z(al)   = 1 mgts + 1 ojdTH
-z(fe3+) = 1 macmTH
-z(cr)   = 1 crenTH
-z(ti)   = 1/2 obufTH
-z(Mg)   = 1/2 obufTH + 1 odi   + 1 en + 1 fm
+z(Fe,M1)   = 1 fs
+z(Al,M1)   = 1 mgts + 1 ojdTH
+z(Fe3+,M1) = 1 macmTH
+z(Cr,M1)   = 1 crenTH
+z(Ti,M1)   = 1/2 obufTH
+z(Mg,M1)   = 1/2 obufTH + 1 odi   + 1 en + 1 fm
 
 M2                                  | site name
 4 1 1                               | number of species, effective multiplicity, true multiplicity
-z(fe)   = 1 fs + 1 fm
-z(ca)   = 1 odi  
-z(na)   = 1 ojdTH
-z(Mg)   = 1 obufTH + 1 en + 1 crenTH + 1 macmTH + 1 mgts 
+z(Fe,M2)   = 1 fs + 1 fm
+z(Ca,M2)   = 1 odi  
+z(Na,M2)   = 1 ojdTH
+z(Mg,M2)   = 1 obufTH + 1 en + 1 crenTH + 1 macmTH + 1 mgts 
 
 T                                   | site name
 2 .5 2                              | number of species, effective multiplicity, true multiplicity
@@ -16797,12 +17287,12 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Clinopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881–900.
+                      Clinopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881ï¿½900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
 
-                      Revised parameters entered by DB Sept 2022.
+                      Revised parameters entered by Debaditya Bandyopadhyay, Sept 2022.
 
                       JADC, Oct 2022
 
@@ -17093,3 +17583,342 @@ end_flagged_endmembers
 
 end_of_model
                       --------------------------------------------------------
+begin_model
+                        Ternary feldspar ï¿½4TRï¿½ model
+                        Holland, TJB, Green, ECR & Powell, R (2021)
+
+                        * entered by Bob Myhill, 2023/07/08
+
+                        * swapped abh for ab? converted to 688 format, JADC, 13/7/23
+
+                        * reverted to ab, though how this is compatible with san is
+                          beyond me. JADC, 30/8/23
+
+                        * if this is the "plagioclase parameterization" then is there
+                          supposed to be another model for alkali fsp?
+
+                        * Thermocalc input:
+
+                            % ternary feldspar, ï¿½4TRï¿½ model, with plagioclase-friendly 
+                            %         parameterisation.
+                            %
+                            % Holland, TJB, Green, ECR & Powell, R (2021). A thermodynamic model
+                            % for feldspars in KAlSi3O8-NaAlSi3O8-CaAl2Si2O8 for mineral 
+                            % equilibrium calculations. Journal of Metamorphic Geology, 1-14.
+                            % Published online as DOI 10.1111/jmg.12639
+                            % 
+                            % E-m   Formula        Mixing sites
+                            %                      A                   TB*            
+                            %                      Na    Ca    K       Al    Si      
+                            % ab    NaAlSi3O8      1     0     0       1     3       
+                            % san   KAlSi3O8       0     0     1       1     3       
+                            % an    CaAl2Si2O8     0     1     0       2     2     
+                            % *use 1/4 entropy of mixing from TB-sites  
+ 
+                              asf
+                                W(ab,an)   14.6 -0.00935 -0.04
+                                W(ab,san)  24.1 -0.00957  0.338
+                                W(an,san)  48.5    0     -0.13
+                                
+                                ab   0.674    0  0
+                                an   0.550    0  0
+                                san  1.000    0  0
+                      ---------------------------------------------------------
+Fsp(HGP)                          | solution name.
+abbreviation Fsp
+full_name    ternary-feldspar
+
+688                                | model type: 688 format standard model
+
+1                                  | number of polytopes
+1                                  | number of simplices
+3                                  | number of vertices on each simplex
+ab                                 | endmembers on the vertices
+an
+san
+
+0. 1   .1   0                      | range and resolution for albite, imod = 0 -> cartesian subdivision
+0. 1   .1   0                      | range and resolution for anorthite, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+w(ab an)          14600   -9.35 * T_K - 0.04  * P_bar
+w(ab san)         24100   -9.57 * T_K + 0.338 * P_bar
+w(an san)         48500   -0.13 * P_bar
+end_excess_function
+
+2                                   | number of sites in configurational entropy model
+
+M                                   | site name
+3 1 1                               | number of species, effective multiplicity, true multiplicity
+z(Na,M)  = 1 ab
+z(Ca,M)  = 1 an
+z(K,M)   = 1 san
+
+T                                   | site name
+2 1 4                               | number of species, effective multiplicity, true multiplicity
+z(Al,T) = 0.25 ab + 0.25 san + 0.5 an
+z(Si,T) = 0.75 ab + 0.75 san + 0.5 an
+
+[O8]                                | formula suffix, enter "none" for no suffix.
+
+begin_van_laar_sizes
+alpha(ab)      0.674
+alpha(an)      0.555
+alpha(san)     1
+end_van_laar_sizes
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                        Model for the Na-rich side of the Peristerite gap to
+                        be used together with Fsp(HGP) from:
+                        Holland, TJB, Green, ECR & Powell, R (2021)
+
+                        Entered by Maria M. Ariza, 2024/01/17
+                      --------------------------------------------------------- 
+lAb(HGP)                           | solution name.
+abbreviation lAb
+full_name    binary-feldspar
+
+688                                | model type: 688 format standard model
+1                                  | number of polytopes
+1                                  | number of simplices
+2                                  | number of vertices on each simplex
+ab                                 | endmembers on the vertices
+an
+
+0. 1   .1   0                      | range and resolution for albite, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+w(an ab)          3400
+end_excess_function
+
+1                                   | number of sites in configurational entropy model
+M                                   | site name
+2 1 1                               | number of species, effective multiplicity, true multiplicity
+z(Na,M)  = 1 ab
+z(Ca,M)  = 1 an
+
+[O8]                                | formula suffix, enter "none" for no suffix.
+
+begin_van_laar_sizes
+alpha(ab)      0.64
+alpha(an)      1
+end_van_laar_sizes
+
+begin_dqf_corrections
+dqf(ab) = -1746 +  2 * T_K
+dqf(an) = 10000
+end_dqf_corrections
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+melt(SP)
+abbreviation Liq
+full_name    liquid
+
+2                                     model type: simplicial composition space
+
+13                                    number of endmembers
+
+fo8L     fa8L     zr8L
+abL      sil8L    anL
+kspL     wi8L     q8L
+alp8L     cep8L
+yp8L      h2oL      
+
+0 0 0 0 0 0 0 0 0 0 0 0 0           | endmember flags.
+
+0      1     .1 0                   | range and resolution of X(fo),  0 => cartesian subdivision
+0      1     .1 0                   | range and resolution of X(fa),  0 => cartesian subdivision
+0      .1    .1 0                   | range and resolution of X(zrL), 0 => asymmetric subdivision
+0      1     .1 0                   | range and resolution of X(ab),  0 => cartesian subdivision
+0      1     .1 0                   | range and resolution of X(sil), 0 => cartesian subdivision
+0      1     .1 0                   | range and resolution of X(an),  0 => cartesian subdivision
+0      1     .1 0                   | range and resolution of X(ksp), 0 => cartesian subdivision
+0      .1    .1 0                   | range and resolution of X(wiL), 0 => asymmetric subdivision
+0      1     .1 0                   | range and resolution of X(q),   0 => cartesian subdivision
+0      .1    .1 0                   | range and resolution of X(apL), 0 => asymmetric subdivision
+0      .1    .1 0                   | range and resolution of X(cepL), 0 => asymmetric subdivision
+0      .1    .1 0                   | range and resolution of X(ypL), 0 => asymmetric subdivision
+begin_excess_function
+                                    | the excess parameters used for the haplo-
+                                    | granite melt model vary between papers (notably w(an-sil)),
+                                    | the values here are from the thermocalc
+                                    | model file 'thdmloss.txt' and appear largely
+                                    | consistent with the white et al paper.
+w(q8L    anL) -10d3
+w(q8L  sil8L) 12d3
+w(q8L    abL) 12d3    -0.4 * P_bar
+w(q8L   kspL) -2d3    -0.5 * P_bar
+w(q8L   h2oL) 15d3
+w(q8L   fo8L) 12d3    -0.4 * P_bar
+w(q8L   fa8L) 14d3
+w(abL  sil8L) 12d3
+w(abL   kspL) -6d3     3. * P_bar
+w(abL   fo8L) 10d3
+w(abL   fa8L)  2d3
+w(abL   h2oL)  1d3    -0.2 * P_bar
+w(kspL   anL)   0     -1. * P_bar
+w(kspL sil8L) 12d3
+w(kspL  h2oL) 11d3    -0.45 * P_bar
+w(kspL  fo8L) 12d3
+w(kspL  fa8L) 12d3
+                                    | w(anL sil8) is 12 kJ in the Holland & Powell J Pet paper
+                                    | but appears to have accidentally been set to zero
+                                    | for the calculations published in the White et al. JMG
+                                    | paper. To restore this parameter delete the comment
+                                    | marker "|" on the following line:
+                                    | w(anL sil8) 12d3
+w(anL   h2oL)  9d3   -0.85 * P_bar
+w(sil8L fo8L) 12d3
+w(sil8L fa8L) 12d3
+w(sil8L h2oL) 16d3
+w(fo8L  fa8L) 18d3
+w(fo8L  h2oL) 11d3   -0.5 * P_bar
+w(fa8L  h2oL) 12d3
+
+w(q8L   wi8L) 14d3
+w(abL   wi8L) 10d3
+w(kspL  wi8L) 12d3
+w(wi8L  fo8L) 18d3
+w(wi8L  fa8L) 18d3
+w(wi8L  h2oL) 11d3   -0.5 * P_bar
+
+w(q8L   cep8L) 14d3
+w(abL   cep8L) 12d3
+w(kspL  cep8L) 12d3
+w(cep8L  fo8L) 12d3
+w(cep8L  fa8L) 12d3
+w(cep8L  h2oL) 25d3
+
+w(q8L   yp8L) 14d3
+w(abL   yp8L) 12d3
+w(kspL  yp8L) 12d3
+w(yp8L  fo8L) 12d3
+w(yp8L  fa8L) 12d3
+w(yp8L  h2oL) 25d3
+
+w(q8L   alp8L) 14d3
+w(abL   alp8L) 12d3
+w(kspL  alp8L) 12d3
+w(alp8L  fo8L) 12d3
+w(alp8L  fa8L) 12d3
+w(alp8L  h2oL) 25d3
+
+end_excess_function
+
+4                           | Configurational entropy: two non-temkin sites (Water, Melt)
+                            | and one temkin site (olvine). hp assume a fsp = ab + or "molecule""
+                            | with mixing on a temkin M site, but the math works out the same as
+                            | the endmembers are treated as separate endmembers and the M site
+                            | dropped.
+
+2 1                         | water-vacancy site
+z(H) = 1 h2oL
+
+3 0                         | temkin olivine site
+n(Mg) = 4 fo8L
+n(Fe) = 4 fa8L
+n(Zn) = 4 wi8L
+
+9 0                         | silicate species site
+z(w)     = 1 h2oL
+z(q)     = 1 q8L
+z(ksp)   = 1 kspL
+z(ab)    = 1 abL
+z(sil)   = 1 sil8L
+z(an)    = 1 anL
+z(zr)    = 1 zr8L
+z(ol)    = 1 fo8L + 1 fa8L + 1 wi8L
+z(phos) = 1 alp8L + 1 cep8L + 1 yp8L
+
+3 2
+z(P)     = 1 alp8L
+z(CE)     = 1 cep8L
+
+begin_dqf_corrections
+dqf(fo8L)  -10d3
+dqf(fa8L)  -9d3 0 -1.3
+dqf(sil8L) -10d3
+                                     | pre-white et al '07 value: dqf(fo8L)  -15d3 0 0
+                                     | pre-white et al '07 value: dqf(fa8L)  -15d3 0 0
+                                     | pre-white et al '07 value: dqf(sil8L) -10d3 0 0
+end_dqf_corrections
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                                      HP '98 quaternary garnet + Y model Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019. F. Gervais COVID time 2020
+
+YGt(SP)
+abbreviation Gt
+full_name    garnet
+
+2                                     model type: simplicial composition space
+5                                   number of endmembers
+yag   spss
+py     gr     alm                     endmember names
+
+1  1  0  0  0                        | endmember flags
+
+1e-5  1e-4  .1 1           | imod = 1 -> non-linear subdivision
+0  1     .1 0              |
+0  1     .1 0              | imod = 0 -> cartesian subdivision
+0  1     .1 0              | imod = 0 -> cartesian subdivision
+                           | NOTE restricted subdivision range on Mn (Species 1)!
+
+begin_excess_function
+w(py gr) 33000
+w(alm py)  2500                | hp '98 give 2.4 kJ
+w(py spss) 4500
+w(alm spss)  240
+end_excess_function
+
+1                                   | 1 site entropy model
+
+5 3                                 | 5 species, site multiplicity 3
+z(Fe) = 1 alm
+z(Mg) = 1 py
+z(Ca) = 1 gr
+z(Mn) = 1 spss
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                             Ideal monazite from Spear and Pyle, 2010 converted to HP by Shrestha et al.,2019. F. Gervais COVID time 2020
+                                                      M
+                                                     _____________
+
+                                      Mutliplicity    2
+                                                     _____________
+
+                                       cemnz            ce
+                                       ymnz               y
+Mnz(SP)
+abbreviation mz
+full_name    monazite
+
+2                           | model type: simplicial
+
+2                           | endmembers
+cemnz ymnz
+
+                            | see commentary in the header of this file for explanation of
+                            | endmember flags and subdivision schemes.
+
+0  0                        | endmember flags
+
+0  1     .1   0             | cemnz
+
+ideal 
+
+1                           | 1 site entropy model
+
+2 2                         | M 2 species, site multiplicity = 1
+z(ce) = 1 cemnz
+
+end_of_model
+                      --------------------------------------------------------
+
