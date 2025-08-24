@@ -924,7 +924,8 @@
            0         815
            0         816
            0         817
-           1         310
+           0         818
+           0         819
            1         311
            1         312
            1         313
@@ -945,9 +946,9 @@
            1         326
            1         327
            1         328
-           0         329
-           0         818
-           1         330
+           1         329
+           0         330
+           0         820
            1         331
            1         332
            1         333
@@ -957,22 +958,21 @@
            1         317
            1         318
            0         319
-           0         819
-           0         820
            0         821
+           0         822
+           0         823
            1         321
            1         322
            1         323
            0         324
-           0         823
-           0         824
+           0         825
            0         826
+           0         828
            1         326
            1         327
            1         328
-           0         329
-           0         828
-           0         829
+           1         329
+           0         330
            0         830
            0         831
            0         832
@@ -985,14 +985,14 @@
            1         338
            1         339
            0         340
-           0         822
+           0         824
            1         341
            1         342
            1         343
            0         344
-           0         825
-           0         345
            0         827
+           0         345
+           0         829
            1         346
            1         347
            1         348
@@ -1142,15 +1142,15 @@
            8           1           9
            4           9           2           3           6           7
           11          12        -130
-           7           0           7
-           4           9           2           3           6           7
-          11
-           8           1           9
-           4           9           2           3           6           7
-          11          12        -148
            7           1           8
            4           9           2           3           6           7
           11        -130
+           8           1           9
+           4           9           2           3           6           7
+          11          12        -148
+           7           0           7
+           4           9           2           3           6           7
+          11
            7           1           8
            4           2           3           6           7          11
           12        -130
@@ -1283,7 +1283,7 @@
           12        -152
            6           1           7
            6          13          10           7          11          12
-        -192
+        -191
            7           1           8
            2           1           3           6          10          11
           12        -152
@@ -1297,7 +1297,7 @@
            2           6          13          10           7          11
           12        -152
 
- 255 compound counter
+ 252 compound counter
    1 fo      
    2 fa      
    3 lrn     
@@ -1459,100 +1459,97 @@
  159 CO      
  160 CH4     
  161 H2      
- 162 H2S     
- 163 perL    
- 164 limL    
- 165 corL    
- 166 eskL    
- 167 hemL    
- 168 qL      
- 169 foL     
- 170 faL     
- 171 woL     
- 172 enL     
- 173 diL     
- 174 silL    
- 175 anL     
- 176 SO2     
- 177 fbr     
- 178 fchum   
- 179 fphA    
- 180 fatg    
- 181 atgts   
- 182 odo     
- 183 oank    
- 184 ts_dqf  
- 185 cumm_dqf
- 186 grun_dqf
- 187 fanth_dq
- 188 ged_dqf 
- 189 ocar    
- 190 ma_dqf  
- 191 kho     
- 192 dhem    
- 193 mots    
- 194 f3clin  
- 195 kho1    
- 196 sil8L   
- 197 fo8L    
- 198 fa8L    
- 199 q8L     
- 200 ma1_dqf 
- 201 ctdo    
- 202 msto    
- 203 mots1   
- 204 ospr    
- 205 cfs     
- 206 crdi    
- 207 cess    
- 208 cenjh   
- 209 cren    
- 210 oen     
- 211 odi     
- 212 qjL     
- 213 dijL    
- 214 ctjL    
- 215 fojL    
- 216 fajL    
- 217 hmjL    
- 218 ekjL    
- 219 foTL    
- 220 faTL    
- 221 cfsg    
- 222 mfpv    
- 223 mcpv    
- 224 cmpv    
- 225 cfpv    
- 226 capv    
- 227 fcor    
- 228 hmgts   
- 229 isp     
- 230 iherc   
- 231 imt     
- 232 cessh   
- 233 crdih   
- 234 crenh   
- 235 macm    
- 236 foHL    
- 237 faHL    
- 238 qHL     
- 239 hmL     
- 240 ekL     
- 241 foWL    
- 242 faWL    
- 243 qWL     
- 244 hmWL    
- 245 ekWL    
- 246 qTHL    
- 247 foTHL   
- 248 faTHL   
- 249 hmTHL   
- 250 ekTHL   
- 251 ispTH   
- 252 crenTH  
- 253 macmTH  
- 254 cessTH  
- 255 crdiTH  
+ 162 S2      
+ 163 H2S     
+ 164 perL    
+ 165 limL    
+ 166 corL    
+ 167 eskL    
+ 168 hemL    
+ 169 qL      
+ 170 foL     
+ 171 faL     
+ 172 woL     
+ 173 enL     
+ 174 diL     
+ 175 silL    
+ 176 anL     
+ 177 SO2     
+ 178 fbr     
+ 179 fchum   
+ 180 fphA    
+ 181 fatg    
+ 182 atgts   
+ 183 ts_dqf  
+ 184 cumm_dqf
+ 185 grun_dqf
+ 186 fanth_dq
+ 187 ged_dqf 
+ 188 ocar    
+ 189 ma_dqf  
+ 190 kho     
+ 191 dhem    
+ 192 mots    
+ 193 f3clin  
+ 194 kho1    
+ 195 sil8L   
+ 196 fo8L    
+ 197 fa8L    
+ 198 q8L     
+ 199 ma1_dqf 
+ 200 ctdo    
+ 201 msto    
+ 202 mots1   
+ 203 ospr    
+ 204 cfs     
+ 205 crdi    
+ 206 cess    
+ 207 cenjh   
+ 208 cren    
+ 209 oen     
+ 210 odi     
+ 211 qjL     
+ 212 dijL    
+ 213 ctjL    
+ 214 fojL    
+ 215 fajL    
+ 216 hmjL    
+ 217 ekjL    
+ 218 cfsg    
+ 219 mfpv    
+ 220 mcpv    
+ 221 cmpv    
+ 222 cfpv    
+ 223 capv    
+ 224 fcor    
+ 225 hmgts   
+ 226 isp     
+ 227 iherc   
+ 228 imt     
+ 229 cessh   
+ 230 crdih   
+ 231 crenh   
+ 232 macm    
+ 233 foHL    
+ 234 faHL    
+ 235 qHL     
+ 236 hmL     
+ 237 ekL     
+ 238 foWL    
+ 239 faWL    
+ 240 qWL     
+ 241 hmWL    
+ 242 ekWL    
+ 243 qTHL    
+ 244 foTHL   
+ 245 faTHL   
+ 246 hmTHL   
+ 247 ekTHL   
+ 248 ispTH   
+ 249 crenTH  
+ 250 macmTH  
+ 251 cessTH  
+ 252 crdiTH  
 
   13 solution model counter
    1  688    6 cAmph(G)  
@@ -1561,7 +1558,7 @@
    4    2    2 A-phase   
    5    2    2 Po(HP)    
    6   39    7 COH-Fluid 
-   7    2    5 oCcM(EF)  
+   7    2    3 oCcM(EF)  
    8    2    3 T         
    9    2    3 Atg(PN)   
   10    8    4 O(HGP)    
