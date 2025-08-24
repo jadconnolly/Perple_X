@@ -23,7 +23,6 @@ src/MC_fit
 test/**/*.arf
 test/**/*.blk
 test/**/*.plt
-test/**/*.prn
 test/**/*.pts
 test/**/*.ps
 test/**/*.tim
