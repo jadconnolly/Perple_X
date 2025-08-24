@@ -157,7 +157,15 @@ fphA = 1 phA - 7/3 ta + 7/3 fta
 fatg = 1 atg - 16 ta + 16 fta
     DQF(J/mol) = 0
                                  |--------------------------------------------------------
-                                 | for Atg(PN) model (Padr�n-Navarta et al., 2013, Lithos)
+                                 | make definitions for Koyomi Abe's unpublished meionite-
+                                 | mizzonite scapolite model, Scap(KA)
+miz   = 2/3 me + 1 abh  + 1/3 cc
+        DQF(J/mol) = -50000
+
+kmiz   = 2/3 me + 1 san  + 1/3 cc
+        DQF(J/mol) =  10000
+                                 |--------------------------------------------------------
+                                 | for Atg(PN) model (Padron-Navarta et al., 2013, Lithos)
 atgts = 4 clin + 9/17 atg - 24/17 br
     DQF = -2e3 + 46.1*T_K
                                  |--------------------------------------------------------
@@ -2685,7 +2693,7 @@ c1 = 23.3  c2 = .4627E-2  c5 = 76.3
 end
 
  
-S2       EoS = 1 | H=  128540.0 
+S2       EoS = 10 | H=  128540.0 
 S2(1)
 GH = 59667.35  S0 = 231  
 c1 = 37.1  c2 = .2398E-2  c3 = -161000  c5 = -65  

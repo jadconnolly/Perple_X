@@ -1674,7 +1674,7 @@ c----------------------------------------------------------------------
 
       external ffirst, degen 
 
-      logical degen, solvus, quit, news, solvnt(k19)
+      logical degen, solvus, quit, news, solvnt(k19), rejct
 
       double precision x(*), slam(h9), clamda(*)
 
@@ -1728,10 +1728,18 @@ c----------------------------------------------------------------------
          if (is(i).ne.1) then
 c                                 make a list of found phases:
             id = i + jiinc
+c                                 reject_degenerates, 7.1.13
+            if (lopt(69).and.idegen.gt.0) then
 
-c           if (idegen.gt.0) then 
-c              if (degen(id,1)) cycle
-c           end if
+               rejct = .false.
+
+               do j = 1, idegen
+                  if (cp2(idg(j),i).ne.0d0) rejct = .true.
+               end do
+
+               if (rejct) cycle
+
+            end if
 c                                 currently endmember compositions are not 
 c                                 refined (this is probably a mistake, but 
 c                                 seems to work fine), so use id > ipoint
@@ -2201,7 +2209,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical solvus, degen, badsol
+      logical solvus, degen, badsol, rejct
 
       external ffirst, solvus, degen, badsol
 
@@ -2290,6 +2298,18 @@ c                                 is = 2 upper bound
 c                                 is = 3 input constraint
 c                                 is = 4 temporary constraint (weak solution)
          if (is(i).ne.1) then
+c                                 degeneracy test, 7.1.13
+            if (lopt(69).and.idegen.gt.0) then
+
+               rejct = .false.
+
+               do j = 1, idegen
+                  if (cp2(idg(j),i).ne.0d0) rejct = .true.
+               end do
+
+               if (rejct) cycle
+
+            end if
 c                                 a stable point, add to list
             npt = npt + 1
             jdv(npt) = i
