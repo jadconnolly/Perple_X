@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.13 August 23, 2025.',
+     *     'Perple_X release 7.1.13 August 24, 2025.',
 
      *     'Copyright (C) 1986-2025 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -4551,9 +4551,12 @@ c                                 inappropriate EoS
      *      ' replacing EoS = ',i3,' with Eos = ',i3)
 
 1020  format ('The EoS code (',i3,') specified for entry ',a,' in data',
-     *        ' file ', a,' requires',/,'volumetric data, edit the ',
-     *        'entry to update the EoS code or provide the missing ',/,
-     *        'data')
+     *        ' file ', a,' requires',/,'volumetric data. Possible rem',
+     *        'edies:',//,
+     *        ' - exclude the species from your calculation',/,
+     *        ' - edit the entry to provide an appropriate EoS code, e',
+     *        '.g., 10 or 1##',/,
+     *        ' - provide the requisite volumetric data')
 
       end
 
