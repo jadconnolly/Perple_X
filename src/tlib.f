@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.13 August 24, 2025.',
+     *     'Perple_X release 7.1.13 August 27, 2025.',
 
      *     'Copyright (C) 1986-2025 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -4461,17 +4461,6 @@ c                                 on the off chance of a loose end keyword
 c                                 EoS
          read (nval2,*,iostat=ier) ieos
          if (ier.ne.0) exit
-c                                 check for obsolete internal EoS flag.
-         if (ieos.eq.201.or.ieos.eq.202) then 
-
-            write (*,1010) n2name(1:nblen(n2name)),name(1:nblen(name)),
-     *                     name(1:nblen(name)),ieos,ieos - 100
-
-            call errdbg ('Read the preceding text, it is likely that '//
-     *                   'this error will occur for a second entry '//
-     *                   'with 200 < Eos < 202')
-
-         end if 
 c                                 look for comments
          j = index(card,'|')
          commnt = ' '
@@ -4501,62 +4490,10 @@ c                                 component is in the phase.
          end if
 
          if (.not.aq.and.(ieos.eq.15.or.ieos.eq.16)) cycle
-c                                 standard form with no volumetric EoS, force
-c                                 error
-         if (ieos.gt.0.and.ieos.lt.5.and.thermo(3,k10).eq.0d0) then
-
-            write (*,1020) ieos, name(1:nblen(name)), 
-     *                           n2name(1:nblen(n2name))
-
-            call errpau
-
-         end if
-c                                 check for reserved (fluid) species names
-         do i = 1, nsp
-
-            if (name.eq.specie(i)) then
-c                                 allowed fluid ieos codes are:
-c                                 0           - no PVT EoS
-c                                 10          - ideal gas
-c                                 101-100+NSP - GFSM option wired EoS
-c                                 201-202     - Special component wired EoS
-               if (ieos.ne.0.and.ieos.ne.10.and.ieos.ne.201.and.
-     *             ieos.ne.202.and.
-     *             .not.(ieos.gt.100.and.ieos.le.100+nsp)) then
-c                                 the species has a reserved name but 
-c                                 inappropriate EoS
-                  write (*,1000) name(1:nblen(name)), 
-     *                           n2name(1:nblen(n2name))
-
-                  call errpau
-
-               end if
-
-            end if
-
-         end do
 
          exit
 
       end do
-
-1000  format (/,'**error ver967** ',a,' is a name reserved for fluid ',
-     *        'species but the',/,'EoS flag specified for this entity ',
-     *        'in ',a,' is not a fluid EoS. Remedies:',//,
-     *        4x,'1 - rename/delete the entity',/,
-     *        4x,'2 - update/correct the EoS flag of the entity')
-
-1010  format ('Data file: ',a,' invokes an out-of-date EoS code for ',a,
-     *      '. To update the file edit the',/,'entry for ',a,
-     *      ' replacing EoS = ',i3,' with Eos = ',i3)
-
-1020  format ('The EoS code (',i3,') specified for entry ',a,' in data',
-     *        ' file ', a,' requires',/,'volumetric data. Possible rem',
-     *        'edies:',//,
-     *        ' - exclude the species from your calculation',/,
-     *        ' - edit the entry to provide an appropriate EoS code, e',
-     *        '.g., 10 or 1##',/,
-     *        ' - provide the requisite volumetric data')
 
       end
 
@@ -11879,6 +11816,7 @@ c1020  format (/)
 c-----------------------------------------------------------------------
 c ichk = 0 and 2 -> test for saturated entities
 c ichk = 1 and 3 -> test for non-saturated entities
+c ichk = 2 and 3 are redundant tests so warnings can be suppressed
 c ichk = 4 -> look for phases that consist entirely of constrained components
 c ichk > 1  and not 4 -> do not compare against excluded list (for make definitions).
 c ichk = 5 allow phases that include only mobile/saturated components (aq species).
@@ -11987,9 +11925,8 @@ c                               special component
 
              if (.not.good) then
 
-                if (ichk.eq.1.and.(iam.eq.1.or.iam.eq.15)
-     *                        .or.iam.eq.2.or.iam.eq.4)
-     *                                 call warn (16,tot,j,name)
+                if ((ichk.eq.1.or.ichk.eq.0).and.(iam.eq.1.or.iam.eq.15)
+     *               .or.iam.eq.2.or.iam.eq.4) call warn (16,tot,j,name)
 
                 goto 90
 

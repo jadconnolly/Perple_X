@@ -629,7 +629,7 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer id,i,j,k
+      integer id, i ,j ,k , nblen
 
       logical lmake, nchk
 
@@ -637,6 +637,12 @@ c---------------------------------------------------------------------
       external gzero
 
       double precision z(14),smax,t0,qr2,vmax,dt,g1,g2
+
+      external nblen
+
+      character specie*4
+      integer isp, ins
+      common/ cxt33 /isp,ins(nsp),specie(nsp)
 
       integer ltyp,lct,lmda,idis
       common/ cst204 /ltyp(k10),lct(k10),lmda(k10),idis(k10)
@@ -699,15 +705,99 @@ c---------------------------------------------------------------------
       if (id+1.gt.k10) call error (1,0d0,id+1,'k10')
 
       ipoint = iphct
-c                               check for duplicates
+c                                 check for duplicates
       if (nchk) then
          do i = jmct + 1, iphct
             if (name.ne.names(i)) cycle
             call error (73,g1,i,name)
          end do
       end if
-c                               load name and phase flag
+c                                 load name and phase flag
       names(id) = name
+c                                 -------------------------------------------------
+c                                 ieos flag testing removed from getphi Aug 27, 2025
+c                                 check for obsolete internal EoS flag.
+      if (ieos.eq.201.or.ieos.eq.202) then 
+
+         write (*,1010) n2name(1:nblen(n2name)),name(1:nblen(name)),
+     *                     name(1:nblen(name)),ieos
+
+         call errdbg ('Read the preceding text, it is likely that '//
+     *                'this error will occur for a second entry '//
+     *                'with 200 < Eos < 202')
+
+      else if (ieos.gt.0.and.ieos.lt.5.and.thermo(3,k10).eq.0d0) then
+c                                 standard form with no volumetric EoS set to
+c                                 ieos to G(Pr,T) and warn intrusively
+         write (*,1020) ieos, name(1:nblen(name)), 
+     *                        n2name(1:nblen(n2name))
+
+         call wrnstp
+
+         ieos = 0
+
+      end if
+c                                 check for reserved (fluid) species names
+      do i = 1, nsp
+
+         if (name.eq.specie(i)) then
+c                                 allowed fluid ieos codes are:
+c                                 0           - no PVT EoS
+c                                 10          - ideal gas
+c                                 101-100+NSP - GFSM option wired EoS
+            if (ieos.ne.0.and.ieos.ne.10.and.
+     *          .not.(ieos.gt.100.and.ieos.le.100+nsp)) then
+c                                 the species has a reserved name but 
+c                                 inappropriate EoS
+               write (*,1000) name(1:nblen(name)), name(1:nblen(name)),
+     *                        n2name(1:nblen(n2name))
+
+               call errpau
+
+            else if (ieos.eq.0.and.iam.ne.5) then
+
+               write (*,1030) name(1:nblen(name)), name(1:nblen(name)),
+     *                        n2name(1:nblen(n2name)),
+     *                        name(1:nblen(name)),
+     *                        name(1:nblen(name)),
+     *                        n2name(1:nblen(n2name)), nsp + 100
+
+               call wrnstp
+
+            end if
+
+         end if
+
+      end do
+
+1000  format (/,'**error ver967** ',a,' is a name reserved for fluid ',
+     *        'species but the',/,'EoS flag specified for ',a,' ',
+     *        'in ',a,' is not a fluid EoS. Remedies:',//,
+     *        4x,'1 - rename/delete the entity',/,
+     *        4x,'2 - update/correct the EoS flag of the entity')
+1010  format ('Data file: ',a,' invokes an out-of-date EoS code for ',a,
+     *      '. To update the file edit the',/,'entry for ',a,
+     *      ' replacing EoS = ',i3,' with the appropriate species code')
+1020  format (/,'**warning ver966** EoS code ',i1,' for ',a,' in dat',
+     *        'a file ', a,' requires',/,'volumetric data. The code wi',
+     *        'll automatically be set to 0, a G(Pr,T) EoS, when this',/
+     *       ,'remedy is inappropriate, alternatives are:',//,
+     *     4x,'1 - exclude the species from your calculation',/,
+     *     4x,'2 - edit the entry to provide the appropriate EoS code,',
+     *        ' e.g., 10 or 1##',/,
+     *     4x,'3 - provide the requisite volumetric data',/)
+1030  format (/,'**warning ver968** ',a,' is a name reserved for fluid',
+     *        ' species but the EoS flag',/,'for ',a,' in ',a,' is a ',
+     *        'G(Pr,T) EoS appropriate only for calculations as a ',/,
+     *        'function of the activity or fugacity of ',a,'. If this ',
+     *        'is not the case, best practice is to:',//,
+     *     4x,'1 - exclude the species from your calculation',/,
+     *     4x,'2 - or edit the entry for ',a,' in ',a,' to indicate th',
+     *        'e appropriate EoS code (100-',i3,')',/)
+c                                 end of ieos flag testing
+c                                 ------------------------------------------
+
+
 c                               moduli flags, indicate availability of
 c                               bulk and shear modulus
 
@@ -716,7 +806,6 @@ c                                        = 1, just shear
 c                                        = 2, shear and bulk
 c                                        = 3, both
       iemod(id) = ikind
-
       ikp(id) = 0
       ifp(id) = 0
       idis(id) = 0

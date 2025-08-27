@@ -581,7 +581,7 @@ c                                 initialize icount in case of failure
          end if
 
          if (ifault.gt.2.or.(ifault.gt.0.and.objf.gt.oktol)) then
-c                                 write failure 
+c                                 write failure msgs 
             write (strg1,'(a,a,i5,a,i5,a)') strg,', Try ',i,
      *            ' did not converge after ',icount,
      *            ' objective function evaluations.'
@@ -1694,6 +1694,12 @@ c                                 modal data
             read (nval1,*) emode(mxpt,nph)
             mcmode(mxpt) = .true.
 
+            if (pmode(mxpt,nph).le.0d0) call errdbg ('modes must be '//
+     *               '> 0, reading: '//tname(1:nblen(tname)))
+
+            if (emode(mxpt,nph).le.0d0) call errdbg ('modal uncertain'//
+     *             'ties must be > 0, reading: '//tname(1:nblen(tname)))
+
             if (randm.and.(invunc.eq.1.or.invunc.eq.2)) then
 c                                 perturb modes if doing uncertainty
 c                                 analysis
@@ -2001,10 +2007,8 @@ c                                 fail, and what's with the > 1?
          else
 
             do i = 1, kbulk
-c                                 normalize composition and error for
-c                                 scoring:
+c                                 normalize composition for scoring:
                comp(i) = comp(i)/tot
-               ecomp(i) = ecomp(i)/tot
 
             end do
 
@@ -2791,7 +2795,7 @@ c     find the centroid of the current simplex and the function value there.
       end if
 
       if (func.gt.oktol) then
-         write (*,'(a,1x,g12.6)') 'Aborting, bad objf: ',h(i)
+         write (*,'(a,1x,g12.6)') 'Aborting, bad objf: ',func
          ifault = 2
          return
       end if
