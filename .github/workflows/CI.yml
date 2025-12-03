@@ -30,8 +30,26 @@ jobs:
           sudo ln -s $(which gfortran-12) $(dirname $(which gfortran-12))/gfortran
     - name: Install compilers windows
       if: contains( matrix.os, 'windows')
+      shell: pwsh
       run: |
-          choco install cmake
+        choco install cmake -y
+        choco install mingw -y
+
+        # Add MinGW to PATH for subsequent steps
+        $mingwPath = "C:\tools\mingw64\bin"
+        if (Test-Path $mingwPath) {
+          echo "Using MinGW at $mingwPath"
+          echo "$mingwPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        } else {
+          Write-Error "MinGW path not found at $mingwPath"
+        }
+
+    - name: Check gfortran on windows
+      if: contains( matrix.os, 'windows')
+      shell: pwsh
+      run: |
+        gfortran --version
+
   
     # Compile source files (slightly different on windows vs. linux/mac because of extensions) 
     - name: Compile sources windows
