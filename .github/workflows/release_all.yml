@@ -1,0 +1,122 @@
+name: Release binaries (Linux, macOS, Windows)
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    name: Build release – ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macOS-latest
+          - windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # ---------- Install compilers / tools per OS ----------
+
+      - name: Install compilers (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gfortran make
+
+      - name: Install compilers (macOS)
+        if: matrix.os == 'macOS-latest'
+        run: |
+          brew install gcc@12
+          # Make gfortran available as "gfortran"
+          sudo ln -s $(which gfortran-12) $(dirname $(which gfortran-12))/gfortran || true
+
+      - name: Install compilers and tools (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          choco install mingw -y
+          choco install cmake -y
+
+          $mingwPath = "C:\tools\mingw64\bin"
+          if (Test-Path $mingwPath) {
+            echo "Using MinGW at $mingwPath"
+            echo "$mingwPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          } else {
+            Write-Error "MinGW path not found at $mingwPath"
+          }
+
+      - name: Check gfortran
+        shell: pwsh
+        run: gfortran --version
+        if: matrix.os == 'windows-latest'
+
+      # ---------- Build binaries per OS ----------
+
+      - name: Compile sources (Linux/macOS)
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
+        run: |
+          make -C src -f makefile
+
+      - name: Compile sources (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          make -C src -f makefile EXT=.exe
+
+      # ---------- Package artifacts per OS ----------
+
+      - name: Package Linux binaries
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mkdir binary
+          # Copy executables from src/ to binary/
+          find src -maxdepth 1 -type f -perm -111 -exec cp {} binary \;
+          tar -pczf Perple_X_Linux_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
+
+      - name: Package macOS binaries
+        if: matrix.os == 'macOS-latest'
+        run: |
+          mkdir binary
+          # Copy executables from src/ to binary/
+          find src -maxdepth 1 -type f -perm -111 -exec cp {} binary \;
+          tar -pczf Perple_X_macOS_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
+
+      - name: Package Windows binaries
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path binary -Force | Out-Null
+          Get-ChildItem -Path src -Filter *.exe -Recurse | Copy-Item -Destination binary
+          Compress-Archive -Path binary, datafiles, optionfiles, matlab_scripts `
+            -DestinationPath Perple_X_Windows_64_gfortran.zip -Force
+
+      # ---------- Upload artifacts to the release ----------
+
+      - name: Upload Linux artifacts
+        if: matrix.os == 'ubuntu-latest'
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: 'Perple_X_Linux_64_gfortran.tar.gz'
+
+      - name: Upload macOS artifacts
+        if: matrix.os == 'macOS-latest'
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: 'Perple_X_macOS_64_gfortran.tar.gz'
+
+      - name: Upload Windows artifacts
+        if: matrix.os == 'windows-latest'
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: 'Perple_X_Windows_64_gfortran.zip'
