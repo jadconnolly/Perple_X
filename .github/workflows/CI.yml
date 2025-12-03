@@ -8,21 +8,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      name: CI
-
-on: [push, pull_request]
-
-jobs:
-  build:
-    name: Build - ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - macOS-latest
-          - windows-latest
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - name: Checkout code
@@ -42,11 +29,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gfortran make
 
-      - name: Install GCC compilers macOS
-        if: contains(matrix.os, 'macOS')
+      - name: Install compilers (macOS)
+        if: contains(matrix.os, 'macos')
         run: |
           brew install gcc@12
-          # Make gfortran-12 available as "gfortran"
           sudo ln -s $(which gfortran-12) $(dirname $(which gfortran-12))/gfortran || true
 
       - name: Install compilers (Windows)
@@ -58,8 +44,7 @@ jobs:
 
           $mingwPath = "C:\tools\mingw64\bin"
           if (Test-Path $mingwPath) {
-            Write-Host "Using MinGW at $mingwPath"
-            # Make MinGW (gfortran) visible to later steps
+            echo "Using MinGW at $mingwPath"
             echo "$mingwPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           } else {
             Write-Error "MinGW path not found at $mingwPath"
@@ -79,7 +64,7 @@ jobs:
           make -C src -f makefile EXT=.exe
 
       - name: Compile sources (Linux/macOS)
-        if: false == contains(matrix.os, 'windows')
+        if: ${{ !contains(matrix.os, 'windows') }}
         run: |
           make -C src -f makefile
 
@@ -97,7 +82,7 @@ jobs:
           make -C src -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.so
 
       - name: Compile libraries (macOS)
-        if: contains(matrix.os, 'macOS')
+        if: contains(matrix.os, 'macos')
         run: |
           make -C src -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.dylib
 
@@ -108,76 +93,3 @@ jobs:
 
       - name: Run tests (through julia)
         uses: julia-actions/julia-runtest@latest
-
-      matrix:
-        os:
-          - ubuntu-latest
-          - macOS-latest
-          - windows-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Setup julia  
-      uses: julia-actions/setup-julia@v1
-      with:
-          version: '1.8'
-          arch: 'x64'
-    
-    # Install required compilers 
-    - name: Install GCC compilers macOS
-      if: contains( matrix.os, 'macOS')
-      run: |
-          brew install gcc@12 
-          sudo ln -s $(which gfortran-12) $(dirname $(which gfortran-12))/gfortran
-    - name: Install compilers windows
-      if: contains( matrix.os, 'windows')
-      shell: pwsh
-      run: |
-        choco install cmake -y
-        choco install mingw -y
-
-        # Add MinGW to PATH for subsequent steps
-        $mingwPath = "C:\tools\mingw64\bin"
-        if (Test-Path $mingwPath) {
-          echo "Using MinGW at $mingwPath"
-          echo "$mingwPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        } else {
-          Write-Error "MinGW path not found at $mingwPath"
-        }
-
-    - name: Check gfortran on windows
-      if: contains( matrix.os, 'windows')
-      shell: pwsh
-      run: |
-        gfortran --version
-
-  
-    # Compile source files (slightly different on windows vs. linux/mac because of extensions) 
-    - name: Compile sources windows
-      if: contains( matrix.os, 'windows')
-      run: |
-        make -C src -f makefile EXT=.exe
-    - name: Compile sources Linux/mac    
-      if: false == contains( matrix.os, 'windows')
-      run: |
-        make -C src -f makefile
-        
-   # Compile shared library
-    - name: Compile libraries windows 
-      if: contains( matrix.os, 'windows')
-      run: |
-        make -C src -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.dll
-    - name: Compile libraries linux 
-      if: contains( matrix.os, 'ubuntu')
-      run: |
-        make -C src -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.so
-    - name: Compile libraries mac 
-      if: contains( matrix.os, 'macOS')
-      run: |
-        make -C src -f makefile FLINK='-shared' FFLAGS='-fPIC -O3' EXT=.dylib
-        
-   # Test julia  
-    - name: Setup julia testing framework
-      uses: julia-actions/julia-buildpkg@latest
-    - name: Run tests (through julia)
-      uses: julia-actions/julia-runtest@latest  

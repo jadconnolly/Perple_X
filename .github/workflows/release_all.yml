@@ -13,7 +13,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macOS-latest
+          - macos-latest
           - windows-latest
 
     steps:
@@ -29,7 +29,7 @@ jobs:
           sudo apt-get install -y gfortran make
 
       - name: Install compilers (macOS)
-        if: matrix.os == 'macOS-latest'
+        if: matrix.os == 'macos-latest'
         run: |
           brew install gcc@12
           # Make gfortran available as "gfortran"
@@ -58,7 +58,7 @@ jobs:
       # ---------- Build binaries per OS ----------
 
       - name: Compile sources (Linux/macOS)
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: |
           make -C src -f makefile
 
@@ -79,7 +79,7 @@ jobs:
           tar -pczf Perple_X_Linux_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
 
       - name: Package macOS binaries
-        if: matrix.os == 'macOS-latest'
+        if: matrix.os == 'macos-latest'
         run: |
           mkdir binary
           # Copy executables from src/ to binary/
