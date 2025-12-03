@@ -35,25 +35,32 @@ jobs:
           # Make gfortran available as "gfortran"
           sudo ln -s $(which gfortran-12) $(dirname $(which gfortran-12))/gfortran || true
 
-      - name: Install compilers and tools (Windows)
+      - name: Setup MSYS2 and mingw-w64 toolchain (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-gcc-fortran
+
+      - name: Install cmake (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
-          choco install mingw -y
           choco install cmake -y
 
-          $mingwPath = "C:\tools\mingw64\bin"
-          if (Test-Path $mingwPath) {
-            echo "Using MinGW at $mingwPath"
-            echo "$mingwPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          } else {
-            Write-Error "MinGW path not found at $mingwPath"
-          }
-
-      - name: Check gfortran
-        shell: pwsh
-        run: gfortran --version
+      - name: Check gfortran (Windows)
         if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          if command -v gfortran >/dev/null 2>&1; then
+            gfortran --version
+          else
+            echo "gfortran not found in MSYS2/mingw PATH; aborting.";
+            exit 1;
+          fi
 
       # ---------- Build binaries per OS ----------
 
@@ -64,7 +71,7 @@ jobs:
 
       - name: Compile sources (Windows)
         if: matrix.os == 'windows-latest'
-        shell: pwsh
+        shell: bash
         run: |
           make -C src -f makefile EXT=.exe
 
