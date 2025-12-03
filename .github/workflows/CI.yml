@@ -63,6 +63,15 @@ jobs:
             Write-Warning "MinGW/gfortran not found in standard locations; continuing but gfortran may be unavailable."
           }
 
+      - name: Install compilers (macOS)
+        if: contains(matrix.os, 'macos')
+        run: |
+          brew install gcc@12
+          # Try to make gfortran-12 available as 'gfortran'
+          if command -v gfortran-12 >/dev/null 2>&1; then
+            sudo ln -s $(which gfortran-12) $(dirname $(which gfortran-12))/gfortran || true
+          fi
+
       - name: Check gfortran (Windows)
         if: contains(matrix.os, 'windows')
         shell: pwsh
@@ -73,6 +82,16 @@ jobs:
           } else {
             Write-Warning "gfortran not found; Windows build may fail later if gfortran is required."
           }
+
+      - name: Check gfortran (Unix)
+        if: ${{ !contains(matrix.os, 'windows') }}
+        run: |
+          if command -v gfortran >/dev/null 2>&1; then
+            gfortran --version
+          else
+            echo "gfortran not found on runner; aborting build.";
+            exit 1;
+          fi
 
       # ----------------- Compile sources -----------------
 
