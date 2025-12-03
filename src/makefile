@@ -47,8 +47,9 @@ COMP77 = gfortran
 # 32/64 bit libraries.
 # G. Helffrich/30 Nov. '15
 # FFLAGS =  -O3 -static-libgfortran -Wpedantic
+# FFLAGS = -O3 -std=legacy
 
-FFLAGS = -O3 -std=legacy
+FFLAGS = -O3
 
 #-Wstrict-overflow -Wstringop-overflow=2 removed for 690
 # WFM Added 2007Sep05, PAPPEL 2010SEPT08: for 6.6.0
