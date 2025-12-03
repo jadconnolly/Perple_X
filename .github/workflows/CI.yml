@@ -29,6 +29,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gfortran make
 
+      - name: Install compilers (Windows)
+        if: contains(matrix.os, 'windows')
+        shell: pwsh
+        run: |
+          choco install mingw -y
+          choco install cmake -y
 
           # Try to locate gfortran / mingw bin directory in several common locations
           $found = $false
@@ -55,17 +61,6 @@ jobs:
 
           if (-not $found) {
             Write-Warning "MinGW/gfortran not found in standard locations; continuing but gfortran may be unavailable."
-          }
-        run: |
-          choco install mingw -y
-          choco install cmake -y
-
-          $mingwPath = "C:\tools\mingw64\bin"
-          if (Test-Path $mingwPath) {
-            echo "Using MinGW at $mingwPath"
-            echo "$mingwPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          } else {
-            Write-Error "MinGW path not found at $mingwPath"
           }
 
       - name: Check gfortran (Windows)
