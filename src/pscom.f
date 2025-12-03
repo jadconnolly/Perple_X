@@ -5,7 +5,7 @@
       include 'perplex_parameters.h'
 
       double precision x0, y0, dy, tic, tic1, tic2, x, y, xc, yc, dy2,
-     *                 dxt, dyt, dxc, dyc
+     *                 dxt, dyt, dxc, dyc, f1, f2
 
       integer i
 
@@ -16,7 +16,8 @@
 
 c psytic - subroutine to draw y-axis ticks.
 
-c                                   once, this seemed like a good idea
+      f1 = tic1/tic
+      f2 = tic2/tic
       if (ltern) then
          x = x0
          y = y0
@@ -30,7 +31,7 @@ c                                   once, this seemed like a good idea
          call trneq (xc,yc)
          dxc = xc-x
          dyc = yc-y
-      endif
+      end if
       dxt = tic
       dyt = 0d0
 
@@ -79,12 +80,12 @@ c                                   once, this seemed like a good idea
                call trneq (x,y)
             endif
             call psmove (x,y)
-            call psrlin (tic1/tic*dxt, tic1/tic*dyt, 1d0, width)
+            call psrlin (f1*dxt, f1*dyt, 1d0, width)
             if (ltern) then
                call psmove (x,y)
-               call psrlin (tic1/tic*dxc,tic1/tic*dyc,1d0,width)
+               call psrlin (f1*dxc,f1*dyc,1d0,width)
             endif
-            y = y + dy2
+            yc = yc + dy2
             x = x0
             y = yc
             if (ltern) then
@@ -132,10 +133,10 @@ c                                   once, this seemed like a good idea
 
             do i = 1, 4
                if (yc.ge.ymax) exit
-               call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+               call psrlin (f2*dxt, f2*dyt, 1d0, width)
                if (ltern) then
                   call psmove (x,y)
-                  call psrlin (tic2/tic*dxc,tic2/tic*dyc,1d0,width)
+                  call psrlin (f2*dxc,f2*dyc,1d0,width)
                endif
                yc = yc + dy2
                x = x0
@@ -149,10 +150,10 @@ c                                   once, this seemed like a good idea
 
             if (yc.ge.ymax) exit 
 
-            call psrlin (tic1/tic*dxt, tic1/tic*dyt, 1d0, width)
+            call psrlin (f1*dxt, f1*dyt, 1d0, width)
             if (ltern) then
                call psmove (x,y)
-               call psrlin (tic1/tic*dxc,tic1/tic*dyc,1d0,width)
+               call psrlin (f1*dxc,f1*dyc,1d0,width)
             endif
             yc = yc + dy2
             x = x0
@@ -165,10 +166,10 @@ c                                   once, this seemed like a good idea
 
             do i = 1, 4
                if (yc.ge.ymax) exit 
-               call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+               call psrlin (f2*dxt, f2*dyt, 1d0, width)
                if (ltern) then
                   call psmove (x,y)
-                  call psrlin (tic2/tic*dxc,tic2/tic*dyc,1d0,width)
+                  call psrlin (f2*dxc,f2*dyc,1d0,width)
                endif
                yc = yc + dy2
                x = x0
@@ -196,10 +197,10 @@ c                                   once, this seemed like a good idea
 
          do i = 1, 4
             if (yc.le.ymin) return
-            call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+            call psrlin (f2*dxt, f2*dyt, 1d0, width)
             if (ltern) then
                call psmove (x,y)
-               call psrlin (tic2/tic*dxc,tic2/tic*dyc,1d0,width)
+               call psrlin (f2*dxc,f2*dyc,1d0,width)
             endif
             yc = yc - dy2
             x = x0
@@ -213,10 +214,10 @@ c                                   once, this seemed like a good idea
 
          if (yc.le.ymin) return
 
-         call psrlin (tic1/tic*dxt, tic1/tic*dyt, 1d0, width)
+         call psrlin (f1*dxt, f1*dyt, 1d0, width)
          if (ltern) then
             call psmove (x,y)
-            call psrlin (tic1/tic*dxc,tic1/tic*dyc,1d0,width)
+            call psrlin (f1*dxc,f1*dyc,1d0,width)
          endif
 
          yc = yc - dy2
@@ -230,10 +231,10 @@ c                                   once, this seemed like a good idea
 
          do i = 1, 4
             if (yc.le.ymin) exit
-            call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
+            call psrlin (f2*dxt, f2*dyt, 1d0, width)
             if (ltern) then
                call psmove (x,y)
-               call psrlin (tic2/tic*dxc,tic2/tic*dyc,1d0,width)
+               call psrlin (f2*dxc,f2*dyc,1d0,width)
             endif
             yc = yc - dy2
             x = x0
@@ -250,124 +251,14 @@ c                                   once, this seemed like a good idea
       end
 
 c------------------------------------------------------------------
-      subroutine psxtic (y0, x0, dx, tic, tic1, tic2)
+      subroutine psxtic (y0, x0, dx, tic, tic1, tic2, ltern)
 
-      implicit none 
-
-      include 'perplex_parameters.h'
-
-      double precision x0, y0, dx, tic, tic1, tic2, x, dx2
-
-      integer i
-
-      double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
-      common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
-
-c psxtic - subroutine to draw x-axis ticks.
-
-      x = x0 
-      call psmove (x0,y0)
-
-      if (.not.half.and..not.tenth) then 
-
-         do while (x.lt.xmax) 
-            call psrlin (0d0, tic, 1d0, width)
-            call psrmov (dx, -tic)
-            x = x + dx 
-         end do 
-
-      else if (.not.tenth) then
-
-         dx2 = dx / 2d0
-
-         do while (x.lt.xmax) 
-            call psrlin (0d0, tic, 1d0, width)
-            call psrmov (dx2, -tic)
-            x = x + dx2
-            if (x.ge.xmax) exit
-            call psrlin (0d0, tic1, 1d0, width)
-            call psrmov (dx2, -tic1)
-            x = x + dx2
-         end do 
-
-         if (x0-dx2.gt.xmin)
-     *      call psline (x0-dx2, y0, x0-dx2, y0+tic1, 1d0, width)
-
-      else
-
-         dx2 = dx / 10d0
-
-         do while (x.le.xmax) 
-
-            call psrlin (0d0, tic, 1d0, width)
-            call psrmov (dx2, -tic)
-            x = x + dx2
-
-            do i = 1, 4
-               if (x.ge.xmax) exit
-               call psrlin (0d0, tic2, 1d0, width)
-               call psrmov (dx2, -tic2)
-               x = x + dx2
-            end do 
-
-            if (x.ge.xmax) exit 
-            call psrlin (0d0, tic1, 1d0, width)
-            call psrmov (dx2, -tic1)
-            x = x + dx2
-
-            do i = 1, 4
-               if (x.ge.xmax) exit
-               call psrlin (0d0, tic2, 1d0, width)
-               call psrmov (dx2, -tic2)
-               x = x + dx2
-            end do 
-
-         end do 
-
-         if (x0-dx2.lt.xmin) return
-
-         x = x0 - dx2
-
-         call psmove (x, y0)
-
-         do i = 1, 4
-            if (x.le.xmin) return
-            call psrlin (0d0, tic2, 1d0, width)
-            call psrmov (-dx2, -tic2)
-            x = x - dx2
-         end do
-
-         if (x.le.xmin) return
-         call psrlin (0d0, tic1, 1d0, width)
-         call psrmov (dx2, -tic1) 
-         x = x - dx2 
-
-         do i = 1, 4
-            if (x.le.xmin) exit
-            call psrlin (0d0, tic2, 1d0, width)
-            call psrmov (-dx2, -tic2)
-            x = x - dx2
-         end do 
-
-      end if 
-
-      end
-
-
-c------------------------------------------------------------------
-      subroutine psxtig (y0, x0, dx, tic, tic1, tic2, ltern)
-c
-c this is george's version of psxtic, it goes into an infinite
-c loop for 1d calculations (dx = 0), here a quick fix has been
-c made by restoring psxtic so that psxtig is only called if
-c ltern true.
-c
       implicit none 
 
       include 'perplex_parameters.h'
 
       double precision x0, y0, dx, tic, tic1, tic2, x, y, xc, yc, dx2,
-     *                 dxt, dyt, dxc, dyc
+     *                 dxt, dyt, dxc, dyc, dxt1, dyt1, dxc1, dyc1, dth
 
       integer i
 
@@ -392,9 +283,21 @@ c psxtic - subroutine to draw x-axis ticks.
          call trneq (xc,yc)
          dxc = xc-x
          dyc = yc-y
+         xc = x0
+         yc = tic1
+         call trneq (xc,yc)
+         dxt1 = xc-x
+         dyt1 = yc-y
+         xc = x0-tic1
+         yc = tic1
+         call trneq (xc,yc)
+         dxc1 = xc-x
+         dyc1 = yc-y
       else
          dxt = 0d0
          dyt = tic
+         dxt1 = 0d0
+         dyt1 = tic1
       endif
 
       xc = x0
@@ -405,7 +308,7 @@ c psxtic - subroutine to draw x-axis ticks.
 
       if (.not.half.and..not.tenth) then 
 
-         do while (xc.lt.xmax) 
+         do while (abs(xc-xmax).ge.abs(dx/2)) 
             call psrlin (dxt, dyt, 1d0, width)
             if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
                call psmove (x,y)
@@ -421,23 +324,24 @@ c psxtic - subroutine to draw x-axis ticks.
       else if (.not.tenth) then
 
          dx2 = dx / 2d0
+         dth = abs(dx2/2)
 
-         do while (abs(xc-xmax) .gt. dx2)
+         do while (abs(xc-xmax) .gt. dth)
             call psrlin (dxt, dyt, 1d0, width)
             if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
                call psmove (x,y)
                call psrlin (dxc, dyt, 1d0, width)
             endif
             xc = xc + dx2
-            if (abs(xc-xmax).lt.dx2) exit
+            if (abs(xc-xmax).lt.dth) exit
             x = xc
             y = y0
             if (ltern) call trneq (x,y)
             call psmove (x,y)
-            call psrlin (dxt, dyt, 1d0, width)
+            call psrlin (dxt1, dyt1, 1d0, width)
             if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
                call psmove (x,y)
-               call psrlin (dxc, dyc, 1d0, width)
+               call psrlin (dxc1, dyc1, 1d0, width)
             endif
             xc = xc + dx2
             x = xc
@@ -446,7 +350,7 @@ c psxtic - subroutine to draw x-axis ticks.
             call psmove (x,y)
          end do 
 
-         if (x0-dx2.gt.xmin) then
+         if (abs(x0-xmin).gt.dth) then
             x = x0-dx2
             y = y0
             xc = x0-dx2
@@ -461,8 +365,9 @@ c psxtic - subroutine to draw x-axis ticks.
       else
 
          dx2 = dx / 10d0
+         dth = abs(dx2/2)
 
-         do while (xc.le.xmax) 
+         do while (abs(xc-xmax).ge.dth) 
 
             call psrlin (dxt, dyt, 1d0, width)
             if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
@@ -476,7 +381,7 @@ c psxtic - subroutine to draw x-axis ticks.
             call psmove (x,y)
 
             do i = 1, 4
-               if (xc.ge.xmax) exit
+               if (abs(xc-xmax).lt.dth) exit
                call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
                if (ltern) then
                   call psmove (x,y)
@@ -489,7 +394,7 @@ c psxtic - subroutine to draw x-axis ticks.
                call psmove (x,y)
             end do 
 
-            if (xc.ge.xmax) exit
+            if (abs(xc-xmax).lt.dth) exit
             call psrlin (tic1/tic*dxt, tic1/tic*dyt, 1d0, width)
             if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
                call psmove (x,y)
@@ -502,7 +407,7 @@ c psxtic - subroutine to draw x-axis ticks.
             call psmove (x,y)
 
             do i = 1, 4
-               if (xc.ge.xmax) exit
+               if (abs(xc-xmax).lt.dth) exit
                call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
                if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
                   call psmove (x,y)
@@ -517,7 +422,7 @@ c psxtic - subroutine to draw x-axis ticks.
 
          end do 
 
-         if (x0-dx2.lt.xmin) return
+         if (abs(x0-xmin).lt.dth) return
 
          x = x0 - dx2
          y = y0
@@ -526,7 +431,7 @@ c psxtic - subroutine to draw x-axis ticks.
 
          xc = x0 - dx2
          do i = 1, 4
-            if (xc.le.xmin) return
+            if (abs(xc-xmin).le.dth) return
             call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
             if (ltern) then
                call psmove (x,y)
@@ -539,7 +444,7 @@ c psxtic - subroutine to draw x-axis ticks.
             call psmove (x,y)
          end do
 
-         if (xc.le.xmin) return
+         if (abs(xc-xmin).le.dth) return
          call psrlin (tic1/tic*dxt, tic1/tic*dyt, 1d0, width)
          if (ltern) then
             call psmove (x,y)
@@ -552,7 +457,7 @@ c psxtic - subroutine to draw x-axis ticks.
          call psmove (x,y)
 
          do i = 1, 4
-            if (xc.le.xmin) exit
+            if (abs(xc-xmin).le.dth) exit
             call psrlin (tic2/tic*dxt, tic2/tic*dyt, 1d0, width)
             if (ltern) then
                call psmove (x,y)
@@ -606,10 +511,11 @@ c psylbl - subroutine to put on y-axis labels.
          call pstext (x, y, numbs(i), ic(i))
          if (lgrid) then
             x = xmin
-            y = yc + ydc
+            y = yc
             xg = xmax
             yg = y
             if (ltern) then
+               xg = xg - yg
                call trneq (x,y)
                call trneq (xg,yg)
             endif
@@ -695,7 +601,7 @@ c psxlbl - subroutine to put on x-axis labels.
 
       integer ic(40),i,ix1
 
-      double precision x0, dx, x, xdc, y, t, xc, ylv, xl, yl
+      double precision x0, dx, x, xdc, y, t, xc, ylv, xl, yl, xr, yr
  
       character*12 numbs(40)
 
@@ -713,18 +619,24 @@ c psxlbl - subroutine to put on x-axis labels.
       xc = x0
       do i = 1, ix1
 
-         if (xc.ne.xmin) then
+         if (xc.ne.xmin.or.oned) then
             t = xc - dfloat(ic(i)) * xdc
             y = ylv
             if (ltern) call trneq (t,y)
             call pstext (t, y, numbs(i), ic(i))
-            if (lgrid) then
+            if (lgrid.and..not.oned) then
                x = xc
                y = ymin
                xl = xc
                yl = ymax
                if (ltern) then
+                  xr = xc
+                  yr = ymax - xc
                   call trneq (x,y)
+                  call trneq (xr,yr)
+                  call psline (x, y, xr, yr, 10d0, 0d0)
+                  yl = xl
+                  xl = 0d0
                   call trneq (xl,yl)
                endif
                call psline (x, y, xl, yl, 10d0, 0d0)
@@ -737,6 +649,167 @@ c psxlbl - subroutine to put on x-axis labels.
  
       end
 c----------------------------------------------------------------------
+      subroutine psylab (y0, dy, tmin, ltern)
+ 
+c psylab - subroutine to put on y-axis labels, using text
+c          justification primitives.
+
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      double precision y0,dy,tmin,x,y,xdc,yc,xg,yg,adj(2)
+
+      integer i,iy1
+ 
+      character*12 numbs(40)
+ 
+      integer ic(40)
+
+      logical ltern
+
+      double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+      common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+
+      data adj/1d0,5d-1/
+
+c     xdc = 1.17d0 * dcx * nscale 
+      xdc = 0.80d0 * dcx * nscale 
+      tmin = 1d30
+ 
+      call psnum (y0,ymax,dy,ic,iy1,numbs)
+ 
+      yc = y0
+ 
+      do i = 1, iy1
+         x = xmin - xdc 
+         tmin = min(tmin, x, xmin - (ic(i)+2) * xdc)
+         y = yc
+         if (ltern) call trneq (x,y)
+         call psatxt (x, y, numbs(i), ic(i), 1d0, 0d0, 'R', adj)
+         if (lgrid) then
+            x = xmin
+            y = yc
+            xg = xmax
+            yg = y
+            if (ltern) then
+               xg = xg - yg
+               call trneq (x,y)
+               call trneq (xg,yg)
+            endif
+            call psline (x, y, xg, yg, 10d0, 0d0)
+         endif
+         yc = yc + dy
+      end do 
+ 
+      end
+c----------------------------------------------------------------------
+      subroutine psxlab (x0, dx, ltern)
+ 
+c psxlab - subroutine to put on x-axis labels, using text justification
+c          primitives
+
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer ic(40),i,ix1
+
+      double precision x0, dx, x, xdc, y, t, xc, ylv, xl, yl, xr, yr,
+     *   adj(2)
+ 
+      character*12 numbs(40)
+
+      logical ltern
+
+      double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+      common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+
+      data adj/5d-1,1d0/
+
+      ylv = ymin - 1.2d0*nscale*dcy
+ 
+      xdc = dcx*nscale/1.75d0
+ 
+      call psnum (x0,xmax,dx,ic,ix1,numbs)
+ 
+      xc = x0
+      do i = 1, ix1
+
+         if (xc.ne.xmin) then
+            t = xc - dfloat(ic(i)) * xdc
+            y = ylv
+            if (ltern) call trneq (t,y)
+            call psatxt (xc, ylv, numbs(i), ic(i), 1d0, 0d0, 'C', adj)
+            if (lgrid.and..not.oned) then
+               x = xc
+               y = ymin
+               xl = xc
+               yl = ymax
+               if (ltern) then
+                  xr = xc
+                  yr = ymax - xc
+                  call trneq (x,y)
+                  call trneq (xr,yr)
+                  call psline (x, y, xr, yr, 10d0, 0d0)
+                  yl = xl
+                  xl = 0d0
+                  call trneq (xl,yl)
+               endif
+               call psline (x, y, xl, yl, 10d0, 0d0)
+            endif
+         end if 
+
+         xc = xc + dx
+
+      end do 
+ 
+      end
+
+c----------------------------------------------------------------------
+      subroutine psatxt (x, y, text, jtext, size, ang, just, adj)
+
+c psatxt - emit adjusted text (plain, black) onto plot
+c          jtext - if 0, use nonblank length; > 0 use that many chars
+c          size - (relative) 1.0 is normal, < 1 smaller, > 1 bigger
+c          ang - text angle (degrees)
+c          just - R L or C (justification)
+c          adj - point position relative to text; (dx,dy) text fraction
+c             (0,0) -> bottom left, (1,1) top right, (0.5,0.0) centered
+c             below text, (0.0,0.5) left justified, vertically centered,
+c             etc.
+
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      character text*(*), just*1
+
+      integer jtext
+
+      double precision x, y, size, ang, adj(2)
+
+      integer tlen, ifb(2)
+      double precision box(2)
+
+      integer nblen
+      external nblen
+
+      data ifb/2*0/, box/2*0d0/
+
+      if (jtext.ne.0) then
+         tlen = jtext
+      else
+         tlen = nblen(text)
+      end if
+
+      call psotxt (x, y, ifb, size)
+      call psostr (text(1:tlen))
+      call psetxt (ang,just,adj,box)
+
+      end
+
+c----------------------------------------------------------------------
       subroutine psaxes (jop0)
  
 c psaxes - subroutine to output (sloppy) axes.
@@ -746,7 +819,8 @@ c psaxes - subroutine to output (sloppy) axes.
       include 'perplex_parameters.h'
 
       double precision x0,y0,dx,dy,xtic,ytic,xtic1,ytic1,
-     *                 xtic2,ytic2,tmin,x,y,vlo,vhi,fpoly
+     *                 xtic2,ytic2,tmin,x,y,vlo,vhi,fpoly,
+     *                 adjtop(2), adjbot(2)
 
       integer jop0, i, nchar, ic(2), nblen
 
@@ -769,6 +843,8 @@ c psaxes - subroutine to output (sloppy) axes.
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+
+      data adjtop/5d-1,1d0/, adjbot/5d-1,0d0/
 c----------------------------------------------------------------------
 c                                 statement function to evaluate T(P) or P(T)
       fpoly(X) = c0 + X*(c1 + X*(c2 + X*(c3 + X*(c4 + X*c5))))
@@ -805,29 +881,41 @@ c                                       draw left vertical axis tics
 c                                       draw right vertical axis
       call psytic (xmax, y0, dy, -xtic, -xtic1, -xtic2, .false.)
 c                                       draw bottom horizontal axis
-      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2)
+      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2, .false.)
 c                                       draw top horizontal axis
-      call psxtic (ymax, x0, dx, -ytic, -ytic1, -ytic2)
+      call psxtic (ymax, x0, dx, -ytic, -ytic1, -ytic2, .false.)
  
       call pssctr (ifont,nscale,nscale,0d0)
 c                                       numeric axis labels:
-      call psylbl (y0, dy, tmin, .false.) 
+c     call psylbl (y0, dy, tmin, .false.)
+      call psylab (y0, dy, tmin, .false.)
  
-      call psxlbl (x0, dx, .false.)
+c     call psxlbl (x0, dx, .false.)
+      call psxlab (x0, dx, .false.)
 c                                     x-axis name
       call pssctr (ifont,nscale,nscale,0d0)  
 
-      x = xmin + 0.5d0 * xlen - 2d0*dcx*nscale
+c     x = xmin + 0.5d0 * xlen - 2d0*dcx*nscale
+c     y = ymin - 4d0*dcy*nscale
+
+c     call pstext (x,y,vnm(1),0)
+
+      x = xmin + 0.5d0 * xlen
       y = ymin - 4d0*dcy*nscale
 
-      call pstext (x,y,vnm(1),0)
+      call psatxt (x,y,vnm(1),0,1d0,0d0,'C',adjtop)
 c                                       y-axis name
-      call pssctr (ifont,nscale,nscale,90d0)
+c     call pssctr (ifont,nscale,nscale,90d0)
 
-      x = tmin - 3.33d0*dcx*nscale
-      y = ymin + 0.5d0 * ylen - 2.5d0*dcy*nscale
+c     x = tmin - 3.33d0*dcx*nscale
+c     y = ymin + 0.5d0 * ylen - 2.5d0*dcy*nscale
  
-      call pstext (x,y,vnm(2),0)
+c     call pstext (x,y,vnm(2),0)
+
+      x = tmin - 2.33d0*dcx*nscale
+      y = ymin + 0.5d0 * ylen
+ 
+      call psatxt (x,y,vnm(2),0,1d0,90d0,'C',adjbot)
 c                                       sectioning constraints
       if (jvar.gt.2) then
 
@@ -937,13 +1025,13 @@ c                                       draw axes triangle
       yv(2) = 0.
       xv(3) = (xmax+xmin)/2
       yv(3) = sqrt(3d0)/2d0*(xmax-xmin)
-      call pspygn (xv, yv, 3, 1d0, width, 0)
+      call pspygn (xv, yv, 3, 1d0, width, 0, 0, 0)
 c                                       draw left vertical axis tics
       call psytic (xmin, y0, dy, xtic, xtic1, xtic2, .true.)
 c                                       draw right vertical axis
       call psytic (xmax, y0, dy, -xtic, -xtic1, -xtic2, .true.)
 c                                       draw bottom horizontal axis
-      call psxtig (ymin, x0, dx, ytic, ytic1, ytic2, .true.)
+      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2, .true.)
  
       call pssctr (ifont,nscale,nscale,0d0)
 c                                       numeric axis labels:
@@ -1715,8 +1803,8 @@ c                                 -------------------------------------
      *        4x,'picture_transformation :',/,
      *        28x,g9.3,1x,'[0.18] x-scale (rel)',/,
      *        28x,g9.3,1x,'[0.18] y-scale (rel)',/,
-     *        28x,g9.3,1x,'[0.18] x-translation (pts)',/,
-     *        28x,g9.3,1x,'[0.18] y-translation (pts)',/,
+     *        28x,g9.3,1x,'[160.] x-translation (pts)',/,
+     *        28x,g9.3,1x,'[220.] y-translation (pts)',/,
      *        28x,g9.3,1x,'[0.0]  rotation (deg)',/,
      *        4x,'plot_aspect_ratio      ',f5.3,6x,
      *           '[1.0] x_axis_length/y_axis_length',/,
@@ -1724,7 +1812,7 @@ c                                 -------------------------------------
      *        4x,'tenth_ticks            ',l1,10x,'[F] T',/,
      *        4x,'text_scale             ',f5.3,6x,'[1.] (rel)',/,
      *        4x,'plot_extra_data        ',l1,10x,
-     *           '[T] F, to plot, e.g., experimental observations',/)
+     *           '[F] T, if T plot, e.g., experimental observations',/)
 
 1020  format (/,'To change these options edit or create ',
      *        'the plot option file',/,'See: ',
@@ -1834,28 +1922,21 @@ c----------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      double precision SMALL, RADIUS, SQRC, DMDC, TRC0, TRC1, TRC2,
-     *   SQRT2
-      parameter (SMALL=2*0.25d0, RADIUS=2*0.375d0,
-     * SQRC=0.88622692545275801364d0, ! /* sqrt(pi / 4) */
-     * DMDC=1.25331413731550025119d0, !	/* sqrt(pi / 4) * sqrt(2) */
-     * TRC0=1.55512030155621416073d0, !	/* sqrt(4 * pi/(3 * sqrt(3))) */
-     * TRC1=1.34677368708859836060d0, !	/* TRC0 * sqrt(3) / 2 */
-     * TRC2=0.77756015077810708036d0, !	/* TRC0 / 2 */
-     * SQRT2=1.414213562373095048801688724210d0 ! sqrt(2)
-     * )
-
       character file*72
 
-      integer type, ier, symb, gfill, ix, npts, ifg, ibg, is, ie, icol
+      integer type, ier, symb, gfill, ix, npts, ifg, ibg, is, ie, icol,
+     *   isym, fbg(2)
 
-      double precision x, y, size, sigx, sigy, xy(2), sig(2),
-     *   lx(nx), ly(nx), r, xc, yc, rline, cwidth, xx(4), yy(4)
+      double precision x, y, size, sigx, sigy, xy(2), sig(2), adj(2),
+     *   lx(nx), ly(nx), box(2), ssiz, rline, cwidth, temp, ang
 
-      character line*128
+      character line*128, key*8, val*8, extra*16, just*1
 
       integer nblen
       external nblen
+
+      logical getkwd,getnbs
+      external getkwd,getnbs
 
       equivalence (x,xy(1)),(y,xy(2))
       equivalence (sigx,sig(1)),(sigy,sig(2))
@@ -1885,29 +1966,58 @@ c----------------------------------------------------------------
 c                                 skip blank or comment lines
          if (0.ne.index('*#|',line(1:1))) cycle
          if (line.eq.' ') cycle
-c                                 omit comment text
+c                                 omit comment text, trim comments
+         if (line(1:1).eq.'*') cycle
          ix = index(line, '#')
-         if (ix.eq.0) ix = index(line, '|')
-         if (ix.eq.0) ix = nblen(line)
+         if (ix.ne.0) line(ix:) = ' '
+         ix = index(line, '|')
+         if (ix.ne.0) line(ix:) = ' '
+         ix = nblen(line)
 
 c                                 check for line data
-c                                 in future, parse '> L' line for parameters
-c                                 like lty=, lwd=
+c                                 parse '> L' line for parameters
+1010     format('**',a,1x,a)
+1020     format('**Missing keyword value for key ',a)
          if (ix.ge.3 .and. line(1:3) .eq. '> L') then
-            is = index(line(1:ix),'col=')
-            if (is.ne.0) then
+            line(1:3) = ' '
+            rline = 1d0
+            cwidth = 1d0
+            icol = 0
+            symb = 0
+            size = 1d0
+            gfill = 1
+            do while(getkwd(line,key,val))
+c                                 have a key
+               is = nblen(key)
+               if (key.eq.'col') then
 c                                 parse line color, col=n
-               ie = index(line(is:ix),' ')
-               if (ie.eq.0) then
-                  ie = ix
+                  read(val,*,iostat=ier) icol
+                  if (ier.ne.0) icol = 0
+               else if (key.eq.'lty') then
+c                                 parse line type, lty=n
+                  read(val,*,iostat=ier) rline
+                  if (ier.ne.0) rline = 1d0
+               else if (key.eq.'lwd') then
+c                                 parse line width, lwd=n
+                  read(val,*,iostat=ier) cwidth
+                  if (ier.ne.0) cwidth = 1d0
+               else if (key.eq.'sym') then
+c                                 parse point symbol, sym=n
+                  read(val,*,iostat=ier) symb
+                  if (ier.ne.0) symb = 1
+               else if (key.eq.'ssiz') then
+c                                 parse symbol size, ssiz=n
+                  read(val,*,iostat=ier) size
+                  if (ier.ne.0) size = 1d0
+               else if (key.eq.'sfil') then
+c                                 parse symbol fill color, sfil=n
+                  read(val,*,iostat=ier) gfill
+                  if (ier.ne.0) gfill = 1
                else
-                  ie = is + ie-1
+                  write(*,1010) 'Unrecognized > L key',key(1:is)
+                  cycle
                end if
-               read(line(is+4:ie),*,iostat=ier) icol
-               if (ier.ne.0) icol = 0
-            else
-               icol = 0
-            end if
+            end do
 
             do npts=1,nx
 
@@ -1928,7 +2038,14 @@ c                                 parse line color, col=n
 
             end do
 
-            call pspyln(lx,ly,npts-1,1d0,1d0,icol)
+c                                 draw line, optionally add points
+            call pspyln(lx,ly,npts-1,rline,cwidth,icol)
+            if (symb .ne. 0) then
+               do ix=1,npts-1
+                  call psdsym(lx(ix),ly(ix),symb,size,1d0,1d0,
+     *                        gfill,gfill)
+               end do
+            end if
 
             if (ier.ne.0) exit 
 
@@ -1938,6 +2055,123 @@ c                                 parse line color, col=n
 
          end if
 
+c                                 check for text annotation
+         if (ix.ge.3 .and. line(1:3) .eq. '> T') then
+            line(1:3) = ' '
+            if (.not.getnbs(line,2,extra)) then
+               write(*,*) '**Missing > T (x,y) coordinate'
+               exit
+            end if
+            read(line,*,iostat=ier) xy(iv1), xy(iv2)
+            if (ier.ne.0) then
+               write(*,*) '**Bad > T (x,y) coordinate'
+               exit
+            end if
+            ix = index(line,extra(1:nblen(extra)))
+            line(1:ix+nblen(extra)-1) = ' '
+            symb = 0
+            size = 1d0
+            ssiz = 1d0
+            gfill = 0
+            just = 'L'
+            adj(1:2) = 0d0
+            ang = 0d0
+            box(1:2) = 0d0
+            fbg(1) = 0
+            fbg(2) = 1
+            do while(getkwd(line,key,extra))
+c                                 have a key
+               if (key.eq.'col') then
+c                                 parse text color, col=n
+                  read(extra,*,iostat=ier) fbg
+                  if (ier.ne.0) then
+                     read(extra,*,iostat=ier) fbg(1)
+                     if (ier.ne.0) then
+                        write(*,*) '**Bad text color, using default'
+                        fbg(1) = 0
+                        fbg(2) = 1
+                     else
+                        fbg(2) = 1
+                     end if
+                  end if
+               else if (key.eq.'sym') then
+c                                 parse point symbol, sym=n
+                  read(extra,*,iostat=ier) symb
+                  if (ier.ne.0) symb = 1
+               else if (key.eq.'ssiz') then
+c                                 parse symbol size, ssiz=n
+                  read(extra,*,iostat=ier) ssiz
+                  if (ier.ne.0) ssiz = 1d0
+               else if (key.eq.'sfil') then
+c                                 parse symbol fill color, sfil=n
+                  read(extra,*,iostat=ier) gfill
+                  if (ier.ne.0) gfill = 1
+               else if (key.eq.'ang') then
+c                                 parse text angle, ang=x
+                  read(extra,*,iostat=ier) ang
+                  if (ier.ne.0) ang = 0d0
+               else if (key.eq.'siz') then
+c                                 parse text size, siz=x
+                  read(extra,*,iostat=ier) size
+                  if (ier.ne.0) size = 1d0
+               else if (key.eq.'just') then
+c                                 parse text justification, just=LCR
+                  just = extra(1:1)
+                  if (0.eq.index('LCR',just)) then
+                     write(*,*) '**Bad text justification, using L'
+                     just = 'L'
+                  end if
+               else if (key.eq.'adj') then
+c                                 parse box alignment, adj=x,y
+                  read(extra,*,iostat=ier) adj
+                  if (ier.ne.0) then
+                     write(*,*) '**Bad adj value, ignoring'
+                     cycle
+                  end if
+               else if (key.eq.'box') then
+c                                 parse box position, box=x,y
+                  read(extra,*,iostat=ier) box
+                  if (ier.ne.0) then
+                     write(*,*) '**Bad box value, ignoring'
+                     box(1:2) = 0d0
+                     cycle
+                  end if
+               else
+                  write(*,1010) 'Unrecognized > T key',key(1:is)
+                  cycle
+               end if
+            end do
+
+c                                 processing ... have a point?
+            if (symb.ne.0) then
+               call psdsym(x, y, symb, ssiz, 1d0, 1d0, 0, gfill)
+            end if
+
+c                                 text line preamble
+            call psotxt (x,y,fbg,size)
+
+c                                 handle text line (more to come)
+            do
+               read(n8,'(a)',iostat=ier) line
+               if (ier.ne.0) exit
+               if (line(1:1) .eq. '>') exit
+               if (0.ne.index('*#|',line(1:1))) cycle
+               ix = index(line, '#')
+               if (ix.eq.0) ix = index(line, '|')
+               if (ix.eq.0) ix = nblen(line)+1
+               call psostr(line(1:ix-1))
+            end do
+
+c                                 finish up text line
+            call psetxt (ang,just,adj,box)
+
+            if (line(1:1).eq.'>') go to 100
+
+            cycle
+
+         end if
+
+c                                 if we fell through to here, must be a point
          type = 1
          read(line(1:ix),*,iostat=ier)
      *      xy(iv1), xy(iv2), sig(iv1), sig(iv2), symb, size, gfill
@@ -1947,256 +2181,15 @@ c                                 parse line color, col=n
      *         xy(iv1), xy(iv2), symb, size, gfill
          end if
          if (ier.ne.0) then
-            write(*,*) '**Bad point file line: ',line(1:nblen(line))
+            write(*,1010) 'Bad point file line: ',line(1:nblen(line))
             cycle
          end if
-         if (gfill.lt.0 .or. gfill.gt.15) then
-            write(*,*) '**Bad fill in line: ',line(1:nblen(line))
+         if (gfill.lt.0 .or. gfill.gt.12) then
+            write(*,1010) 'Bad fill in line: ',line(1:nblen(line))
             cycle
          end if
 
-c                                 various plot symbols
-         rline = 1d0
-         cwidth = 1d0
-         if (symb.eq.0) then
-c           0: square
-            xc = dcx*size*RADIUS
-            yc = dcy*size*RADIUS
-            call psrect (x-xc, x+xc, y-yc, y+yc, rline, cwidth, gfill)
-         else if (symb.eq.1) then
-c           1: circle
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            call pselip (x,y, xc, yc, 1d0, 0d0, gfill, ifg, ibg)
-         else if (symb.eq.2) then
-c           2: triangle - point up
-            r =  TRC0 * RADIUS * dcy * size
-            yc = TRC2 * RADIUS * dcy * size
-            xc = TRC1 * RADIUS * dcx * size
-            xx(1) = x
-            yy(1) = y+r
-            xx(2) = x+xc
-            yy(2) = y-yc
-            xx(3) = x-xc
-            yy(3) = y-yc
-            call pspygn (xx,yy,3,rline,cwidth,gfill)
-         else if (symb.eq.3) then
-c           3: plus
-            xc = SQRT2*RADIUS*dcx*size
-            yc = SQRT2*RADIUS*dcy*size
-            call psline (x-xc,y,x+xc,y,rline,cwidth)
-            call psline (x,y-yc,x,y+yc,rline,cwidth)
-         else if (symb.eq.4) then
-c           4: times
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            call psline (x-xc,y-yc,x+xc,y+yc,rline,cwidth)
-            call psline (x-xc,y+yc,x+xc,y-yc,rline,cwidth)
-         else if (symb.eq.5) then
-c           5: diamond
-            xc = SQRT2 * RADIUS * dcx * size
-            yc = SQRT2 * RADIUS * dcy * size
-            xx(1) = x-xc
-            yy(1) = y
-            xx(2) = x
-            yy(2) = y+yc
-            xx(3) = x+xc
-            yy(3) = y
-            xx(4) = x
-            yy(4) = y-yc
-            call pspygn (xx, yy, 4, rline, cwidth, gfill)
-         else if (symb.eq.6) then
-c           6: triangle - point down
-            r =  TRC0 * RADIUS * dcy * size
-            yc = TRC2 * RADIUS * dcy * size
-            xc = TRC1 * RADIUS * dcx * size
-            xx(1) = x
-            yy(1) = y-r
-            xx(2) = x+xc
-            yy(2) = y+yc
-            xx(3) = x-xc
-            yy(3) = y+yc
-            call pspygn (xx, yy, 3, rline, cwidth, gfill)
-         else if (symb.eq.7) then
-c           7: square and times superimposed
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            call psrect (x-xc, x+xc, y-yc, y+yc, rline, cwidth, gfill)
-            call psline (x-xc,y-yc,x+xc,y+yc,rline,cwidth)
-            call psline (x-xc,y+yc,x+xc,y-yc,rline,cwidth)
-         else if (symb.eq.8) then
-c           8: plus and times superimposed
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            call psline (x-xc,y-yc,x+xc,y+yc,rline,cwidth)
-            call psline (x-xc,y+yc,x+xc,y-yc,rline,cwidth)
-            xc = SQRT2*RADIUS*dcx*size
-            yc = SQRT2*RADIUS*dcy*size
-            call psline (x-xc,y,x+xc,y,rline,cwidth)
-            call psline (x,y-yc,x,y+yc,rline,cwidth)
-         else if (symb.eq.9) then
-c           9: diamond and plus superimposed
-            xc = SQRT2 * RADIUS * dcx * size
-            yc = SQRT2 * RADIUS * dcy * size
-            call psline (x-xc,y,x+xc,y,rline,cwidth)
-            call psline (x,y-yc,x,y+yc,rline,cwidth)
-            xx(1) = x-xc
-            yy(1) = y
-            xx(2) = x
-            yy(2) = y+yc
-            xx(3) = x+xc
-            yy(3) = y
-            xx(4) = x
-            yy(4) = y-yc
-            call pspygn (xx, yy, 4, rline, cwidth, gfill)
-         else if (symb.eq.10) then
-c           10: circle and plus superimposed
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            call pselip (x,y, xc, yc, 1d0, 0d0, gfill, ifg, ibg)
-            call psline (x-xc,y,x+xc,y,rline,cwidth)
-            call psline (x,y-yc,x,y+yc,rline,cwidth)
-         else if (symb.eq.11) then
-c           11: superimposed triangles
-            r =  TRC0 * RADIUS * dcy * size
-            yc = TRC2 * RADIUS * dcy * size
-            yc = 0.5 * (yc + r)
-            xc = TRC1 * RADIUS * dcx * size
-            xx(1) = x
-            yy(1) = y-r
-            xx(2) = x+xc
-            yy(2) = y+yc
-            xx(3) = x-xc
-            yy(3) = y+yc
-            call pspygn (xx, yy, 3, rline, cwidth, gfill)
-            xx(1) = x
-            yy(1) = y+r
-            xx(2) = x+xc
-            yy(2) = y-yc
-            xx(3) = x-xc
-            yy(3) = y-yc
-            call pspygn (xx, yy, 3, rline, cwidth, gfill)
-         else if (symb.eq.12) then
-c           12: square and plus superimposed
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            call psrect (x-xc, x+xc, y-yc, y+yc, rline, cwidth, gfill)
-            call psline (x-xc,y,x+xc,y,rline,cwidth)
-            call psline (x,y-yc,x,y+yc,rline,cwidth)
-         else if (symb.eq.13) then
-c           13: circle and times superimposed
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            call pselip (x,y, xc, yc, 1d0, 0d0, gfill, ifg, ibg)
-            call psline (x-xc,y-yc,x+xc,y+yc,rline,cwidth)
-            call psline (x-xc,y+yc,x+xc,y-yc,rline,cwidth)
-         else if (symb.eq.14) then
-c           14: square and point-up triangle superimposed
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            xx(1) = x
-            yy(1) = y+yc
-            xx(2) = x+xc
-            yy(2) = y-yc
-            xx(3) = x-xc
-            yy(3) = y-yc
-            call psrect (x-xc, x+xc, y-yc, y+yc, rline, cwidth, gfill)
-            call pspygn (xx, yy, 3, rline, cwidth, 0)
-         else if (symb.eq.15) then
-c           15: filled square
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            call psrect (x-xc, x+xc, y-yc, y+yc, rline, cwidth, gfill)
-         else if (symb.eq.16) then
-c           16: filled circle
-            xc = RADIUS * dcx * size;
-            yc = RADIUS * dcy * size;
-            call pselip (x,y, xc, yc, rline, cwidth, gfill, ifg, ibg)
-         else if (symb.eq.17) then
-c           17: filled point-up triangle
-            r =  TRC0 * RADIUS * dcy * size
-            yc = TRC2 * RADIUS * dcy * size
-            xc = TRC1 * RADIUS * dcx * size
-            xx(1) = x
-            yy(1) = y+r
-            xx(2) = x+xc
-            yy(2) = y-yc
-            xx(3) = x-xc
-            yy(3) = y-yc
-            call pspygn (xx, yy, 3, rline, cwidth, gfill)
-         else if (symb.eq.18) then
-c           18: filled diamond
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            xx(1) = x-xc
-            yy(1) = y
-            xx(2) = x
-            yy(2) = y+yc
-            xx(3) = x+xc
-            yy(3) = y
-            xx(4) = x
-            yy(4) = y-yc
-            call pspygn (xx, yy, 4, rline, cwidth, gfill)
-         else if (symb.eq.19) then
-c           19: filled circle
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            call pselip (x,y, xc, yc, rline, cwidth, gfill, ifg, ibg)
-         else if (symb.eq.20) then
-c           20: small circle
-            xc = SMALL * dcx * size
-            yc = SMALL * dcy * size
-            call pselip (x,y, xc, yc, rline, cwidth, gfill, ifg, ibg)
-         else if (symb.eq.21) then
-c           21: circles
-            xc = RADIUS * dcx * size
-            yc = RADIUS * dcy * size
-            call pselip (x,y, xc, yc, rline, cwidth, gfill, ifg, ibg)
-         else if (symb.eq.22) then
-c           22: squares
-            xc = RADIUS * SQRC * dcx * size
-            yc = RADIUS * SQRC * dcy * size
-            call psrect (x-xc, x+xc, y-yc, y+yc, rline, cwidth, gfill)
-         else if (symb.eq.23) then
-c           23: diamonds
-            xc = RADIUS * DMDC * dcx * size
-            yc = RADIUS * DMDC * dcy * size
-            xx(1) = x          
-            yy(1) = y-yc 
-            xx(2) = x+xc
-            yy(2) = y 
-            xx(3) = x          
-            yy(3) = y+yc 
-            xx(4) = x-xc
-            yy(4) = y 
-            call pspygn (xx, yy, 4, rline, cwidth, gfill)
-         else if (symb.eq.24) then
-c           24: triangle (point up)
-            r =  TRC0 * RADIUS * dcy * size
-            yc = TRC2 * RADIUS * dcy * size
-            xc = TRC1 * RADIUS * dcx * size
-            xx(1) = x
-            yy(1) = y+r
-            xx(2) = x+xc
-            yy(2) = y-yc
-            xx(3) = x-xc
-            yy(3) = y-yc
-            call pspygn (xx, yy, 3, rline, cwidth, gfill)
-         else if (symb.eq.25) then
-c           25: triangle (point down)
-            r =  TRC0 * RADIUS * dcy * size
-            yc = TRC2 * RADIUS * dcy * size
-            xc = TRC1 * RADIUS * dcx * size
-            xx(1) = x
-            yy(1) = y-r
-            xx(2) = x+xc
-            yy(2) = y+yc
-            xx(3) = x-xc
-            yy(3) = y+yc
-            call pspygn (xx, yy, 3, rline, cwidth, gfill)
-         else
-            write(*,*) '**Bad symbol in line: ',line(1:nblen(line))
-         endif
+         call psdsym(x, y, symb, size, 1d0, 1d0, gfill, gfill)
 
 c                                 add error bars if requested
          if (type.eq.1) then
@@ -2214,6 +2207,331 @@ c                                 add error bars if requested
 
       close(n8)
 
+      end
+
+      subroutine psdsym(x, y, symb, size, rline, cwidth, ifg, ibg)
+c----------------------------------------------------------------
+c psdsym - subroutine to draw a specific symbol
+
+c contributed by George Helffrich, ELSI, 9/23/2021.
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      double precision SMALL, RADIUS, SQRC, DMDC, TRC0, TRC1, TRC2,
+     *   SQRT2
+      parameter (SMALL=2*0.25d0, RADIUS=2*0.375d0,
+     * SQRC=0.88622692545275801364d0, ! /* sqrt(pi / 4) */
+     * DMDC=1.25331413731550025119d0, !	/* sqrt(pi / 4) * sqrt(2) */
+     * TRC0=1.55512030155621416073d0, !	/* sqrt(4 * pi/(3 * sqrt(3))) */
+     * TRC1=1.34677368708859836060d0, !	/* TRC0 * sqrt(3) / 2 */
+     * TRC2=0.77756015077810708036d0, !	/* TRC0 / 2 */
+     * SQRT2=1.414213562373095048801688724210d0 ! sqrt(2)
+     * )
+
+      integer symb, ifg, ibg
+      double precision x, y, xc, yc, size, rline, cwidth, r,
+     *   xx(4), yy(4)
+
+      double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+      common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
+c----------------------------------------------------------------
+
+c                                 various plot symbols
+         if (symb.eq.0) then
+c           0: square
+            xc = dcx*size*RADIUS
+            yc = dcy*size*RADIUS
+            call psfrec (x-xc, x+xc, y-yc, y+yc, rline, cwidth, 0,
+     *                   ifg, ibg)
+         else if (symb.eq.1) then
+c           1: circle
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psfeli (x,y, xc, yc, 1d0, 1d0, 0, ifg, ibg)
+         else if (symb.eq.2) then
+c           2: triangle - point up
+            r =  TRC0 * RADIUS * dcy * size
+            yc = TRC2 * RADIUS * dcy * size
+            xc = TRC1 * RADIUS * dcx * size
+            xx(1) = x
+            yy(1) = y+r
+            xx(2) = x+xc
+            yy(2) = y-yc
+            xx(3) = x-xc
+            yy(3) = y-yc
+            call psfpyg (xx,yy,3,rline,cwidth,0,ifg,ibg)
+         else if (symb.eq.3) then
+c           3: plus
+            xc = SQRT2*RADIUS*dcx*size
+            yc = SQRT2*RADIUS*dcy*size
+            call psclin (x-xc,y,x+xc,y,rline,cwidth,ifg)
+            call psclin (x,y-yc,x,y+yc,rline,cwidth,ifg)
+         else if (symb.eq.4) then
+c           4: times
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psclin (x-xc,y-yc,x+xc,y+yc,rline,cwidth,ifg)
+            call psclin (x-xc,y+yc,x+xc,y-yc,rline,cwidth,ifg)
+         else if (symb.eq.5) then
+c           5: diamond
+            xc = SQRT2 * RADIUS * dcx * size
+            yc = SQRT2 * RADIUS * dcy * size
+            xx(1) = x-xc
+            yy(1) = y
+            xx(2) = x
+            yy(2) = y+yc
+            xx(3) = x+xc
+            yy(3) = y
+            xx(4) = x
+            yy(4) = y-yc
+            call psfpyg (xx, yy, 4, rline, cwidth, 0, ifg, ibg)
+         else if (symb.eq.6) then
+c           6: triangle - point down
+            r =  TRC0 * RADIUS * dcy * size
+            yc = TRC2 * RADIUS * dcy * size
+            xc = TRC1 * RADIUS * dcx * size
+            xx(1) = x
+            yy(1) = y-r
+            xx(2) = x+xc
+            yy(2) = y+yc
+            xx(3) = x-xc
+            yy(3) = y+yc
+            call psfpyg (xx, yy, 3, rline, cwidth, 0, ifg, ibg)
+         else if (symb.eq.7) then
+c           7: square and times superimposed
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psfrec (x-xc, x+xc, y-yc, y+yc, rline, cwidth, 0,
+     *                   ifg,ibg)
+            call psclin (x-xc,y-yc,x+xc,y+yc,rline,cwidth,ifg)
+            call psclin (x-xc,y+yc,x+xc,y-yc,rline,cwidth,ifg)
+         else if (symb.eq.8) then
+c           8: plus and times superimposed
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psclin (x-xc,y-yc,x+xc,y+yc,rline,cwidth,ifg)
+            call psclin (x-xc,y+yc,x+xc,y-yc,rline,cwidth,ifg)
+            xc = SQRT2*RADIUS*dcx*size
+            yc = SQRT2*RADIUS*dcy*size
+            call psclin (x-xc,y,x+xc,y,rline,cwidth,ifg)
+            call psclin (x,y-yc,x,y+yc,rline,cwidth,ifg)
+         else if (symb.eq.9) then
+c           9: diamond and plus superimposed
+            xc = SQRT2 * RADIUS * dcx * size
+            yc = SQRT2 * RADIUS * dcy * size
+            call psclin (x-xc,y,x+xc,y,rline,cwidth,ifg)
+            call psclin (x,y-yc,x,y+yc,rline,cwidth,ifg)
+            xx(1) = x-xc
+            yy(1) = y
+            xx(2) = x
+            yy(2) = y+yc
+            xx(3) = x+xc
+            yy(3) = y
+            xx(4) = x
+            yy(4) = y-yc
+            call psfpyg (xx, yy, 4, rline, cwidth, 0, ifg, ibg)
+         else if (symb.eq.10) then
+c           10: circle and plus superimposed
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psfeli (x,y, xc, yc, 1d0, 1d0, 0, ifg, ibg)
+            call psclin (x-xc,y,x+xc,y,rline,cwidth,ifg)
+            call psclin (x,y-yc,x,y+yc,rline,cwidth,ifg)
+         else if (symb.eq.11) then
+c           11: superimposed triangles
+            r =  TRC0 * RADIUS * dcy * size
+            yc = TRC2 * RADIUS * dcy * size
+            yc = 0.5 * (yc + r)
+            xc = TRC1 * RADIUS * dcx * size
+            xx(1) = x
+            yy(1) = y-r
+            xx(2) = x+xc
+            yy(2) = y+yc
+            xx(3) = x-xc
+            yy(3) = y+yc
+            call psfpyg (xx, yy, 3, rline, cwidth, 0, ifg, ibg)
+            xx(1) = x
+            yy(1) = y+r
+            xx(2) = x+xc
+            yy(2) = y-yc
+            xx(3) = x-xc
+            yy(3) = y-yc
+            call psfpyg (xx, yy, 3, rline, cwidth, 0, ifg, ibg)
+         else if (symb.eq.12) then
+c           12: square and plus superimposed
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psfrec (x-xc, x+xc, y-yc, y+yc, rline, cwidth,
+     *                  0, ifg, ibg)
+            call psclin (x-xc,y,x+xc,y,rline,cwidth,ifg)
+            call psclin (x,y-yc,x,y+yc,rline,cwidth,ifg)
+         else if (symb.eq.13) then
+c           13: circle and times superimposed
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psfeli (x,y, xc, yc, 1d0, 1d0, 0, ifg, ibg)
+            call psclin (x-xc,y-yc,x+xc,y+yc,rline,cwidth,ifg)
+            call psclin (x-xc,y+yc,x+xc,y-yc,rline,cwidth,ifg)
+         else if (symb.eq.14) then
+c           14: square and point-up triangle superimposed
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            xx(1) = x
+            yy(1) = y+yc
+            xx(2) = x+xc
+            yy(2) = y-yc
+            xx(3) = x-xc
+            yy(3) = y-yc
+            call psfrec (x-xc, x+xc, y-yc, y+yc, rline, cwidth,
+     *                   0, ifg, ibg)
+            call psfpyg (xx, yy, 3, rline, cwidth, 0, ifg, ibg)
+         else if (symb.eq.15) then
+c           15: filled square
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psfrec (x-xc, x+xc, y-yc, y+yc, rline, cwidth, 7,
+     *                   ifg, ifg)
+         else if (symb.eq.16) then
+c           16: filled triangle - point down
+            r =  TRC0 * RADIUS * dcy * size
+            yc = TRC2 * RADIUS * dcy * size
+            xc = TRC1 * RADIUS * dcx * size
+            xx(1) = x
+            yy(1) = y-r
+            xx(2) = x+xc
+            yy(2) = y+yc
+            xx(3) = x-xc
+            yy(3) = y+yc
+            call psfpyg (xx, yy, 3, rline, cwidth, 7, ifg, ifg)
+         else if (symb.eq.17) then
+c           17: filled point-up triangle
+            r =  TRC0 * RADIUS * dcy * size
+            yc = TRC2 * RADIUS * dcy * size
+            xc = TRC1 * RADIUS * dcx * size
+            xx(1) = x
+            yy(1) = y+r
+            xx(2) = x+xc
+            yy(2) = y-yc
+            xx(3) = x-xc
+            yy(3) = y-yc
+            call psfpyg (xx, yy, 3, rline, cwidth, 7, ifg, ifg)
+         else if (symb.eq.18) then
+c           18: filled diamond
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            xx(1) = x-xc
+            yy(1) = y
+            xx(2) = x
+            yy(2) = y+yc
+            xx(3) = x+xc
+            yy(3) = y
+            xx(4) = x
+            yy(4) = y-yc
+            call psfpyg (xx, yy, 4, rline, cwidth, 7, ifg, ifg)
+         else if (symb.eq.19) then
+c           19: filled circle
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psfeli (x,y, xc, yc, rline, cwidth, 7, ifg, ibg)
+         else if (symb.eq.20) then
+c           20: small circle
+            xc = SMALL * dcx * size
+            yc = SMALL * dcy * size
+            call psfeli (x,y, xc, yc, rline, cwidth, 7, 0, ibg)
+         else if (symb.eq.21) then
+c           21: circles (filled)
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psfeli (x,y, xc, yc, rline, cwidth, 7, 0, ibg)
+            xc = SMALL * dcx * size
+            yc = SMALL * dcy * size
+            call psfeli (x,y, xc, yc, rline, cwidth, 7, 0, ibg)
+         else if (symb.eq.22) then
+c           22: squares (filled)
+            xc = RADIUS * SQRC * dcx * size
+            yc = RADIUS * SQRC * dcy * size
+            call psfrec (x-xc, x+xc, y-yc, y+yc, rline, cwidth, 7,
+     *                   0, ibg)
+            xc = SMALL * SQRC * dcx * size
+            yc = SMALL * SQRC * dcy * size
+            call psfrec (x-xc, x+xc, y-yc, y+yc, rline, cwidth, 7,
+     *                   0, ibg)
+         else if (symb.eq.23) then
+c           23: diamonds (filled)
+            xc = RADIUS * DMDC * dcx * size
+            yc = RADIUS * DMDC * dcy * size
+            xx(1) = x          
+            yy(1) = y-yc 
+            xx(2) = x+xc
+            yy(2) = y 
+            xx(3) = x          
+            yy(3) = y+yc 
+            xx(4) = x-xc
+            yy(4) = y 
+            call psfpyg (xx, yy, 4, rline, cwidth, 7, 0, ibg)
+            xc = SMALL * DMDC * dcx * size
+            yc = SMALL * DMDC * dcy * size
+            xx(1) = x          
+            yy(1) = y-yc 
+            xx(2) = x+xc
+            yy(2) = y 
+            xx(3) = x          
+            yy(3) = y+yc 
+            xx(4) = x-xc
+            yy(4) = y 
+            call psfpyg (xx, yy, 4, rline, cwidth, 0, 0, ibg)
+         else if (symb.eq.24) then
+c           24: triangle (point up, filled)
+            r =  TRC0 * RADIUS * dcy * size
+            yc = TRC2 * RADIUS * dcy * size
+            xc = TRC1 * RADIUS * dcx * size
+            xx(1) = x
+            yy(1) = y+r
+            xx(2) = x+xc
+            yy(2) = y-yc
+            xx(3) = x-xc
+            yy(3) = y-yc
+            call psfpyg (xx, yy, 3, rline, cwidth, 7, 0, ibg)
+         else if (symb.eq.25) then
+c           25: triangle (point down, filled)
+            r =  TRC0 * RADIUS * dcy * size
+            yc = TRC2 * RADIUS * dcy * size
+            xc = TRC1 * RADIUS * dcx * size
+            xx(1) = x
+            yy(1) = y-r
+            xx(2) = x+xc
+            yy(2) = y+yc
+            xx(3) = x-xc
+            yy(3) = y+yc
+            call psfpyg (xx, yy, 3, rline, cwidth, 7, 0, ibg)
+         else if (symb.eq.26) then
+c           26: circle (filled)
+            xc = RADIUS * dcx * size
+            yc = RADIUS * dcy * size
+            call psfeli (x,y, xc, yc, rline, cwidth, 7, 0, ibg)
+         else if (symb.eq.27) then
+c           27: square (filled)
+            xc = RADIUS * SQRC * dcx * size
+            yc = RADIUS * SQRC * dcy * size
+            call psfrec (x-xc, x+xc, y-yc, y+yc, rline, cwidth, 7,
+     *                   0, ibg)
+         else if (symb.eq.28) then
+c           28: diamond (filled)
+            xc = RADIUS * DMDC * dcx * size
+            yc = RADIUS * DMDC * dcy * size
+            xx(1) = x          
+            yy(1) = y-yc 
+            xx(2) = x+xc
+            yy(2) = y 
+            xx(3) = x          
+            yy(3) = y+yc 
+            xx(4) = x-xc
+            yy(4) = y 
+            call psfpyg (xx, yy, 4, rline, cwidth, 7, 0, ibg)
+         else
+            write(*,*) '**Bad symbol code: ',symb
+         endif
       end
 
 

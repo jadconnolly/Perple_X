@@ -9,7 +9,7 @@ c Petrography, Swiss Federal Insitute of Technology, CH-8092 Zurich,
 c SWITZERLAND. All rights reserved.
  
 c----------------------------------------------------------------
-      subroutine pselip (xor,yor,dx,dy,rline,wide,ifill,ifg,ibg)
+      subroutine pselip (xor,yor,dx,dy,rline,wide,ifill)
 
       implicit none
 
@@ -26,8 +26,42 @@ c pselip - subroutine to generate ellipse primitives.
       write (nps,1030)
  
       call psolin (rline,wide)
-c     call psocfg (ifg,ibg)
-      call psoclr
+      if (ifill.eq.7) then
+         call psocfg (0,0)
+      else
+         call psocfg (0,1)
+      end if
+c     call psoclr
+      call psofil (ifill)
+      call psotrn
+ 
+      call psscpt (xor,yor,ixor,iyor)
+
+      write (nps,1020) ixor,iyor,int(dx * xscale),int(dy * yscale)
+ 
+1020  format ('%I',/,4(i7,1x),' Elli',/,'End',/)
+1030  format (/,'Begin %I Elli')
+      end
+c----------------------------------------------------------------
+      subroutine psfeli (xor,yor,dx,dy,rline,wide,ifill,ifg,ibg)
+
+      implicit none
+
+c psfeli - subroutine to generate ellipse primitives, colored and/or
+c          filled.
+
+      double precision rline,xor,yor,dy,dx,wide
+
+      integer ifill,ixor,iyor,ifg,ibg
+
+      integer nps
+      double precision xscale,yscale,xmn,ymn
+      common/ scales /xscale,yscale,xmn,ymn,nps
+ 
+      write (nps,1030)
+ 
+      call psolin (rline,wide)
+      call psocfg (ifg,ibg)
       call psofil (ifill)
       call psotrn
  
@@ -93,7 +127,7 @@ c psrpgn - subroutine to generate closed polygons, rel. coordinates.
       end do 
  
  
-      call pspygn (x,y,jpts,rline,wide,ifill)
+      call pspygn (x,y,jpts,rline,wide,ifill,0,0)
  
       end
 c----------------------------------------------------------------
@@ -126,13 +160,18 @@ c pspygr - with gray scale fill.
 1030  format (/,'Begin %I Poly')
       end
 c----------------------------------------------------------------
-      subroutine pspygn (x,y,npts,rline,width,ifill)
+      subroutine pspygn (x,y,npts,rline,width,ifill,ifg,ibg)
  
 c pspygn - subroutine to generate closed polygons, abs. coordinates.
+c          fill is grayscale/pattern selector, 0-7 (white-black, grayscale),
+c          8-15 patterns.  If grayscale = < 7, drawing done with black and
+c          filling with grayscale value.  If grayscale = 7 (black), drawing
+c          is done with ifg, and filled with ibg.  (This is taken care of in
+c          the postscript procedure /ifill (in psprol)).
 
       implicit none
 
-      integer npts,ifill
+      integer npts,ifill,ifg,ibg
  
       double precision x(npts),y(npts),width,rline
 
@@ -143,8 +182,41 @@ c pspygn - subroutine to generate closed polygons, abs. coordinates.
       write (nps,1030)
  
       call psolin (rline,width)
-      call psoclr
+      call psocfg (ifg,ibg)
+c     call psoclr
       call psofil (ifill)
+      call psotrn
+      call psopts (x,y,npts)
+ 
+      write (nps,1020) npts
+ 
+1020  format (i5,' Poly',/,'End',/)
+1030  format (/,'Begin %I Poly')
+      end
+c----------------------------------------------------------------
+      subroutine psfpyg (x,y,npts,rline,width,ifl,ifg,ibg)
+ 
+c psfpyg - subroutine to generate closed polygons, abs. coordinates
+c          with color fill.
+c          ifl = 0, rect outlined in ifg, no fill
+c          ifl = 1-6, pattern fill, ifg, ibg irrelevant
+c          ifl = 7, rect outlined in ifg, filled in ibg
+
+      implicit none
+
+      integer npts,ifl,ifg,ibg
+ 
+      double precision x(npts),y(npts),width,rline
+
+      integer nps
+      double precision xscale,yscale,xmn,ymn
+      common/ scales /xscale,yscale,xmn,ymn,nps
+ 
+      write (nps,1030)
+ 
+      call psolin (rline,width)
+      call psocfg (ifg,ibg)
+      call psofil (ifl)
       call psotrn
       call psopts (x,y,npts)
  
@@ -409,21 +481,25 @@ c                                 3 - green
 c                                 4 - blue
      *          0., 0., 1., 'blue',
 c                                 5 - purple
-     *          0., 1., 1., 'purple',
+c    *          0., 1., 1., 'purple',
+     *          0.627, 0.125, 0.941, 'purple',
 c                                 6 - yellow
      *          1., 1., 0., 'yellow',
 c                                 7 - brown
-     *          1., 0., 1., 'brown',
+c    *          1., 0., 1., 'brown',
+     *          0.588, 0.294, 0.0, 'brown',
 c                                 8 - orange
      *          1., .5, 0., 'orange',
 c                                 9 - dark blue
      *          0., 0., .5, 'dark blue',
 c                                 10 - dark red
-     *          .5, .0, .0, 'dark red',
+c    *          .5, .0, .0, 'dark red',
+     *          .7, .0, .0, 'dark red',
 c                                 11 - dark green
      *          0., .5, 0., 'dark green',
 c                                 12 - dark yellow
-     *          0.5, 0.5, 0., 'dark yellow'/
+c    *          0.5, 0.5, 0., 'dark yellow'/
+     *          0.835, 0.713, 0.039, 'dark yellow'/
  
       write (nps,1000)
      *   cnm(ifg)(1:nblen(cnm(ifg))), (col(j,ifg),j=1,3),
@@ -501,7 +577,7 @@ c  to hexadecimal gives the bit pattern for the line.
  
       end if
  
-1000  format ('none SetB %I b n')
+1000  format ('%I b n',/,'none SetB')
 1010  format ('%I b ',i5,/,f5.2,' 0 0 [] 0 SetB')
 1020  format ('%I b ',i5,/,f5.2,a28,'SetB')
  
@@ -556,7 +632,7 @@ c                               next 8 fills are patterned
      *          '< 77 bb ee dd 77 bb ee dd > -1'/
  
       if (ifill.eq.0) then
-          write (nps,1000) 
+          write (nps,1010) 'none'
       else if (ifill.le.15) then
          write (nps,1010) fill(ifill)
       else
@@ -564,7 +640,6 @@ c                               next 8 fills are patterned
          stop
       end if
  
-1000  format ('none SetP %I p n')
 1010  format ('%I p',/,a30,' SetP')
  
       end
@@ -631,7 +706,10 @@ c psprol - subroutine to write (EPS) postscript prolog.
 
       integer i,nps
 
-      character cprops(191)*63
+      character cprops(179)*63, cprond(12)*63, cpradd(154)*63
+
+      integer nblen
+      external nblen
 
       character font*40
       common/ myfont /font
@@ -702,21 +780,39 @@ c psprol - subroutine to write (EPS) postscript prolog.
      *'brushNone not{istroke}if end}dup 0 4 dict put def',
      *'/Text{ishow}def',
      *'/idef{dup where{pop pop pop}{exch def}ifelse}def',
-     *'/ifill{0 begin gsave',
-     *'patternGrayLevel -1 ne{fgred bgred fgred sub patternGrayLevel ',
-     *'mul add',
+c -------------------
+c    *'/ifill{0 begin gsave',
+c    *'patternGrayLevel -1 ne{fgred bgred fgred sub patternGrayLevel ',
+c    *'mul add',
+c    *'fggreen bggreen fggreen sub patternGrayLevel mul add',
+c    *'fgblue bgblue fgblue sub patternGrayLevel mul add setrgbcolor',
+c    *'eofill}{eoclip originalCTM setmatrix',
+c    *'pathbbox/t exch def/r exch def/b exch def/l exch def',
+c    *'/w r l sub ceiling cvi def','/h t b sub ceiling cvi def',
+c    *'/imageByteWidth w 8 div ceiling cvi def',
+c    *'/imageHeight h def',
+c    *'bgred bggreen bgblue setrgbcolor eofill',
+c    *'fgred fggreen fgblue setrgbcolor',
+c    *'w 0 gt h 0 gt and{l b translate w h scale',
+c    *'w h true [w 0 0 h neg 0 h]{patternproc}imagemask}if}ifelse',
+c    *'grestore end}dup 0 8 dict put def',
+c -------------------
+     *'/ifill{0 begin gsave % patternGrayLevel = 0 -> bg color fill',
+     *'patternGrayLevel -1 ne { 0 patternGrayLevel eq {',
+     *'bgred bggreen bgblue setrgbcolor}{',
+     *'fgred bgred fgred sub patternGrayLevel mul add',
      *'fggreen bggreen fggreen sub patternGrayLevel mul add',
      *'fgblue bgblue fgblue sub patternGrayLevel mul add setrgbcolor',
-     *'eofill}{eoclip originalCTM setmatrix',
+     *'}ifelse eofill }{ eoclip originalCTM setmatrix',
      *'pathbbox/t exch def/r exch def/b exch def/l exch def',
      *'/w r l sub ceiling cvi def','/h t b sub ceiling cvi def',
-     *'/imageByteWidth w 8 div ceiling cvi def',
-     *'/imageHeight h def',
+     *'/imageByteWidth w 8 div ceiling cvi def /imageHeight h def',
      *'bgred bggreen bgblue setrgbcolor eofill',
      *'fgred fggreen fgblue setrgbcolor',
      *'w 0 gt h 0 gt and{l b translate w h scale',
      *'w h true [w 0 0 h neg 0 h]{patternproc}imagemask}if}ifelse',
-     *'grestore end}dup 0 8 dict put def',
+     *'grestore end }dup 0 8 dict put def',
+c -------------------
      *'/istroke{gsave brushDashOffset -1 eq{[] 0 setdash',
      *'1 setgray}{brushDashArray brushDashOffset setdash',
      *'fgred fggreen fgblue setrgbcolor}ifelse',
@@ -725,7 +821,7 @@ c psprol - subroutine to write (EPS) postscript prolog.
      *'/ishow{0 begin gsave fgred fggreen fgblue setrgbcolor',
      *'/fontDict printFont findfont printSize scalefont dup ',
      *'setfont def'/
-      data (cprops(i),i=96,189)/
+      data (cprops(i),i=96,177)/
      *'/descender fontDict begin 0 [FontBBox] 1 get FontMatrix end',
      *'transform exch pop def',
      *'/vertoffset 0 descender sub printSize sub printFont/Courier ne',
@@ -805,16 +901,176 @@ c psprol - subroutine to write (EPS) postscript prolog.
      *'movetoNeeded{p0x p0y moveto}if p1x p1y p2x p2y p3x p3y curveto',
      *'end}dup 0 17 dict put def',
      *'/storexyn{/n exch def/y n array def/x n array def n 1 ',
-     *'sub -1 0{/i exch def y i 3 2 roll put x i 3 2 roll put}for}def',
+     *'sub -1 0{/i exch def y i 3 2 roll put x i 3 2 roll put}for}def'/
+
+      data (cpradd(i),i=1,154)/
+     *'/TBB{0 begin  % text-array TBB',
+     *'   /max{2 copy lt{exch}if pop}def',
+     *'   /txt exch def',
+     *'   gsave matrix defaultmatrix setmatrix',
+     *'   /fontDict printFont findfont printSize scalefont dup',
+     *'      setfont def',
+     *'   /horoffset',
+     *'      fontDict begin 0 [FontBBox] 0 get FontMatrix end',
+     *'      transform exch pop',
+     *'   def',
+     *'   txt { /l exch def gsave',
+     *'      l false charpath pathbbox flattenpath',
+     *'      /uy exch def /ux exch def /ly exch def /lx exch def',
+     *'      ux lx sub uy ly sub',
+     *'      grestore',
+     *'   } forall',
+     *'   %lx ly pairs left on stack for each line',
+     *'   0 0 txt { ',
+     *'      pop',
+     *'      % x1 y1 x0 y0 => x1 y1 y0 x0 =>',
+     *'      % x0 x1 y1 y0 => x0 x1 y1+y0 =>',
+     *'      % y1+y0 x0 x1 => y1+y0 x0/x1 => x0/x1 y0+y1',
+     *'      exch 4 1 roll add 3 1 roll max exch',
+     *'   } forall',
+     *'   exch horoffset sub exch',
+     *'   txt length 1 ne {pop txt length printSize mul}if',
+     *'   grestore',
+     *'   end',
+     *'} dup 0 10 dict put def',
+     *'/JText{0 begin gsave  % text-array LCR',
+     *'   /lcr exch def %alignment key',
+     *'   /txt exch def %text-array',
+     *'   /fontDict',
+     *'       printFont findfont printSize scalefont dup setfont def',
+     *'   /descender',
+     *'      fontDict begin 0 [FontBBox] 1 get FontMatrix end',
+     *'      transform exch pop',
+     *'   def',
+     *'   /vertoffset',
+     *'      descender neg printSize sub',
+     *'      printFont /Courier ne',
+     *'      printFont /Courier-Bold ne and {1 add}if',
+     *'   def',
+     *'   0 0 moveto txt TBB /hgt exch def /wid exch def',
+     *'   (LRC) lcr search',
+     *'      {pop pop pop}',
+     *'      {pop 0 vertoffset moveto',
+     *'         (BAD ALIGNMENT: ") show lcr show (") show',
+     *'         /txt [] def',
+     *'      } ifelse',
+     *'   descender neg',
+     *'   fgred fggreen fgblue setrgbcolor',
+     *'   txt {',
+     *'      /str exch def',
+     *'      printSize sub dup 0 exch moveto',
+     *'      [str] TBB pop',
+     *'      lcr (L) eq {pop str show} if',
+     *'      lcr (R) eq {wid exch sub 0 rmoveto str show} if',
+     *'      lcr (C) eq {',
+     *'         2 div wid 2 div exch sub 0 rmoveto str show',
+     *'      } if',
+     *'   } forall',
+     *'   pop',
+     *'   grestore end',
+     *'} dup 0 6 dict put def',
+     *'/OText{0 begin gsave % text-array ox oy angle LCR',
+     *'   /lcr exch def',
+     *'   /ang exch def',
+     *'   /oy exch def',
+     *'   /ox exch def',
+     *'   /txt exch def',
+     *'   0 0 moveto txt TBB /ht exch def /wd exch def',
+     *'   ang rotate wd ox mul neg ht 1 oy sub mul translate',
+     *'   txt lcr JText',
+     *'   grestore end',
+     *'} dup 0 8 dict put def',
+     *'/QBox{0 begin gsave % text-arr rx ry LCR;rx,ry-rel. off. x,y',
+     *'   /dp 1 def     % offset of text rel. to box; avoid overlap',
+     *'   /lcr exch def',
+     *'   /ry exch def',
+     *'   /rx exch def',
+     *'   /txt exch def',
+     *'   0 0 moveto txt TBB',
+     *'   dp 2 mul add /ly exch def dp 2 mul add /lx exch def',
+     *'   mark                          %more than one might be true',
+     *'   rx 0 ge ry 0 gt and {(++)} if %I quadrant',
+     *'   rx 0 ge ry 0 lt and {(+-)} if %II quadrant',
+     *'   rx 0 le ry 0 lt and {(--)} if %III quadrant',
+     *'   rx 0 le ry 0 gt and {(-+)} if %IV quadrant',
+     *'   rx 0 ge ry 0 eq and {(+0)} if %horizontal',
+     *'   rx 0 le ry 0 eq and {(-0)} if %horizontal',
+     *'   /pp exch def                  %e.g., /pp (++) def',
+     *'   cleartomark                   %clear any duplicates',
+     *'   0.2 lx mul /dx exch def       %x offset',
+     *'   /qb {                         %define the path to make box',
+     *'      newpath',
+     *'      0 0 moveto',
+     *'      pp (++) eq {',
+     *'         rx ry rlineto',
+     *'         0 ly rlineto',
+     *'         lx 0 rlineto',
+     *'         0 ly neg rlineto',
+     *'         lx dx sub neg 0 rlineto',
+     *'      } if',
+     *'      pp (-+) eq {',
+     *'         rx ry rlineto',
+     *'         0 ly rlineto',
+     *'         lx neg 0 rlineto',
+     *'         0 ly neg rlineto',
+     *'         lx dx sub 0 rlineto',
+     *'      } if',
+     *'      pp (--) eq {',
+     *'         rx ry rlineto',
+     *'         0 ly neg rlineto',
+     *'         lx neg 0 rlineto',
+     *'         0 ly rlineto',
+     *'         lx dx sub 0 rlineto',
+     *'      } if',
+     *'      pp (+-) eq {',
+     *'         rx ry rlineto',
+     *'         0 ly neg rlineto',
+     *'         lx 0 rlineto',
+     *'         0 ly rlineto',
+     *'         lx neg dx add 0 rlineto',
+     *'      } if',
+     *'      pp (-0) eq {',
+     *'         rx ry rlineto',
+     *'         lx neg 0 rlineto',
+     *'         0 ly neg rlineto',
+     *'         lx 0 rlineto',
+     *'         0 ly dx sub rlineto',
+     *'      } if',
+     *'      pp (+0) eq {',
+     *'         rx ry rlineto',
+     *'         lx 0 rlineto',
+     *'         0 ly neg rlineto',
+     *'         lx neg 0 rlineto',
+     *'         0 ly dx sub rlineto',
+     *'      } if',
+     *'      closepath',
+     *'   } def',
+     *'   bgred bggreen bgblue setrgbcolor qb exec fill',
+     *'   fgred fggreen fgblue setrgbcolor qb exec stroke',
+     *'   % building rx ry translate txt XX XX 0 lcr OText',
+     *'   rx dp add ry translate txt',
+     *'      pp (++) eq {0 0} if',
+     *'      pp (-+) eq {1 0} if',
+     *'      pp (--) eq {1 1} if',
+     *'      pp (+-) eq {0 1} if',
+     *'      pp (+0) eq {0 1} if',
+     *'      pp (-0) eq {1 1} if',
+     *'   0 lcr OText',
+     *'   grestore end',
+     *'} dup 0 10 dict put def'/
+
+      data (cprond(i),i=1,12)/
      *'%%EndProlog','%I Idraw 7 Grid 8','%%Page: 1 1','Begin',
      *'%I b u','%I cfg u','%I cbg u','%I f u','%I p u','%I t',
      *'[ .8 0 0 .8 0 0 ] concat',
      *'/originalCTM matrix currentmatrix def'/
 
-      write (nps,'(a)') (cprops(i),i=1,2)
+      write (nps,'(a)') (cprops(i)(1:nblen(cprops(i))),i=1,2)
       write (nps,1000) font
       write (nps,1010) bbox
-      write (nps,'(a)') (cprops(i),i=3,189)
+      write (nps,'(a)') (cprops(i)(1:nblen(cprops(i))),i=3,177)
+      write (nps,'(a)') (cpradd(i)(1:nblen(cpradd(i))),i=1,154)
+      write (nps,'(a)') (cprond(i)(1:nblen(cprond(i))),i=1,12)
 
 1000  format ('%%IncludeFont: ',a)
 1010  format ('%%BoundingBox: ',4(i4,1x))
@@ -859,7 +1115,33 @@ c psrect - subroutine to output a rectangle, with integer fill
       y(3) = y2
       y(4) = y1
  
-      call pspygn (x,y,4,rline,width,ifill)
+      call pspygn (x,y,4,rline,width,ifill,0,1)
+ 
+      end
+c----------------------------------------------------------------
+      subroutine psfrec (x1,x2,y1,y2,rline,width,ifl,ifg,ibg)
+ 
+c psfrec - subroutine to output a rectangle, with color fill
+c          ifl = 0, rect outlined in ifg, no fill
+c          ifl = 1-6, pattern fill, ifg, ibg irrelevant
+c          ifl = 7, rect outlined in ifg, filled in ibg
+
+      implicit none
+
+      double precision x1,x2,y1,y2,rline,x(4),y(4),width
+
+      integer ifl,ifg,ibg
+ 
+      x(1) = x1
+      x(2) = x1
+      x(3) = x2
+      x(4) = x2
+      y(1) = y1
+      y(2) = y2
+      y(3) = y2
+      y(4) = y1
+ 
+      call psfpyg (x,y,4,rline,width,ifl,ifg,ibg)
  
       end
 c----------------------------------------------------------------
@@ -1111,6 +1393,18 @@ c psline - subroutine to output a line (absolute).
 
       double precision x1,y1,x2,y2,rline,width
 
+      call  psclin (x1,y1,x2,y2,rline,width,0)
+      end
+c------------------------------------------------------------------
+      subroutine psclin (x1,y1,x2,y2,rline,width,icol)
+ 
+c psclin - subroutine to output a colored line (absolute).
+ 
+      implicit none
+
+      integer icol
+      double precision x1,y1,x2,y2,rline,width
+
       integer nps
       double precision xscale, yscale, xmn, ymn
       common/ scales /xscale,yscale,xmn,ymn,nps
@@ -1118,7 +1412,8 @@ c psline - subroutine to output a line (absolute).
       write (nps,1000)
  
       call psolin (rline,width)
-      call psoclr
+      call psocfg (icol,icol)
+c     call psoclr
  
       write (nps,1010)
  
@@ -1263,11 +1558,11 @@ c     jchar - length of character string, 0 if unknown.
 
       double precision x,y,x0,y0,xtr,ytr
 
-      integer jchar,nchar,i,ict
+      integer jchar,nchar,i
  
       character*(*) text
  
-      character*1 itsy(400),ifonts(13)*33,bitsy(400)
+      character*1 ifonts(13)*33
  
       character font*40
       common/ myfont /font
@@ -1318,36 +1613,7 @@ c     *           '/Symbol 14 SetF'/
       else
          nchar = jchar
       end if
- 
-      if (nchar.gt.398) nchar = 398
- 
-      read (text,1020) (bitsy(i),i=2,nchar+1)
-c                                 scan for '(' or ')'
-      ict = 1
-      do i = 2, nchar + 1
-         if ((bitsy(i).eq.')').or.(bitsy(i).eq.'('))then
-            ict = ict + 1
-c                                 the double backslash
-c                                 here is necessary for SUNS
-c                                 because the first is read
-c                                 as an escape character. On
-c                                 convex this causes a compile
-c                                 time warning, and on Mac and
-c                                 IBM compilers there is no
-c                                 warning.
-            itsy(ict) = '\\'
-            ict = ict + 1
-            itsy(ict) = bitsy(i)
-         else
-            ict = ict + 1
-            itsy(ict) = bitsy(i)
-         end if
-      end do 
 
-      if (ict.gt.399) ict = 399
- 
-      itsy(1) = '('
-      itsy(ict+1) = ')'
  
       x0 = (x-xmn) * xscale
       y0 = (y-ymn) * yscale
@@ -1358,7 +1624,8 @@ c                                 warning.
       write (nps,1010) ifonts(ifont),font,
      *                 ac,bc,cc,dc,xtr,ytr
  
-      write (nps,1020) (itsy(i),i=1,ict+1)
+      call psostr(text(1:nchar))
+
       write (nps,1030)
  
 1010  format ('Begin %I Text',/,
@@ -1366,8 +1633,160 @@ c                                 warning.
      *        '/',a,' 14 SetF',/,
      *        '%I t',/,'[',6(g9.3,1x),'] concat',/,
      *        '%I',/,'[')
-1020  format (400a)
 1030  format ('] Text',/,'End',/)
+      end
+c-------------------------------------------------------------------
+      subroutine psostr (text)
+c psostr - output a string formatted ala PostScript on unit nps
+c-------------------------------------------------------------------
+
+      implicit none
+
+      character*(*) text
+
+      integer nchar, ict, i
+
+      character*1 itsy(400)
+
+      integer nblen
+      external nblen
+
+      integer nps
+      double precision xscale,yscale,xmn,ymn
+      common/ scales /xscale,yscale,xmn,ymn,nps
+
+      nchar = min(nblen(text),400)
+ 
+c                                 scan for '(' or ')'
+      ict = 0
+      do i = 1, nchar
+         if ((text(i:i).eq.')').or.(text(i:i).eq.'('))then
+            ict = min(ict + 1,400)
+c                                 the double backslash
+c                                 here is necessary for SUNS
+c                                 because the first is read
+c                                 as an escape character. On
+c                                 convex this causes a compile
+c                                 time warning, and on Mac and
+c                                 IBM compilers there is no
+c                                 warning.
+            itsy(ict) = '\\'
+         end if
+         ict = min(ict + 1,400)
+         itsy(ict) = text(i:i)
+      end do 
+
+      write (nps,1020) '(',(itsy(i),i=1,ict),')'
+1020  format (402a)
+      end
+c-------------------------------------------------------------------
+      subroutine psotxt (x,y,icol,siz)
+ 
+c psotxt - subroutine to output justified text strings.
+ 
+c     x, y - data coordinates of the label
+c     icol - color key (fg, bg)
+c     siz - size (1 is normal)
+
+      implicit none
+
+      integer icol(2)
+      double precision x,y,siz
+
+      double precision x0,y0,xtr,ytr
+
+      character ifonts(13)*33
+ 
+      character font*40
+      common/ myfont /font
+      
+      double precision a,b,c,d,xt,yt
+      common/ trans /a,b,c,d,xt,yt
+
+      integer ifont
+      double precision ac,bc,cc,dc
+      common/ chars /ac,bc,cc,dc,ifont
+
+      integer nps
+      double precision xscale,yscale,xmn,ymn
+      common/ scales /xscale,yscale,xmn,ymn,nps
+ 
+      save ifonts
+ 
+      data ifonts/'%I f *-times-medium-i-*-140-*',
+     *            '%I f *-times-bold-r-*-140-*',
+     *            '%I f *-times-medium-r-*-140-*',
+     *            '%I f *-times-medium-r-*-120-*',
+     *            '%I f *-helvetica-medium-o-*-140-*',
+     *            '%I f *-helvetica-bold-r-*-140-*',
+     *            '%I f *-helvetica-medium-r-*-140-*',
+     *            '%I f *-helvetica-medium-r-*-120-*',
+     *            '%I f *-courier-bold-r-*-120-*',
+     *            '%I f *-courier-medium-r-*-100-*',
+     *            '%I f *-courier-medium-r-*-80-*',
+     *            '%I f Symbol-12',
+     *            '%I f Symbol-14'/
+ 
+      x0 = (x-xmn) * xscale
+      y0 = (y-ymn) * yscale
+ 
+      xtr = x0 * a + y0 * c + xt
+      ytr = x0 * b + y0 * d + yt
+
+      write (nps,1010)
+
+      call psocfg(icol(1),icol(2))
+ 
+      write (nps,1020) ifonts(ifont),font,nint(14*siz),
+     *                 ac,bc,cc,dc,xtr,ytr
+ 
+ 
+1010  format ('Begin %I Text')
+1020  format (a,/,
+     *        '/',a,' ',i2,' SetF',/,
+     *        '%I t',/,'[',6(g9.3,1x),'] concat',/,
+     *        '%I',/,'[')
+      end
+c-------------------------------------------------------------------
+      subroutine psetxt (angle,just,adj,box)
+ 
+c psetxt - subroutine to output the end of a justified text string.
+ 
+c     angle - text angle (ccw from horizontal)
+c     just - justification (LCR)
+c     adj - positioning of box around point (rx,ry)
+
+      implicit none
+
+      double precision angle,adj(2),box(2)
+      character just*1
+
+      double precision pts(2), x0, y0
+      
+      double precision a,b,c,d,xt,yt
+      common/ trans /a,b,c,d,xt,yt
+
+      integer ifont
+      double precision ac,bc,cc,dc
+      common/ chars /ac,bc,cc,dc,ifont
+
+      integer nps
+      double precision xscale,yscale,xmn,ymn
+      common/ scales /xscale,yscale,xmn,ymn,nps
+ 
+      if (box(1).eq.0d0 .and. box(2).eq.0d0) then
+         write (nps,1030) adj,angle,just
+      else
+         x0 = box(1) * xscale
+         y0 = box(2) * yscale
+ 
+         pts(1) = (x0 * a + y0 * c) / ac
+         pts(2) = (x0 * b + y0 * d) / dc
+         write (nps,1040) pts,just
+      end if
+ 
+1030  format ('] ',3(f8.4,1x),'(',a1,') OText',/,'End',/)
+1040  format ('] ',2(f8.4,1x),'(',a1,') QBox',/,'End',/)
       end
 c-------------------------------------------------------------------
       subroutine psublk (text,jchar)

@@ -269,7 +269,7 @@ c                                 -sdt
      *      - (thermo(6,id) + thermo(10,id) / t) / t
      *      + thermo(8,id) * dsqrt(t) + thermo(9,id)*dlog(t)
 c                                  MC_fit thermo data uncertainty analysis
-      if (mcfit.and.invprt) then
+      if (iam.eq.2.and.mcfit.and.invprt) then
         gval = gval + hinc(id)
       end if
 c                                 vdp-ndu term:
@@ -726,49 +726,61 @@ c                                 check for obsolete internal EoS flag.
      *                'this error will occur for a second entry '//
      *                'with 200 < Eos < 202')
 
-      else if (ieos.gt.0.and.ieos.lt.5.and.thermo(3,k10).eq.0d0) then
+      end if
+
+
+      if (iam.eq.1.or.iam.eq.2.or.iam.eq.15) then
+c                                 make checks for dubious fluid species entries
+c                                 this is done only for minimization programs. for
+c                                 other programs it is assumed the user knows what
+c                                 she's doing or the error will be caught later.
+         if (ieos.gt.0.and.ieos.lt.5.and.thermo(3,k10).eq.0d0) then
 c                                 standard form with no volumetric EoS set to
 c                                 ieos to G(Pr,T) and warn intrusively
-         write (*,1020) ieos, name(1:nblen(name)), 
-     *                        n2name(1:nblen(n2name))
+            write (*,1020) ieos, name(1:nblen(name)), 
+     *                           n2name(1:nblen(n2name))
 
-         call wrnstp
+            call wrnstp
 
-         ieos = 0
+            ieos = 0
 
-      end if
+         end if
 c                                 check for reserved (fluid) species names
-      do i = 1, nsp
+         do i = 1, nsp
 
-         if (name.eq.specie(i)) then
+            if (name.eq.specie(i)) then
 c                                 allowed fluid ieos codes are:
 c                                 0           - no PVT EoS
 c                                 10          - ideal gas
 c                                 101-100+NSP - GFSM option wired EoS
-            if (ieos.ne.0.and.ieos.ne.10.and.
-     *          .not.(ieos.gt.100.and.ieos.le.100+nsp)) then
+               if (ieos.ne.0.and.ieos.ne.10.and.
+     *             .not.(ieos.gt.100.and.ieos.le.100+nsp)) then
 c                                 the species has a reserved name but 
 c                                 inappropriate EoS
-               write (*,1000) name(1:nblen(name)), name(1:nblen(name)),
-     *                        n2name(1:nblen(n2name))
+                  write (*,1000) name(1:nblen(name)), 
+     *                           name(1:nblen(name)),
+     *                           n2name(1:nblen(n2name))
 
-               call errpau
+                  call errpau
 
-            else if (ieos.eq.0.and.iam.ne.5) then
+               else if (ieos.eq.0) then
 
-               write (*,1030) name(1:nblen(name)), name(1:nblen(name)),
-     *                        n2name(1:nblen(n2name)),
-     *                        name(1:nblen(name)),
-     *                        name(1:nblen(name)),
-     *                        n2name(1:nblen(n2name)), nsp + 100
+                  write (*,1030) name(1:nblen(name)), 
+     *                           name(1:nblen(name)),
+     *                           n2name(1:nblen(n2name)),
+     *                           name(1:nblen(name)),
+     *                           name(1:nblen(name)),
+     *                           n2name(1:nblen(n2name)), nsp + 100
 
-               call wrnstp
+                  call wrnstp
+
+               end if
 
             end if
 
-         end if
+         end do
 
-      end do
+      end if
 
 1000  format (/,'**error ver967** ',a,' is a name reserved for fluid ',
      *        'species but the',/,'EoS flag specified for ',a,' ',
@@ -784,7 +796,7 @@ c                                 inappropriate EoS
      *       ,'remedy is inappropriate, alternatives are:',//,
      *     4x,'1 - exclude the species from your calculation',/,
      *     4x,'2 - edit the entry to provide the appropriate EoS code,',
-     *        ' e.g., 10 or 1##',/,
+     *        ' e.g., 0, 10, or 1##',/,
      *     4x,'3 - provide the requisite volumetric data',/)
 1030  format (/,'**warning ver968** ',a,' is a name reserved for fluid',
      *        ' species but the EoS flag',/,'for ',a,' in ',a,' is a ',
@@ -2172,13 +2184,10 @@ c----------------------------------------------------------------------
       integer length,com
       character chars*1, card*400
       common/ cst51 /length,com,chars(400),card
-
-      integer indq,idqf
-      double precision dqf
-      common/ cst222 /dqf(m3,m4),indq(m4),idqf
 c----------------------------------------------------------------------
 
       idqf = 0
+      loctol = -1d0
       laar = .false.
       stck = .true.
       norf = .true.
@@ -2242,6 +2251,10 @@ c           write (*,*) 'set low res for '//tname
          else if (key.eq.'unbounded_composition') then 
 
             unbd = .true.
+
+         else if (key.eq.'solvus_tolerance') then 
+
+            read (strg,*) loctol
 
          else
 
@@ -2378,7 +2391,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer ibeg, ier, iscan, imax, match, idim
+      integer ibeg, ier, iscan, imax, match, idim, jend, i
 
       external iscan, match
 
@@ -2389,10 +2402,6 @@ c----------------------------------------------------------------------
       integer length,com
       character chars*1, card*400
       common/ cst51 /length,com,chars(400),card
-
-      integer jend,i,idqf,indq
-      double precision dqf
-      common/ cst222 /dqf(m3,m4),indq(m4),idqf
 c----------------------------------------------------------------------
 
       eod = ' '
@@ -4189,10 +4198,6 @@ c---------------------------------------------------------------------
      *        i,j,ikill,jkill,kill,kdep,kdqf,ktic,jold,
      *        i2ni(m4),kwas(m4),k,l,itic,ijkill(m4),
      *        j2oj(msp),j2nj(msp),i2oi(m4),maxord
-c                                 dqf variables
-      integer indq,idqf
-      double precision dqf
-      common/ cst222 /dqf(m3,m4),indq(m4),idqf
 c                                 local input variables
       integer iddeps,norder,nr
       double precision depnu,denth
@@ -6779,9 +6784,6 @@ c---------------------------------------------------------------------
       common/ cxt7 /y(m4),z(m4),pa(m4),p0a(m4),x(h4,mst,msp),w(m1),
      *              wl(m17,m18),pp(m4)
 
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
-
       integer nsub,nterm
       double precision acoef
       common/ cst107 /acoef(m10,m11,0:m0),
@@ -6825,10 +6827,6 @@ c                                 special model endmember indexing
 
       double precision cp
       common/ cst12 /cp(k5,k10)
-c                                 dqf parameters
-      integer idqf,indq
-      double precision dqf
-      common/ cst222 /dqf(m3,m4),indq(m4),idqf
 
       integer ln,lt,lid,jt,jid
       double precision lc, l0c, jc
@@ -6895,6 +6893,15 @@ c                                 initialize compositional distances
       do i = 1, icp
          dcp(i,im) = 0d0
       end do
+c                                 if model has a local solvus tolerance
+c                                 set it, this is solvus_tolerance, it 
+c                                 might be a good idea to do the same for
+c                                 solvs_tolerance1
+      if (loctol.gt.0d0) then 
+         soltol(im) = loctol
+      else 
+         soltol(im) = nopt(8)
+      end if 
 c                                 check endmember counters:
       if (im.gt.h9) call error (52,dq(1),idqf,'GMODEL')
 c                                 check for inconsistent model reformation
@@ -17505,10 +17512,6 @@ c---------------------------------------------------------------------
      *        i,j,ikill,jkill,kill,kdep,kdqf,ktic,jold,
      *        i2ni(m4),kwas(m4),k,l,itic,ijkill(m4),
      *        j2oj(msp),j2nj(msp),i2oi(m4)
-c                                 dqf variables
-      integer indq,idqf
-      double precision dqf
-      common/ cst222 /dqf(m3,m4),indq(m4),idqf
 c                                 local input variables
       integer iddeps,norder,nr
       double precision depnu,denth

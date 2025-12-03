@@ -5194,18 +5194,15 @@ c                                 local variables
 
       integer ikp
       common/ cst61 /ikp(k1)
-
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
 c-----------------------------------------------------------------------
       np = 0   
       ncpd = 0 
       solvs1 = .false.
 c                                 solvus tolerance, miscib 1.2
       if (lopt(9)) then 
-         soltol = 1.8d0*nopt(8)
+         loctol = 1.8d0*nopt(8)
       else 
-         soltol = nopt(8)
+         loctol = nopt(8)
       end if 
 
       do 10 i = 1, ntot
@@ -5251,6 +5248,8 @@ c                                 compound
          else 
 
             ids = ikp(idsol(1,i))
+
+
 c                                 check for immiscibility
             do 20 j = 1, jdsol(i)
 c                                 how many phases are there of this
@@ -5704,9 +5703,6 @@ c-----------------------------------------------------------------------
       integer is
       double precision cp, bbb, ccc
       common/ cst313 /cp(k5,k1),bbb(k5),ccc(k1),is(k1+k5)
-
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
 c-----------------------------------------------------------------------
       solvsc = .false.
 
@@ -5715,7 +5711,7 @@ c-----------------------------------------------------------------------
          if (dcp(i,ids).eq.0d0) cycle
 
          if (dabs(cp(i,id1)/ctot(id1)-cp(i,id2)/ctot(id2))/dcp(i,ids)
-     *                  .gt.soltol) then
+     *                  .gt.loctol) then
             solvsc = .true.
             exit
          end if

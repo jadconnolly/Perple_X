@@ -140,7 +140,7 @@ c---------------------------------------------------------------
 
             if (isym.eq.0) then
 
-               call pselip (x,y,r*dcx,r*dcy,1d0,0d0,7,0,1)
+               call pselip (x,y,r*dcx,r*dcy,1d0,0d0,7)
 
             else if (isym.eq.1) then
  
@@ -148,7 +148,7 @@ c---------------------------------------------------------------
 
             else if (isym.eq.2) then
 
-               call pselip (x,y,r*dcx,r*dcy,1d0,0d0,1,0,1)
+               call pselip (x,y,r*dcx,r*dcy,1d0,0d0,1)
 
             else if (isym.eq.3) then
 
@@ -162,7 +162,7 @@ c---------------------------------------------------------------
 
             if (isym.eq.4) then
 
-               call pselip (x,y,r*dcx,r*dcy,1d0,0d0,7,0,1)
+               call pselip (x,y,r*dcx,r*dcy,1d0,0d0,7)
 
             else if (isym.eq.5) then
  
@@ -170,7 +170,7 @@ c---------------------------------------------------------------
 
             else if (isym.eq.6) then
 
-               call pselip (x,y,r*dcx,r*dcy,1d0,0d0,1,0,1)
+               call pselip (x,y,r*dcx,r*dcy,1d0,0d0,1)
 
             else if (isym.eq.7) then
 
@@ -196,7 +196,7 @@ c---------------------------------------------------------------
                   icbg = 1
                end if 
 
-               call pselip (x,y,r*dcx,r*dcy,1d0,1d0,7,icfg,icbg)
+               call pselip (x,y,r*dcx,r*dcy,1d0,1d0,7)
 
             end if 
 

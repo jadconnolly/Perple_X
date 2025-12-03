@@ -762,7 +762,7 @@ c                                 composition fbulk
      *          5x,20(1x,a,3x))
 1030  format (1x,a,3x,3(f6.2,4x),g9.3,1x,20(f8.5,1x))
 1031  format (1x,a,3x,3(f6.2,4x),g9.3,1x,20(f8.3,1x))
-1040  format (14x,'mol',8x,'g',8x,'wt %',5x,'mol/kg')
+1040  format (14x,'mol',9x,'g',8x,'wt %',5x,'mol/kg')
 1060  format (/,' Enthalpy (J/kg) = ',g12.6,/,
      *          ' Specific Enthalpy (J/m3) = ',g12.6,/,
      *          ' Entropy (J/K/kg) = ',g12.6,/,
@@ -771,15 +771,16 @@ c                                 composition fbulk
      *          ' Specific Heat Capacity (J/K/m3) = ',g12.6,/)
 1070  format (/,'Variance (c-p+',i1,') = ',i2,/)
 1080  format (21x,'Complete Assemblage',30x,'Solid Only',
-     *        /,14x,'mol',8x,'g',8x,'wt %',5x,'mol/kg',
-     *          10x,'mol',8x,'g',8x,'wt %',5x,'mol/kg')
+     *        /,14x,'mol',9x,'g',8x,'wt %',5x,'mol/kg',
+     *          10x,'mol',9x,'g',8x,'wt %',5x,'mol/kg')
 1100  format (' Solid Enthalpy (J/kg) = ',g12.6,/,
      *        ' Solid Secific Enthalpy (J/m3) = ',g12.6,/,
      *        ' Solid Entropy (J/K/kg) = ',g12.6,/,
      *        ' Solid Specific Entropy (J/K/m3) = ',g12.6,/,
      *        ' Solid Heat Capacity (J/K/kg) = ',g12.6,/,
      *        ' Solid Specific Heat Capacity (J/K/m3) = ',g12.6,/)
-1110  format (1x,a8,2x,4(f8.3,2x),5x,4(f8.3,2x))
+1110  format (1x,a8,2x,f8.3,2x,f9.3,2(2x,f8.3),5x,
+     *                 f8.3,2x,f9.3,2(2x,f8.3))
 1120  format (29x,a8,' = ',g12.6)
 1121  format (29x,'X(C',i1,')    = ',g12.6)
 1130  format (/,'Chemical Potentials (J/mol):',//,2x,20(4x,a,5x))

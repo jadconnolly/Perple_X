@@ -45,6 +45,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 2
+      mcfit = .false.
 c                                 perplexwrap.f flags
       getInput = .true.
       sWarn = .false.

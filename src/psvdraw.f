@@ -472,14 +472,14 @@ c                                  first divariant
             do i = 1, ib                      
                if (iasmbl(i).eq.2) then
                   call merger (i,iperm,kvert,xx,yy)
-                  call pspygn (xx,yy,kvert,0d0,0d0,7)
+                  call pspygn (xx,yy,kvert,0d0,0d0,7,0,0)
                end if
             end do
 c                                  third univariant
             do i = 1, ib                      
                if (iasmbl(i).eq.1) then
                   call merger (i,iperm,kvert,xx,yy)
-                  call pspygn (xx,yy,kvert,1d0,0d0,3)
+                  call pspygn (xx,yy,kvert,1d0,0d0,3,0,0)
                end if
             end do
 c                                  last invariant
@@ -491,7 +491,7 @@ c                                  last invariant
                      xx(j) = x(1,id) 
                      yy(j) = x(2,id) 
                   end do
-                  call pspygn (xx,yy,3,1d0,0d0,0)
+                  call pspygn (xx,yy,3,1d0,0d0,0,0,0)
                end if
             end do   
 
@@ -511,9 +511,9 @@ c                                           draw tie lines:
                if (jas.eq.0) then
 c                                           invariant
                   if (vline) then
-                     call pspygn  (xx,yy,3,1d0,1d0,0)
+                     call pspygn  (xx,yy,3,1d0,1d0,0,0,0)
                   else 
-                     call pspygn  (xx,yy,3,1d0,0d0,0)
+                     call pspygn  (xx,yy,3,1d0,0d0,0,0,0)
                   end if 
 
                else if (jas.eq.1) then
@@ -526,7 +526,7 @@ c                                           univariant
 
                   if (fill) then 
 
-                     call pspygn  (xx,yy,3,0d0,0d0,3)
+                     call pspygn  (xx,yy,3,0d0,0d0,3,0,0)
 c                                 draw a thin line between same phase
                      do j = 1, 3
                         id = jdf(iperm(1,j),i)
@@ -537,15 +537,15 @@ c                                           draw the line:
      *                      xx(iperm(2,j)),yy(iperm(2,j)),style,0d0)
                      end do
                   else
-                     call pspygn  (xx,yy,3,1d0,0d0,0)
+                     call pspygn  (xx,yy,3,1d0,0d0,0,0,0)
                   end if 
 
                else if (jas.eq.2) then
 c                                           divariant
                   if (fill) then 
-                     call pspygn  (xx,yy,3,0d0,0d0,7)
+                     call pspygn  (xx,yy,3,0d0,0d0,7,0,0)
                   else
-                     call pspygn  (xx,yy,3,1d0,0d0,0)
+                     call pspygn  (xx,yy,3,1d0,0d0,0,0,0)
                   end if 
                end if 
 
@@ -560,12 +560,12 @@ c                                           divariant
                   x1 = x(1,i) + 15d-3
                   y1 = x(2,i) 
                   call pstext (x1,y1,names(i),8)
-                  call pselip (x1-0.015d0,y1,7d-3,7d-3,0d0,0d0,7,0,1)
+                  call pselip (x1-0.015d0,y1,7d-3,7d-3,0d0,0d0,7)
                end if
             end do
          end if 
 c                                       draw bounding triangle
-         call pspygn  (x3,y3,3,1d0,0d0,0)
+         call pspygn  (x3,y3,3,1d0,0d0,0,0,0)
 c                                       sectioning constraints
          call pssctr (ifont,nscale,nscale,0d0)
 
@@ -1111,7 +1111,7 @@ c                                 variance restrictions:
 c                                 make radius proportional to variance 
          r = .78d0/(ipvar+1)
  
-         call pselip (x(1),y(1),r*dcx,r*dcy,0d0,0d0,7,0,1)
+         call pselip (x(1),y(1),r*dcx,r*dcy,0d0,0d0,7)
  
          if (iop3.eq.0) call psalbl (x,y,1,ipvar,ipid,1,rline,iop9)
  
@@ -1324,14 +1324,14 @@ c                              change in a solution:
 55          if (isum.eq.2.and.ikp(idr(1)).eq.ikp(idr(2))) then
 c                              draw an open dot, but don't
 c                              do anything else:         
-               call pselip (x(idr(1)),t1,rx,ry,1d0,0d0,0,0,1)
+               call pselip (x(idr(1)),t1,rx,ry,1d0,0d0,0)
                iphi(it) = idr(2)          
             
                cycle 
 
             end if  
 c                              draw dot         
-            call pselip (x(idr(1)),t1,rx,ry,1d0,0d0,7,0,1)
+            call pselip (x(idr(1)),t1,rx,ry,1d0,0d0,7)
 c                              draw line
             call psline (x(id1),t1,x(id2),t1,1d0,0d0)
 c                              replace reacted phase:
@@ -1399,13 +1399,13 @@ c                                 the new phase.
 c                              all phases different
 c                              draw line
                call psline (x(i1),t1,x(i2),t1,1d0,0d0)
-               call pselip (x(i00),t1,rx,ry,1d0,0d0,7,0,1)
+               call pselip (x(i00),t1,rx,ry,1d0,0d0,7)
 
             else if (isum.eq.2) then
                if (idif.eq.2) then 
 c                              all phases different
                   call psline (x(i1),t1,x(i2),t1,1d0,0d0)
-                  call pselip (x(i00),t1,rx,ry,1d0,0d0,7,0,1)
+                  call pselip (x(i00),t1,rx,ry,1d0,0d0,7)
 
                else 
 c                              one solution + one compound
@@ -1414,9 +1414,9 @@ c                              compound in the middle
 c                              change variance of reaction
                      ivar = 1
 
-                     call pselip (x(i00),t1,rx,ry,1d0,0d0,7,0,1)
+                     call pselip (x(i00),t1,rx,ry,1d0,0d0,7)
 
-                     call psline (x(i1),t1,x(i2),t1,1d0,0d0)          
+                     call psline (x(i1),t1,x(i2),t1,1d0,0d0)
 
                   else 
 c                              pseudoinvariant
@@ -1442,7 +1442,7 @@ c                              check if on left line
                if (imis.eq.0) call psline (x(i00),t1,x(i2),t1,1d0,0d0)
                if (itot.eq.0) then
                   ivar = 1
-                  call pselip (x(i00),t1,rx,ry,1d0,0d0,7,0,1)
+                  call pselip (x(i00),t1,rx,ry,1d0,0d0,7)
                end if 
 
 
@@ -1466,7 +1466,7 @@ c                              i00 and i2 are the same:
                      ivar = 1
 c                              eutectic/peritectic with solvus
                      call psline (x(i1),t1,x(i2),t1,1d0,0d0)
-                     call pselip (x(i00),t1,rx,ry,1d0,0d0,7,0,1)
+                     call pselip (x(i00),t1,rx,ry,1d0,0d0,7)
                else if (ikp(i1).eq.ikp(i00)) then
 c                              pseudounivariant, left
                   call psline (x(i1),t1,x(i00),t1,1d0,0d0)
@@ -1488,7 +1488,7 @@ c                              change variance:
                   if (itoc.eq.1) ivar = 1
 
                   if (ivar.eq.1) call pselip 
-     *                           (x(idr(1)),t1,rx,ry,1d0,0d0,7,0,1)
+     *                           (x(idr(1)),t1,rx,ry,1d0,0d0,7)
 
                   call psline (x(iphi(id1)),t1,
      *                         x(iphi(id2)),t1,1d0,0d0)
@@ -1884,27 +1884,27 @@ c                                   numeric label:
 
              if (ird.lt.10) then
                 call pselip (x(imid),y(imid),
-     *                      fac*dcx,fac*1.2d0*dcy,rline,0d0,1,0,1)
+     *                      fac*dcx,fac*1.2d0*dcy,rline,0d0,1)
                 call pstext (x(imid)-2.45d0*dcx*fac,
      *                      y(imid)+0.8d0*dcy*fac,lnms,6)
              else if (ird.lt.100) then
                 call pselip (x(imid),y(imid),fac*1.74d0*dcx,
-     *                       fac*1.6d0*dcy,rline,0d0,1,0,1)
+     *                       fac*1.6d0*dcy,rline,0d0,1)
                 call pstext (x(imid)-2.71d0*dcx*fac,
      *                      y(imid)+0.8d0*dcy*fac,lnms,6)
              else if (ird.lt.1000) then
                 call pselip (x(imid),y(imid),
-     *               fac*2.75d0*dcx,fac*1.83d0*dcy,rline,0d0,1,0,1)
+     *               fac*2.75d0*dcx,fac*1.83d0*dcy,rline,0d0,1)
                 call pstext (x(imid)-3.04d0*dcx*fac,
      *                       y(imid)+0.8d0*dcy*fac,lnms,6)
              else if (ird.lt.10000) then 
                 call pselip (x(imid),y(imid),
-     *               fac*3.75d0*dcx,fac*2d0*dcy,rline,0d0,1,0,1)
+     *               fac*3.75d0*dcx,fac*2d0*dcy,rline,0d0,1)
                 call pstext (x(imid)-4d0*dcx*fac,
      *                       y(imid)+0.8d0*dcy*fac,lnms,6)
              else 
                 call pselip (x(imid),y(imid),
-     *               fac*4.75d0*dcx,fac*2d0*dcy,rline,0d0,1,0,1)
+     *               fac*4.75d0*dcx,fac*2d0*dcy,rline,0d0,1)
                 call pstext (x(imid)-4d0*dcx*fac,
      *                       y(imid)+0.8d0*dcy*fac,lnms,6)
              end if

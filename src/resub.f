@@ -456,9 +456,6 @@ c----------------------------------------------------------------------
       integer ntot,npairs
       common/ cst86 /ntot,npairs
 
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
-
       integer npt,jdv
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
@@ -793,15 +790,15 @@ c----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 c function to test if a solvus separates two pseudocompounds of solution
 c ids, called only for final solution vales by avrger.
+
+c solvs1 uses the solvus_tolerance (nopt(8)) or the solution model
+c specific value assigned in the solution model. 
 c-----------------------------------------------------------------------
       implicit none
  
       include 'perplex_parameters.h'
 
       integer i, id1, id2, ids
-
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
 c                                 composition and model flags
 c                                 for final adaptive solution
       integer kkp,np,ncpd,ntot
@@ -822,7 +819,7 @@ c-----------------------------------------------------------------------
          if (dcp(i,ids).lt.zero) cycle 
 
          if (dabs(cp3(i,id1)/cptot(id1) - cp3(i,id2)/cptot(id2))
-     *                                    / dcp(i,ids).gt.soltol) then
+     *                              / dcp(i,ids).gt.soltol(ids)) then
             solvs1 = .true.
             exit 
          end if 
@@ -846,9 +843,6 @@ c-----------------------------------------------------------------------
 
       integer nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
       common/ cst337 /nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
-
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
 c-----------------------------------------------------------------------
       solvs4 = .false.
 
@@ -891,9 +885,6 @@ c----------------------------------------------------------------------
       external solvs1, solvs4
 c                                 -------------------------------------
 c                                 global variables:
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
-
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c                                 composition and model flags
@@ -957,7 +948,7 @@ c                                figure out how many solutions
 c                                are present:
       np = 0
       ncpd = 0
-      soltol = nopt(8)
+
 
       do i = 1, ntot
 
@@ -1681,9 +1672,6 @@ c----------------------------------------------------------------------
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
 
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
-
       integer ikp
       common/ cst61 /ikp(k1)
 
@@ -1721,7 +1709,6 @@ c----------------------------------------------------------------------
       lspt = 0
       nsol = 0
       quit = .true.
-      soltol = nopt(25)
 
       do i = 1, jphct
 
@@ -1966,6 +1953,8 @@ c-----------------------------------------------------------------------
 c function to test if a solvus separates two static pseudocompounds of
 c solution ids. called only by yclos1, modified in 688 to use the static
 c composition matrix a, rather than cp.
+
+c solvus always uses solvus_tolerance1 = nopt(25)
 c-----------------------------------------------------------------------
       implicit none
 
@@ -1976,9 +1965,6 @@ c-----------------------------------------------------------------------
       integer is
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
-
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
 c-----------------------------------------------------------------------
       solvus = .false.
 
@@ -1986,7 +1972,7 @@ c-----------------------------------------------------------------------
 
          if (dcp(i,ids).eq.0d0) cycle
 
-         if (dabs(a(i,id1)-a(i,id2))/dcp(i,ids).gt.soltol) then
+         if (dabs(a(i,id1)-a(i,id2))/dcp(i,ids).gt.nopt(25)) then
             solvus = .true.
             exit
          end if
@@ -2258,9 +2244,6 @@ c----------------------------------------------------------------------
 
       integer ikp
       common/ cst61 /ikp(k1)
-
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
 
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
@@ -3226,8 +3209,8 @@ c                                 failed
 
       end if
 
-1000  format (/,'Iteration',4x,'G(J/mol)',7x,20(5x,a))
-1010  format (3x,i2,4x,f15.2,6x,20(i9,1x))
+1000  format (/,'Iteration',4x,'G(J/mol)',7x,20(7x,a))
+1010  format (3x,i2,4x,f15.2,6x,20(i11,1x))
 1020  format (3x,i2,4x,'chemical potential back-calculation failed.')
 
       end

@@ -942,9 +942,6 @@ begin_flagged_endmembers
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
-reach_increment 0
-                                    | low_reach and reach_increment conflict, set only one.
-
 | use_model_resolution
 
 end_of_model
@@ -1351,8 +1348,6 @@ begin_flagged_endmembers
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
-| reach_increment 0
-                                    | low_reach and reach_increment conflict, set only one.
 | use_model_resolution
 
 end_of_model
@@ -1750,10 +1745,6 @@ begin_flagged_endmembers
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
-reach_increment 0
-                                    | low_reach and reach_increment conflict, set only one.
-| low_reach
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -2059,10 +2050,6 @@ begin_flagged_endmembers
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
-reach_increment 0
-                                    | low_reach and reach_increment conflict, set only one.
-| low_reach
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -2272,10 +2259,6 @@ begin_flagged_endmembers
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
-reach_increment 0
-                                    | low_reach and reach_increment conflict, set only one.
-| low_reach
-
 end_of_model
                            --------------------------------------------------------
 begin_model
@@ -2285,6 +2268,10 @@ begin_model
                       at P > 1 GPa. Use with caution.
 
                       JADC 4/19
+
+                      Modified to account for molecular CO2 by a CORK-like H2O-CO2 interaction term. 
+                      This is not consistent with the a(H2O) ~ X^2 form of this model, not much else
+                      is either (i.e., it's a poor model for water-rich fluids). JADC, 9/5/2025
 
                       This model requires the following make definitions in the
                       thermodynamic data file make_definitions section:
@@ -2335,20 +2322,21 @@ begin_model
 
                       Add water vacancy site, JADC 11/27/2024
 
-Aqfl(HGP)
+Aqfl(HGPK)
 abbreviation F
 full_name    fluid
 
 2                                   | model type: simplicial composition space
 
-11                                  | number of endmembers
+12                                  | number of endmembers
 
 foWL     faWL
 jdWL     silL     kWL
 woL      ekWL     hmWL
-tiWL     qWL      H2O
+tiWL     qWL      CO2
+H2O
 
-1 1 1 1 1 1 1 1 1 1 1               | endmember flags
+1 1 1 1 1 1 1 1 1 1 1 1             | endmember flags
 
                                     | non-linear subdivision is likely to be
                                     | preferable to cartesian for this model
@@ -2356,16 +2344,17 @@ tiWL     qWL      H2O
                                     | see commentary in the header of this file for explanation of
                                     | endmember flags and subdivision schemes
 
-1d-4 .2   .2  0                     | range and resolution of X(fo)
-1d-4 .2   .2  0                     | range and resolution of X(fa)
-1d-4 .2   .2  0                     | range and resolution of X(jd)
-1d-4 .2   .2  0                     | range and resolution of X(sil)
-1d-4 .2   .2  0                     | range and resolution of X(kj)
-1d-4 .2   .2  0                     | range and resolution of X(wo)
-1d-4 .2   .2  0                     | range and resolution of X(ek)
-1d-4 .2   .2  0                     | range and resolution of X(hm)
-1d-4 .2   .2  0                     | range and resolution of X(ti)
-1d-4 .2   .2  0                     | range and resolution of X(q)
+0     1  0.1  0                     | range and resolution of X(fo)
+0     1  0.1  0                     | range and resolution of X(fa)
+0     1  0.1  0                     | range and resolution of X(jd)
+0     1  0.1  0                     | range and resolution of X(sil)
+0     1  0.1  0                     | range and resolution of X(kj)
+0     1  0.1  0                     | range and resolution of X(wo)
+0     1  0.1  0                     | range and resolution of X(ek)
+0     1  0.1  0                     | range and resolution of X(hm)
+0     1  0.1  0                     | range and resolution of X(ti)
+0     1  0.1  0                     | range and resolution of X(q)
+0     1  0.1  0                     | range and resolution of X(CO2)
 
 begin_excess_function
 W(qWL  H2O)   59d3     0  -0.82
@@ -2378,11 +2367,12 @@ W(hmWL H2O)   73d3     0  -0.66
 W(ekWL H2O)   73d3     0  -0.66
 W(tiWL H2O)   75d3     0  -0.67
 W(kWL  H2O)   44.9d3   0  -1.19
+W(CO2  H2O)   1d4                   | closes regular solution solvus at ~602 K for x*ln(x) model [which this isn't]
 end_excess_function
 
-2                                 | 2 sites
+2                                   | 2 sites
 
-11 1                              | molecular site
+12 1                                | molecular site
 z(foWL) = 1 foWL
 z(faWL) = 1 faWL
 z(jdWL) = 1 jdWL
@@ -2393,6 +2383,7 @@ z(ekL)  = 1 ekWL
 z(hmL)  = 1 hmWL
 z(tiL)  = 1 tiWL
 z(qWL)  = 1 qWL
+z(CO2)  = 1 CO2
 
 2 1                                 | water-vacancy site
 z(H) = 1 H2O
@@ -2401,7 +2392,6 @@ begin_dqf_corrections
 dqf(silL) =  6.72d3  -0.313*Pbar
 dqf(woL)  =  0.22d3  -0.12 *Pbar
 end_dqf_corrections
-
 
 end_of_model
                            --------------------------------------------------------
@@ -4826,6 +4816,13 @@ end_of_model
 begin_model
                             Sapphirine, O/D non-ideal, Wheller & Powell (JMG, 32, 287�299, 2014)
 
+                       ----------------------------------------------------------
+
+                            refer to the commentary of Sapp(KWP) for a resume of Sapphirine models
+                            in solution_model.dat
+
+                       ----------------------------------------------------------
+
                             Modified JADC model entered by Tim Johnson, 7 April 2014.
 
                                                       1      2      3
@@ -4897,7 +4894,7 @@ end_excess_function
 
 3                          | 3 site (M3, M456, T) configurational entropy model
 
-2 3.                       | 2 species on M46, 3 sites per formula unit
+2 3.                       | 2 species on M456, 3 sites per formula unit
 z(m456,fe) = 1 fspr
 
 4 1                        | 4 species on M3, 1 sites per formula unit.
@@ -5541,8 +5538,6 @@ z(Ca) = 1 gr
 z(Mg) = 1 py + 1 knor
 2 2.                                  2 species, site multiplicity of 2
 z(Al) = 1 gr + 1 alm + 1 py
-
-reach_increment 0
 
 end_of_model
                       --------------------------------------------------------
@@ -6404,8 +6399,6 @@ CO2
 ideal                      | internal excess function
 0                          | internal config entropy model
 
-reach_increment 1
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -6858,8 +6851,6 @@ z(Ca) = 0 + 1 an
 2 2                        | 2 species on T-site, 2 sites per formula (al-avoidance model)
 z(Al) = 1/2 + 1/2 an
 
-reach_increment 3
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -6884,8 +6875,6 @@ z(Na) = 1 abh
 
 2 2.                       | 2 species on T, mutiplicity = 2.
 z(Al) = 1/2 + 1/2 an
-
-reach_increment 3
 
 end_of_model
                       --------------------------------------------------------
@@ -6940,8 +6929,6 @@ end_excess_function
 2 1                        | 2 species on O-site, 1 site per formula unit.
 z(Na) = 1 abh
 
-reach_increment 3
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -6966,8 +6953,6 @@ end_excess_function
   1                        | 1 site mixing model
 2 1                        | 2 species on O-site, 1 site per formula unit.
 z(Na) = 1 abh
-
-reach_increment 3
 
 end_of_model
                       --------------------------------------------------------
@@ -6997,8 +6982,6 @@ O2       H2
 ideal
 0
 
-reach_increment 3
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -7018,8 +7001,6 @@ gph      O2       H2
 
 ideal
 0
-
-reach_increment 0
 
 end_of_model
                       --------------------------------------------------------
@@ -7049,8 +7030,6 @@ end_excess_function
   1                        | 1 site mixing model
 2 1                        | 2 species on O-site, 1 site per formula unit.
 z(Na) = 1 pa
-
-reach_increment 3
 
 end_of_model
                       --------------------------------------------------------
@@ -7921,8 +7900,6 @@ end_excess_function
 2 1                                   2 species, site multiplicity of 2
 z(Fe) = 1 mt
 
-reach_increment 3
-
 end_of_model
                       --------------------------------------------------------
 
@@ -8160,8 +8137,6 @@ end_excess_function
 
 2 1                        | 2 species, 1 sites per formula unit.
 z(na) = 1 ne
-
-reach_increment 3
 
 end_of_model
                       --------------------------------------------------------
@@ -8679,8 +8654,6 @@ end_van_laar_sizes
 begin_dqf_corrections
 dqf(an) = 7030 - 4.66 * T_K
 end_dqf_corrections
-
-reach_increment 0
 
 end_of_model
                       --------------------------------------------------------
@@ -9357,8 +9330,6 @@ z(Si,T1)   = 1 ccrts + 1 di + 1 hed + 1 jd + 1 acm
 
 [SiO6]                        | formula suffix, enter "none" for no suffix.
 
-reach_increment 0
-
 end_of_model
                            --------------------------------------------------------
 begin_model
@@ -9433,8 +9404,6 @@ z(b,cr)   = 1 mcrm
 z(b,al)   = 1 sp + 1 herc
 z(b,fe3+) = 1/2 mt + 1/2 mft
 z(b,mg)   = 1/2 mft
-
-reach_increment 3
 
 end_of_model
                   --------------------------------------------------------
@@ -11272,10 +11241,6 @@ begin_flagged_endmembers
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
-reach_increment 0
-                                    | low_reach and reach_increment conflict, set only one.
-| low_reach
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -11631,10 +11596,6 @@ begin_flagged_endmembers
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
-reach_increment 0
-                                    | low_reach and reach_increment conflict, set only one.
-low_reach
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -11938,10 +11899,6 @@ begin_flagged_endmembers
                                     | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
-reach_increment 0
-                                    | low_reach and reach_increment conflict, set only one.
-| low_reach
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -12128,8 +12085,6 @@ end_excess_function
 2 1                                   2 species, site multiplicity = 1.
 z(Fe) = 1 Fe-FCC
 
-reach_increment 3
-
 end_of_model
                             --------------------------------------------------------
 begin_model
@@ -12243,8 +12198,6 @@ O        SIO
 ideal
 0
 
-reach_increment 3
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -12340,8 +12293,6 @@ ideal
 
 0
 
-reach_increment 0
-
 refine_endmembers
 
 end_of_model
@@ -12389,8 +12340,6 @@ ideal
 
 0                          | ideal configurational entropy
 
-reach_increment 3
-
 end_of_model
 
                       --------------------------------------------------------
@@ -12420,8 +12369,6 @@ ideal
 
 0                           | ideal configurational entropy
 
-reach_increment 3
-
 end_of_model
 
 
@@ -12448,11 +12395,7 @@ ideal
 
 0                           | ideal configurational entropy
 
-reach_increment 3
-
 end_of_model
-
-
                       --------------------------------------------------------
 begin_model
                                       majoritic garnet from stixrude '11
@@ -12490,8 +12433,6 @@ z(Ca) = 1 gr
 3 2.                                  2 species, B site multiplicity 2
 z(Mg) = 1/2 maj
 z(Si) = 1/2 maj
-
-reach_increment 4
 
 end_of_model
                       --------------------------------------------------------
@@ -12532,8 +12473,6 @@ end_excess_function
 2 2.                                  2 species, site multiplicity = 2.
 z(mg) = 1 mrw
 
-reach_increment 4
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -12556,8 +12495,6 @@ end_excess_function
 
 2 1                                   2 species, site multiplicity = 1.
 z(mg) = 1 per
-
-reach_increment 4
 
 end_of_model
                       --------------------------------------------------------
@@ -12619,8 +12556,6 @@ alpha(apv)    0.39
 alpha(fpv)    1
 end_van_laar_sizes
 
-reach_increment 4
-
 end_of_model
                 ------------------------------------------------
 begin_model
@@ -12669,8 +12604,6 @@ end_excess_function
 z(Fe) = 1 Fe_LIQ
 z(Si) = 1 Si_LIQ
 
-reach_increment 6
-
 end_of_model
                       --------------------------------------------------------
 begin_model
@@ -12680,6 +12613,12 @@ begin_model
 
                             Entered June 26, 2013. JADC.
 
+                       ----------------------------------------------------------
+
+                            refer to the commentary of Sapp(KWP) for a resume of Sapphirine models
+                            in solution_model.dat
+
+                       ----------------------------------------------------------
 
                                                       1      2      3
                                                       M3     M456   T
@@ -13084,7 +13023,7 @@ FeC-BCC SiC-BCC
 0   1     .1  0                   | imod = 0 -> vacancy fraction on site 2
 ideal                             | internal excess model
 0                                 | 0 site entropy model -> internal model
-reach_increment 3
+
 end_of_model
                            --------------------------------------------------------
 begin_model
@@ -13102,7 +13041,7 @@ FeC-FCC SiC-FCC
 0   1     .1  0                   | imod = 0 -> vacancy fraction on site 2
 ideal                             | internal excess model
 0                                 | 0 site entropy model -> internal model
-reach_increment 3
+
 end_of_model
                            --------------------------------------------------------
 begin_model
@@ -13125,7 +13064,7 @@ end_excess_function
 1                                     1 site entropy model
 2 1                                   2 species, site multiplicity = 1.
 z(Fe) = 1 Fe_LIQ
-reach_increment 3
+
 end_of_model
                            --------------------------------------------------------
 begin_model
@@ -13149,8 +13088,6 @@ end_excess_function
 2 1                          2 species, site multiplicity = 1.
 z(Fe) = 1 Fe-FCC
 
-reach_increment 3
-
 end_of_model
                            --------------------------------------------------------
 begin_model
@@ -13167,8 +13104,6 @@ Cr-BCC
 ideal
 
 0
-
-reach_increment 3
 
 end_of_model
                            --------------------------------------------------------
@@ -13199,7 +13134,7 @@ end_excess_function
 | Nastia's version: 2 0.5333                   |2 species, 1 site multiplicity = 16/30
 2 0.6                      |2 species, 1 site, multiplicity = 18/30
 z(Fe) = 1  FeCr_sig
-reach_increment 3
+
 end_of_model
                            --------------------------------------------------------
 begin_model
@@ -13223,8 +13158,6 @@ end_excess_function
 2 1                        |two end-members mixing on one site and site multiplicity
 z(Fe) = 1 Feliq            |site fraction of Fe on this site in terms of end-members
 
-reach_increment 10
-
 end_of_model
                            --------------------------------------------------------
 begin_model
@@ -13245,8 +13178,6 @@ end_excess_function
 1
 2 1.
 z(C) = 1 FeCA1
-
-reach_increment 10
 
 end_of_model
                            --------------------------------------------------------
@@ -13501,6 +13432,7 @@ z(b,fe3+) = 1 dhem
 z(b,fe2+) = 1/2 dilm
 
 refine_endmembers
+|solvus_tolerance  0.2
 
 end_of_model
                       --------------------------------------------------------
@@ -14460,8 +14392,6 @@ z(t2,al) = 1/2 atgts
 z(m2,mg) = 1 atg
 z(fe,m2) = 1 fatg
 
-reach_increment 0
-
 end_of_model
 
                       --------------------------------------------------------
@@ -14619,8 +14549,6 @@ z(t1,al) = 1 lizts + 1 f3liz
 2 2.                       | 2 species on M0, 1 site per formula unit.
 
 z(m2,mg) = 1 liz + 1 lizts + 1 f3liz
-
-reach_increment 0
 
 end_of_model
                       --------------------------------------------------------
@@ -15087,8 +15015,6 @@ begin_dqf_corrections
 dqf(ts) 10000
 end_dqf_corrections
 
-reach_increment 1
-
 site_check_override
 
 end_of_model
@@ -15221,6 +15147,13 @@ end_of_model
 begin_model
                             Sapphirine, ideal, holland and powell '98
 
+                       ----------------------------------------------------------
+
+                            refer to the commentary of Sapp(KWP) for a resume of Sapphirine models
+                            in solution_model.dat
+
+                       ----------------------------------------------------------
+
                             config entropy corrected, P Goncalves/JADC, 10/1/03
 
                             the corrected model assumes (after the text on TJBH's
@@ -15296,6 +15229,39 @@ begin_model
                             NOTE: This model should be used in conjunction with a special
                             high temperature version of the HP data base (kel04ver.dat).
 
+                       ----------------------------------------------------------
+
+                            A resume of the HP sapphirine solution models in solution model.dat:
+                             
+                            in the h&p world sapphirine has 14 cation sites per 20 oxygen and, taking 
+                            the mg-al-si endmembers as an example, 3 limiting compositions (endmembers):
+
+                              spr4 - Mg(4)Si(2)Al(8)O(20)
+                              spr5 - Mg(3)Si(1)Al(10)O(20)
+                              spr7 - Mg(3.5)Si(1.5)Al(9)O(20)
+
+                            In terms of divalent (Mg,Fe2+) and trivalent (Al,Fe3+) ratio, again 
+                            simplifying by only considering Mg and Al, there are 3 sapphirine 
+                            models in perplex:
+
+                            Sa(KW) - 2014, between spr4 and spr5 - has the widest Al-range. In this 
+                            model, sapphirine has 4 octahedral (M) sites and 8 tetrahedral sites. 
+                            Probably, this model should be used with a ds6 database, as Akhila did.
+
+                            Sapp(TP) - 2010, as Sa(KW), but, supposedly, should be used with kel04ver.dat.
+
+                            Sapp(HP) - 1998-2003 - between spr4 and spr7 - the narrowest Al-range. 
+                            in contrast to the later models, this model has 8 octahedral sites and 6 
+                            tetrahedral sites. It was meant to be used with a ds5 database (<=2011), 
+                            but since it's ideal it can be used with any database, except, perhaps, kel04ver.dat.
+
+                            Sapp(KWP) 2004 - between spr4 and spr5 - The comments in solution_model.dat 
+                            imply this model, as in the later models, 4 octahedral sites and 10 
+                            tetrahedral sites. this model ostensibly should be used with kel04ver.dat 
+                            and models of the HP generation.
+
+                       ----------------------------------------------------------
+
                             Model originally entered by Pulak Sengupta, 7/16/05.
 
                             1) Site populations corrected to correspond to those of Kelsey et al
@@ -15317,6 +15283,9 @@ begin_model
                                       Dependent endmember:
 
                                       fsp5_i = spr5 +  3/4 * (fspr - spr4)
+
+                       ----------------------------------------------------------
+
 Sapp(KWP)
 abbreviation Sap
 full_name    sapphirine
@@ -16075,6 +16044,10 @@ z(Al,T) = 1 nsp + 1/2 isp + 1 nherc + 1/2 iherc
 begin_dqf_corrections
 dqf(qnd)  = -30000
 end_dqf_corrections
+
+refine_endmembers
+
+| solvus_tolerance 0.02
 
 end_of_model
                       --------------------------------------------------------

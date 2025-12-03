@@ -136,11 +136,12 @@ c----------------------------------------------------------------------
 !                                 l9 - max number of aqueous solute species in minimization programs.         
 !                                l10 - max number of parameters stored in caq for each phase.
 !                                l11 - max number of observations for MC inversion
-!                                l12 - max number of inversion parameters
+!                                l12 - max number of inversion parameters, fudged from k5 + k14 to 20
+!                                      to allow cst67 to be used in MINIM
 !                                nsp - max number of species in fluid speciation routines 
 
       parameter (l2=5,l3=l2+2,l5=1000,l6=500,l7=2048,l8=10,l9=150,
-     *           nsp=18,l10=nsp+l9+4,l11=400,l12=l2+k5)
+     *           nsp=18,l10=nsp+l9+4,l11=400,l12=l2+k5+1)
 !                                 m0 - max number of terms for a species site fraction?
 !                                 m1 - max number of terms in excess function
 !                                 m2 - max order of term in excess function
@@ -229,10 +230,12 @@ c                                 interim storage array
 
       integer jpoint, jiinc
       common/ cxt60 /jpoint,jiinc
-
-      integer jbulk, kbulk
+c                                 jbulk = icp + isat (i think)
+c                                 kbulk = jbulk + jmct
+c                                 lbulk = kbulk + ifct
+      integer jbulk, kbulk, lbulk
       double precision cblk
-      common/ cst300 /cblk(k5),jbulk,kbulk
+      common/ cst300 /cblk(k5),jbulk,kbulk, lbulk
 
       double precision ctot
       common/ cst3  /ctot(k1)
@@ -574,20 +577,23 @@ c                                 MC_fit common block:
       logical mcpert, mcflag, oprt, grh, invxpt, fprint, grdsch, seed, 
      *        mcgrid, grhobj, bayes, vital, consol, mcbulk, newstt,
      *        relerr, mchot, lmass, nomiss, missng, nogood, kiso, 
-     *        mcfit, ptonly, mcfrst, nmcov, unplus, mcmode
+     *        mcfit, ptonly, mcfrst, nmcov, unplus, mcmode, uncert,
+     *        mustft, fitdat, simlim, sftmax, sftpot, sftc
 
       integer mxpt, cxpt, random, cextra, optct, idxtra, ptry, unmeas,
      *        xptids, xptptr, xptnph, xpterr, mccpd, mcsol, mcid, 
      *        mcids, msloc, msolct, nparm, nunc, mcpct, mcpid, mctrm,
      *        mcj, mccoef, mccoid, lsqchi, blkptr, bstout, uncomp,
-     *        skp, jkdiag, lsqchm
+     *        skp, jkdiag, lsqchm, mpert, mresid, nmi1, nmi2, nmi3,
+     *        nmi4, nmi5, jfit, likfit, bayfit
 
       character xptnam*18
 
       double precision xptpt, xptblk, xptc, xpte, cprng, sprng, wcomp, 
-     *                 wextra, wmiss, oktol, scores, plow, pdelta,
+     *                 wextra, wmiss, oktol, scores, plow, pdelta, rss,
      *                 cmpmin, cmpmax, xskp, pdqf, ra2zs, un2ft, covar,
-     *                 pmode, emode, wmode, bstlco, bstbco, mxobjf
+     *                 pmode, emode, wmode, bstlco, bstbco, mxobjf, 
+     *                 xlow, xdelta, bay, lik, sftdel
 
       common/ cst68 /xptpt(l11,l2), xptblk(l11,k5), xskp(h5), pdqf,
      *               xptc(k5*l11), xpte(k5*l11), xpterr(l11), ra2zs,
@@ -595,23 +601,33 @@ c                                 MC_fit common block:
      *               wmiss, oktol, scores(l11), plow(l12), un2ft,
      *               pdelta(l12), cmpmin(k5,k5), cmpmax(k5,k5), wmode,
      *               covar(l12**2), pmode(l11,k5), emode(l11,k5), 
-     *               bstlco(l12** 2), bstbco(l12** 2), mxobjf,
+     *               bstlco(l12** 2), bstbco(l12** 2), mxobjf, rss,
+     *               xlow(l12), xdelta(l12), bay, lik, sftdel,
 c                                 integer
-     *               mccpd, mcsol, mxpt, cxpt, nparm, nunc(2), unmeas,
+     *               mccpd, mcsol, mxpt, nparm, mresid, nunc(2), unmeas,
      *               mctrm(k5), cextra, optct, idxtra, lsqchi, lsqchm,
      *               xptids(l11,k5), xptptr(l11,k5), xptnph(l11),
-     *               mcid(k5), mcids(k5), msolct(l11,h9), ptry,
+     *               mcid(k5), mcids(k5), msolct(l11,h9), ptry, mpert,
      *               msloc(l11,k5), mcpct(k5), mcpid(k5,3), skp(h5),
-     *               mccoef(k5,m1), mcj(k5,m1), mccoid(k5,m1,m3),
+     *               mccoef(k5,m1), mcj(k5,m1), mccoid(k5,m1,m3), cxpt,
      *               blkptr(l11), bstout, uncomp(k5), jkdiag(l12),
+     *               nmi1, nmi2, nmi3, nmi4, nmi5, jfit, likfit, 
+     *               bayfit,
 c                                 logical
      *               mcpert, oprt, mcflag(h9), random(3), grh, invxpt,
      *               fprint, grdsch, seed, mcgrid, grhobj, bayes,
-     *               vital, consol, mcbulk, newstt, kiso, mcfit,
+     *               vital, consol, mcbulk, newstt, kiso, mcfit, uncert,
      *               relerr, mchot, lmass, nomiss, missng, nogood,
-     *               ptonly, mcfrst, nmcov, unplus, mcmode(l11),
+     *               ptonly, mcfrst, nmcov, unplus, mcmode(l11), mustft,
+     *               fitdat, simlim(k5), sftmax, sftpot, sftc,
 c                                 character
      *               xptnam(l11)
+c                                 the untrasnformed nelder-mead variables
+c                                 go in their own common so that the block
+c                                 can be used in minim. note this requires
+c                                 the dimension (l2+k5) to be hardwired in minim
+       double precision xinv
+       common/ cst67 /xinv(20)
 c                                 -------------------------------------
 c                                 minim parameters
       integer mtry, conchk, jprint, iquad, kcount 
@@ -714,7 +730,7 @@ c                                 invunc = 2 = > perturb analytical data only
 c                                 invunc = 3 = > perturn thermodynamic data only
 c
 c                                 works in concert with invrnd set in subroutine bstmod
-c                                 invprt = F = > not uncertainty analysis(no pertrubations)
+c                                 invprt = F = > not uncertainty analysis(no perturbations)
 c                                 invprt = T = > uncertainty analysis
       logical invprt, uncrty
       integer invunc
@@ -756,3 +772,10 @@ c                                 io2  - special pointer to O2, for GCOH interna
 
       logical oned
       common/ cst82 /oned
+c                                 local dqf and solvus tolerance values
+      integer indq, idqf
+      double precision dqf
+      common/ cst222 /dqf(m3,m4),indq(m4),idqf
+
+      double precision dcp, soltol, loctol
+      common/ cst57 /dcp(k5,k19), soltol(h9), loctol

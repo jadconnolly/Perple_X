@@ -155,7 +155,7 @@ while ok == 0;
 
     end % end while
 
-    fclose (fid)
+    fclose (fid);
 
 end
 

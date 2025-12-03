@@ -111,29 +111,29 @@ begin_makes
  
  |                                kyco silica buffer
  | kyco = 1 ky - 1 cor
- | 0 0 0
+ |  DQF(J/mol) = 0
  |                                sphene + cc + ru + q CO2 buffer
  | tcrq = 1 cc + 1 ru + 1 q - 1 sph
- | 0. 0. 0.
+ |  DQF(J/mol) = 0
                                 | Ti phengite endmember for Auzanneau et al. (CMP 159:1-24, 2010) mica model
                                 | Gdqf corrected from -482876. to -13469.8 J/mol, D. Dolejs, Mar 6, 2010.
  | tip = 1 fcel + 1 geik - 1/2 fs
  | -13469.8  -14.694 .84
  
  | mthm = 6 hem - 4 mt             | mthm O2 buffer
- | 0
+ |  DQF(J/mol) = 0
  
  | qfm = 2 mt + 3 q  -3 fa         | qfm O2 buffer
- | 0
+ |  DQF(J/mol) = 0
  
  |emog = -1 fo - 2 gph + 1 mag + 1/2 en | EMOG O2 buffer
- |0
+ |  DQF(J/mol) = 0
  
  |ffm = -6 fa + 3 fs + 2 mt        | ffm O2 buffer
- |0
+ |  DQF(J/mol) = 0 |0
  
  |fff = 2 fa - 2 iron - 1 fs         | iron fa fs O2 buffer
- |0
+ |  DQF(J/mol) = 0
  
  | tbi = 1 phl - 1 fo + 1 ru + 1 q | Ti-biotite endmember for TiBio(HP) model
  | 45e3
@@ -159,7 +159,7 @@ DQF(J/mol) = 0
 fatg = 1 atg - 16 ta + 16 fta
 DQF(J/mol) = 0
  
-atgts = 4 clin + 9/17 atg - 24/17 br      | Tshermaks antigorite for Atg(PN) model (Padrón-Navarta et al., 2013, Lithos)
+atgts = 4 clin + 9/17 atg - 24/17 br      | Tshermaks antigorite for Atg(PN) model (Padrï¿½n-Navarta et al., 2013, Lithos)
 DQF = -2e3 + 46.1*T_K
  
 | ettore's makes:

@@ -1,5 +1,5 @@
 function [x,y,z,symb,xname,yname,zname,nvar,mvar,nrow,dnames,titl,type] ...
-    = function_to_get_perple_x_ss_file
+    = function_to_get_MC_fit_files
 
 % MatLab script to read Perple_X tab files see:
 %    perplex.ethz.ch/faq/Perple_X_tab_file_format.txt
@@ -37,11 +37,11 @@ symb = 0;
 
 while ok == 0
 
-    [filename, pathname, indx] = uigetfile({'*.tab;*.pts',' ';'*.*','All Files (*.*)'}, ...
+    [filename, pathname, indx] = uigetfile({'*.tab;*.pts',' ';'*.*', ...
+        'All Files (*.*)'}, ...
         'Select a Perple_X tab or pts file');
 
-
-    if indx == 0, errordlg('You did not choose a tab or pts file, I quit!'), break, end
+    if indx == 0, error('You did not choose a tab or pts file, I quit!'), end
 
     data_file=fullfile(pathname, filename);
 
@@ -88,13 +88,12 @@ while ok == 0
                 errordlg('The input data is not in spreadsheet format, set spreadsheet keyword to T and rerun WERAMI'); %not in ss format, write error
             end
 
-
             [xvar, ok] = listdlg('PromptString','Select the X-axis variable:','ListSize',[200 400],'SelectionMode','single','ListString',dnames{1});
-            if ok == 0, errordlg('You did not choose a variable, I quit!'), break, end
+            if ok == 0, errordlg('You did not choose a variable, I quit!'), error('Aborting Script'), end
             [yvar, ok] = listdlg('PromptString','Select the Y-axis variable:','ListSize',[200 400],'SelectionMode','single','ListString',dnames{1});
-            if ok == 0, errordlg('You did not choose a variable, I quit!'), break, end
+            if ok == 0, errordlg('You did not choose a variable, I quit!'), error('Aborting Script'), end
             [zvar, ok] = listdlg('PromptString','Select the Z-axis variable:','ListSize',[200 400],'SelectionMode','single','ListString',dnames{1});
-            if ok == 0, errordlg('You did not choose a variable, I quit!'), break, end
+            if ok == 0, errordlg('You did not choose a variable, I quit!'), error('Aborting Script'), end
 
             xname = dnames{1}{xvar};
             yname = dnames{1}{yvar};
@@ -144,15 +143,15 @@ while ok == 0
         dnames{1}{cols} = 'Score';
 
         %                                    variable name hack
-        dnames{1}{3} = '\itT\rm, K'
-        dnames{1}{2} = '\itP\rm, bar'
+        dnames{1}{3} = '\itT\rm, K';
+        dnames{1}{2} = '\itP\rm, bar';
         %                                    select the variables
         [xvar, ok] = listdlg('PromptString','Select the X-axis variable:','ListSize',[200 400],'SelectionMode','single','ListString',dnames{1});
-        if ok == 0, errordlg('You did not choose a variable, I quit!'), end
+        if ok == 0, error('You did not choose a variable, I quit!'), end
         [yvar, ok] = listdlg('PromptString','Select the Y-axis variable:','ListSize',[200 400],'SelectionMode','single','ListString',dnames{1});
-        if ok == 0, errordlg('You did not choose a variable, I quit!'), end
+        if ok == 0, error('You did not choose a variable, I quit!'), end
         [zvar, ok] = listdlg('PromptString','Select the Z-axis variable:','ListSize',[200 400],'SelectionMode','single','ListString',dnames{1});
-        if ok == 0, errordlg('You did not choose a variable, I quit!'), end
+        if ok == 0, error('You did not choose a variable, I quit!'), end
 
         xname = dnames{1}{xvar};
         yname = dnames{1}{yvar};
@@ -191,18 +190,6 @@ if mvar > 1
 
     switch choice
         case 'Yes'
-            ok = 0;
-
-        case 'No'
-            ok = 1;
-    end
-
-         i = find(z(:)<0);
-         z(i) = NaN;
-         i = find(z(:)>1);
-         z(i) = NaN;
-
-    if ok == 0
 
         % filter the x-values
         dlg_title = 'Filter dialog...';

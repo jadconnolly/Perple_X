@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.13 August 27, 2025.',
+     *     'Perple_X release 7.1.15 December 26, 2025.',
 
      *     'Copyright (C) 1986-2025 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -197,9 +197,6 @@ c                                 loop to find machine precision (mainly
 c                                 for nag)
       r1 = 1d-12
       r2 = 0d0
-c                                 set mcfit to distinguish MC_fit from MEEMUM
-c                                 as both are using IAM = 2.
-      mcfit = .false.
 
       do
          if (1d0+r1.eq.1d0) exit
@@ -1512,7 +1509,9 @@ c                                 auto refine summary
 
       end if
 
-      if (iam.lt.3) then
+      if (iam.eq.2.and..not.mcfit) lopt(50) = .false.
+
+      if (iam.eq.1.or.iam.eq.2.and..not.mcfit) then
 
          if (lopt(50)) then 
             call mertxt (tfname,prject,'_seismic_data.txt',0)
@@ -1541,6 +1540,8 @@ c                                 computational options this is redundant
          if (lopt(12)) then 
             if (iam.eq.1) then           
                call mertxt (tfname,prject,'_VERTEX_options.txt',0)
+            else if (mcfit.and.iam.eq.2) then 
+               call mertxt (tfname,prject,'_PERPLEX_options.txt',0)
             else if (iam.eq.2) then 
                call mertxt (tfname,prject,'_MEEMUM_options.txt',0)
             else if (iam.eq.3) then 
@@ -1642,6 +1643,8 @@ c                                 console
 c                                 file version, create the file name 
             if (iam.eq.1) then           
                call mertxt (tfname,prject,'_VERTEX_options.txt',0)
+            else if (mcfit.and.iam.eq.2) then 
+               call mertxt (tfname,prject,'_PERPLEX_options.txt',0)
             else if (iam.eq.2) then 
                call mertxt (tfname,prject,'_MEEMUM_options.txt',0)
             else if (iam.eq.3) then 
@@ -1842,6 +1845,8 @@ c                                 version
 c                                 generic blurb
       if (iam.eq.1) then 
          write (n,1000) 'VERTEX'
+      else if (mcfit.and.iam.eq.2) then 
+         write (n,1000) 'MC_FIT'
       else if (iam.eq.2) then 
          write (n,1000) 'MEEMUM'
       else if (iam.eq.3) then 
@@ -1912,11 +1917,18 @@ c                                 2d multilevel grid
 
                if (icopt.eq.2) write (n,1205) nopt(2)
 
-            else if (iam.eq.1.and.icopt.eq.7) then 
+            else if (iam.eq.1.and.icopt.eq.7
+     *                        .or.icopt.gt.8.and.icopt.lt.13) then 
 c                                 1d fractionation grid
-                write (n,1210) grid(4,1),grid(4,2),l7
+                write (n,1210) grid(4,1),grid(4,2),l7,
+c                                 zero_bulk
+     *                         nopt(11),
+c                                 fractionation_lo_limit
+     *                         nopt(32),
+c                                 fractionation_hi_limit
+     *                         nopt(33)
 
-            end if 
+            end if
 c                                 closed or open composition space
             if (iam.eq.1.and.icont.gt.1) write (n,1220) lopt(1)
 
@@ -2156,7 +2168,7 @@ c                                 thermo options for frendly
      *        4x,'scatter-increment      ',g7.1E1,4x,
      *           '[1e-2] 1e-2 => 1e-7',/,
      *        4x,'solvus_tolerance_II     ',a7,3x,'[0.2] 0->1 ',/,
-     *        4x,'zero_mode              ',e7.1E1,4x,
+     *        4x,'zero_mode              ',e7.1E2,4x,
      *           '[1e-6] 0->1; < 0 => off')
 1190  format (/,2x,'1D grid options:',//,
      *        4x,'y_nodes               ',i3,' /',i3,4x,'[40/40] >0, '
@@ -2175,9 +2187,13 @@ c                                 thermo options for frendly
      *          ,'<',i2,/,
      *        4x,'linear_model            ',a3,7x,'[on] off')
 1205  format (4x,'liquidus_resolution    ',f4.2,7x,'[1] K or bar')
-1210  format (/,2x,'Fractionation path options:',//,
+1210  format (/,2x,'Fractionation calculation options:',//,
      *        4x,'1d_path               ',i3,' /',i3,4x,
-     *           '[40/160] >0, <',i4)
+     *           '[40/160] >0, <',i4,/,
+     *        4x,'zero_bulk              ',e7.1E2,4x,'[1e-6] 0->1',/,
+     *        4x,'fractionation_lo_limit ',f4.2,7x,'[0] 0->1',/,
+     *        4x,'fractionation_hi_limit ',f4.2,7x,'[0] lo_limit->1')
+
 1220  format (/,2x,'Composition options:',//,
      *        4x,'closed_c_space          ',l1,9x,'[T] F')
 1230  format (/,2x,'Input/Output options:',//,
@@ -2299,7 +2315,9 @@ c----------------------------------------------------------------------
 
          if (card.ne.' ') then 
 
-            read (card,'(400a)') chars
+c                                 read() may stop at any embedded comma!
+c           read (card,'(400a)') chars
+            call casgn(chars,card,400)
 c                                 find end of data marker '|'
             com = iscan (1,lchar,'|') - 1
 c                                 find a non blank character
@@ -4058,7 +4076,9 @@ c----------------------------------------------------------------------
 
          if (card.ne.' ') then 
 
-            read (card,'(400a)') chars
+c                                 read() may turn commas into blanks!
+c           read (card,'(400a)') chars
+            call casgn(chars,card,400)
 c                                 find end of data marker '|'
             com = iscan (1,lchar,'|') - 1
 c                                 '|' in first column
@@ -4837,7 +4857,9 @@ c----------------------------------------------------------------------
 
          if (card.ne.' ') then 
 
-            read (card,'(400a)') chars
+c                                 read() may stop at any embedded comma!
+c           read (card,'(400a)') chars
+            call casgn(chars,card,400)
 c                                 find end of data marker '|'
             com = iscan (1,lchar,'|') - 1
 c                                 find a non blank character
@@ -4884,6 +4906,69 @@ c                                 no values
             strg = key
 
          end if 
+
+      end if 
+
+      end
+
+
+      subroutine redfnm (lun,ier,fnm)
+c----------------------------------------------------------------------
+c this routine seeks a non-blank card that contains a file name
+
+c the card is also loaded into chars with:
+
+c  length - position of last non-blank character
+c  com    - position of the comment character
+c----------------------------------------------------------------------    
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer lun, ier, iscan, iscnlt, ibeg, iblank
+
+      character fnm*(*)
+
+      external iscan, iscnlt
+
+      integer length,com
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
+c----------------------------------------------------------------------
+
+      ier = 0 
+
+      do 
+
+         read (lun,'(a)',iostat=ier) card
+
+         if (card.ne.' ') then 
+
+            read (card,'(400a)') chars
+c                                 find end of data marker '|'
+            com = iscan (1,lchar,'|') - 1
+c                                 find a non blank character
+            ibeg = iscnlt (1,com,' ')
+c                                 find the next blank
+            iblank = iscan (ibeg,com,' ')
+c                                 len < ibeg => only comments
+            if (ibeg.ge.com) cycle
+c                                 full record length
+            length = iscnlt (lchar,1,' ')
+
+            exit 
+
+         else if (ier.ne.0) then
+
+            exit 
+
+         end if 
+
+      end do 
+
+      if (ier.eq.0) then 
+c                                 load chars into fnm
+         write (fnm,'(400a)') chars(ibeg:iblank)
 
       end if 
 
@@ -7319,9 +7404,14 @@ c-----------------------------------------------------------------------
       logical fp
       common/ cxt32 /ifp(k10), fp(h9)
 
+      integer iam
+      common/ cst4 /iam
+
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 c-----------------------------------------------------------------------
+      if (iam.eq.2.and.mcfit) return
+
       call mertxt (tfname,prject,'_seismic_data.txt',0)
 
       call inqopn (n8,tfname)
@@ -8843,7 +8933,10 @@ c                                 iam - 15 - convex
             write (*,1170) n2name(1:nblen(n2name))
          end if
 c                                 open print/plot files if requested
-         if (prt.ne.' '.and.prt.ne.'no_'.and.iam.ne.13) then 
+         if ((prt.ne.' '.and.prt.ne.'no_'.and.
+     *        iam.ne.13.and.iam.ne.2).or.
+     *      (prt.ne.' '.and.prt.ne.'no_'.and.
+     *        iam.eq.2.and..not.mcfit)) then
 
             io3 = 0 
             call mertxt (name,prject,'.prn',0)
@@ -8948,9 +9041,6 @@ c----------------------------------------------------------------------
 c                                 solution model names
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
-
-      double precision dcp,soltol
-      common/ cst57 /dcp(k5,k19),soltol
 
       character tname*10
       logical refine, lresub
@@ -14063,16 +14153,42 @@ c read yes/no answer, true if yes.
 c----------------------------------------------------------------------
       implicit none
 
+      integer ier
+
       character y*1
 c--------------------------------------------
-      read (*,'(a)') y
+      read (*,'(a)',iostat=ier) y
 
-      if (y.ne.'y'.and.y.ne.'Y') then 
+      if (ier.ne.0.or.(y.ne.'y'.and.y.ne.'Y')) then 
          readyn = .false.
       else
          readyn = .true.
       end if
 
+      end
+
+      subroutine casgn(chrs,strg,n)
+c----------------------------------------------------------------------
+c     asgn - assign a string to a char*1 array with blank padding
+c            intended to be a substitute for read(strg,'(nnnA)') chrs
+c            to avoid any legacy Fortran I/O treatment of commas as
+c            blanks in input
+c----------------------------------------------------------------------
+
+      implicit none
+
+      integer n
+      character strg*(*), chrs(*)*1
+
+      integer i
+
+      do i=1,n
+         if (i.le.len(strg)) then
+            chrs(i) = strg(i:i)
+         else
+            chrs(i) = ' '
+         end if
+      end do
       end
 
       integer function nblen(str)
@@ -14087,4 +14203,101 @@ c nblen - function to return nonblank length of a string
          if (str(i:i) .ne. ' ') exit
       end do
       nblen = i
+      end
+
+
+      logical function getnbs(str,i,nbs)
+c--------------------------------------------------------------- 
+c     getnbs -- Get ith nonblank string from string str, return it in nbs.
+c               If found, return true.  If not there, return false.
+
+      character str*(*), nbs*(*)
+      integer i, j, ix, icnt, ibeg, is
+
+      ix = 1
+      do is=1,i
+c        Find next nonblank.
+         do j=ix,len(str)
+            if (str(j:j) .ne. ' ') go to 20
+         end do
+         getnbs = .false.
+         return
+
+20       continue
+         ibeg = j
+         icnt = index(str(ibeg:),' ')
+         if (icnt .eq. 0) icnt = len(str)-ibeg+1
+         ix = ibeg + icnt
+      end do
+      nbs = str(ibeg:ibeg+icnt-1)
+      getnbs = .true.
+      end
+
+      logical function getkwd(line,key,val)
+c--------------------------------------------------------------- 
+c     getkwd -- Get a keyword = value pair from a string; keyword/value is
+c               delimited by blanks.
+c               If found, return true.  If not there, return false.
+c               If found, line is blanked out so following call can retrieve
+c               next key = value pair
+c--------------------------------------------------------------- 
+      implicit none
+
+      character line*(*), key*(*), val*(*)
+
+      logical getnbs
+      external getnbs
+
+      integer nblen
+      external nblen
+
+      integer is, ie, ix
+
+1000  format('**Missing keyword value for key ',a)
+
+      do while(getnbs(line,1,key))
+c                                 have a key
+         is = nblen(key)
+         ix = index(key,'=')
+         if (ix.ne.0) then
+c                                 have key=xx (xx could be anything, even blank)
+            key(ix:) = ' '
+            ix = index(line,'=')
+            line(ix:ix) = ' '
+            is = nblen(key)
+            if (.not.getnbs(line,2,val)) then
+               write(*,1000) key(1:is)
+               exit
+            end if
+         else if (getnbs(line,2,val)) then
+c                                 key =xx (xx could be anything, even blanks)
+            if (val(1:1).ne.'=') then
+               write(*,1000) key(1:is)
+               line(1:index(line,key(1:is))+is-1) = ' '
+               cycle
+            end if
+            if (val(2:2).eq.' '.and..not.getnbs(line,3,val)) then
+               write(*,1000) key(1:is)
+               exit
+            elseif (val(2:2).ne.' ') then
+               ix = index(line,'=')
+               line(ix:ix) = ' '
+               if (.not.getnbs(line,2,val)) then
+                  write(*,1000) key(1:is)
+                  exit
+               end if
+            end if
+         else
+            write(*,*) '**Missing = and value for key',key(1:is)
+            exit
+         end if
+c                                 have supposed keyword (key) and value (val)
+c                                 blank out line in preparation for next one
+         ie = nblen(val)
+         line(1:index(line,val(1:ie))+ie-1) = ' '
+         getkwd = .true.
+         return
+
+      end do
+      getkwd = .false.
       end

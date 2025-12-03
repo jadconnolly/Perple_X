@@ -806,7 +806,7 @@ c----------------------------------------------------------------------
       dx1 = .75d0*dcx*ascale
       dy1 = .75d0*dcy*ascale
 
-      call pselip (x,y,.25d0*dcx,.25d0*dcy,1d0,0d0,0,0,1)
+      call pselip (x,y,.25d0*dcx,.25d0*dcy,1d0,0d0,0)
 
       if (plopt(3)) then 
 c                                 numeric field label lex(k)
@@ -891,16 +891,20 @@ c psgrd1 - subprogram draw 1d gridded minimization diagrams.
 
       include 'perplex_parameters.h'
 
+      integer nlmx
+      parameter (nlmx=50)
+
       logical readyn
 
       character text*(lchar)
 
       integer k, hfill, jop0,
      *        j, ipoly, idr(k5), iop5, iop6, jmin, jmax,
-     *        iop7, imatch, iend, ivar, jj, ntot
+     *        iop7, imatch, iend, ivar, jj, ntot,
+     *        nlab, ngix, ngrp(nlmx), klab(nlmx)
 
-      double precision rline, x, y, x1, y1, x2, y2, xl,
-     *                 x10, rfill, dx
+      double precision x, y, x1, y1, x2, y2, xl,
+     *                 x10, rfill, dx, xldx, xlab(nlmx), xlmn, xlmx
 
       external readyn
 
@@ -923,6 +927,7 @@ c                                default fill mode by variance:
       x    = xmin - dx
       jmin = loopy
       jmax = 0 
+      nlab = 0
 
       do j = 1, loopy
 
@@ -940,8 +945,6 @@ c                                 get range of centroids
          if (j.gt.jmax) jmax = j 
          if (j.lt.jmin) jmin = j
  
-         rline = 0d0
-
          call gety (j,x,x1,x2)
 
          if (fill) then 
@@ -969,7 +972,8 @@ c                                 white (no fill)
 
             else if (ivar.le.6) then 
 c                                 for di-septa-variant use gray-scale
-               rfill = 1d0 - dfloat (ivar) * 0.2d0
+c              rfill = 1d0 - dfloat (ivar) * 0.2d0
+               rfill = 1d0 - dfloat (ivar-1) * 0.16667d0
                call psrecr (x1,x2,y1,y2,0d0,0d0,rfill)
 
             else 
@@ -993,14 +997,17 @@ c                                 use pattern fills
 
          if (label) then
 c                                 place a label on the field
+            nlab = nlab + 1
             jj = (jmin+jmax)/2
             xl = xmin + (jj-1)*dx
+            xlab(nlab) = xl
+            klab(nlab) = ipoly
 
-            call pselip (xl,y,0.25d0*dcx,0.25d0*dcy,1d0,0d0,0,0,1) 
-            call psbtxt (ipoly, text, iend)
-            call pssctr (ifont, ascale, ascale, 90d0)
-            call pstext (xl-0.7*dcx*ascale,y+3.5*dcy*ascale,
-     *                   text,iend)
+            call pselip (xl,y,0.25d0*dcx,0.25d0*dcy,1d0,0d0,0) 
+c           call psbtxt (ipoly, text, iend)
+c           call pssctr (ifont, ascale, ascale, 90d0)
+c           call pstext (xl-0.7*dcx*ascale,y+3.5*dcy*ascale,
+c    *                   text,iend)
 
             jmin = loopy
             jmax = 0 
@@ -1023,6 +1030,74 @@ c                                  true phase assemblages.
          x = x + dx  
 
       end do 
+c                                  label, and check label overlap
+      if (label .and. nlab.gt.0) then
+c                                  first pass checks for any overlap
+         ngix = 0
+         ngrp(1:nlmx) = 0
+         do j = 2, min(nlab,nlmx)
+            x1 = xlab(j-1)
+            x2 = xlab(j)
+            if (abs(x1-x2) .lt. abs(dcx*ascale)) then
+               if (ngrp(j-1).eq.0) ngix = ngix + 1
+               ngrp(j) = ngix
+            end if
+         end do
+
+c                                  find extent of all overlaps
+         jmin = nlmx
+         jmax = 0
+         do j = 1, ngix
+            do k = 2, min(nlab,nlmx)
+               if (ngrp(k).eq.j) then
+                  jmin = min(jmin,k-1)
+                  jmax = max(jmax,k)
+               end if
+            end do
+            ngrp(jmin) = j
+c                                  have this one
+            if (jmin.gt.1) then
+               xlmn = xlab(jmin-1)
+            else
+               xlmn = xmin
+            end if
+            if (jmax.ge.nlmx) then
+               xlmx = xmax
+            else
+               xlmx = xlab(jmax+1)
+            end if
+            xldx = (1+jmax-jmin)*2.0d0*dcx*ascale
+            k = (jmax+jmin)/2
+            x1 = xlab(k) + xldx/2
+            x2 = xlab(k) - xldx/2
+            if (x1.lt.xlmn) then
+               x1 = xlmn
+               x2 = x1 + xldx
+            end if
+            if (x2.gt.xlmx) then
+               x2 = xlmx
+               x1 = x2 - xldx
+            end if
+            x = x1 - (2d0-0.7d0)*dcx*ascale
+            do k = jmin, jmax
+               call psbtxt (klab(k), text, iend)
+               call pssctr (ifont, ascale, ascale, 90d0)
+               call pstext (x,y+3.5*dcy*ascale,text,iend)
+               call psline (xlab(k),y,x+0.7*dcx*ascale,y+3.4*dcy*ascale,
+     *                      1d0,1d0)
+               x = x + 2.0d0*dcx*ascale
+            end do
+         end do
+c                                  label all non-overlapped fields
+         do j = 1, nlab
+            if (ngrp(j).eq.0) then
+               call psbtxt (klab(j), text, iend)
+               call pssctr (ifont, ascale, ascale, 90d0)
+               call pstext (xlab(j)-0.7*dcx*ascale,y+3.5*dcy*ascale,
+     *                      text,iend)
+            end if
+         end do
+      end if
 
       call psax1d (jop0)
 
@@ -1734,7 +1809,7 @@ c        print*,'y: ',(yy(j),j=1,3)
          if (lmult .or. pltcmp)
 c           if (lmult .or. .not.lnophs)
      *         call pselip (yy(2), yy(3), 0.50d0*dcx, 0.50d0*dcy,
-     *                      1d0, 0d0, 7, 0, 1)
+     *                      1d0, 0d0, 7)
             k = nblen (text(1:14))
             if (id.lt.0) then
                call pstext (yy(2)+dcx*ascale,yy(3)+.7d0*dcy*ascale,
@@ -1781,7 +1856,7 @@ c                                 first one centered above location (a hack)
 !            call trneq (xc,yc)
 !
 !            call pselip (xc, yc, 0.5d0*dcx, 0.5d0*dcy,
-!     *                      1d0, 0d0, 7, 0, 1)
+!     *                      1d0, 0d0, 7)
 !c                                 add the label
 !            call trneq (x,y)
 !c                                 set character transformation
@@ -2092,7 +2167,7 @@ c                                 debug code to plot nodes for assemblage
 c                 if (off) then
 c                    call pselip (
 c    *               xc,yc, 0.25d0*dcx, 0.25d0*dcy,
-c    *               1d0,0d0,0,0,1
+c    *               1d0,0d0,0
 c    *            )
 c                 end if
                   x = x + xc
@@ -2134,7 +2209,7 @@ c              cycle
                call trneq(x,y)
             end if
 c           print*,'Put ',text(1:iend),' at ',x,y
-c           call pselip (x,y, 0.25d0*dcx, 0.25d0*dcy, 1d0,0d0,0,0,1)
+c           call pselip (x,y, 0.25d0*dcx, 0.25d0*dcy, 1d0,0d0,0)
             x = x+dcx*ascale-xdc*iend
             y = y+.7d0*dcy*ascale
             lloc(1,i) = x
@@ -2308,7 +2383,7 @@ c----------------------------------------------------------------------
 c                                 draw axes box
 10    call psrect (xmin,xmax,ymin,ymin+4d0*dcy,1d0,width,0)
 c                                 draw bottom horizontal axis
-      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2)
+      call psxtic (ymin, x0, dx, ytic, ytic1, ytic2, .false.)
  
       call pssctr (ifont, nscale, nscale, 0d0)
 c                                  numeric axis labels:

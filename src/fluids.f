@@ -35,7 +35,6 @@ c    7 - Graphite buffered COH MRK fluid
 c    8 - Graphite buffered COH hybrid-RK fluid
 c    9 - Maximum X(H2O) GCOH fluid Cesare & Connolly 1993
 c   10 - X(O) GCOH-fluid hybrid-MRK Connolly & Cesare 1993
-c   11 - X(O) GCOH-fluid MRK Connolly and Cesare 1993
 c   12 - X(O) GCOHS Connolly & Cesare 1993
 c   13 - X(H) H2-H2O-hybrid
 c   14 - hogbrd, don't use this if you dont know what it is.

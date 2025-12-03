@@ -54,7 +54,7 @@ elseif type == 1 % 2d - table -> 2/3d plot
     [idx, tf] = listdlg('ListString', choices2d,...
         'SelectionMode', 'Single', 'PromptString', 'Select plot style', 'Initialvalue', 1,'Name', 'Make choice');
 
-    if ~tf, display('You did not choose a plot type, I quit!'),return,end
+    if ~tf, disp ('You did not choose a plot type, I quit!'),return,end
 
     if idx == 1
 
@@ -74,7 +74,7 @@ elseif type == 1 % 2d - table -> 2/3d plot
         def = {num2str(amin+da/2),num2str(amax-da/2),num2str(da)};
         c = inputdlg(prompt,dlg,num_lines,def);
         helpdlg('Carefully select contours for labeling. When done, press RETURN while the Graph window is the active window.');
-        contours = [str2num(c{1}):str2num(c{3}):str2num(c{2})];
+        contours = str2double(c{1}):str2double(c{3}):str2double(c{2});
         %            contours = [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 15, 20, 30, 40]
         % contours = [0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02,  0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 15, 20, 30, 40]
         [C,h]= contour(x,y,a,contours);clabel(C,h,'manual'); d2 = 1;
@@ -101,12 +101,6 @@ elseif type == 3 % 2d pts file plots
     mt(1:12) = ['o','o','s','s','v','v','o','o','s','s','v','v'];
     %                                                 first figure
     hold on
-    isym = 0;
-
-    isym1 = 0;
-    isym2 = 0;
-    isym3 = 0;
-    isym4 = 0;
     %                               group points by symbol
     indx(1:5,1:nrow) = 0;
     %                               best central model symbol = 1
@@ -122,9 +116,9 @@ elseif type == 3 % 2d pts file plots
     jct(3) = size(j,1);
     indx(3,1:size(j,1)) = j;
 
-    if indx(2,1) > 0 & indx(1,1) > 0
+    if indx(2,1) > 0 && indx(1,1) > 0
         %                               best perturbed model
-        j = find(a(:) == min(a(:)))
+        j = find(a(:) == min(a(:)));
 
         if j ~= indx(1,1)
             jct(4) = 1;
@@ -137,10 +131,6 @@ elseif type == 3 % 2d pts file plots
 
     j = find(symb>=4);
     indx(5,1:size(j,1)) = j;
-
-    if indx(5,1) > 0
-        errordlg ('invalid symbol code in *.pts file, valid codes [1,4]');
-    end
 
     hold on
 
@@ -155,7 +145,7 @@ elseif type == 3 % 2d pts file plots
 
             if i == 1
 
-                plot3 (x(indx(i,1)),y(indx(i,1)),a(indx(i,1)),['o'], ...
+                plot3 (x(indx(i,1)),y(indx(i,1)),a(indx(i,1)),'o', ...
                     'MarkerFaceColor',"#EDB120",...
                     'MarkerEdgeColor','k',...
                     'MarkerSize',25);
@@ -184,12 +174,12 @@ elseif type == 3 % 2d pts file plots
                     t(i) = cellstr('Central model tries');
                 else
                     t(i) = cellstr('Perturbations');
-                    jplot = i
+                    jplot = i;
                 end
 
             elseif i == 4
 
-                plot3 (x(indx(i,1)),y(indx(i,1)),a(indx(i,1)),['o'], ...
+                plot3 (x(indx(i,1)),y(indx(i,1)),a(indx(i,1)),'o', ...
                     'MarkerFaceColor',"#0072BD",...
                     'MarkerEdgeColor','none',...
                     'MarkerSize',25);
@@ -207,8 +197,6 @@ elseif type == 3 % 2d pts file plots
     end
 
     hold off
-
-    fig1a = figure(1)
 
     % choice = questdlg('Fit a surface to the points','Spline fit','Yes','No','Yes');
     % 
@@ -240,16 +228,16 @@ elseif type == 3 % 2d pts file plots
             'SelectionMode', 'Single', 'PromptString', ...
             'Select plot style', 'Initialvalue', 1,'Name', 'Make choice');
 
-        if ~tf, display('You did not choose a plot type, I quit!'),return,end
+        if ~tf, disp ('You did not choose a plot type, I quit!'),return,end
 
         if idx == 1
 
-            surf(xgrid,ygrid,agrid); d2 = 0; light; shading interp; lighting phong; zlabel(zname);
+            surf(xgrid,ygrid,agrid); light; shading interp; lighting phong; zlabel(zname);
             colorbar; %uncomment for colorbar
 
         elseif idx == 2
 
-            [C,h]=contour(xgrid,ygrid,agrid); clabel(C,h); d2 = 1;
+            [C,h]=contour(xgrid,ygrid,agrid); clabel(C,h); 
 
         elseif idx == 3
 
@@ -260,14 +248,14 @@ elseif type == 3 % 2d pts file plots
             def = {num2str(amin+da/2),num2str(amax-da/2),num2str(da)};
             c = inputdlg(prompt,dlg,num_lines,def);
             helpdlg('Carefully select contours for labeling. When done, press RETURN while the Graph window is the active window.');
-            contours = [str2num(c{1}):str2num(c{3}):str2num(c{2})];
+            contours = str2double(c{1}):str2double(c{3}):str2double(c{2});
             %            contours = [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 15, 20, 30, 40]
             % contours = [0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02,  0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 15, 20, 30, 40]
-            [C,h]= contour(xgrid,ygrid,agrid,contours);clabel(C,h,'manual'); d2 = 1;
+            [C,h]= contour(xgrid,ygrid,agrid,contours);clabel(C,h,'manual'); 
 
         elseif idx ==4
 
-            [C,h]=contourf(xgrid,ygrid,agrid); clabel(C,h); d2 = 1;
+            [C,h]=contourf(xgrid,ygrid,agrid); clabel(C,h); 
 
         end
 
@@ -276,43 +264,28 @@ elseif type == 3 % 2d pts file plots
     choice = questdlg('Plot error ellipse','Covariance','Yes','No','Yes');
 
     switch choice
-        case 'Yes'
-            hold on
-            % zcoor = max(a);
-            % % filter out NaNs if user has restricted data range
-            % xnans = isnan(x);
-            % ynans = isnan(y);
-            % anans = isnan(a);
-            % npts = 0;
-            % dim = size(x);
-            % mpts = dim(1);
-            % 
-            % for i = 1:mpts
-            %     if xnans(i) == 0 && ynans(i) ==0 && anans(i) == 0
-            %         npts = npts + 1;
-            %         xnum(npts) = x(i);
-            %         ynum(npts) = y(i);
-            %     end
-            % end
 
-            %[avg,covariance] = function_to_plot_covariance_ellipse([xnum ynum],zcoor);
-            [avg,covariance] = function_to_plot_covariance_ellipse([x y]);
+        case 'Yes'
+
+            hold on
+
+            [~,covariance] = function_to_plot_covariance_ellipse([x y], jplot);
+
             if jplot ~= 0
+
                 % strg = string(t(jplot)) + newline + ...
                 %     ['  \mu_{',xname,'} = ',num2str(avg(1)),...
                 %     ' \pm ',num2str(sqrt(covariance(1,1)))] + ...
                 %     newline + ['  \mu_{',yname,'} = ',num2str(avg(2)),...
                 %     ' \pm ',num2str(sqrt(covariance(2,2)))];
 
-                strg = string (['\sigma_{\itT\rm}=\pm',num2str(sqrt(covariance(1,1)))])
+                strg = string (['\sigma_{\itT\rm}=\pm',num2str(sqrt(covariance(1,1)))]);
                 strg = string(strg) + newline ...
                     + ['\sigma_{\itP\rm}=\pm',num2str(sqrt(covariance(2,2)))];
                 t(jplot) = cellstr(strg);
-                t(6) = {""}; % cellstr('Covariance');
-            end
+                t(6) = {""}; 
 
-        case 'No'
-            ok = 1;
+            end
     end
 
     xlabel(xname);
@@ -322,11 +295,9 @@ elseif type == 3 % 2d pts file plots
     axis square;
     box;
 
-    fig1b = figure(1)
-
-    if iplot > 0, 
-        if jplot > 0,
-            if jct(4) == 1, 
+    if iplot > 0
+        if jplot > 0
+            if jct(4) == 1
                 legend ([t(1) t(2) t(4)]);
             else
                 legend ([t(1) t(2)]);
@@ -335,7 +306,6 @@ elseif type == 3 % 2d pts file plots
             legend ([t(1) t(3)]); 
         end
     end
-
 
     %view(0,0) % XZ
     %view(0,90) % XY

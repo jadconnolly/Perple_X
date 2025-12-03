@@ -82,11 +82,11 @@ Fe-staurolite              fst             Fe4Al18Si7.5O48H4
 forsterite                 fo              Mg2SiO4                                                                                          
 gehlenite                  geh             Ca2Al2SiO7                                                                                       
 grossular                  gr              Ca3Al2Si3O12                                                                                     
-hydrouscordierite          hcrd            Mg2Al4Si5O18›H2O                                                                                 
+hydrouscordierite          hcrd            Mg2Al4Si5O18ï¿½H2O                                                                                 
 hydroxy-topaz              tpz             Al2SiO4(OH)2                                                                                     
 kyanite                    ky              Al2SiO5                                                                                          
 larnite-bredigite          larn            Ca2SiO4                                                                                          
-lawsonite                  law             CaAl2Si2O7(OH)2›H2O                                                                              
+lawsonite                  law             CaAl2Si2O7(OH)2ï¿½H2O                                                                              
 merwinite                  merw            Ca3MgSi2O8                                                                                       
 Mg-chloritoid              mctd            MgAl2SiO5(OH)2                                                                                   
 Mg-staurolite              mst             Mg4Al18Si7.5O48H4                                                                                
@@ -165,24 +165,24 @@ pyrophyllite               prl             Al2Si4O10(OH)2
 talc                       ta              Mg3Si4O10(OH)2                                                                                   
 tschermak-talc             tats            Mg2Al2Si3O10(OH)2                                                                                
 albite                     ab              NaAlSi3O8                                                                                        
-analcite                   anl             NaAlSi2O6›H2O                                                                                    
+analcite                   anl             NaAlSi2O6ï¿½H2O                                                                                    
 anorthite                  an              CaAl2Si2O8                                                                                       
 coesite                    coe             SiO2                                                                                             
 cristobalite               crst            SiO2                                                                                             
-heulandite                 heu             CaAl2Si7O18›6H2O                                                                                 
+heulandite                 heu             CaAl2Si7O18ï¿½6H2O                                                                                 
 highalbite                 abh             NaAlSi3O8                                                                                        
 kalsilite                  kals            KAlSiO4                                                                                          
-laumontite                 lmt             CaAl2Si4O12›4H2O                                                                                 
+laumontite                 lmt             CaAl2Si4O12ï¿½4H2O                                                                                 
 leucite                    lc              KAlSi2O6                                                                                         
 meionite                   me              Ca4Al6Si6O24(CO3)                                                                                
 microcline                 mic             KAlSi3O8                                                                                         
 nepheline                  ne              NaAlSiO4                                                                                         
 quartz                     q               SiO2                                                                                             
 sanidine                   san             KAlSi3O8                                                                                         
-stilbite                   stlb            CaAl2Si7O18›7H2O                                                                                 
+stilbite                   stlb            CaAl2Si7O18ï¿½7H2O                                                                                 
 stishovite                 stv             SiO2                                                                                             
 tridymite                  trd             SiO2                                                                                             
-wairakite                  wrk             CaAl2Si4O12›H2O3                                                                                 
+wairakite                  wrk             CaAl2Si4O12ï¿½H2O3                                                                                 
 baddeleyite                bdy             ZrO2                                                                                             
 corundum                   cor             Al2O3                                                                                            
 geikielite                 geik            MgTiO3                                                                                           
@@ -233,8 +233,8 @@ Mg liquid (in KFMASH)      mliq            K3Mg0:5Al4Si19:5O47
 Silica liquid              qL              SiO2                                                                                             
 Sillimanite liquid         silL            Al2SiO5                                                                                          
 H+(aq)                     H+                                                                                                               
-Cl­(aq)                    Cl-                                                                                                              
-OH­(aq)                    OH-                                                                                                              
+Clï¿½(aq)                    Cl-                                                                                                              
+OHï¿½(aq)                    OH-                                                                                                              
 Na+(aq)                    Na+                                                                                                              
 K+(aq)                     K+                                                                                                               
 Ca2+(aq)                   Ca++                                                                                                             
@@ -1692,42 +1692,42 @@ b1 = .165E-4 b5 = -.165E-3 b6 = 5800000. b7 = -870 b8 = 4
 end
 
  
-H2O      EoS = 1 | H= -241810.0                                                                   
+H2O      EoS = 101 | H= -241810.0                                                                   
 H2O(1)
 G0 = -228542.3 S0 = 188.8  
 c1 = 40.1 c2 = .8656001E-2 c3 = 487500 c5 = -251.2  
 end
 
  
-CO2      EoS = 1 | H= -393510.0                                                                   
+CO2      EoS = 102 | H= -393510.0                                                                   
 CO2(1)
 G0 = -394332.9 S0 = 213.7  
 c1 = 87.8 c2 = -.2644E-2 c3 = 706400 c5 = -998.9   
 end
 
  
-CO       EoS = 1 | H= -110530.0                                                                   
+CO       EoS = 103 | H= -110530.0                                                                   
 O2(-.5)CO2(1)
 G0 = -137163.7 S0 = 197.67  
 c1 = 45.7 c2 = -.97E-4 c3 = 662700 c5 = -414.7  
 end
 
  
-CH4      EoS = 1 | H= -74810.                                                                     
+CH4      EoS = 104 | H= -74810.                                                                     
 O2(-2)H2O(2)CO2(1)
 G0 = -50695.63 S0 = 186.26  
 c1 = 150.1 c2 = .2062E-2 c3 = 3427700 c5 = -2650.4   
 end
 
  
-O2       EoS = 1 | H=  0.                                                                         
+O2       EoS = 107 | H=  0.                                                                         
 O2(1)
 S0 = 205.2  
 c1 = 48.3 c2 = -.691E-3 c3 = 499200 c5 = -420.7   
 end
 
  
-H2       EoS = 1 | H=  0.                                                                         
+H2       EoS = 105 | H=  0.                                                                         
 O2(-.5)H2O(1)
 G0 = -.4549408E-2 S0 = 130.7  
 c1 = 23.3 c2 = .4627E-2 c5 = 76.3   

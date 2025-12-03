@@ -121,6 +121,9 @@ xlim(h1,xr);xlim(h2,xr);
 ylim(h1,yr);ylim(h2,yr);
 zlim(h1,zr);zlim(h2,zr);
 box(h1); box(h2); 
+
+% adjust position of a subplot
+
 %axis(h1,"square") %'auto','auto x', etc, 'tight','normal'
 a12 =subplot(122);
 a12.Position
@@ -286,3 +289,51 @@ for i = 1, 699
     end
 end
 
+
+
+-----------------------------------------------------------------
+
+choice = questdlg(['Set the same X-Y limits for all plots?'], ...
+    'X-Y limits','Yes','No','No')
+
+switch choice
+    case 'Yes'
+        ok = 0;
+
+    case 'No'
+        ok = 1;
+end
+
+if ok == 0
+
+        prompt = {['Lower X-axis limit:'], ...
+                  ['Upper X-axis limit:']};
+        lines = 1; options.Resize='on';
+        def = {num2str(minx), num2str(maxx)};
+        answer = inputdlg(prompt,dlg_title,lines,def,options);
+
+        minx = str2num(answer{1})
+        maxx = str2num(answer{2})
+
+        prompt = {['Lower Y-axis limit:'], ...
+                  ['Upper Y-axis limit:']};
+        lines = 1; options.Resize='on';
+        def = {num2str(miny), num2str(maxy)};
+        answer = inputdlg(prompt,dlg_title,lines,def,options);
+
+        miny = str2num(answer{1})
+        maxy = str2num(answer{2})
+
+        xr = [minx,maxx]
+        yr = [miny,maxy]
+
+        xlim(xy,xr);xlim(xz,xr);xlim(yz,xr);xlim(xy2,xr);
+        ylim(xy,yr);xlim(xz,yr);xlim(yz,yr);xlim(xy2,yr);
+
+end
+
+
+Synthetic problem (bl\_Chi) solution with Chi-squared Misfit objective function (default settings)
+
+
+0.30646875,0.808934707903777,0.414625,0.039862542955326
