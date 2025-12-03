@@ -7,7 +7,8 @@ jobs:
     name: Build - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: falsename: CI
+      fail-fast: false
+      name: CI
 
 on: [push, pull_request]
 
