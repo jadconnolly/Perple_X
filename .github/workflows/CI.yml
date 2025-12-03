@@ -92,7 +92,7 @@ jobs:
         run: |
           make -C src -f makefile
 
-      # ----------------- Compile shared libraries -----------------
+      # ----------------- Compile shared libraries --------------hh---
 
       - name: Compile libraries (Windows)
         if: contains(matrix.os, 'windows')
