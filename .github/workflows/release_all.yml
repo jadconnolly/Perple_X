@@ -87,7 +87,7 @@ jobs:
 
       - name: Upload Linux artifact
         if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Perple_X_Linux_64_gfortran.tar.gz
           path: Perple_X_Linux_64_gfortran.tar.gz
@@ -102,7 +102,7 @@ jobs:
 
       - name: Upload macOS artifact
         if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Perple_X_macOS_64_gfortran.tar.gz
           path: Perple_X_macOS_64_gfortran.tar.gz
@@ -118,7 +118,7 @@ jobs:
 
       - name: Upload Windows artifact
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Perple_X_Windows_64_gfortran.zip
           path: Perple_X_Windows_64_gfortran.zip
@@ -129,19 +129,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Linux artifact (tolerant)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: true
         with:
           name: Perple_X_Linux_64_gfortran.tar.gz
 
       - name: Download macOS artifact (tolerant)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: true
         with:
           name: Perple_X_macOS_64_gfortran.tar.gz
 
       - name: Download Windows artifact (tolerant)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: true
         with:
           name: Perple_X_Windows_64_gfortran.zip
