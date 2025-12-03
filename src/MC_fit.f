@@ -893,7 +893,7 @@ c                                 write details of scoring to *.out console and 
      *        'ion to F.',/,80('-'))
 1091  format ('the misfit function exceeds the MC_fit misfit_filter_va',
      *        'lue option value.',/,80('-'))
-1092  format ('the model does not predict all analytical data within '
+1092  format ('the model does not predict all analytical data within ',
      *        'its uncertainty',/,80('-'))
 1100  format (/,'**warning ver505** quadratic surface fitting failed. ',
      *        'The Nelder Mead Covariance',/,'and correlation matrices',

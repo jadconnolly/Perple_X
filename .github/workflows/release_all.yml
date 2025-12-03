@@ -85,6 +85,13 @@ jobs:
           find src -maxdepth 1 -type f -perm -111 -exec cp {} binary \;
           tar -pczf Perple_X_Linux_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
 
+      - name: Upload Linux artifact
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Perple_X_Linux_64_gfortran.tar.gz
+          path: Perple_X_Linux_64_gfortran.tar.gz
+
       - name: Package macOS binaries
         if: matrix.os == 'macos-latest'
         run: |
@@ -92,6 +99,13 @@ jobs:
           # Copy executables from src/ to binary/
           find src -maxdepth 1 -type f -perm -111 -exec cp {} binary \;
           tar -pczf Perple_X_macOS_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
+
+      - name: Upload macOS artifact
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Perple_X_macOS_64_gfortran.tar.gz
+          path: Perple_X_macOS_64_gfortran.tar.gz
 
       - name: Package Windows binaries
         if: matrix.os == 'windows-latest'
@@ -102,28 +116,59 @@ jobs:
           Compress-Archive -Path binary, datafiles, optionfiles, matlab_scripts `
             -DestinationPath Perple_X_Windows_64_gfortran.zip -Force
 
-      # ---------- Upload artifacts to the release ----------
-
-      - name: Upload Linux artifacts
-        if: matrix.os == 'ubuntu-latest'
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: 'Perple_X_Linux_64_gfortran.tar.gz'
-
-      - name: Upload macOS artifacts
-        if: matrix.os == 'macOS-latest'
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: 'Perple_X_macOS_64_gfortran.tar.gz'
-
-      - name: Upload Windows artifacts
+      - name: Upload Windows artifact
         if: matrix.os == 'windows-latest'
-        uses: skx/github-action-publish-binaries@master
+        uses: actions/upload-artifact@v3
+        with:
+          name: Perple_X_Windows_64_gfortran.zip
+          path: Perple_X_Windows_64_gfortran.zip
+
+  publish:
+    name: Publish release artifacts
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Linux artifact (tolerant)
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          name: Perple_X_Linux_64_gfortran.tar.gz
+
+      - name: Download macOS artifact (tolerant)
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          name: Perple_X_macOS_64_gfortran.tar.gz
+
+      - name: Download Windows artifact (tolerant)
+        uses: actions/download-artifact@v3
+        continue-on-error: true
+        with:
+          name: Perple_X_Windows_64_gfortran.zip
+
+      - name: Build list of artifacts to publish
+        id: build_list
+        run: |
+          files=""
+          for f in Perple_X_Linux_64_gfortran.tar.gz Perple_X_macOS_64_gfortran.tar.gz Perple_X_Windows_64_gfortran.zip; do
+            if [ -f "$f" ]; then
+              files="$files $f"
+            fi
+          done
+          files=$(echo "$files" | xargs)
+          echo "Found files:$files"
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+
+      - name: Publish artifacts to GitHub release (if any)
+        if: steps.build_list.outputs.files != ''
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: 'Perple_X_Windows_64_gfortran.zip'
+          tag_name: ${{ github.event.release.tag_name }}
+          files: ${{ steps.build_list.outputs.files }}
+
+      - name: Log no artifacts found
+        if: steps.build_list.outputs.files == ''
+        run: |
+          echo "No build artifacts were found to publish."

@@ -113,7 +113,7 @@ c     *       'my_project.tab or my_project.ctr]:')
      *       'file or try a different name (y/n)?')
 1020  format (/,'Contour the ratio of values in separate tab ',
      *       'files (y/n)?',//,'If you answer yes the data from the ',
-     *       'file just read will define the',/,'numerator of the '
+     *       'file just read will define the',/,'numerator of the ',
      *       'ratio and you will be prompted next for a file',/,
      *       'containing the data for the denominator.')
 1040  format (/,'Enter the name of the tab file that ',

@@ -3552,7 +3552,7 @@ c                                 generic warning, also 99
      *        ,'mponents in ',a,' is <= 0',/,'it will be rejected from '
      *         ,'this calculation although it is a legitimate phase.',/,
      *          'To prevent this rejection transform the data base comp'
-     *          'onents (e.g., using CTRANSF)',/,'so that the total amo'
+     *         ,'onents (e.g., using CTRANSF)',/,'so that the total amo'
      *         ,'unt of the components in ',a,' is > 0.',/)
 14    format (/,'**warning ver014** You can not redefine the ',
      *          'saturated phase component:',a,/,'To circumvent this ',

@@ -2044,7 +2044,7 @@ c                                 name and open plot file, write header
 1040  format (/,'Change default variable range (y/n)?')
 1060  format (/,'Current limits on ',a,' are: ',g14.7,'->',g14.7,/,
      *          'Enter new values:')
-1080  format (/,'Enter number of points to be computed along the'
+1080  format (/,'Enter number of points to be computed along the',
      *          ' 1d-section:')
 1140  format (/,'Enter endpoint ',i1,' (',a,') coordinates:')
 1150  format (/,'How many points along the profile?')
@@ -3825,7 +3825,7 @@ c                                 custom prop (phemgp)
 1000  format (/,'This composition will be designated: ',a,/)
 1010  format (/,'**warning ver069** composition_phase is ',a,' but '
      *       ,'composition_system is ',a,'. As ',/, 
-     *        'only one unit can be output for property choice 36 '
+     *        'only one unit can be output for property choice 36 ',
      *        'system units will be',/,'indicated; the ',
      *        'true units for phase compositions are ',a,/)
 

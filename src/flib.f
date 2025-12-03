@@ -590,7 +590,7 @@ c                                get the salt content (elag):
      *       ' are estimated by finite',/,
      *       'difference under the assumption that fluid',
      *       ' speciation does not change over',/,'the 1 bar',
-     *       ' finite difference interval. The estimates'
+     *       ' finite difference interval. The estimates',
      *       ' should be considered',/,'with caution.',/)
 1200  format (/,'For this EoS Y(CO2)* is defined as:',/,
      *          '  Y(CO2)* = n(CO2)/[n(H2O)+n(CO2)]',/,
