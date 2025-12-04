@@ -10,11 +10,18 @@ versions do not require MATLAB, but do require the free MATLAB Runtime installer
 see below for instructions.
 
 -------------------------------------
-The MATLAB standalone programs included in the archive are:
+The MATLAB standalone programs
 
    MC_fit_plot.exe
    perple_x_plot.exe
    perple_x_simple.exe
+
+are included in a subdirectory, or nested archive, of matlab_scripts, named 
+
+MATLAB_***_programs_#####
+
+where *** indicates the operating system (WIN, OSX, or LIN) and ##### indicates the
+MATLAB revision with which they were compiled (e.g., R2024b). 
 
 Although these programs have the same functionality as the scripts of the same name listed 
 below, they are slower and less flexible. The scripts are preferred if a MATLAB

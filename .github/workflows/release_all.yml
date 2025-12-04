@@ -80,48 +80,76 @@ jobs:
       - name: Package Linux binaries
         if: matrix.os == 'ubuntu-latest'
         run: |
-          mkdir binary
-          # Copy executables from src/ to binary/
-          find src -maxdepth 1 -type f -perm -111 -exec cp {} binary \;
-          tar -pczf Perple_X_Linux_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
+          TAG=${{ github.event.release.tag_name }}
+          PKG=Perple_X_${TAG}_Linux_64_gfortran
+          rm -rf "$PKG"
+          mkdir -p "$PKG/bin"
+          find src -maxdepth 1 -type f -perm -111 -exec cp {} "$PKG/bin/" \;
+          # copy support directories if they exist
+          for d in datafiles optionfiles matlab_scripts; do
+            if [ -d "$d" ]; then
+              cp -r "$d" "$PKG/"
+            fi
+          done
+          # remove any existing archives inside package to avoid nesting
+          find "$PKG" -type f \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.tgz' \) -delete || true
+          ARCHIVE=${PKG}.tar.gz
+          tar -C . -czf "$ARCHIVE" "$PKG"
 
       - name: Upload Linux artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: Perple_X_Linux_64_gfortran.tar.gz
-          path: Perple_X_Linux_64_gfortran.tar.gz
+          name: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
+          path: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
 
       - name: Package macOS binaries
         if: matrix.os == 'macos-latest'
         run: |
-          mkdir binary
-          # Copy executables from src/ to binary/
-          find src -maxdepth 1 -type f -perm -111 -exec cp {} binary \;
-          tar -pczf Perple_X_macOS_64_gfortran.tar.gz binary datafiles optionfiles matlab_scripts
+          TAG=${{ github.event.release.tag_name }}
+          PKG=Perple_X_${TAG}_macOS_64_gfortran
+          rm -rf "$PKG"
+          mkdir -p "$PKG/bin"
+          find src -maxdepth 1 -type f -perm -111 -exec cp {} "$PKG/bin/" \;
+          for d in datafiles optionfiles matlab_scripts; do
+            if [ -d "$d" ]; then
+              cp -r "$d" "$PKG/"
+            fi
+          done
+          find "$PKG" -type f \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.tgz' \) -delete || true
+          ARCHIVE=${PKG}.tar.gz
+          tar -C . -czf "$ARCHIVE" "$PKG"
 
       - name: Upload macOS artifact
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: Perple_X_macOS_64_gfortran.tar.gz
-          path: Perple_X_macOS_64_gfortran.tar.gz
+          name: Perple_X_${{ github.event.release.tag_name }}_macOS_64_gfortran.tar.gz
+          path: Perple_X_${{ github.event.release.tag_name }}_macOS_64_gfortran.tar.gz
 
       - name: Package Windows binaries
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path binary -Force | Out-Null
-          Get-ChildItem -Path src -Filter *.exe -Recurse | Copy-Item -Destination binary
-          Compress-Archive -Path binary, datafiles, optionfiles, matlab_scripts `
-            -DestinationPath Perple_X_Windows_64_gfortran.zip -Force
+          $tag = '${{ github.event.release.tag_name }}'
+          $pkg = "Perple_X_${tag}_Windows_64_gfortran"
+          if (Test-Path $pkg) { Remove-Item -Recurse -Force $pkg }
+          New-Item -ItemType Directory -Path "$pkg\bin" -Force | Out-Null
+          Get-ChildItem -Path src -Filter *.exe -File | ForEach-Object { Copy-Item -Path $_.FullName -Destination "$pkg\bin\" }
+          foreach ($d in @('datafiles','optionfiles','matlab_scripts')) {
+            if (Test-Path $d) { Copy-Item -Recurse -Path $d -Destination $pkg }
+          }
+          # remove any nested archives that may have been copied
+          Get-ChildItem -Path $pkg -Recurse -Include '*.zip','*.tar.gz','*.tgz' -File -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+          $zip = "$pkg.zip"
+          Compress-Archive -Path "$pkg\*" -DestinationPath $zip -Force
 
       - name: Upload Windows artifact
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: Perple_X_Windows_64_gfortran.zip
-          path: Perple_X_Windows_64_gfortran.zip
+          name: Perple_X_${{ github.event.release.tag_name }}_Windows_64_gfortran.zip
+          path: Perple_X_${{ github.event.release.tag_name }}_Windows_64_gfortran.zip
 
   publish:
     name: Publish release artifacts
@@ -132,25 +160,26 @@ jobs:
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
-          name: Perple_X_Linux_64_gfortran.tar.gz
+          name: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
 
       - name: Download macOS artifact (tolerant)
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
-          name: Perple_X_macOS_64_gfortran.tar.gz
+          name: Perple_X_${{ github.event.release.tag_name }}_macOS_64_gfortran.tar.gz
 
       - name: Download Windows artifact (tolerant)
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
-          name: Perple_X_Windows_64_gfortran.zip
+          name: Perple_X_${{ github.event.release.tag_name }}_Windows_64_gfortran.zip
 
       - name: Build list of artifacts to publish
         id: build_list
         run: |
+          TAG=${{ github.event.release.tag_name }}
           files=""
-          for f in Perple_X_Linux_64_gfortran.tar.gz Perple_X_macOS_64_gfortran.tar.gz Perple_X_Windows_64_gfortran.zip; do
+          for f in Perple_X_${TAG}_Linux_64_gfortran.tar.gz Perple_X_${TAG}_macOS_64_gfortran.tar.gz Perple_X_${TAG}_Windows_64_gfortran.zip; do
             if [ -f "$f" ]; then
               files="$files $f"
             fi
