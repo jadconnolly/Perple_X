@@ -200,7 +200,7 @@ jobs:
             if [ -n "$found" ]; then
               base=$(basename "$found")
               cp "$found" "$base"
-              files_nl+="$base\n"
+              files_nl+="$base"$'\n'
             fi
           done
           # Trim trailing newline when printing for logs
@@ -211,6 +211,20 @@ jobs:
             echo "Found files: (none)"
             echo "files=" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Publish artifacts to GitHub release (if any)
+        if: steps.build_list.outputs.files != ''
+        # Debug: print the exact files string passed to the release action
+      - name: Debug: show release files input
+        if: steps.build_list.outputs.files != ''
+        run: |
+          echo "=== Files to publish (each line) ==="
+          # iterate over newline-separated output and print each file on its own line
+          IFS=$'\n' read -rd '' -a arr <<< "${{ steps.build_list.outputs.files }}" || true
+          for f in "${arr[@]}"; do
+            echo "FILE: $f"
+          done
+          echo "=== End files ==="
 
       - name: Publish artifacts to GitHub release (if any)
         if: steps.build_list.outputs.files != ''
