@@ -217,17 +217,7 @@ jobs:
             echo "files=" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Debug: show release files input
-        if: steps.build_list.outputs.files != ''
-        env:
-          FILES: ${{ steps.build_list.outputs.files }}
-        run: |
-          echo "=== Files to publish (each line) ==="
-          # print each non-empty line from the multiline output
-          printf '%s\n' "$FILES" | sed '/^$/d' | while IFS= read -r f; do
-            echo "FILE: $f"
-          done
-          echo "=== End files ==="
+      # debug step removed
 
       - name: Publish artifacts to GitHub release (if any)
         if: steps.build_list.outputs.files != ''
