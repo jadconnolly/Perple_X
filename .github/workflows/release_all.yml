@@ -221,9 +221,9 @@ jobs:
         if: steps.build_list.outputs.files != ''
         run: |
           echo "=== Files to publish (each line) ==="
-          # iterate over newline-separated output and print each file on its own line
-          IFS=$'\n' read -rd '' -a arr <<< "${{ steps.build_list.outputs.files }}" || true
-          for f in "${arr[@]}"; do
+          # print each non-empty line from the multiline output
+' "${{ steps.build_list.outputs.files }}" | sed '/^$/d' | while IFS= read -r f; do
+          printf '%s\n' "${{ steps.build_list.outputs.files }}" | sed '/^$/d' | while IFS= read -r f; do
             echo "FILE: $f"
           done
           echo "=== End files ==="
