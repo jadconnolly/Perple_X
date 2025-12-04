@@ -212,9 +212,6 @@ jobs:
             echo "files=" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Publish artifacts to GitHub release (if any)
-        if: steps.build_list.outputs.files != ''
-        # Debug: print the exact files string passed to the release action
       - name: Debug: show release files input
         if: steps.build_list.outputs.files != ''
         run: |
