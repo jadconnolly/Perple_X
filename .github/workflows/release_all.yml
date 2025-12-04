@@ -178,13 +178,23 @@ jobs:
         id: build_list
         run: |
           TAG=${{ github.event.release.tag_name }}
+          patterns=(
+            "Perple_X_${TAG}_Linux_64_gfortran.tar.gz"
+            "Perple_X_${TAG}_macOS_64_gfortran.tar.gz"
+            "Perple_X_${TAG}_Windows_64_gfortran.zip"
+          )
           files=""
-          for f in Perple_X_${TAG}_Linux_64_gfortran.tar.gz Perple_X_${TAG}_macOS_64_gfortran.tar.gz Perple_X_${TAG}_Windows_64_gfortran.zip; do
-            if [ -f "$f" ]; then
-              files="$files $f"
+          # search workspace for matching files (download-artifact places them in a folder named after the artifact)
+          for p in "${patterns[@]}"; do
+            found=$(find . -type f -name "$p" -print -quit || true)
+            if [ -n "$found" ]; then
+              # copy the file to workspace root with its basename so softprops can find it
+              base=$(basename "$found")
+              cp "$found" "$base"
+              files="$files $base"
             fi
           done
-          files=$(echo "$files" | xargs)
+          files=$(echo "$files" | xargs || true)
           echo "Found files:$files"
           echo "files=$files" >> "$GITHUB_OUTPUT"
 
