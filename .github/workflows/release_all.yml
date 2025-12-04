@@ -193,20 +193,25 @@ jobs:
             "Perple_X_${TAG}_macOS_64_gfortran.tar.gz"
             "Perple_X_${TAG}_Windows_64_gfortran.zip"
           )
-          files_nl=""
-          # search ./artifacts for matching files
+          files=""
+          # search ./artifacts for matching files and copy them to workspace root
           for p in "${patterns[@]}"; do
             found=$(find artifacts -type f -name "$p" -print -quit || true)
             if [ -n "$found" ]; then
               base=$(basename "$found")
               cp "$found" "$base"
-              files_nl+="$base"$'\n'
+              files="$files $base"
             fi
           done
-          # Trim trailing newline when printing for logs
-          if [ -n "$files_nl" ]; then
-            echo -e "Found files:\n$files_nl"
-            printf 'files<<EOF\n%s\nEOF\n' "$files_nl" >> "$GITHUB_OUTPUT"
+          # normalize whitespace
+          files=$(echo $files | xargs || true)
+          if [ -n "$files" ]; then
+            echo "Found files: $files"
+            echo "files<<EOF" >> "$GITHUB_OUTPUT"
+            for f in $files; do
+              echo "$f" >> "$GITHUB_OUTPUT"
+            done
+            echo "EOF" >> "$GITHUB_OUTPUT"
           else
             echo "Found files: (none)"
             echo "files=" >> "$GITHUB_OUTPUT"
