@@ -161,18 +161,28 @@ jobs:
         continue-on-error: true
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
+          path: artifacts
 
       - name: Download macOS artifact (tolerant)
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_macOS_64_gfortran.tar.gz
+          path: artifacts
 
       - name: Download Windows artifact (tolerant)
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_Windows_64_gfortran.zip
+          path: artifacts
+
+      - name: List downloaded artifacts for debugging
+        run: |
+          echo "Listing ./artifacts contents"
+          ls -al artifacts || true
+          echo "Listing workspace root"
+          ls -al || true
 
       - name: Build list of artifacts to publish
         id: build_list
@@ -183,20 +193,24 @@ jobs:
             "Perple_X_${TAG}_macOS_64_gfortran.tar.gz"
             "Perple_X_${TAG}_Windows_64_gfortran.zip"
           )
-          files=""
-          # search workspace for matching files (download-artifact places them in a folder named after the artifact)
+          files_nl=""
+          # search ./artifacts for matching files
           for p in "${patterns[@]}"; do
-            found=$(find . -type f -name "$p" -print -quit || true)
+            found=$(find artifacts -type f -name "$p" -print -quit || true)
             if [ -n "$found" ]; then
-              # copy the file to workspace root with its basename so softprops can find it
               base=$(basename "$found")
               cp "$found" "$base"
-              files="$files $base"
+              files_nl+="$base\n"
             fi
           done
-          files=$(echo "$files" | xargs || true)
-          echo "Found files:$files"
-          echo "files=$files" >> "$GITHUB_OUTPUT"
+          # Trim trailing newline when printing for logs
+          if [ -n "$files_nl" ]; then
+            echo -e "Found files:\n$files_nl"
+            printf 'files<<EOF\n%s\nEOF\n' "$files_nl" >> "$GITHUB_OUTPUT"
+          else
+            echo "Found files: (none)"
+            echo "files=" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Publish artifacts to GitHub release (if any)
         if: steps.build_list.outputs.files != ''
