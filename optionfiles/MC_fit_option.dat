@@ -2,6 +2,8 @@
 
         | Run-time MC_fit 7.1.15 options:
 
+        | For complete documentation refer to: perplex.ethz.ch/MC_fit_documentation/options.html
+
         | MC_fit reads options from both perplex_option.dat and MC_fit_option.dat
 
         |-------------------------------------------------------------
@@ -30,41 +32,61 @@
 
 |----------------------------------------------------------------------
 
+| common input/output options
+
 molar_composition_input       default | [T] T => input compositions are in molar units; F => mass (wt) units (~lmass)
-kiso                          default | [F] T => convert molar compositions to mass units and terminate (kiso)
-thermobarometry               default | [T] F => invert observational data for thermodynamic parameters (~invxpt)
-MINIM_algorithm               default | [T] T => use MINIM (Nelder-Mead) algorithm to find best fit model; F => use grid search (~mcgrid)
-Bayes                         default | [F] F => minimize misfit to select best model; T => use maximum Bayes score (bayes)
-perturbation_hot_start        default | [F] T => do perturbation analysis around user specified inversion coordinate (mchot)
-GRH                           default | [F] T => use George's normalizations, etc. (GRH)
-model_output                  default | [all] improved or best => which sucessful models are output (bstout)
-vital_sign                    default | [T] T => output objective function counter (vital)
-seed                          default | [F] F => don't seed random number generator (seed)
 no_missing_phases             default | [T] T => do not accept models that fail to predict all observed phases (nomiss)
+perturbation_hot_start        default | [F] T => do perturbation analysis around user specified inversion coordinate (mchot)
+print_level                   default | [0], Nelder-Mead console output 0 => normal, < 0 => silent, > 0 => verbose (jprint)
 relative_error                default | [T] T => input uncertainties are relative error; F => absolute error (relerr)
-best_central_model            default | [T] T => use best central model for uncertainty analysis (~newstt)
 uncertainties                 default | [all] analytical or thermodynamic => which components of the uncertainty are evaluated (invunc)
-Nelder-Mead_covariance        default | [T] T => include Nelder-Meade covariance matrix in model output ()
-uncertainty_plus              default | [T] T => add Nelder-Meade covariance to perturbation analysis uncertainty
-objective_composition         default | [Chi] LSQ or wChi => objective function for compositional data (lsqchi)
-objective_mode                default | [Chi] LSQ or wChi => objective function for modal scoring (lsqchi)
-OBJF_filter_value             default | [1d1] => maximum acceptable OBJF value for a sucessful result (mxobjf)
-max_OBJF_value                default | [1d5] => maximum value of the objective function, larger values trigger an error (oktol)
-convergence_threshold         default | [1d-4] => maximum variance of the objective function for MINIM convergence (invtol)
-w_composition                 default | [1d0] => weighting factor for the composition term of the objective function (wcomp)
-w_extra                       default | [1d4] => weighting factor for the extraneous phase term of the objective function (wextra)
-w_missing                     default | [1d3] => weighting factor for the missing phase term of the objective function (wmiss)
+
+| logistical options
 
 number_of_tries               default | [100] => number of tries during search for the best central model (mtry)
 number_of_perturbations       default | [100] => number of perturbations for the uncertainty analysis (nunc(1))
-number_of_perturbation_tries  default | [100] => number of tries for each perturbation if ~best_central_model (ptry)
-expansion_criterion           default | [1d-4] => criterion to decide if final simplex should be expanded prior to quadratic fitting (simplx)
+soft_interior_potentials      default | [T] T => use soft-interior transformation for potential (P, T, f, etc) inversion parameters (sftpot)
+soft_interior_C               default | [T] T => use soft-interior transformation for unmeasured component inversion parameters (sftc)
+softmax                       default | [T] T => use softmax * scale transformation for simplicial inversion parameters (sftmax)
+soft_delta                    default | [6.0] => e-fold scale for soft-interior and softmax transformations (sftdel)
+
+| scoring options
+
+Bayes                         default | [F] F => minimize misfit to select best model; T => use maximum Bayes score (bayes)
+objective_composition         default | [Chi] LSQ or wChi => objective function for compositional data (lsqchi)
+objective_mode                default | [Chi] LSQ or wChi => objective function for modal scoring (lsqchi)
+prior_probability_PT_only     default | [T] T => for Bayes scoring, base prior probabilities only on inital pressure-temperature range; F => use all parameters
+range_to_sigma                default | [4.0] => for Bayes scoring, parameter_range/standard_deviation (ra2zs)
+uncertainty_multiplier        default | [2.0] => for fit criterion, observational data must fit within uncertainty * uncertainty_multiplier (un2ft)
+w_composition                 default | [1d0] for Chi and LSQ, [1d-4] for wChi => weighting factor for the composition term of the objective function (wcomp)
+w_extra                       default | [1d4] => weighting factor for the extraneous phase term of the objective function (wextra)
+w_missing                     default | [1d3] => weighting factor for the missing phase term of the objective function (wmiss)
+w_mode                        default | [1d0] => weighting factor for the composition term of the objective function (wmode)
+
+| Nelder-Mead tuning options
+
+convergence_threshold         default | [1d-4] => maximum variance of the objective function for MINIM convergence (invtol)
+max_OBJF_value                default | [1d5] => maximum value of the objective function, larger values trigger an error (oktol)
+max_OBJF_evaluations          default | [1000] => maximum number of objective function evaluations permitted for a try (kcount)
+objective_composition         default | [Chi] LSQ or wChi => objective function for compositional data (lsqchi)
+objective_mode                default | [Chi] LSQ or wChi => objective function for modal scoring (lsqchi)
 step_size                     default | [0.1] => fractional step size (frac)
 convergence_testing           default | [10] => frequency of testing for convergence (conchk)
-print_level                   default | [0], 0 => normal, < 0 => silent, > 0 => verbose (jprint)
-quadratic_fitting             default | [F] T => use quadratic surface fitting to improve location of the minimum
-max_OBJF_evaluations          default | [1000] => maximum number of objective function evaluations permitted for a try (kcount)
 
-prior_probability_PT_only     default | [T] T => for Bayes scoring, base prior probabilities only on inital pressure-temperature range; F => use all parameters
-range_to_standard_error       default | [2.0] => for Bayes scoring, parameter_range/2/standard_error
-uncertainty_multiplier        default | [2.0] => for fit criterion, observational data must fit within uncertainty * uncertainty_multiplier 
+| Less used or special application options
+
+best_central_model            default | [T] T => use best central model for uncertainty analysis (~newstt)
+expansion_criterion           default | [1d-4] => criterion to decide if final simplex should be expanded prior to quadratic fitting (simplx)
+GRH                           default | [F] T => use George's normalizations, etc. (GRH)
+kiso                          default | [F] T => convert molar compositions to mass units and terminate (kiso)
+model_output                  default | [all] improved or best => which sucessful models are output (bstout)
+MINIM_algorithm               default | [T] T => use MINIM (Nelder-Mead) algorithm to find best fit model; F => use grid search (~mcgrid)
+must_fit_all_data             default | [F] T => results only accepted if all analytical data if fit within uncertainty*uncertainty_multiplier (mustft)
+Nelder-Mead_covariance        default | [F] T => include Nelder-Meade covariance matrix in model output (nmcov)
+number_of_perturbation_tries  default | [100] => number of tries for each perturbation if ~best_central_model (ptry)
+OBJF_filter_value             default | [1d99] => maximum acceptable OBJF value for a sucessful result (mxobjf)
+quadratic_fitting             default | [F] T => use quadratic surface fitting to improve location of the minimum
+seed                          default | [F] F => don't seed random number generator (seed)
+thermobarometry               default | [T] F => invert observational data for thermodynamic parameters (~invxpt)
+uncertainty_plus              default | [F] T => add Nelder-Meade covariance to perturbation analysis uncertainty
+vital_sign                    default | [T] T => output objective function counter (vital)

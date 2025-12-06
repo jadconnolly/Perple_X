@@ -164,7 +164,7 @@ variance                  default | [1 99] exploratory and auto-refine; maximum 
 vrh/hs_weighting          default | [0.5] 0->1, weighting factor for the stiff average in VRH/HS averaging (see bounds)
 
 warning_ver637            default | [T] T => warn and cease interpolation in WERAMI when immiscible solutions are present, lopt(31)
-warn_interactive          default | [F] T => overrides interactive y/n warnings by setting the y answer, lopt(56)
+warn_interactive          default | [T] F => overrides interactive y/n warnings by setting the y answer, lopt(56)
 
 x_nodes                   default | [20 40] exploratory and auto-refine (grid parameters keyword group), lowest-level x grid resolution 
 y_nodes                   default | [20 40] exploratory and auto-refine (grid parameters keyword group), lowest-level y grid resolution
