@@ -3,15 +3,11 @@
 [![Build Status](https://github.com/jadconnolly/Perple_X/workflows/CI/badge.svg)](https://github.com/jadconnolly/Perple_X/actions)
 
 
-This repository contains the latest source codes and precompiled binaries for [Perple_X](https://www.perplex.ethz.ch), a collection of Fortran77 programs for calculating phase diagrams, thermobarometry, manipulating thermodynamic data, and modeling equilibrium phase fractionation and reactive transport. 
-More information can be found on the [Perple_X](https://www.perplex.ethz.ch) webpage.
+This repository contains the latest source codes and binaries for [Perple_X](https://www.perplex.ethz.ch), a collection of Fortran77 programs for calculating phase diagrams, thermobarometry, manipulating thermodynamic data, and modeling equilibrium phase fractionation and reactive transport. More information can be found on the [Perple_X](https://www.perplex.ethz.ch) webpage.
 
-The source codes and precompiled binaries for **Windows**, **Linux**, and **MacOS** can be downloaded from [releases](https://github.com/jadconnolly/Perple_X/releases/).
-Installation instructions are [here](https://www.perplex.ethz.ch/MC_fit_documentation/perple_x_installation.html "installation instructions").
+The source codes and precompiled binaries for **Windows**, **Linux**, and **MacOS** can be downloaded from [releases](https://github.com/jadconnolly/Perple_X/releases/). Installation instructions are [here](https://www.perplex.ethz.ch/MC_fit_documentation/perple_x_installation.html "installation instructions").
 
-Precompiled binaries for all modern operating systems can also be downloaded through the julia package manager.
-The binaries can be used from the command-line, or directly from within julia.  
-Instructions for this option follow:
+Binaries for all modern operating systems can also be downloaded through the julia package manager. The binaries can be used from the command-line, or directly from within julia. Instructions for this option follow:
 
 ## 1. Downloading Perple_X binaries via julia
 Follow these steps:
