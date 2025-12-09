@@ -2067,7 +2067,9 @@ c                                 ecomp > 0 check to not overwrite nerone estima
             if (.not.relerr.and.comp(i).ne.0d0.and.ecomp(i).gt.0d0) then
 c                                 convert absolute error to relative
                ecomp(i) = ecomp(i)/comp(i)
-            else if (.not.relerr) then
+
+            else if (.not.relerr.and.ecomp(i).ne.-1d0) then
+
                call errdbg ('absolute errors cannot be used on zeroed'//
      *                      ' compositions, switch to relative error')
             end if

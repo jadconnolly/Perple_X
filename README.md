@@ -7,4 +7,4 @@ This repository contains the latest source code and executables for Perple_X. [P
 
 The source code and executables for **Windows**, **Linux**, and **macOS** can be downloaded from [releases](https://github.com/jadconnolly/Perple_X/releases/). Installation instructions are [here](https://www.perplex.ethz.ch/perple_x_installation.html "installation instructions").
 
-Executables for all modern operating systems can also be downloaded through the **Julia** package manager. The executables can be used from the command-line, or directly from within Julia. Installation instructions are [here](https://github.com/jadconnolly/Perple_X/markdown/julia.md).
+Executables for all modern operating systems can also be downloaded through the **Julia** package manager. The executables can be used directly from within Julia or, after extraction, as command-line programs. Installation instructions are [here](https://github.com/jadconnolly/Perple_X/markdown/julia.md).
