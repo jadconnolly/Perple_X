@@ -1559,7 +1559,7 @@ c                                 reload final arrays from temporary
 
          end if 
 
-         if (ibulk.gt.k2) call error (183,0d0,k2,'SORTER')
+         if (ibulk.gt.l13-2) call error (183,0d0,l13,'SORTER')
          ibulk = ibulk + 1
          iap(ibulk) = i
          kdbulk = ibulk
@@ -1578,7 +1578,7 @@ c                                 the assemblage is new:
          end do
 
          ibulk = ibulk + 1
-         if (ibulk.gt.k2) call error (183,0d0,k2,'BLKMAT')
+         if (ibulk.gt.l13-2) call error (183,0d0,l13,'BLKMAT')
          kdbulk = ibulk 
          iap(ibulk) = iasct 
 
@@ -3427,6 +3427,11 @@ c                                 seismic data summary file
 
 c                                 unnecessary stuff for meemum
       call setau2
+c                                 make an expanded component counter that
+c                                 includes saturated phase components
+      lbulk = kbulk
+
+      if (ifct.gt.0) lbulk = lbulk + ifct
 
       end
 

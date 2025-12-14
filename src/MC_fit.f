@@ -37,35 +37,27 @@ c                                 read input normal thermo files, etc
 c                                 -------------------------------------
 c                                 at this point it's possible to override 
 c                                 options/variable configuration etc
-      lbulk = kbulk
 
-      if (ifct.gt.0) then 
 c                                 a saturated phase constraint
-         if (ifct.eq.1) then 
+      if (ifct.eq.1) then 
 c                                 it'll have to be pure, remove the variable 
 c                                 from the ipot/iv list
-            j = 0
+         j = 0
 
-            do i = 1, ipot
+         do i = 1, ipot
 
-               if (iv(i).eq.3) then 
-                  v(iv(i)) = vmin(iv(i))
-               else 
-                  j = j + 1
-                  iv(j) = iv(i)
-               end if
+            if (iv(i).eq.3) then 
+               v(iv(i)) = vmin(iv(i))
+            else 
+               j = j + 1
+               iv(j) = iv(i)
+            end if
 
-            end do
+         end do
 
-            ipot = j
-
-         end if
-
-         lbulk = lbulk + ifct
+         ipot = j
 
       end if
-
-
 c                                 set to molar output regardless of 
 c                                 option file, mass input units in the imc
 c                                 file allowed via lmass flag
@@ -889,8 +881,8 @@ c                                 write details of scoring to *.out console and 
 1080  format (i4,' tries have converged so far.')
 1085  format (i4,' successful perturbations so far.')
 1090  format ('one or more observed phases are not predicted. To use ',
-     *        'such results set the ',/,'MC_fit no_missing phases opti',
-     *        'ion to F.',/,80('-'))
+     *        'such results set the ',/,'MC_fit no_missing_phases opti',
+     *        'on to F.',/,80('-'))
 1091  format ('the misfit function exceeds the MC_fit misfit_filter_va',
      *        'lue option value.',/,80('-'))
 1092  format ('the model does not predict all analytical data within ',

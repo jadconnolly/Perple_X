@@ -1558,7 +1558,7 @@ c     jchar - length of character string, 0 if unknown.
 
       double precision x,y,x0,y0,xtr,ytr
 
-      integer jchar,nchar,i
+      integer jchar,nchar
  
       character*(*) text
  

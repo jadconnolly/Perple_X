@@ -422,7 +422,7 @@ c                                 site multiplicity
       end if
 
       if (lopt(24).and.np.gt.0) then 
-c                                 ouput endmember molar g, partial molar g, and activities:
+c                                 output endmember molar g, partial molar g, and activities:
 c                                 electrolyte fluid is a special
 c                                 case because the electrolyte energies
 c                                 depend on the solvent properties
@@ -3420,10 +3420,10 @@ c                                 pssect, input is in nodal coordinates
       end if
 c                                 identify the assemblage    
       jd = igrd(iloc,jloc)
-c                                 the iap(jd) check works if k2 is inconsistent
+c                                 the iap(jd) check works if l13 is inconsistent
 c                                 between vertex and werami. the question is then
 c                                 whether there's any point in checking jd?           
-      if (jd.ge.k2-1.or.iap(jd).eq.0) then
+      if (jd.ge.l13-1.or.iap(jd).eq.0) then
 c                                 no data at point, set ijpt = 0 and return
          ijpt = 0 
          return

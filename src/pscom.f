@@ -1924,11 +1924,11 @@ c----------------------------------------------------------------
 
       character file*72
 
-      integer type, ier, symb, gfill, ix, npts, ifg, ibg, is, ie, icol,
-     *   isym, fbg(2)
+      integer type, ier, symb, gfill, ix, npts, ifg, ibg, is, icol,
+     *   fbg(2)
 
       double precision x, y, size, sigx, sigy, xy(2), sig(2), adj(2),
-     *   lx(nx), ly(nx), box(2), ssiz, rline, cwidth, temp, ang
+     *   lx(nx), ly(nx), box(2), ssiz, rline, cwidth, ang
 
       character line*128, key*8, val*8, extra*16, just*1
 

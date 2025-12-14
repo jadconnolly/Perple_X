@@ -57,9 +57,6 @@ c-----------------------------------------------------------------------
 
       logical first, err
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
@@ -321,9 +318,6 @@ c-----------------------------------------------------------------------
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
       common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
@@ -555,9 +549,6 @@ c-----------------------------------------------------------------------
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
       common/ cst226 /ncol,nrow,fileio,flsh,anneal,verbos,siphon,
@@ -570,12 +561,12 @@ c-----------------------------------------------------------------------
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
 
-      integer jlow,jlev,loopx,loopy,jinc1
-      common/ cst312 /jlow,jlev,loopx,loopy,jinc1
-
       integer fmode,ifrct,ifr
       logical gone
       common/ frct1 /fmode,ifrct,ifr(k23),gone(k5)
+
+      integer jlow,jlev,loopx,loopy,jinc1
+      common/ cst312 /jlow,jlev,loopx,loopy,jinc1
 c-----------------------------------------------------------------------
 
       iasct = 0
@@ -683,9 +674,6 @@ c-----------------------------------------------------------------------
       integer npt,jdv
       double precision cptot,ctotal
       common/ cst78 /cptot(k19),ctotal,jdv(k19),npt
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 
       integer is
       double precision a,b,c
@@ -820,13 +808,13 @@ c                                 NOTE if not fileio, then jlow must not change
 
       end if
 c                                 check resolution dependent dimensions
-      if (loopx*ncol.gt.k2) then
-         write (*,*) ' parameter k2 must be >= ncol*loopx'
-         write (*,*) ' increase parameter k2 for routine DUMMY1'
+      if (loopx*ncol.gt.l13) then
+         write (*,*) ' parameter l13 must be >= ncol*loopx'
+         write (*,*) ' increase parameter l13 for routine DUMMY1'
          write (*,*) ' or increase box size (vz(1)) or decrease'
          write (*,*) ' number of path increments (loopx) or try'
          write (*,*) ' the large parameter version of VERTEX'
-         write (*,*) ' k2 = ',k2 
+         write (*,*) ' l13 = ',l13 
          write (*,*) ' ncol * loopx = ',ncol*loopx
          stop
       end if 
@@ -1420,7 +1408,7 @@ c                                 possibility.
 
       if (idead.eq.0) call lpopt0 (idead)
 c                                 if idead = 0 optimization was ok
-      if (idead.ne.0) idead = k2
+      if (idead.ne.0) idead = l13
 
       call isgood (i,j,idead)
 
@@ -1431,7 +1419,7 @@ c-----------------------------------------------------------------------
 c isgood - for sucessful gridded minimization sort and index the 
 c          assemblage. for bad minimizations flag the grid/assemblage
 c          pointer. in either case increment count stats.
-c          if idead > 0, should be either k2 or k2-1 which get mapped to
+c          if idead > 0, should be either l13 or l13-1 which get mapped to
 c          iap(idead) = k3 or k3-1
 c-----------------------------------------------------------------------
       implicit none
@@ -1455,7 +1443,7 @@ c                                 the molar amounts of the phases are in amt.
          rcount(5) = rcount(5) + 1
 
          igrd(i,j) = idead
-         iap(idead) = idead + k3-k2
+         iap(idead) = idead + k3 - l13
 
       end if  
 
@@ -1496,7 +1484,7 @@ c                                 compute bulk coordinate at node i,j
 c                                 do a quick check for closed composition
 c                                 if bad, assign bad result and return
          if (cx(1)+cx(2).gt.r1) then
-            igrd(i,j) = k2
+            igrd(i,j) = l13
             idead = 2
             return
          end if
@@ -1509,7 +1497,7 @@ c                                 compositions; this check obviates the
 c                                 need for fancy loop indexing.
       call chkblk (idead)
 
-      if (idead.ne.0) igrd(i,j) = k2
+      if (idead.ne.0) igrd(i,j) = l13
 
       end
 
@@ -1827,9 +1815,6 @@ c---------------------------------------------------------------------
       double precision cp3, amt
       common/ cxt15 /cp3(k0,k19),amt(k19),kkp(k19),np,ncpd,ntot
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       save init
       data init/.true./
 
@@ -1873,10 +1858,10 @@ c                               for auto_refine).
       end do 
 c                               could check here if loopx*loopy, the
 c                               theoretical max number of assemblages
-c                               is > k2, but in practice the number of
-c                               assemblages << k2, so only test when 
+c                               is > l13, but in practice the number of
+c                               assemblages << l13, so only test when 
 c                               actually set.
-      do j = 1, k2
+      do j = 1, l13
          iap(j) = 0 
       end do 
 c                               increments at each level
@@ -2206,7 +2191,7 @@ c                              generate this case.
 
          write (*,1020) 'low',vname(iv1),i,j
 
-         call isgood (i,j,k2)
+         call isgood (i,j,l13)
 
          return
 
@@ -2219,7 +2204,7 @@ c                              generate this case.
 c                              only warn if past exploratory phase
          call liqwrn (i,j,'no solids','lowest')
 
-         call isgood (i,j,k2-1)
+         call isgood (i,j,l13-1)
 
          return
 
@@ -2229,7 +2214,7 @@ c                              only warn if past exploratory phase
 c                              only warn if past exploratory phase
          call liqwrn (i,j,'no liquid','lowest')
 
-         call isgood (i,j,k2-1)
+         call isgood (i,j,l13-1)
 
          return
 
@@ -2249,7 +2234,7 @@ c                              do the optimization
 
          write (*,1020) 'high',vname(iv1),i,j
 
-         call isgood (i,j,k2)
+         call isgood (i,j,l13)
 
          return
 
@@ -2262,7 +2247,7 @@ c                              do the optimization
 c                              only warn if past exploratory phase
          call liqwrn (i,j,'solids','highest')
 
-         call isgood (i,j,k2-1)
+         call isgood (i,j,l13-1)
 
          return
 
@@ -2270,7 +2255,7 @@ c                              only warn if past exploratory phase
 c                              only warn if past exploratory phase
          call liqwrn (i,j,'liquid','highest')
 
-         call isgood (i,j,k2-1)
+         call isgood (i,j,l13-1)
 
          return
 
@@ -2358,7 +2343,8 @@ c                                 fndliq failed
          if (refine) write (*,1020) 'liquidus grid',i,j
 c                                 here's an opportunity to set
 c                                 a bad value for the temperature.
-         idead = k2
+         idead = l13
+
       else 
 
          if (sol.and.l.ne.0 .or. .not.sol.and.l.eq.2) then
@@ -2711,8 +2697,8 @@ c                               for auto_refine).
       igrd = 0
 c                               could check here if loopx*loopy, the
 c                               theoretical max number of assemblages
-c                               is > k2, but in practice the number of
-c                               assemblages << k2, so only test when 
+c                               is > l13, but in practice the number of
+c                               assemblages << l13, so only test when 
 c                               actually set.
       iap = 0
 c                               increments at each level
@@ -3133,6 +3119,7 @@ c---------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i, j, kinc, ii, jj, kinc2, kinc21
+c---------------------------------------------------------------------
 c                                 the commented version fills
 c                                 with just assemblage i,j this
 c                                 would be fine if compression is
@@ -3186,7 +3173,7 @@ c---------------------------------------------------------------------
       include 'perplex_parameters.h'
 
       integer i, j, ii, jcent, icent, jj, kinc
-
+c---------------------------------------------------------------------
       do ii = i, i + kinc
          do jj = j, j + kinc
 c                                 the conditional prevents 
@@ -3385,12 +3372,12 @@ c-----------------------------------------------------------------------
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
 
+      double precision v,tr,pr,r,ps
+      common/ cst5  /v(l2),tr,pr,r,ps
+
       integer fmode,ifrct,ifr
       logical gone
       common/ frct1 /fmode,ifrct,ifr(k23),gone(k5)
-
-      double precision v,tr,pr,r,ps
-      common/ cst5  /v(l2),tr,pr,r,ps
 
       integer kkp,np,ncpd,ntot
       double precision cp3,amt

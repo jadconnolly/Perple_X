@@ -9644,9 +9644,6 @@ c-----------------------------------------------------------------------
       integer iorig,jnsp,iy2p
       common / cst159 /iorig(m4),jnsp(m4),iy2p(m4)
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       integer jend
       common/ cxt23 /jend(h9,m14+2)
 
@@ -10212,7 +10209,7 @@ c                                 check if the phase consists
 c                                 entirely of saturated components:
       if (ctot(iphct).lt.nopt(50)) then
 
-         if (im.ne.oim) call warn (55,scp(1),l,tname)
+         if (im.ne.oim) call error (30,scp(1),l,tname)
 
          bad = .true.
          oim = im
@@ -15218,11 +15215,11 @@ c----------------------------------------------------------------------
       if (iclos.eq.1) then
 c                                 static
          write (*,1000) id,tkp,ukp,name,amt,lambda,c(id),
-     *                  (a(i,id),i=1,jbulk)
+     *                  (a(i,id),i=1,icomp)
       else
 c                                 dynamic
          write (*,1000) id,tkp,ukp,name,amt,lambda,g2(id),
-     *                  (cp2(i,id),i=1,jbulk)
+     *                  (cp2(i,id),i=1,icomp)
       end if
 
 1000  format (i7,1x,i4,1x,i4,1x,a,20(g14.6,1x))
@@ -18668,6 +18665,8 @@ c                                 thermodynamic components.
 
       end do
 
+c     if (scptot.eq.0d0) call error (30,scptot,ids,'GETSCP')
+
       end
 
       subroutine input2 (first)
@@ -19636,7 +19635,7 @@ c                                 pointer to solution compositional coordinates
 
          ibulk = ibulk + 1
 
-         if (ibulk.gt.k2) call error (183,0d0,k2,'BLINP')
+         if (ibulk.gt.l13-2) call error (183,0d0,l13,'BLINP')
 
          read (n5,*,end=99) icog(ibulk),jcog(ibulk),iap(ibulk)
 
@@ -19649,6 +19648,7 @@ c                                an inconsistent blk file in unsplt
          end if 
 c                                phase molar amounts
          read (n5,*,iostat=ier) (bg(i,ibulk),i=1,iavar(3,ias))
+
          if (ier.ne.0) goto 99
 
          icox(ibulk) = jxco
@@ -19675,7 +19675,8 @@ c                                lagged speciation
                if (kxco.gt.k18) call error (61,0d0,k18,'BPLINP')
 
                read (n5,*,iostat=ier) (xco(j), j = jxco, kxco)
-               if (ier.ne.0) goto 99
+
+               if (ier.ne.0) goto 99 
 
             end if  
          
@@ -19699,7 +19700,9 @@ c                                 potentials
 
          if (icopt.eq.2) then 
             read (n5,*,iostat=ier) tliq(ibulk)
+
             if (ier.ne.0) goto 99
+
          end if
 
       end do
@@ -19709,7 +19712,6 @@ c                                 potentials
       if (ier.ne.0) err = .true.
 
       end
-
 
       subroutine plinp (err)
 c---------------------------------------------------------------------- 
@@ -19736,9 +19738,6 @@ c----------------------------------------------------------------------
 
       integer ipot,jv,iv
       common / cst24 /ipot,jv(l2),iv(l2)
-
-      double precision vip
-      common/ cst28 /vip(l2,k2)
 
       logical fileio, flsh, anneal, verbos, siphon, colcmp, usecmp
       integer ncol, nrow
@@ -19920,7 +19919,7 @@ c                                 close n8 for assemblage list (plopt(3), PSSECT
       close (n8) 
 c                                 make the "null" assemblages
       do i = 0, 1
-         iap(k2-i) = k3-i
+         iap(l13-i) = k3-i
          iavar(1,k3-i) = 0
          iavar(2,k3-i) = 0 
          iavar(3,k3-i) = 0
@@ -19931,6 +19930,8 @@ c                                 if coodinates from a file, read
 c                                 coordinate file.
          open (n8,file=cfname,status='old',iostat=ier)
          if (ier.ne.0) call error (6,vip(1,1),i,cfname)
+c                                 1d coordinates limited by k2 rather
+c                                 than l13.
          if (loopy.gt.k2) call error (1,vip(1,1),loopy,'k2')
          do j = 1, loopy
             read (n8,*,iostat=ier) (vip(jv(i),j), i = 1, ipot)
@@ -22177,6 +22178,7 @@ c                                 initial implementation in perple_X and was
 c                                 added April 3, 2021.
 c              call lamla4 (dg,lmda(id))
 c              gval = gval + dg
+               dg = 0d0
 
             else if (eos(id).ne.8.and.eos(id).ne.9) then
 c                                 putnis landau model as implemented incorrectly

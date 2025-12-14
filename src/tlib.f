@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.15 December 8, 2025.',
+     *     'Perple_X release 7.1.16 December 14, 2025.',
 
      *     'Copyright (C) 1986-2025 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -155,9 +155,6 @@ c----------------------------------------------------------------------
       integer grid
       double precision rid 
       common/ cst327 /grid(6,2),rid(5,2)
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
@@ -1591,26 +1588,28 @@ c                                 grid parameters
          if (loopy.gt.l7) then 
             call warn (92,nopt(1),loopy,'y_node')
             grid(2,i) = (l7 - 1)/2**(grid(3,i)-1) + 1
+            call wrnstp
          end if 
 
          if (loopx.gt.l7) then 
             call warn (92,nopt(1),loopx,'x_node')
             grid(1,i) = (l7 - 1)/2**(grid(3,i)-1) + 1
+            call wrnstp
          end if 
 
          if (grid(4,i).gt.l7) then 
             call warn (92,nopt(1),loopx,'1dpath')
             grid(4,i) = l7 - 1
+            call wrnstp
          end if  
 
          if (grid(5,i).lt.1) then 
             call warn (113,rid(1,i),grid(5,i),'VARIAN')
             grid(5,i) = 1
+            call wrnstp
          end if 
 
-         if (rid(1,i).lt.1d-2) then 
-            call warn (114,rid(1,i),i,'INPUT1')
-         end if 
+         if (rid(1,i).lt.1d-2) call warn (114,rid(1,i),i,'INPUT1') 
 
       end do
 c                                 --------------------------------------
@@ -2729,10 +2728,13 @@ c---------------------------------------------------------------------
       integer iam
       common/ cst4 /iam
 
+      character fname*10, aname*6, lname*22
+      common/ csta7 /fname(h9),aname(h9),lname(h9)
+
       character tname*10
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
-
+c----------------------------------------------------------------------
       if (refine) then
          tag = '2nd'
       else 
@@ -2797,6 +2799,8 @@ c---------------------------------------------------------------------
          write (*,28) int, char(1:l)
       else if (ier.eq.29) then 
          write (*,29) int, char(1:l)
+      else if (ier.eq.30) then
+         write (*,30) char(1:nblen(char)), char(1:nblen(char))
       else if (ier.eq.32) then 
          write (*,32)
       else if (ier.eq.33) then 
@@ -2947,7 +2951,7 @@ c                                 accordingly:
       else if (ier.eq.182) then
          write (*,182) k2
       else if (ier.eq.183) then
-         write (*,183) k2,char(1:l)
+         write (*,183) l13,char(1:l)
       else if (ier.eq.197) then
          write (*,197) int, k5, char(1:l)
       else if (ier.eq.200) then
@@ -3037,6 +3041,10 @@ c                                 accordingly:
      *          ' routine: ',a,/)
 29    format (/,'**error ver029** unknown term type ',i6,' for',
      *          ' solution model: ',a,/)
+30    format (/,'**warning ver030** possible compositions of ',a,' lie '
+     *         ,'entirely within the saturated',/,'component compositio'
+     *         ,'n space. Eliminate the component saturation constrain'
+     *         ,'ts'/,'or use convex.',/)
 32    format (/,'**error ver032** stability field calculations (',
      *          'option 2) are disabled in this version of PERPLEX',/)
 33    format (/,'**error ver033** expression with too many terms in ',a
@@ -3393,8 +3401,6 @@ c----------------------------------------------------------------------
          write (*,53) realv
       else if (ier.eq.54) then 
          write (*,54)
-      else if (ier.eq.55) then 
-         write (*,55) char(1:l)
       else if (ier.eq.56) then 
          write (*,56) char(1:l)
       else if (ier.eq.57) then
@@ -3702,11 +3708,6 @@ c                                 generic warning, also 99
 54    format (/,'**warning ver054** property choices 25, 36, and 38 are'
      *         ,' not allowed in combination',/,'with other property '
      *         ,'choices',/)
-55    format (/,'**warning ver055** possible compositions of ',a,' lie',
-     *        ' entirely within the saturated',/,'component composition'
-     *         ,' space. the compositions will not be considered.',/,
-     *         'If this is problematic, then eliminate the component ',
-     *         'saturation constraints',/,'or use convex.',/)
 56    format ('**warning ver056** the EoS specified by the hybrid_',
      *        'EoS_',a,' option will be',/,'overridden by the EoS sp',
      *        'ecified in the problem definition file. To prevent this',
@@ -7597,9 +7598,6 @@ c----------------------------------------------------------------------
       integer iam
       common/ cst4 /iam
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       integer length,com
       character chars*1, card*400
       common/ cst51 /length,com,chars(400),card
@@ -8883,9 +8881,6 @@ c-----------------------------------------------------------------------
 
       external nblen
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       integer iam
       common/ cst4 /iam
 
@@ -9448,9 +9443,6 @@ c-----------------------------------------------------------------------
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       integer hcp,idv
       common/ cst52  /hcp,idv(k7)
 
@@ -9810,7 +9802,7 @@ c                             jprct+1..icomp -> (jmct.ne.0) mobile components
       jprct = icomp - jmct
 c                             kbulk counter used for aq speciation which allows
 c                             saturated + mobile components
-      kbulk = jbulk + jmct
+      kbulk = jfct
 c                             excluded phases
       ixct = 0
 c                             decode excluded phases

@@ -388,9 +388,6 @@ c----------------------------------------------------------------------
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
 
-      integer io3,io4,io9
-      common/ cst41 /io3,io4,io9
-
       save tags
 
       data tags/      'g(J/mol)     ','h(J/mol)     ','log10[Keq]   ',
@@ -1095,9 +1092,6 @@ c-----------------------------------------------------------------------
       integer ipt2
       double precision ptx
       common/ cst32 /ptx(l5),ipt2
-
-      integer io3,io4,io9
-      common/ cst41 /io3,io4,io9
 c-----------------------------------------------------------------------
       if (iphct.gt.4) goto 20
       write (*,1050) (vnu(l),names(l),l=1,iphct)

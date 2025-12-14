@@ -375,9 +375,6 @@ c---------------------------------------------------------------------
       integer iind, idep
       double precision c0,c1,c2,c3,c4,c5
       common/ cst316 /c0,c1,c2,c3,c4,c5,iind,idep
- 
-      double precision vip
-      common/ cst28 /vip(l2,k2)
 
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
@@ -2528,9 +2525,6 @@ c----------------------------------------------------------------
 
       double precision ymx,ymn,xl(i11),yl(i11),x(3),dx,dy(i11),xmx,xmn,
      *                 mzero
-
-      double precision vip
-      common/ cst28 /vip(l2,k2)
 
       character*162 title
       common/ csta8 /title(4)

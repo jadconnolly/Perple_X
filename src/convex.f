@@ -60,9 +60,6 @@ c-----------------------------------------------------------------------
 
       logical first, pots, err
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       integer jtest,jpot
       common/ debug /jtest,jpot
 
@@ -222,9 +219,6 @@ c-----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 c-----------------------------------------------------------------------
 c                              write header to graphics files (n4, n5):
       if (io4.ne.1) then
@@ -255,9 +249,6 @@ c-----------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 
       integer iind, idep
       double precision c0,c1,c2,c3,c4,c5
@@ -574,9 +565,6 @@ c-----------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 
       integer ismax,igot
       double precision value
@@ -1041,11 +1029,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i,j,k,irnms,isol,np
+      integer i,j,k,isol,np
 
       logical solvs1, bad
-
-      common/ csta1 /irnms(k2,k7)
 
       integer idr,ivct
       double precision vnu
@@ -1057,9 +1043,6 @@ c----------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      integer irv
-      common/ cst35 /irv(k2)
 
       integer ikp
       common/ cst61 /ikp(k1)
@@ -1159,20 +1142,11 @@ c-----------------------------------------------------------------------
       double precision vnu
       common/ cst25 /vnu(k7),idr(k7),ivct
 
-      integer irnms
-      common/ csta1 /irnms(k2,k7)
- 
-      double precision vip
-      common/ cst28 /vip(l2,k2)
-
       integer ipot,jv,iv1,iv2,iv3,iv4,iv5
       common/ cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      integer irv
-      common/ cst35 /irv(k2)
 
       integer ivarrx,ivarip,isudo,ivar
       common/ cst62 /ivarrx(k2),ivarip(k2),isudo,ivar
@@ -1815,9 +1789,6 @@ c-----------------------------------------------------------------------
 
       integer ipid,ipct
       common/ cst29 /ipid(k2,k8),ipct
- 
-      double precision vip
-      common/ cst28 /vip(l2,k2)
 
       integer ipvt,idv,iophi,idphi,iiphi,iflg1
       double precision a,b
@@ -1837,9 +1808,6 @@ c-----------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 c-----------------------------------------------------------------------
       ivi = iovi
       ivd = iovd
@@ -2611,9 +2579,6 @@ c-----------------------------------------------------------------------
       integer irct,ird
       double precision vn
       common/ cst31 /vn(k2,k7),irct,ird   
- 
-      double precision vip
-      common/ cst28 /vip(l2,k2)
 
       integer ipot,jv,iv1,iv2,iv3,iv4,iv5
       common/ cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
@@ -2664,12 +2629,6 @@ c----------------------------------------------------------------------
 
       integer ipid,ipct
       common/ cst29 /ipid(k2,k8),ipct
- 
-      double precision vip
-      common/ cst28 /vip(l2,k2)
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
@@ -2748,23 +2707,8 @@ c-----------------------------------------------------------------------
       integer ir
       common/ cst13 /ir(k2)
 
-      integer irnms
-      common/ csta1 /irnms(k2,k7)
-
-      character rxnstr*(kd2)
-      common/ cst104 /rxnstr(k2)
-
-      double precision vip
-      common/ cst28 /vip(l2,k2)
-
       integer ipot,jv,iv1,iv2,iv3,iv4,iv5
       common/ cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
-      integer irv
-      common/ cst35 /irv(k2)
 
       integer ivarrx,ivarip,isudo,ivar
       common/ cst62 /ivarrx(k2),ivarip(k2),isudo,ivar
@@ -2822,9 +2766,6 @@ c----------------------------------------------------------------------
       double precision vn
       common/ cst31 /vn(k2,k7),irct,ird
 
-      character rxnstr*(kd2)
-      common/ cst104 /rxnstr(k2)
-
       integer icp2
       common/ cst81 /icp2
 
@@ -2833,9 +2774,6 @@ c----------------------------------------------------------------------
 
       integer ibug
       common/ cst105 /ibug(k2)
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 
       integer ivarrx,ivarip,isudo,ivar
       common/ cst62 /ivarrx(k2),ivarip(k2),isudo,ivar
@@ -2981,9 +2919,6 @@ c-----------------------------------------------------------------------
       integer iplus(k5),iminus(k5),jplus(k5),jminus(k5),ip,im,i,j,ist,
      *        ione(k7),jone(k7),iend,jst,is,jend,id
 
-      character rxnstr*(kd2)
-      common/ cst104 /rxnstr(k2)
-
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
@@ -3126,9 +3061,6 @@ c-----------------------------------------------------------------------
       integer irct,ird
       double precision vn
       common/ cst31 /vn(k2,k7),irct,ird
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 
       integer ikp
       common/ cst61 /ikp(k1)
@@ -3488,9 +3420,6 @@ c----------------------------------------------------------------------
 
       integer ipot,jv,iv1,iv2,iv3,iv4,iv5
       common/ cst24 /ipot,jv(l2),iv1,iv2,iv3,iv4,iv5
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
@@ -3909,9 +3838,6 @@ c----------------------------------------------------------------------
       integer icp2
       common/ cst81 /icp2
 
-      double precision vip
-      common/ cst28 /vip(l2,k2)
-
       integer ipvt,idv,iophi,idphi,iiphi,iflg1
       double precision a,b
       common/ cst23 /a(k8,k8),b(k8),ipvt(k8),idv(k8),
@@ -3930,9 +3856,6 @@ c----------------------------------------------------------------------
 
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
-
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
 c-----------------------------------------------------------------------
       jchk = 0 
       icp3 = icp + 3
@@ -4174,9 +4097,6 @@ c----------------------------------------------------------------------
       integer ird, irend, ier, irends(k2), j, jct
 
       double precision rends(2,16,k2), dx, dy, x, y, xx, yy
-
-      integer irv
-      common/ cst35 /irv(k2)
 
       integer ipot,jv,iv
       common/ cst24 /ipot,jv(l2),iv(l2)
@@ -4593,9 +4513,6 @@ c-----------------------------------------------------------------------
      *          mpart(k8)*34, exten(2)*8, ptext*(kd2), mtext*(kd2)
 
       integer jchar(2),ip,im,i,id,j,nchar
-
-      character rxnstr*(kd2)
-      common/ cst104 /rxnstr(k2)
 
       integer jfct,jmct,jprct,jmuct
       common/ cst307 /jfct,jmct,jprct,jmuct
@@ -5484,9 +5401,6 @@ c----------------------------------------------------------------------
 
       integer ipid,ipct
       common/ cst29 /ipid(k2,k8),ipct
- 
-      double precision vip
-      common/ cst28 /vip(l2,k2)
 
       integer ipvt,idv,iophi,idphi,iiphi,iflg1
       double precision a,b
@@ -5551,9 +5465,6 @@ c-----------------------------------------------------------------------
 
       integer ipid,ipct
       common/ cst29 /ipid(k2,k8),ipct
- 
-      double precision vip
-      common/ cst28 /vip(l2,k2)
 
       integer ipvt,idv,iophi,idphi,iiphi,iflg1
       double precision a,b

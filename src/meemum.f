@@ -34,9 +34,6 @@ c----------------------------------------------------------------------
       double precision a,b,c
       common/ cst313 /a(k5,k1),b(k5),c(k1),is(k1+k5)
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       double precision goodc, badc
       common/ cst20 /goodc(3),badc(3)
 

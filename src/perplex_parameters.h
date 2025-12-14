@@ -4,7 +4,7 @@
       integer j3,j4,j5,j6,j9
       integer k0,k1,k2,k3,k4,k5,k7,k8,k9,k10,k13,k14,k15
       integer k16,k17,k18,k19,k20,k21,k22,k23,k24,kd2,k25
-      integer l2,l3,l5,l6,l7,l8,l9,l10,l11,l12,lchar
+      integer l2,l3,l5,l6,l7,l8,l9,l10,l11,l12,l13,lchar
       integer m0,m1,m2,m3,m4,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15
       integer m16,m17,m18,m19,m20,m21,m22,m23,m24,m25
       integer msp,mst,mdim,ms1
@@ -138,10 +138,11 @@ c----------------------------------------------------------------------
 !                                l11 - max number of observations for MC inversion
 !                                l12 - max number of inversion parameters, fudged from k5 + k14 to 20
 !                                      to allow cst67 to be used in MINIM
+!                                l13 - max number of populated nodes for WERAMI/PSSECT, theoretically could be l7^2
 !                                nsp - max number of species in fluid speciation routines 
 
       parameter (l2=5,l3=l2+2,l5=1000,l6=500,l7=2048,l8=10,l9=150,
-     *           nsp=18,l10=nsp+l9+4,l11=400,l12=l2+k5+1)
+     *           nsp=18,l10=nsp+l9+4,l11=400,l12=l2+k5+1,l13=500000)
 !                                 m0 - max number of terms for a species site fraction?
 !                                 m1 - max number of terms in excess function
 !                                 m2 - max order of term in excess function
@@ -512,19 +513,28 @@ c                                 nlpsol blocks
       integer count, rcount, lcount
       common/ cstcnt /count, rcount(5), lcount(5)
 c                                 ----------------------------------------
-c                                 global assemblage data, k2 <= l7^2, replace k2 w/ l7?
+c                                 global optimization data points, l13 <= l7^2
 c                                 bulk assemblage counter dependent arrays
+c                                 formerly (7.1.4-) the multi-use k2 parameter
+c                                 was used for this purpose. k2 is still used
+c                                 in the vip array for 1-d calculations.
+c                                 optimization data points are NOT unique
+c                                 assemblages. Unique assemblage data is 
+c                                 limited by k3.
+
+c                                 the last two elements of iap(k3) are reserved
+c                                 for bad assemblage pointers.
       double precision amu, tliq
-      common/ cst48 /amu(k8,k2), tliq(k2)
+      common/ cst48 /amu(k8,l13), tliq(l13)
 
       integer icog,jcog
-      common/ cxt17 /icog(k2),jcog(k2)
+      common/ cxt17 /icog(l13),jcog(l13)
 
       integer iap,ibulk
-      common/ cst74 /iap(k2),ibulk
+      common/ cst74 /iap(l13),ibulk
 
       double precision bg
-      common/ cxt19 /bg(k5,k2)
+      common/ cxt19 /bg(k5,l13)
 
       integer igrd
       common/ cst311 /igrd(l7,l7)
@@ -779,3 +789,19 @@ c                                 local dqf and solvus tolerance values
 
       double precision dcp, soltol, loctol
       common/ cst57 /dcp(k5,k19), soltol(h9), loctol
+c                                 invariant point coordinates for CONVEX and
+c                                 1d grid coordinates for VERTEX
+      double precision vip
+      common/ cst28 /vip(l2,k2)
+c                                 CONVEX junk:
+      integer irnms
+      common/ csta1 /irnms(k2,k7)
+
+      character rxnstr*(kd2)
+      common/ cst104 /rxnstr(k2)
+
+      integer io3,io4,io9
+      common / cst41 /io3,io4,io9
+
+      integer irv
+      common/ cst35 /irv(k2)

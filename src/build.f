@@ -65,9 +65,6 @@ c-----------------------------------------------------------------------
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 
-      integer io3,io4,io9
-      common / cst41 /io3,io4,io9
-
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
 

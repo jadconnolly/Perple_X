@@ -1137,12 +1137,12 @@ c----------------------------------------------------------------------
      *        denois, pltcmp, george
 
       integer i, j, k, l, m, id, jcoor, iix, jix, klev, jd,
-     *        v1, v2, nsegs, tseg,
-     *        noth, grp, iass, ictr, kass, msol,
-     *        ii, jj, in, iend, cflag, isol, nsol, ngrp,
-     *        nssol, issol(k2),
-     *        lass(k2), lsol(k2), labs(k2), nabs(k2),
-     *        gixi(8), gixj(8), lblix(k3)
+     *        v1, v2, nsegs, tseg, ii, jj, noth, grp, iass, ictr, 
+     *        kass, msol, in, iend, cflag, isol, nsol, ngrp,
+     *        nssol, gixi(8), gixj(8), lblix(k3),
+c                                 these guys probably need to be 
+c                                 dimensioned by l13 (>k2).
+     *        issol(l13), lass(l13), lsol(l13), labs(l13), nabs(l13)
 
       equivalence (lblix,lblphs)
 
@@ -1155,8 +1155,9 @@ c----------------------------------------------------------------------
       external nblen, readyn
 
       double precision lvmin, lvmax, vlo, vhi, vrt, x, y, cst, 
-     *         xc, yc, cvec(3), dinv(3,3), yssol(m14+2,k2), wt(3),
-     *         cont, lloc(2,k3)
+     *         xc, yc, cvec(3), dinv(3,3), wt(3), cont, lloc(2,k3),
+c                                 as above, swapped to l13
+     *         yssol(m14+2,l13)
 
       double precision rline,thick,font,xdc,
      *                 clinex(npts),cliney(npts),
@@ -1308,7 +1309,7 @@ c                                 reconstruct the temperature grid
                if (ijpt.eq.0) then 
 c                                no data for node i,j: could turn on 
 c                                extrapolation if this occurs a lot.
-                  if (igrd(i,j).eq.k2-1) then
+                  if (igrd(i,j).eq.l13-1) then
                      tgrid(i,j) = vmax(iv1)
                   else 
                      tgrid(i,j) = nopt(7)
@@ -1335,7 +1336,7 @@ c                                 a computed point
 
                else
 
-                  if (igrd(i,j).eq.k2-1) then
+                  if (igrd(i,j).eq.l13-1) then
                      tgrid(i,j) = vmax(iv1)
                   else 
                      tgrid(i,j) = nopt(7)
