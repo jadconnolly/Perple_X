@@ -1159,11 +1159,8 @@ c                                 dimensioned by l13 (>k2).
 c                                 as above, swapped to l13
      *         yssol(m14+2,l13)
 
-      double precision rline,thick,font,xdc,
-     *                 clinex(npts),cliney(npts),
-     *                 linex(npts),liney(npts),
-     *                 cline(2,npts),segs(4,nseg)
-
+      double precision rline,thick,font,xdc
+   
       integer n,ng,ntri,npeece,ipts,ipiece,ncon,
      *        ipiecs(2,npcs),npiece(mcon),segm(nseg),
      *        ifirst(mcon),next(nseg),ilast(mcon)
@@ -1185,8 +1182,8 @@ c                                 to store integer workspace?
       integer iassf
       external iassf
 
-      double precision tgrid
-      common/ cst308 /tgrid(l7,l7)
+c     double precision tgrid
+c     common/ cst308 /tgrid(l7,l7)
 
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
@@ -1232,12 +1229,26 @@ c                                 working arrays
       common/ dim   /z(nx,ny),ix,iy,mvar
       common/ dim1  /zt(nx,ny)
 
+      double precision, allocatable ::clinex(:), cliney(:), linex(:), 
+     *                               liney(:), cline(:,:), segs(:,:),
+     *                               tgrid(:,:)
+
+      logical, save :: alloc
+      data alloc /.false./
+
       data (gixi(i),gixj(i),i=1,8)/
 c         1     2     3      4    5     6    7    8
      *  -1,-1, 0,-1, 1,-1, -1,0, 1,0, -1,1, 0,1, 1,1
 c        x  y  x  y  x  y   x y  x y   x y  x y  x y
      */
 c----------------------------------------------------------------------
+      if (.not. alloc) then
+         allocate (tgrid(l7,l7))
+         allocate (clinex(npts), cliney(npts), linex(npts), liney(npts))
+         allocate (cline(2,npts))
+         allocate (segs(4,nseg))
+         alloc = .true.
+      end if
 c                                 initialization, phase lists etc
       call initlq
 c                                 default options:
@@ -1362,7 +1373,7 @@ c                                 plot the isotherms:
 c                                 -------------------------------------
 c                                 denoise temperature grid
 
-      if (denois)  call unnois (0.0d0, 5, 20, .false.)
+      if (denois)  call unnois (0.0d0, 5, 20, .false., tgrid)
 c                                 determine temperature range in grid, copy to
 c                                 uniformly dense grid for contouring.
 c                                 contouring uses a rectangular grid, however.
@@ -2773,7 +2784,7 @@ c----------------------------------------------------------------------
  
       end
 
-      subroutine unnois (sigma, nitn, nitv, nbore)
+      subroutine unnois (sigma, nitn, nitv, nbore, tgrid)
 c--------------------------------------------------------------------
 c unnois - smooth a ternary grid using algorithm of Sun et al. (2007),
 c           IEEE Trans. Computer Graphics v.13, 925-938.
@@ -2803,28 +2814,45 @@ c--------------------------------------------------------------------
       double precision sigma
 
       integer i, j, k, l, n, vi1, vi2, vi3, nvrt, nfac, nn, nnb(13),
-     *   vfn(ll), vfi(6,ll), i1(2), i2(2), i3(2), vin(3), gdim, ig, ii
+     *        i1(2), i2(2), i3(2), vin(3), gdim, ig, ii
+
+c     integer vfn(ll), vfi(6,ll)
 
       equivalence (vi1,vin(1)),(vi2,vin(2)),(vi3,vin(3))
 
       double precision ccx, ccy, dot, glo, ghi, grdscl,
-     *   vrtx(3,ll), fnrm(3,ll), tnrm(3,ll), v0(3), v1(3), v2(3)
+     *                 v0(3), v1(3), v2(3)
+
+c     integer vfn(ll), vfi(6,ll)
+c     double precision vrtx(3,ll), fnrm(3,ll), tnrm(3,ll)
 
       double precision dotd
 
       integer jlow,jlev,loopx,loopy,jinc
       common/ cst312 /jlow,jlev,loopx,loopy,jinc
 
-      double precision tgrid
-      common/ cst308 /tgrid(l7,l7)
+      double precision tgrid(l7,l7)
 
       integer ncall
       data ncall/0/
-c ------------------------------------------------------------------------------
+c-------------------------------------------------------------------------------
+c                                   make the huge arrays allocateable
+      integer, allocatable :: vfn(:), vfi(:,:)
+      double precision, allocatable :: vrtx(:,:), fnrm(:,:), tnrm(:,:)
+
+      logical allocd
+      save allocd, vfn, vfi, vrtx, fnrm, tnrm
+      data allocd /.false./
+c-------------------------------------------------------------------------------
 c statement function to back-translate dense grid index to sparse index
       ig(ii) = 1 + (ii-1)*jinc
 c ------------------------------------------------------------------------------
-
+      if (.not. allocd) then
+         allocate(vfn(ll), vfi(6,ll))
+         allocate(vrtx(3,ll), fnrm(3,ll), tnrm(3,ll))
+         allocd = .true.
+      end if
+c
       ncall = ncall + 1
 c                                 # vertices and faces
       gdim = 1 + (loopx-1)/jinc

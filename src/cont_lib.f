@@ -22,13 +22,19 @@ C----------------------------------------------------------------
       parameter (nseg=100000,npts=250000,npcs=100000,mcon=50)
 
       character kontor*80
-    
-      double precision cont(mcon),clinex(npts),
-     *     cliney(npts),linex(npts),liney(npts),cline(2,npts),
-     *     segs(4,nseg)
 
-      integer ipiecs(2,npcs),npiece(mcon),ifirst(mcon),
-     *        next(nseg),ilast(mcon)
+      double precision cont(mcon)
+
+      integer ipiecs(2,npcs), npiece(mcon), ifirst(mcon),
+     *        ilast(mcon)
+    
+  
+c     double precision cont(mcon),clinex(npts),
+c    *     cliney(npts),linex(npts),liney(npts),cline(2,npts),
+c    *     segs(4,nseg)
+
+c     integer ipiecs(2,npcs),npiece(mcon),ifirst(mcon),
+c    *        next(nseg),ilast(mcon)
 
       logical readyn 
 
@@ -48,7 +54,23 @@ C----------------------------------------------------------------
 
       double precision xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
       common/ wsize /xmin,xmax,ymin,ymax,dcx,dcy,xlen,ylen
-c----------------------------------------------------------------            
+c                                 make big arrays allocateable
+      integer, allocatable ::next(:)
+
+      double precision, allocatable ::clinex(:), cliney(:), linex(:), 
+     *                               liney(:), cline(:,:), segs(:,:)
+
+      logical, save :: allocd
+      data allocd /.false./
+c----------------------------------------------------------------       
+c                                 allocate:
+      if (.not. allocd) then
+         allocate (clinex(npts), cliney(npts), linex(npts), liney(npts))
+         allocate (cline(2,npts))
+         allocate (segs(4,nseg))
+         allocate (next(nseg))
+         allocd = .true.
+      end if     
 c                                  contor interval
       j = 0
       do i = 1, ncon
