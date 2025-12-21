@@ -522,8 +522,13 @@ c                                 optimization data points are NOT unique
 c                                 assemblages. Unique assemblage data is 
 c                                 limited by k3.
 
+c                                 THE L13 = 5e5 IS RIDICULOUSLY LARGE AND 
+c                                 ONLY NECESSARY TO VIEW FAILED WHOLE MANTLE 
+c                                 CALCULATIONS; L13 = 1e5 IS MORE THAN ADEQUATE
+c                                 AND SHOULD BE RESTORED.
+
 c                                 the last two elements of iap(k3) are reserved
-c                                 for bad assemblage pointers.
+c                                 for bad assemblage pointers. 
       double precision amu, tliq
       common/ cst48 /amu(k8,l13), tliq(l13)
 
@@ -588,7 +593,8 @@ c                                 MC_fit common block:
      *        mcgrid, grhobj, bayes, vital, consol, mcbulk, newstt,
      *        relerr, mchot, lmass, nomiss, missng, nogood, kiso, 
      *        mcfit, ptonly, mcfrst, nmcov, unplus, mcmode, uncert,
-     *        mustft, fitdat, simlim, sftmax, sftpot, sftc
+     *        mustft, fitdat, simlim, simmol, needms, sftmax, sftpot,
+     *        sftc
 
       integer mxpt, cxpt, random, cextra, optct, idxtra, ptry, unmeas,
      *        xptids, xptptr, xptnph, xpterr, mccpd, mcsol, mcid, 
@@ -629,7 +635,8 @@ c                                 logical
      *               vital, consol, mcbulk, newstt, kiso, mcfit, uncert,
      *               relerr, mchot, lmass, nomiss, missng, nogood,
      *               ptonly, mcfrst, nmcov, unplus, mcmode(l11), mustft,
-     *               fitdat, simlim(k5), sftmax, sftpot, sftc,
+     *               fitdat, simlim(k5), simmol(k5), needms, sftmax, 
+     *               sftpot, sftc,
 c                                 character
      *               xptnam(l11)
 c                                 the untrasnformed nelder-mead variables

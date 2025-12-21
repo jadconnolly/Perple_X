@@ -990,6 +990,7 @@ c                                 temperature range
       end if
 c                                 initialize simple limit flag
       simlim = .false.
+      needms = .false.
 
       do 
 c                                 read optional unmeasured components
@@ -2008,10 +2009,27 @@ c                                 mass/mol conversions
          if (key.eq.'end_'//tag) exit
 
          ok = .false.
-c                                 check for simple limit expressions:
-         if (tag.eq.'limits'.and.key.eq.'Simple') then
 
+         if (tag.eq.'limits'.and.(key.eq.'simple_mole'.or.
+     *                            key.eq.'Simple'.or.
+     *                            key.eq.'simple_mass')) then
+c                                 simple limit expressions in terms of mole
+c                                 or mass fractions
              simlim(unmeas) = .true.
+
+             if (key.eq.'simple_mass') then
+c                                 simple limit expressions in terms of mass
+c                                 fractions
+                simmol(unmeas) = .false.   
+c                                 flag indicating mass units needed.
+                needms = .true.   
+     
+             else 
+
+                simmol(unmeas) = .true.
+
+             end if
+
              ok = .true.
              i = uncomp(unmeas)
 
@@ -2251,7 +2269,7 @@ c-----------------------------------------------------------------------
 
       integer i, j, k, l, ixpt
 
-      double precision cmax, cmin
+      double precision cmax, cmin, mtotal
 
       integer npt,jdv
       double precision cptot,ctotal
@@ -2300,19 +2318,42 @@ c KA hack
          end do
 
       end if
+c                                 get the total number of moles
+c                                 and total mass
+      ctotal = 0d0
+
+      do j = 1, lbulk
+         ctotal = ctotal + cblk(j)
+      end do
 
       if (unmeas.gt.0) then
 c                                unmeasured components
+         if (needms) then 
+c                                need mass fractions
+            mtotal = 0d0
+
+            do j = 1, lbulk
+               mtotal = mtotal + cblk(j) * atwt(j)
+            end do
+
+         end if
+
          do l = 1, unmeas
 c                                 
             cmax = 0d0
             cmin = 0d0
             k = uncomp(l)
 
-            if (simlim(l)) then 
-c                                simple limit expression
-               cblk(k) = cmpmin(l,k) + 
-     *                   (cmpmax(l,k) - cmpmin(l,k)) * xinv(ipot+l)
+            if (simlim(l).and.simmol(l)) then 
+c                                simple molar limit expression
+               cblk(k) = cmpmin(l,k) + xinv(ipot+l) * 
+     *                  (cmpmax(l,k) - cmpmin(l,k)) / ctotal
+
+            else if (simlim(l).and..not.simmol(l)) then 
+c                                simple mass limit expression
+               cblk(k) = ( cmpmin(l,k) + xinv(ipot+l) * 
+     *                    (cmpmax(l,k) - cmpmin(l,k)) * mtotal) /
+     *                    atwt(k)
 
             else 
 c                                coupled limit expression
@@ -2329,15 +2370,13 @@ c              cblk(k) = cmin + (cmax - cmin) * x(ipot+l+(ixpt-1))
             end if
 
          end do
+c                                 update ctotal 
+         do l = 1, unmeas
+            ctotal = ctotal + cblk(uncomp(l))
+         end do
 
       end if
 c                                 normalize, should be to icp?
-      ctotal = 0d0 
-
-      do j = 1, lbulk
-         ctotal = ctotal + cblk(j)
-      end do
-
       b(1:lbulk) = cblk(1:lbulk) / ctotal
 
       end
