@@ -37,11 +37,11 @@ ifeq ($(STATIC),1)
   # ---------------- Windows (MSYS2/MinGW/Cygwin) ----------------
   ifneq (,$(filter MINGW% MSYS% CYGWIN%,$(UNAME_S)))
   # Make the whole link prefer static libs (this is the key difference on Windows)
-    LDFLAGS_RUNTIME_PRE  += -static -static-libgfortran -static-libgcc
-    LDFLAGS_RUNTIME_PRE  += -Wl,--as-needed
+    LDFLAGS_RUNTIME_PRE  += -static -static-libgfortran -static-libgcc -Wl,--as-needed
 
-  # And still force these explicitly (belt + suspenders)
-    LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lquadmath -lwinpthread -Wl,-Bdynamic
+  # IMPORTANT: do NOT end in -Bdynamic, or gfortran’s appended libs become DLL deps
+    LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lquadmath -lwinpthread
+  # (optional belt+suspenders) LDFLAGS_RUNTIME_POST += -Wl,-Bstatic
 
   endif
 
@@ -114,7 +114,6 @@ werami: werami.o $(LIBRARY)
 
 pssect: psect.o cont_lib.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) psect.o cont_lib.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
-
 
 pstable: pstable.o $(LIBRARY_PS)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY_PS) -o $@$(EXT) $(FLINK_POST)
