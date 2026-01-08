@@ -36,24 +36,13 @@ ifeq ($(STATIC),1)
 
   # ---------------- Windows (MSYS2/MinGW/Cygwin) ----------------
   ifneq (,$(filter MINGW% MSYS% CYGWIN%,$(UNAME_S)))
-    # Remove DLL deps for gfortran/gcc runtime
-    LDFLAGS_RUNTIME_PRE  += -static-libgfortran -static-libgcc
+  # Make the whole link prefer static libs (this is the key difference on Windows)
+    LDFLAGS_RUNTIME_PRE  += -static -static-libgfortran -static-libgcc
+    LDFLAGS_RUNTIME_PRE  += -Wl,--as-needed
 
-    # Force static quadmath + winpthread (must be AFTER objects)
-    QUADMATH_A    := $(shell $(FC) -print-file-name=libquadmath.a)
-    WINPTHREAD_A  := $(shell $(FC) -print-file-name=libwinpthread.a)
+  # And still force these explicitly (belt + suspenders)
+    LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lquadmath -lwinpthread -Wl,-Bdynamic
 
-    ifneq ($(QUADMATH_A),libquadmath.a)
-      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
-    else
-      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
-    endif
-
-    ifneq ($(WINPTHREAD_A),libwinpthread.a)
-      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic $(WINPTHREAD_A) -Wl,-Bdynamic
-    else
-      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic
-    endif
   endif
 
   # ---------------- Linux (Ubuntu runner) ----------------
@@ -124,7 +113,8 @@ werami: werami.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 pssect: psect.o cont_lib.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) psect.o cont_lib.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o cont_lib.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
+
 
 pstable: pstable.o $(LIBRARY_PS)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY_PS) -o $@$(EXT) $(FLINK_POST)
