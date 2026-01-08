@@ -4,6 +4,9 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build release – ${{ matrix.os }}
@@ -12,18 +15,18 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-22.04
           - macos-latest
           - windows-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # ---------- Install compilers / tools per OS ----------
 
       - name: Install compilers (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y gfortran make
@@ -31,54 +34,85 @@ jobs:
       - name: Install compilers (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          brew install gcc@12
-          # Make gfortran available as "gfortran"
-          sudo ln -s $(which gfortran-12) $(dirname $(which gfortran-12))/gfortran || true
+          brew update
+          brew install gcc
+          gfortran --version
 
       - name: Setup MSYS2 and mingw-w64 toolchain (Windows)
         if: matrix.os == 'windows-latest'
         uses: msys2/setup-msys2@v2
         with:
+          msystem: MINGW64
           update: true
           install: >-
             mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-make
-            mingw-w64-x86_64-gcc-fortran
-
-      - name: Install cmake (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          choco install cmake -y
 
       - name: Check gfortran (Windows)
         if: matrix.os == 'windows-latest'
-        shell: bash
+        shell: msys2 {0}
         run: |
-          if command -v gfortran >/dev/null 2>&1; then
-            gfortran --version
-          else
-            echo "gfortran not found in MSYS2/mingw PATH; aborting.";
-            exit 1;
-          fi
+          gfortran --version
 
       # ---------- Build binaries per OS ----------
 
       - name: Compile sources (Linux/macOS)
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+        if: matrix.os == 'ubuntu-22.04' || matrix.os == 'macos-latest'
         run: |
-          make -C src -f makefile
+          make -C src -f makefile STATIC=1
 
       - name: Compile sources (Windows)
         if: matrix.os == 'windows-latest'
-        shell: bash
+        shell: msys2 {0}
         run: |
-          make -C src -f makefile EXT=.exe
+          make -C src -f makefile EXT=.exe STATIC=1
 
+      #----------- Linux Check -----------------------
+      - name: Check runtime deps (Linux)
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          set -e
+          for f in src/*; do
+            if [ -x "$f" ] && file "$f" | grep -q ELF; then
+              echo "== $f =="
+              if ldd "$f" | grep -Eiq "gfortran|quadmath|gcc_s"; then
+                echo "Found unwanted runtime deps in $f"
+                ldd "$f"
+                exit 1
+              fi
+            fi
+          done
+
+      #----------- macOS Check -----------------------
+      - name: Check runtime deps (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          set -e
+          for f in src/*; do
+            if [ -x "$f" ] && file "$f" | grep -q Mach-O; then
+              echo "== $f =="
+              if otool -L "$f" | grep -Eiq "gfortran|quadmath|gcc_s"; then
+                echo "Found unwanted runtime deps in $f"
+                otool -L "$f"
+                exit 1
+              fi
+            fi
+          done
+
+      #----------- Windows Check -----------------------
+      - name: Check runtime deps (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          set -e
+          for f in src/*.exe; do
+            echo "== $f =="
+            objdump -p "$f" | grep -Ei "DLL Name:.*(gfortran|quadmath|gcc|winpthread)" && exit 1 || true
+          done
       # ---------- Package artifacts per OS ----------
 
       - name: Package Linux binaries
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           TAG=${{ github.event.release.tag_name }}
           PKG=Perple_X_${TAG}_Linux_64_gfortran
@@ -97,7 +131,7 @@ jobs:
           tar -C . -czf "$ARCHIVE" "$PKG"
 
       - name: Upload Linux artifact
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-22.04'
         uses: actions/upload-artifact@v4
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
@@ -131,6 +165,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
           $tag = '${{ github.event.release.tag_name }}'
           $pkg = "Perple_X_${tag}_Windows_64_gfortran"
           if (Test-Path $pkg) { Remove-Item -Recurse -Force $pkg }
@@ -139,10 +174,10 @@ jobs:
           foreach ($d in @('datafiles','optionfiles','matlab_scripts')) {
             if (Test-Path $d) { Copy-Item -Recurse -Path $d -Destination $pkg }
           }
-          # remove any nested archives that may have been copied
           Get-ChildItem -Path $pkg -Recurse -Include '*.zip','*.tar.gz','*.tgz' -File -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
           $zip = "$pkg.zip"
           Compress-Archive -Path "$pkg\*" -DestinationPath $zip -Force
+
 
       - name: Upload Windows artifact
         if: matrix.os == 'windows-latest'
@@ -154,7 +189,7 @@ jobs:
   publish:
     name: Publish release artifacts
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Download Linux artifact (tolerant)
         uses: actions/download-artifact@v4
