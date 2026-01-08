@@ -65,6 +65,16 @@ jobs:
           pacman -Q | grep -E "gcc|gfortran|toolchain" || true
           gfortran --version
 
+      - name: Debug quadmath static availability (Linux)
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          gfortran --version
+          echo "libquadmath.a path:"
+          gfortran -print-file-name=libquadmath.a
+          echo "libquadmath.so path:"
+          gfortran -print-file-name=libquadmath.so
+          ls -l "$(gfortran -print-file-name=libquadmath.a)" || true
+
       # ---------- Build binaries per OS ----------
 
       - name: Compile sources (Linux)
