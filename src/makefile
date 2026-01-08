@@ -18,55 +18,50 @@ FC ?= gfortran
 COMP77 ?= $(FC)
 LINK77 ?= $(FC)
 
-
 FFLAGS = -O3
 
-LDFLAGS_RUNTIME :=
-
 STATIC ?= 0
-LDFLAGS_RUNTIME :=
+
+LDFLAGS_RUNTIME_PRE  :=
+LDFLAGS_RUNTIME_POST :=
 
 ifeq ($(STATIC),1)
   # mostly static runtime everywhere (where supported)
-  LDFLAGS_RUNTIME += -static-libgfortran -static-libgcc
+  LDFLAGS_RUNTIME_PRE += -static-libgfortran -static-libgcc
 
   UNAME_S := $(shell uname -s 2>/dev/null)
 
-  # --- Windows (MSYS2/MinGW) analogue of the Linux quadmath absolute-path trick ---
-  # Works when uname looks like MINGW*, MSYS*, CYGWIN*, or simply when EXT=.exe
-
+  # Windows (MSYS2/MinGW)
   ifneq (,$(filter MINGW% MSYS% CYGWIN%,$(UNAME_S)))
     QUADMATH_A := $(shell $(FC) -print-file-name=libquadmath.a)
     ifneq ($(QUADMATH_A),libquadmath.a)
-      LDFLAGS_RUNTIME += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
+      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
     else
-      LDFLAGS_RUNTIME += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
+      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
     endif
 
-    # Optional: make winpthread static by absolute path too (often needed with MinGW)
     WINPTHREAD_A := $(shell $(FC) -print-file-name=libwinpthread.a)
     ifneq ($(WINPTHREAD_A),libwinpthread.a)
-      LDFLAGS_RUNTIME += -Wl,-Bstatic $(WINPTHREAD_A) -Wl,-Bdynamic
+      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic $(WINPTHREAD_A) -Wl,-Bdynamic
     else
-      LDFLAGS_RUNTIME += -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic
+      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic
     endif
   endif
 
-  # Linux: try to make quadmath static without using -static-libquadmath
-
+  # Linux
   ifeq ($(UNAME_S),Linux)
-    QUADMATH_A := $(shell gfortran -print-file-name=libquadmath.a)
+    QUADMATH_A := $(shell $(FC) -print-file-name=libquadmath.a)
     ifneq ($(QUADMATH_A),libquadmath.a)
-      LDFLAGS_RUNTIME += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
+      # keep quadmath at END of link line
+      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
     else
-      # fallback (shouldn't happen on Ubuntu runner)
-      LDFLAGS_RUNTIME += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
+      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
     endif
   endif
-
 endif
 
-FLINK += $(LDFLAGS_RUNTIME)
+FLINK_PRE  += $(LDFLAGS_RUNTIME_PRE)
+FLINK_POST += $(LDFLAGS_RUNTIME_POST)
 
 MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit
 all: $(MYOBJ)
@@ -82,52 +77,52 @@ clean:
 #
 #
 MC_fit: MC_fit.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 convex: convex.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 meemum: meemum.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 vertex: vertex.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 werami: werami.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 pssect: psect.o cont_lib.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK) psect.o cont_lib.o $(LIBRARY) -o $@$(EXT)
 
 pstable: pstable.o $(LIBRARY_PS)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY_PS) -o $@$(EXT) $(FLINK_POST)
 
 pspts: pspts.o $(LIBRARY_PS) 
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY_PS) -o $@$(EXT) $(FLINK_POST)
 
 psvdraw: psvdraw.o $(LIBRARY_PS)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY_PS) -o $@$(EXT) $(FLINK_POST)
 
 pt2curv: pt2curv.o $(LIBRARY_PS)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY_PS) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY_PS) -o $@$(EXT) $(FLINK_POST)
 
 actcor: actcor.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 build: build.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 fluids: fluids.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 ctransf: ctransf.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 DEW_2_ver: DEW_2_ver.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 frendly: frendly.o $(LIBRARY)
-	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 
 #################################################################################
