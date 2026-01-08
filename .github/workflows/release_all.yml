@@ -37,13 +37,17 @@ jobs:
         run: |
           brew update
           brew install gcc
-          gfortran --version
+          echo "$(brew --prefix)/bin" >> $GITHUB_PATH
+          ls -l "$(brew --prefix)/bin"/gfortran* || true
+          command -v gfortran || true
+          command -v gfortran-15 || true
 
       - name: Setup MSYS2 and mingw-w64 toolchain (Windows)
         if: matrix.os == 'windows-latest'
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
+          path-type: inherit
           update: true
           install: >-
             mingw-w64-x86_64-toolchain
@@ -53,19 +57,31 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: msys2 {0}
         run: |
+          export PATH=/mingw64/bin:$PATH
+          echo "MSYSTEM=$MSYSTEM"
+          echo "PATH=$PATH"
+          ls -la /mingw64/bin/gfortran* || true
+          which gfortran || true
+          pacman -Q | grep -E "gcc|gfortran|toolchain" || true
           gfortran --version
 
       # ---------- Build binaries per OS ----------
 
-      - name: Compile sources (Linux/macOS)
-        if: matrix.os == 'ubuntu-22.04' || matrix.os == 'macos-latest'
+      - name: Compile sources (Linux)
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           make -C src -f makefile STATIC=1
+
+      - name: Compile sources (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          make -C src -f makefile STATIC=1 FC=gfortran-15
 
       - name: Compile sources (Windows)
         if: matrix.os == 'windows-latest'
         shell: msys2 {0}
         run: |
+          export PATH=/mingw64/bin:$PATH
           make -C src -f makefile EXT=.exe STATIC=1
 
       #----------- Linux Check -----------------------
@@ -105,6 +121,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: msys2 {0}
         run: |
+          export PATH=/mingw64/bin:$PATH
           set -e
           for f in src/*.exe; do
             echo "== $f =="

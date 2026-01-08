@@ -58,9 +58,10 @@ STATIC ?= 0
 LDFLAGS_RUNTIME :=
 
 ifeq ($(STATIC),1)
-  # "Mostly static" everywhere: eliminates libgfortran/libgcc runtime dependency
-  LDFLAGS_RUNTIME += -static-libgfortran -static-libgcc
+  # mostly static runtime (Linux/macOS): remove libgfortran/libgcc/libquadmath runtime deps
+  LDFLAGS_RUNTIME += -static-libgfortran -static-libgcc -static-libquadmath
 endif
+
 
 # On Windows, if STATIC=1, go fully static (single EXE)
 ifeq ($(STATIC),1)
