@@ -13,9 +13,11 @@
 # 
 ##################### COMPILER VARIABLES ####################################  
 #                   
-#                  COMP77 = the name of the local fortran 77 compatible compiler
-#COMP77 = g77
-COMP77 = gfortran
+#                  FC = the name of the local fortran 77 compatible compiler
+FC ?= gfortran
+COMP77 ?= $(FC)
+LINK77 ?= $(FC)
+
 #                  FFLAGS = compile options
 #                  FLINK = linker options
 #FFLAGS = -C -O3 -Wpedantic -Wunused
@@ -51,28 +53,30 @@ COMP77 = gfortran
 
 FFLAGS = -O3
 
-# --- User-tunable ---
-STATIC ?= 0
+LDFLAGS_RUNTIME :=
 
-# You likely already have FC/FFLAGS/LDFLAGS; add these:
+STATIC ?= 0
 LDFLAGS_RUNTIME :=
 
 ifeq ($(STATIC),1)
-  # mostly static runtime (Linux/macOS): remove libgfortran/libgcc/libquadmath runtime deps
-  LDFLAGS_RUNTIME += -static-libgfortran -static-libgcc -static-libquadmath
-endif
+  # mostly static runtime everywhere (where supported)
+  LDFLAGS_RUNTIME += -static-libgfortran -static-libgcc
 
+  # Windows: try for a single self-contained .exe
+  ifeq ($(EXT),.exe)
+    LDFLAGS_RUNTIME += -static
+    LDFLAGS_RUNTIME += -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic
+  endif
 
-# On Windows, if STATIC=1, go fully static (single EXE)
-ifeq ($(STATIC),1)
-  ifdef OS
-    ifeq ($(OS),Windows_NT)
-      LDFLAGS_RUNTIME += -static
-    endif
+  # Linux: try to make quadmath static without using -static-libquadmath
+  UNAME_S := $(shell uname -s 2>/dev/null)
+  ifeq ($(UNAME_S),Linux)
+    LDFLAGS_RUNTIME += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
   endif
 endif
 
 FLINK += $(LDFLAGS_RUNTIME)
+
 
 #-Wstrict-overflow -Wstringop-overflow=2 removed for 690
 # WFM Added 2007Sep05, PAPPEL 2010SEPT08: for 6.6.0
