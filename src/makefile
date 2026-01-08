@@ -30,16 +30,38 @@ ifeq ($(STATIC),1)
   # mostly static runtime everywhere (where supported)
   LDFLAGS_RUNTIME += -static-libgfortran -static-libgcc
 
-  # Windows: try for a single self-contained .exe
-  ifeq ($(EXT),.exe)
-    LDFLAGS_RUNTIME += -static
-    LDFLAGS_RUNTIME += -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic
+  UNAME_S := $(shell uname -s 2>/dev/null)
+
+  # --- Windows (MSYS2/MinGW) analogue of the Linux quadmath absolute-path trick ---
+  # Works when uname looks like MINGW*, MSYS*, CYGWIN*, or simply when EXT=.exe
+
+  ifneq (,$(filter MINGW% MSYS% CYGWIN%,$(UNAME_S)))
+    QUADMATH_A := $(shell $(FC) -print-file-name=libquadmath.a)
+    ifneq ($(QUADMATH_A),libquadmath.a)
+      LDFLAGS_RUNTIME += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
+    else
+      LDFLAGS_RUNTIME += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
+    endif
+
+    # Optional: make winpthread static by absolute path too (often needed with MinGW)
+    WINPTHREAD_A := $(shell $(FC) -print-file-name=libwinpthread.a)
+    ifneq ($(WINPTHREAD_A),libwinpthread.a)
+      LDFLAGS_RUNTIME += -Wl,-Bstatic $(WINPTHREAD_A) -Wl,-Bdynamic
+    else
+      LDFLAGS_RUNTIME += -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic
+    endif
   endif
 
   # Linux: try to make quadmath static without using -static-libquadmath
-  UNAME_S := $(shell uname -s 2>/dev/null)
+
   ifeq ($(UNAME_S),Linux)
-    LDFLAGS_RUNTIME += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
+    QUADMATH_A := $(shell gfortran -print-file-name=libquadmath.a)
+    ifneq ($(QUADMATH_A),libquadmath.a)
+      LDFLAGS_RUNTIME += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
+    else
+      # fallback (shouldn't happen on Ubuntu runner)
+      LDFLAGS_RUNTIME += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
+    endif
   endif
 
 endif
