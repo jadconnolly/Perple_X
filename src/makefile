@@ -44,8 +44,6 @@ ifeq ($(STATIC),1)
 
 endif
 
-endif
-
 FLINK += $(LDFLAGS_RUNTIME)
 
 MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit
