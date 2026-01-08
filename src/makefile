@@ -17,30 +17,40 @@
 FC ?= gfortran
 COMP77 ?= $(FC)
 LINK77 ?= $(FC)
+STATIC ?= 0
+
+# Default executable extension
+EXT ?=
+ifeq ($(OS),Windows_NT)
+  EXT := .exe
+endif
 
 FFLAGS = -O3
-
-STATIC ?= 0
 
 LDFLAGS_RUNTIME_PRE  :=
 LDFLAGS_RUNTIME_POST :=
 
 ifeq ($(STATIC),1)
-  # mostly static runtime everywhere (where supported)
+  # remove libgfortran + libgcc* DLL/SO deps
   LDFLAGS_RUNTIME_PRE += -static-libgfortran -static-libgcc
+
+  # key for Linux: prevents gfortran-injected shared libs (like -lquadmath)
+  # from being recorded as NEEDED when they are not actually required
+  LDFLAGS_RUNTIME_PRE += -Wl,--as-needed
 
   UNAME_S := $(shell uname -s 2>/dev/null)
 
-  # Windows (MSYS2/MinGW)
+  # Windows (MSYS2/MinGW/Cygwin): kill libquadmath-0.dll and libwinpthread-1.dll
   ifneq (,$(filter MINGW% MSYS% CYGWIN%,$(UNAME_S)))
     QUADMATH_A := $(shell $(FC) -print-file-name=libquadmath.a)
+    WINPTHREAD_A := $(shell $(FC) -print-file-name=libwinpthread.a)
+
     ifneq ($(QUADMATH_A),libquadmath.a)
       LDFLAGS_RUNTIME_POST += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
     else
       LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
     endif
 
-    WINPTHREAD_A := $(shell $(FC) -print-file-name=libwinpthread.a)
     ifneq ($(WINPTHREAD_A),libwinpthread.a)
       LDFLAGS_RUNTIME_POST += -Wl,-Bstatic $(WINPTHREAD_A) -Wl,-Bdynamic
     else
@@ -48,11 +58,10 @@ ifeq ($(STATIC),1)
     endif
   endif
 
-  # Linux
+  # Linux: kill libquadmath.so.0
   ifeq ($(UNAME_S),Linux)
     QUADMATH_A := $(shell $(FC) -print-file-name=libquadmath.a)
     ifneq ($(QUADMATH_A),libquadmath.a)
-      # keep quadmath at END of link line
       LDFLAGS_RUNTIME_POST += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
     else
       LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
