@@ -70,7 +70,7 @@ jobs:
       - name: Compile sources (Linux)
         if: matrix.os == 'ubuntu-22.04'
         run: |
-          make -C src -f makefile STATIC=1
+          make -C src -f makefile STATIC=1 FC=gfortran 
 
       - name: Compile sources (macOS)
         if: matrix.os == 'macos-latest'
@@ -82,7 +82,7 @@ jobs:
         shell: msys2 {0}
         run: |
           export PATH=/mingw64/bin:$PATH
-          make -C src -f makefile EXT=.exe STATIC=1
+          make -C src -f makefile EXT=.exe STATIC=1 FC=gfortran
 
       #----------- Linux Check -----------------------
       - name: Check runtime deps (Linux)
@@ -95,22 +95,6 @@ jobs:
               if ldd "$f" | grep -Eiq "gfortran|quadmath|gcc_s"; then
                 echo "Found unwanted runtime deps in $f"
                 ldd "$f"
-                exit 1
-              fi
-            fi
-          done
-
-      #----------- macOS Check -----------------------
-      - name: Check runtime deps (macOS)
-        if: matrix.os == 'macos-latest'
-        run: |
-          set -e
-          for f in src/*; do
-            if [ -x "$f" ] && file "$f" | grep -q Mach-O; then
-              echo "== $f =="
-              if otool -L "$f" | grep -Eiq "gfortran|quadmath|gcc_s"; then
-                echo "Found unwanted runtime deps in $f"
-                otool -L "$f"
                 exit 1
               fi
             fi
@@ -129,48 +113,58 @@ jobs:
           done
       # ---------- Package artifacts per OS ----------
 
-      - name: Package Linux binaries
-        if: matrix.os == 'ubuntu-22.04'
+      - name: Package macOS binaries
+        if: matrix.os == 'macos-latest'
         run: |
+          set -e
           TAG=${{ github.event.release.tag_name }}
-          PKG=Perple_X_${TAG}_Linux_64_gfortran
+          PKG=Perple_X_${TAG}_macOS_64_gfortran
           rm -rf "$PKG"
-          mkdir -p "$PKG/bin"
+          mkdir -p "$PKG/bin" "$PKG/lib"
+
+          # Copy executables
           find src -maxdepth 1 -type f -perm -111 -exec cp {} "$PKG/bin/" \;
-          # copy support directories if they exist
+
+          # Copy support directories if they exist
           for d in datafiles optionfiles matlab_scripts; do
             if [ -d "$d" ]; then
               cp -r "$d" "$PKG/"
             fi
           done
+
+          # Bundle Homebrew GCC quadmath dylib (Apple Silicon runner uses /opt/homebrew)
+          QMLIB="/opt/homebrew/opt/gcc/lib/gcc/current/libquadmath.0.dylib"
+          if [ -f "$QMLIB" ]; then
+            cp "$QMLIB" "$PKG/lib/"
+          else
+            echo "ERROR: Expected libquadmath not found at $QMLIB"
+            echo "Available candidates:"
+            ls -al /opt/homebrew/opt/gcc/lib/gcc/current/ || true
+            exit 1
+          fi
+
+          # Add rpath and rewrite absolute Homebrew path -> @rpath
+          for exe in "$PKG/bin/"*; do
+            if file "$exe" | grep -q Mach-O; then
+              # Ensure @rpath points to ../lib relative to the executable
+              install_name_tool -add_rpath "@executable_path/../lib" "$exe" 2>/dev/null || true
+
+              # Rewrite quadmath load command
+              install_name_tool -change \
+                "$QMLIB" \
+                "@rpath/libquadmath.0.dylib" \
+                "$exe"
+
+              echo "== otool -L $exe =="
+              otool -L "$exe"
+            fi
+          done
+
           # remove any existing archives inside package to avoid nesting
           find "$PKG" -type f \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.tgz' \) -delete || true
           ARCHIVE=${PKG}.tar.gz
           tar -C . -czf "$ARCHIVE" "$PKG"
 
-      - name: Upload Linux artifact
-        if: matrix.os == 'ubuntu-22.04'
-        uses: actions/upload-artifact@v4
-        with:
-          name: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
-          path: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
-
-      - name: Package macOS binaries
-        if: matrix.os == 'macos-latest'
-        run: |
-          TAG=${{ github.event.release.tag_name }}
-          PKG=Perple_X_${TAG}_macOS_64_gfortran
-          rm -rf "$PKG"
-          mkdir -p "$PKG/bin"
-          find src -maxdepth 1 -type f -perm -111 -exec cp {} "$PKG/bin/" \;
-          for d in datafiles optionfiles matlab_scripts; do
-            if [ -d "$d" ]; then
-              cp -r "$d" "$PKG/"
-            fi
-          done
-          find "$PKG" -type f \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.tgz' \) -delete || true
-          ARCHIVE=${PKG}.tar.gz
-          tar -C . -czf "$ARCHIVE" "$PKG"
 
       - name: Upload macOS artifact
         if: matrix.os == 'macos-latest'
@@ -270,7 +264,31 @@ jobs:
             echo "files=" >> "$GITHUB_OUTPUT"
           fi
 
-      # debug step removed
+      #----------- macOS Packaged Check -----------------------
+      - name: Check packaged runtime deps (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          set -e
+          TAG=${{ github.event.release.tag_name }}
+          PKG=Perple_X_${TAG}_macOS_64_gfortran
+          for f in "$PKG/bin/"*; do
+            if file "$f" | grep -q Mach-O; then
+              echo "== $f =="
+              if otool -L "$f" | grep -Eiq "/opt/homebrew/"; then
+                echo "Found unwanted Homebrew runtime deps in $f"
+                otool -L "$f"
+                exit 1
+              fi
+              # sanity: ensure quadmath is now via @rpath
+              if ! otool -L "$f" | grep -q "@rpath/libquadmath.0.dylib"; then
+                echo "Expected @rpath quadmath not found in $f"
+                otool -L "$f"
+                exit 1
+              fi
+            fi
+          done
+
+        # debug step removed
 
       - name: Publish artifacts to GitHub release (if any)
         if: steps.build_list.outputs.files != ''

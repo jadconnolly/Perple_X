@@ -18,38 +18,6 @@ FC ?= gfortran
 COMP77 ?= $(FC)
 LINK77 ?= $(FC)
 
-#                  FFLAGS = compile options
-#                  FLINK = linker options
-#FFLAGS = -C -O3 -Wpedantic -Wunused
-
-# pappel: for use with gfortran
-# JADC 1/21/13: O2 and O3 cause fp errors in the speciation routine speci2 in gfortran, the optimization
-# seems to work if local variables are initialized to zero (even though there are no uninitialized variables).
-# use -ffpe-trap=zero,overflow,underflow to catch fp errors.
-# use -ffpe-trap 
-# use -fbounds-check array bound checking
-# use -finit-real=snan -fpe=trap check for unitialized variables
-# use -Wall -Wextra for extensive warnings
-
-# Mark Caddick's OSX generic gfortran compilation flags:
-
-#FFLAGS = -O3 
-#FFLINK = -static-libgfortran -lgfortran -lgcc -lSystem -nodefaultlibs -mmacosx-version-min=10.6  /usr/local/lib/libquadmath.a
-
-# FFLAGS = -finit-local-zero -Os -m64 -static-libgfortran
-# For distribution using static (pre-linked) compiler run-time libraries, use
-# following compiler flags for gfortran builds on MacOSX/Darwin.  gfortran
-# versions up through 4.9 lack the ability to include a static libquadmath, so
-# awkward link flags (FLINK) and directory for static libquadmath defined.
-# Most commonly, gfortran will use the directory /usr/local/lib, but some
-# builds will differ on location.  To find your library location, use a command
-# (from the command line) like,
-#    find /usr/local -name libquadmath.a -print
-# and substitute the directory name you find for LQMDIR.  En garde choosing
-# 32/64 bit libraries.
-# G. Helffrich/30 Nov. '15
-# FFLAGS =  -O3 -static-libgfortran -Wpedantic
-# FFLAGS = -O3 -std=legacy
 
 FFLAGS = -O3
 
@@ -73,13 +41,13 @@ ifeq ($(STATIC),1)
   ifeq ($(UNAME_S),Linux)
     LDFLAGS_RUNTIME += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
   endif
+
+endif
+
 endif
 
 FLINK += $(LDFLAGS_RUNTIME)
 
-
-#-Wstrict-overflow -Wstringop-overflow=2 removed for 690
-# WFM Added 2007Sep05, PAPPEL 2010SEPT08: for 6.6.0
 MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit
 all: $(MYOBJ)
 
@@ -141,22 +109,6 @@ DEW_2_ver: DEW_2_ver.o $(LIBRARY)
 frendly: frendly.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK) $@.o $(LIBRARY) -o $@$(EXT)
 
-#hptover: hptover.o
-#	$(COMP77) $(FFLAGS) $@.o -o $@
-
-#htog: htog.o
-#	$(COMP77) $(FFLAGS) $@.o -o $@
-
-# targets missing from '07:
-#rk: rk.o flib.o tlib.o
-#	$(COMP77) $(FFLAGS) $@.o tlib.o flib.o -o $@
-#ps_p_contor: ps_p_contor.o pslib.o
-#	$(COMP77) $(FFLAGS) $@.o pslib.o -o $@
-#ge0pt: ge0pt.o
-#	$(COMP77) $(FFLAGS) $@.o -o $@
-#satsurf: satsurf.o flib.o tlib.o
-#	$(COMP77) $(FFLAGS) $@.o flib.o tlib.o -o $@
-#rewrite,sox,gox,cohscont 
 
 #################################################################################
 # Explicitly make objects to override the default compiler choice implemented
@@ -215,15 +167,6 @@ vertex.o: vertex.f perplex_parameters.h
 werami.o: werami.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c werami.f
 
-
-#ge0pt.o: ge0pt.f
-#	$(COMP77) $(FFLAGS) -c ge0pt.f
-#hptover.o: hptover.f
-#	$(COMP77) $(FFLAGS) -c hptover.f
-#htog.o: htog.f
-#	$(COMP77) $(FFLAGS) -c htog.f
-
-# WFM 2007Sep05
 .c.o:
 	$(CC) $(CFLAGS) $(INCL) -c $<
 
