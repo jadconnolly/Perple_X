@@ -31,19 +31,17 @@ LDFLAGS_RUNTIME_PRE  :=
 LDFLAGS_RUNTIME_POST :=
 
 ifeq ($(STATIC),1)
-  # remove libgfortran + libgcc* DLL/SO deps
-  LDFLAGS_RUNTIME_PRE += -static-libgfortran -static-libgcc
-
-  # key for Linux: prevents gfortran-injected shared libs (like -lquadmath)
-  # from being recorded as NEEDED when they are not actually required
-  LDFLAGS_RUNTIME_PRE += -Wl,--as-needed
 
   UNAME_S := $(shell uname -s 2>/dev/null)
 
-  # Windows (MSYS2/MinGW/Cygwin): kill libquadmath-0.dll and libwinpthread-1.dll
+  # ---------------- Windows (MSYS2/MinGW/Cygwin) ----------------
   ifneq (,$(filter MINGW% MSYS% CYGWIN%,$(UNAME_S)))
-    QUADMATH_A := $(shell $(FC) -print-file-name=libquadmath.a)
-    WINPTHREAD_A := $(shell $(FC) -print-file-name=libwinpthread.a)
+    # Remove DLL deps for gfortran/gcc runtime
+    LDFLAGS_RUNTIME_PRE  += -static-libgfortran -static-libgcc
+
+    # Force static quadmath + winpthread (must be AFTER objects)
+    QUADMATH_A    := $(shell $(FC) -print-file-name=libquadmath.a)
+    WINPTHREAD_A  := $(shell $(FC) -print-file-name=libwinpthread.a)
 
     ifneq ($(QUADMATH_A),libquadmath.a)
       LDFLAGS_RUNTIME_POST += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
@@ -58,16 +56,41 @@ ifeq ($(STATIC),1)
     endif
   endif
 
-  # Linux: kill libquadmath.so.0
+  # ---------------- Linux (Ubuntu runner) ----------------
   ifeq ($(UNAME_S),Linux)
-    QUADMATH_A := $(shell $(FC) -print-file-name=libquadmath.a)
-    ifneq ($(QUADMATH_A),libquadmath.a)
-      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic $(QUADMATH_A) -Wl,-Bdynamic
-    else
-      LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lquadmath -Wl,-Bdynamic
-    endif
+    # Take full control so no shared libgfortran/libquadmath/libgcc_s appear in ldd.
+    # (Your CI allows libc/libm/ld-linux.)
+    LDFLAGS_RUNTIME_PRE  += -nodefaultlibs
+
+    # Optional; harmless on Linux, and can prevent “sticky” injected libs:
+    LDFLAGS_RUNTIME_PRE  += -Wl,--as-needed
+
+    # Absolute paths to the static archives we want
+    LIBGFORTRAN_A := $(shell $(FC) -print-file-name=libgfortran.a)
+    LIBQUADMATH_A := $(shell $(FC) -print-file-name=libquadmath.a)
+    LIBGCC_A      := $(shell $(FC) -print-file-name=libgcc.a)
+    LIBGCC_EH_A   := $(shell $(FC) -print-file-name=libgcc_eh.a)
+
+    # Group to handle circular refs cleanly
+    LDFLAGS_RUNTIME_POST += -Wl,--start-group \
+                              $(LIBGFORTRAN_A) \
+                              $(LIBQUADMATH_A) \
+                              $(LIBGCC_A) \
+                              $(LIBGCC_EH_A) \
+                            -Wl,--end-group
+
+    # System libs (dynamic) – allowed by your CI check
+    LDFLAGS_RUNTIME_POST += -lm -lc
+  endif
+
+  # ---------------- macOS (Darwin) ----------------
+  # Do NOT add Linux ld flags like --as-needed or --start-group here.
+  # Also note: fully static libgfortran/libgcc is generally not supported on macOS.
+  ifeq ($(UNAME_S),Darwin)
+    # Keep empty on purpose.
   endif
 endif
+
 
 FLINK_PRE  += $(LDFLAGS_RUNTIME_PRE)
 FLINK_POST += $(LDFLAGS_RUNTIME_POST)
