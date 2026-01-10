@@ -35,10 +35,15 @@
 | common input/output options
 
 molar_composition_input       default | [T] T => input compositions are in molar units; F => mass (wt) units (~lmass)
-no_missing_phases             default | [T] T => do not accept models that fail to predict all observed phases (nomiss)
 perturbation_hot_start        default | [F] T => do perturbation analysis around user specified inversion coordinate (mchot)
 print_level                   default | [0], Nelder-Mead console output 0 => normal, < 0 => silent, > 0 => verbose (jprint)
 relative_error                default | [T] T => input uncertainties are relative error; F => absolute error (relerr)
+residuals                     default | [F] T => output raw residuals (rnorm)
+residuals_standardized        default | [T] T => output standardized residuals (rstd)
+score_Chi                     default | [F] T => output Chi for each component regardless of whether it is in use (rchi)
+score_LSQ                     default | [F] T => output LSQ for each component regardless of whether it is in use (rlsq)
+score_misfit                  default | [T] T => output misfit_composition for each component (robj)
+score_wChi                    default | [F] T => output wChi for each component regardless of whether it is in use (rwch)
 uncertainties                 default | [all] analytical or thermodynamic => which components of the uncertainty are evaluated (invunc)
 
 | logistical options
@@ -53,8 +58,9 @@ soft_delta                    default | [6.0] => e-fold scale for soft-interior 
 | scoring options
 
 Bayes                         default | [F] F => minimize misfit to select best model; T => use maximum Bayes score (bayes)
-objective_composition         default | [Chi] LSQ or wChi => objective function for compositional data (lsqchi)
-objective_mode                default | [Chi] LSQ or wChi => objective function for modal scoring (lsqchi)
+misfit_composition            default | [Chi] LSQ or wChi => objective function for compositional data (lsqchi)
+misfit_mode                   default | [Chi] LSQ or wChi => objective function for modal scoring (lsqchi)
+no_missing_phases             default | [T] T => do not accept models that fail to predict all observed phases (nomiss)
 prior_probability_PT_only     default | [T] T => for Bayes scoring, base prior probabilities only on inital pressure-temperature range; F => use all parameters
 range_to_sigma                default | [4.0] => for Bayes scoring, parameter_range/standard_deviation (ra2zs)
 uncertainty_multiplier        default | [2.0] => for fit criterion, observational data must fit within uncertainty * uncertainty_multiplier (un2ft)
@@ -68,8 +74,6 @@ w_mode                        default | [1d0] => weighting factor for the compos
 convergence_threshold         default | [1d-4] => maximum variance of the objective function for MINIM convergence (invtol)
 max_OBJF_value                default | [1d5] => maximum value of the objective function, larger values trigger an error (oktol)
 max_OBJF_evaluations          default | [1000] => maximum number of objective function evaluations permitted for a try (kcount)
-objective_composition         default | [Chi] LSQ or wChi => objective function for compositional data (lsqchi)
-objective_mode                default | [Chi] LSQ or wChi => objective function for modal scoring (lsqchi)
 step_size                     default | [0.1] => fractional step size (frac)
 convergence_testing           default | [10] => frequency of testing for convergence (conchk)
 

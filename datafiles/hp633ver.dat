@@ -243,7 +243,28 @@ zrg  = 1 gr + 3 zrc - 6 q       | Zr garnet endmember
 zrru = 1 bdy                    | Zr rutile endmember
        52.84e3 -0.01829e3 -0.074
 mots = 1 mgts - 1/2 cor + 1/2 hem | ferric opx endmember MgFe3+AlSiO6 for Opx(HP)
-       22d3 0 0
+       22d3
+                                 |--------------------------------------------------------
+                                 | for Atg(LE) model (Eberhard et al., 2023, JPet)
+                                 | NB! the Atg(LE) and Liz(LE) models require the
+                                 | the following, commented, make definition for 
+                                 | ferri-clinochlore in Chl(W), to use "Chl(W)" with
+                                 | Atg(LE)/Liz(LE) uncomment f3clin and, if it exists, 
+                                 | comment the entry for f3clin associated with the 
+                                 | original Chl(W) parameterization.
+                                 | In essence the f3clin "modification" is bullpucky, 
+                                 | it simply eliminates ferric iron from Chl and has
+                                 | no experimental basis. Admittedly the White version 
+                                 | is excessively stable.
+| f3clin = 1 clin - 1/2 gr + 1/2 andr
+|       DQF(J/mol) = 40d3
+atgFe2 = 1 atg - 16 ta + 16 fta
+     DQF(J/mol) = -350e3
+atgAl  = 1 atg - 17 ta + 17 tats
+     DQF(J/mol) = -450e3
+atgFe3 = 1 atg - 17 ta + 17 tats - 8.5 gr + 8.5 andr
+     DQF(J/mol) = -127e3 -3.4 * P_bar
+                                 |--------------------------------------------------------
                                  | Make definitions for White et al. (JMG 32:261-286, 2014) models
 f3clin = 1 clin - 1/2 gr + 1/2 andr
        DQF(J/mol) = 2d3 0 0

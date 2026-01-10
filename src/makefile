@@ -14,7 +14,7 @@
 ##################### COMPILER VARIABLES ####################################  
 #                   
 #                  FC = the name of the local fortran 77 compatible compiler
-FC ?= gfortran
+FC = gfortran
 COMP77 ?= $(FC)
 LINK77 ?= $(FC)
 STATIC ?= 0

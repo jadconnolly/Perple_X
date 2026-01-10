@@ -176,6 +176,10 @@ atgts = 4 clin + 9/17 atg - 24/17 br
                                  | Atg(LE)/Liz(LE) uncomment f3clin and, if it exists, 
                                  | comment the entry for f3clin associated with the 
                                  | original Chl(W) parameterization.
+                                 | In essence the f3clin "modification" is bullpucky, 
+                                 | it simply eliminates ferric iron from Chl and has
+                                 | no experimental basis. Admittedly the White version 
+                                 | is excessively stable.
 | f3clin = 1 clin - 1/2 gr + 1/2 andr
 |       DQF(J/mol) = 40d3
 atgFe2 = 1 atg - 16 ta + 16 fta
@@ -184,6 +188,12 @@ atgAl  = 1 atg - 17 ta + 17 tats
      DQF(J/mol) = -450e3
 atgFe3 = 1 atg - 17 ta + 17 tats - 8.5 gr + 8.5 andr
      DQF(J/mol) = -127e3 -3.4 * P_bar
+                                |--------------------------------------------------------
+                                | Make definitions for White et al. (JMG 32:261-286, 2014) models
+f3clin = 1 clin - 1/2 gr + 1/2 andr
+       DQF(J/mol) = 2d3 0 0  
+kho1 = 1 py - 1 gr + 1 andr
+       DQF(J/mol) = 27d3  
                                 |--------------------------------------------------------
                                 | ettore's makes:
 | odo = 1/2 mag 1/2 cc 
@@ -272,12 +282,6 @@ zrru = 1 bdy                    | Zr rutile endmember
                                 |--------------------------------------------------------
 mots = 1 mgts - 1/2 cor + 1/2 hem | ferric opx endmember MgFe3+AlSiO6 for Opx(HP)
        22d3
-                                |--------------------------------------------------------
-                                | Make definitions for White et al. (JMG 32:261-286, 2014) models
-f3clin = 1 clin - 1/2 gr + 1/2 andr
-       DQF(J/mol) = 2d3 0 0  
-kho1 = 1 py - 1 gr + 1 andr
-       DQF(J/mol) = 27d3  
 |--------------------------------------------------------------------------------
                                  | Generic 8-oxygen HP liquid endmembers. Because 
                                  | these occur in many melts models they are created

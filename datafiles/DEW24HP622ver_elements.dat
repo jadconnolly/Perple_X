@@ -124,6 +124,9 @@ begin_makes
  | qfm = 2 mt + 3 q  -3 fa         | qfm O2 buffer
  | 0 0 0
  
+ | QFM = 2 mt + 3 q  -3 fa         | qfm O2 buffer
+ | DQF(J/mol) = 0
+
  |emog = -1 fo - 2 gph + 1 mag + 1/2 en | EMOG O2 buffer
  |0 0 0
  
@@ -160,11 +163,12 @@ DQF(J/mol) = 0
 atgts = 4 clin + 9/17 atg - 24/17 br      | Tshermaks antigorite for Atg(PN) model (Padr n-Navarta et al., 2013, Lithos)
 DQF = -2e3 + 46.1*T_K
  
-| ettore's makes:
-| odo = 1/2 mag 1/2 cc
-| -1000. 0 0
-| oank = 1/4 sid 1/2 cc 1/4 mag
-|  -750 0 0
+|ettore's makes:
+odo = 1/2 mag 1/2 cc
+ DQF(J/mol) = -1000. 
+
+oank = 1/4 sid 1/2 cc 1/4 mag
+  DQF(J/mol) = -750 0 0
  
 | odo = 1/2 mag + 1/2 cc          | ordered dolmite species for H&P dolomite model
 | -13.5d3 0 0
@@ -2785,7 +2789,7 @@ end
 
 
 Ca(Ac)2, EoS = 16 | Gf = -1303609. Ca(CH3COO)2(0)  Shock & Koretsky (1993) with revised volume from the sum of the ion a1 values by Dimitri June 22, 2021 
-Ca(1)C(2)H2(1.5)O2(1.5) 
+Ca(1)C(4)H2(3)O2(2) 
 G0 = -1303609.  S0 = 135.1432  w = -15899.2  
 a1 = 8.266711  a2 = 6078.665  a3 = -30.72641  a4 = -141402.6  c1 = 484.5921  c2 = 1472763.  
 end
@@ -3093,7 +3097,7 @@ end
 
 
 Fe(Ac)2, EoS = 16 | Gf =  -844331. Fe(CH3COO)2(0)  Sverjensky et al. (1997) with revised volume increased in order that a1 of the complex is th
-Fe(1)C(2)H2(1.5)O2(1.5) 
+Fe(1)C(4)H2(3)O2(2) 
 G0 = -844331.2  S0 = 48.24152  w = -15899.2  
 a1 = 6.064634  a2 = 3982.069  a3 = -13.14665  a4 = -132735.2  c1 = 476.0099  c2 = 1442934.  
 end
@@ -3562,7 +3566,7 @@ end
 
 
 Na(Ac)2- EoS = 16 | Gf =  -997758. Na(CH3COO)2(-)  G, H, S, Cp, V from Shock & Koretsky (1993); a1 estimated with Sverjensky et al. (2014) 
-Na(1)C(2)H2(1.5)O2(1.5) 
+Na(1)C(4)H2(6)O2(4) 
 G0 = -997758.5  S0 = 184.096  w = 402820.5  q = -1  
 a1 = 9.21512  a2 = 6981.645  a3 = -38.29781  a4 = -145135.5  c1 = 479.7662  c2 = 1321910.  
 end
@@ -3610,7 +3614,7 @@ a1 = 3.965727  a2 = 1983.701  a3 = 3.60947  a4 = -124474  c1 = 208.6674  c2 = 40
 end
 
 
-NaHSiO3, EoS = 16 | Gf = -1285074. NaHSiO3(0)  Sverjensky et al. (1997) with revised a1 equal to the sum of the ions used to predict new values of
+NaHSiO3, EoS = 16 | Gf = -1285074. Na(HSiO3)(0)  Sverjensky et al. (1997) with revised a1 equal to the sum of the ions used to predict new values of
 Na(1)Si(1)H2(.5)O2(1.5) 
 G0 = -1285074.  S0 = 79.496  w = -15899.2  
 a1 = 2.148024  a2 = 253.0675  a3 = 18.12067  a4 = -117319.5  c1 = 30.07439  c2 = -107023.5  

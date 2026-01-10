@@ -914,7 +914,7 @@ c-----------------------------------------------------------------------
 
       logical randm, bad
 
-      integer ier, nblen, i
+      integer ier, nblen, i, j
 
       character key*22, val*3, nval1*12, nval2*12, nval3*12,
      *          strg*40, strg1*40
@@ -930,12 +930,14 @@ c-----------------------------------------------------------------------
       logical refine, lresub
       common/ cxt26 /refine,lresub,tname
 c-----------------------------------------------------------------------
-c                                to allow invptx to use the same objective 
-c                                function and i/o structure as invxpt the 
-c                                multi-experiment arrays of invxpt are used
-c                                here even though invptx treats only one 
-c                                observation (mxpt = 1). 
+c                                 to allow invptx to use the same objective 
+c                                 function and i/o structure as invxpt the 
+c                                 multi-experiment arrays of invxpt are used
+c                                 here even though invptx treats only one 
+c                                 observation (mxpt = 1). 
       mxpt = 1
+c                                 initialize phase weighting
+      invwt = 1d0 
 c                                 number of phase compositions
       cxpt = 0
 c                                 unmeasured component counter
@@ -1046,6 +1048,26 @@ c                                 no limiting component specifications
 
          end if
 c                                 end of unmeasured component loop
+      end do
+c                                 make a list of the measured thermodynamic components:
+      meas = 0
+
+      do i = 1, icp
+
+         bad = .false.
+
+         do j = 1, unmeas
+            if (uncomp(j).eq.i) then 
+               bad = .true.
+               exit
+            end if
+         end do
+
+         if (bad) cycle
+
+         meas = meas + 1
+         cmeas(meas) = i
+
       end do
 c                                 read optional effective bulk
       call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
@@ -1754,6 +1776,18 @@ c                                 and name:
          else 
             vnm(unmeas+2+nph) = aname(ids)
          end if
+c                                 get optional inversion weighting 
+         call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
+
+         if (key.eq.'inversion_weight') then     
+
+            read (strg,*) invwt(mxpt,nph)
+
+         else 
+
+            backspace (n8)
+
+         end if 
 c                                 look for optional modal data, only 
 c                                 invptx, so 1d arrays
          call redcd1 (n8,ier,key,val,nval1,nval2,nval3,strg,strg1)
@@ -1894,12 +1928,12 @@ c                                 doing uncertainty analysis, perturb the modes
 
          ok = .true.
 
-         do i = 1, icp
+         do i = 1, meas
 c                                 don't bother with saturated/mobile
 c                                 components.
             bad = .false.
 
-            do j = 1, unmeas
+            do j = 1, icp
 c                                 don't bother with unmeasured components
                if (uncomp(j).eq.i) then
                   bad = .true.
@@ -2129,6 +2163,7 @@ c                                 get new total for normalization
          do i = 1, lbulk
 c                                 normalize composition for scoring:
             comp(i) = comp(i)/tot
+
          end do
 
       else if (norm.and.grh) then 
@@ -3642,9 +3677,9 @@ c     fit - true if model fits within error
 c-----------------------------------------------------------------------
       include 'perplex_parameters.h'
 
-      integer id, kd, j, k, l, m
+      integer id, kd, j, k, l, m, ll
 
-      logical fit, skip
+      logical fit
 
       double precision total, term
 c-----------------------------------------------------------------------
@@ -3653,7 +3688,9 @@ c-----------------------------------------------------------------------
       m = 0
 c                                 normalization depends on whether any
 c                                 compositional uncertainty given
-      do l = 1, lbulk
+      do ll = 1, meas
+
+         l = cmeas(ll)
 
          total = total + pcomp(l,kd)
          if (xpte(xptptr(id,j)+l).eq.0d0) m = l
@@ -3662,20 +3699,9 @@ c                                 compositional uncertainty given
 
       if (m.eq.0) then
 c                                 calculate residual
-         do l = 1, lbulk
-c                                 skip unmeasured components
-            skip = .false.
+         do ll = 1, meas
 
-            do k = 1, unmeas
-               if (uncomp(k).eq.l) then
-                  skip = .true.
-                  exit
-               end if
-            end do
-c                                skip saturated phase components
-            if (l.gt.kbulk.and.lbulk.gt.kbulk) skip = .true.
-
-            if (skip) cycle
+            l = cmeas(ll)
 
             k = xptptr(id,j)+l
 
@@ -3686,7 +3712,7 @@ c                                skip saturated phase components
             mresid = mresid + 1
             rss = rss + term**2
 
-            if (term.gt.un2ft*xpte(k)) fit = .false.
+            if (term.gt.un2ft*xpte(k)*xptc(k)) fit = .false.
 
             if (.not.GRH) then
 
@@ -3721,7 +3747,7 @@ c                                 anything but this
 
             end if
 
-            score = score + term
+            score = score + invwt(id,j) * term
 
          end do
 
@@ -3731,7 +3757,9 @@ c                                 only one has no uncertainty - normalize
 c                                 to it, calculate weighted residual
          total = xptc(m) / pcomp(m,kd)
 
-         do l = 1, lbulk
+         do ll = 1, meas
+
+            l = cmeas(ll)
 
             if (l.eq.m) cycle
 
@@ -3774,7 +3802,7 @@ c                                 calculate residual
       mresid = mresid + 1
       rss = rss + term**2
 
-      if (term.gt.un2ft*emode(id,j)) fit = .false.
+      if (term.gt.un2ft*emode(id,j)*mode) fit = .false.
 
       if (lsqchm.eq.1) then 
 c                                 LSQ modal obj
@@ -3793,7 +3821,7 @@ c                                 in the solution model
 
       end if
 
-      mscore = term
+      mscore =  invwt(id,j) * term
 
       end
 
@@ -4014,12 +4042,12 @@ c-----------------------------------------------------------------------
       character bdname(k5)*14
 
       integer id, jd, ids, i, j, k, kct(k5), ksol(k5,k5), ibest, mpred,
-     *        idextr(k5), jmin(k5), mextra, jdbest, kd, lu, kmin(k5), l,
-     *        nmiss, jj, jbest, jds(h5), istsat, nblen, ld
+     *        idextr(k5), jmin(k5), mextra, jdbest, kd, lu, kmin(k5), 
+     *        l, nmiss, jj, jbest, jds(h5), istsat, nblen, ld, kdk, kk
 
       double precision score, best, res, mode, tot, extra, comp, miss, 
-     *                 cscor(k5), sres(k5), scmode, mscor(k5), 
-     *                 mscore
+     *                 cscor(k5), sres(k5), sres1(k5), scmode, 
+     *                 mscor(k5), mscore, sres2(k5), den
 
       external score, nblen, mscore
 
@@ -4402,16 +4430,11 @@ c                                 ------------------------------------
             end if
 
             write (lu,1100) comp, extra, miss
-            if (mcmode(id)) then 
-               write (lu,1105) scmode
-            else 
-               write (lu,'(/)')
-            end if
+            if (mcmode(id)) write (lu,1105) scmode
 
             if (mpred.gt.0) then 
 c                                 phases observed and predicted
                write (lu,1000)
-               write (lu,1020) (cname(k), k = 1, lbulk)
 
                do j = 1, mpred
 c                                 jd/kmin points to the phase in the predicted assemblage
@@ -4423,63 +4446,125 @@ c                                 ld/jmin points to the phase in the observed as
 
                   mode = props(1,jd)*props(16,jd)/psys(1)*1d2
 
-                  write (lu,'(a)') pname(jd)
+                  write (lu,1021) pname(jd), 
+     *                             (cname(cmeas(k)), k = 1, meas)
+
 
                   if (jd.le.np) then 
 c                                 a solution
                      tot = 0d0
 
-                     do k = 1, lbulk
-                        tot = tot + pcomp(k,jd)
+                     do k = 1, meas
+                        tot = tot + pcomp(cmeas(k),jd)
                      end do
 
-                    do k = 1, lbulk
-c                                 calculate individual component residuals
-                        sres(k) = (xptc(kd+k) - pcomp(k,jd)/tot) 
+                    sres = 0d0
+                    sres1 = 0d0
+                    sres2 = 0d0
+
+                    do kk = 1, meas
+
+                       k = cmeas(kk)
+c                                 skip unused components
+                       if (xptc(kd+k).eq.0d0) cycle
+
+                       kdk = kd + k
+                       sres(kk) = (xptc(kdk) - pcomp(k,jd)/tot) 
+c                                 sqrt chi
+                       if (pcomp(k,jd).ne.0d0) then
+                          den = pcomp(k,jd)/tot
+                       else
+c                                 pseudo Chi-square
+                          den = xptc(kdk)
+                       end if
+ 
+                       if (den.ne.0d0) sres1(kk) = sres(kk)/dsqrt(den)
+c                                standardized residual
+                       sres2(kk) = sres(kk)/(xpte(kdk)*xptc(kdk))
+
                      end do
 
-                     write (lu,1030) 'predicted*', mode, 
-     *                               (pcomp(k,jd)/tot, k = 1, lbulk)
+                     write (lu,1030) 'predicted', mode, 
+     *                           (pcomp(cmeas(k),jd)/tot, k = 1, meas)
 
                      if (mcmode(id)) then
-                        write (lu,1030) 'observed* ', pmode(id,ld)*1d2,
-     *                               (xptc(kd+k), k = 1, lbulk)
-                        write (lu,1030) 'residual  ',
-     *                                          pmode(id,ld)*1d2 - mode,
-     *                                          (sres(k), k = 1, lbulk)
+
+                        den = pmode(id,ld)*1d2 - mode
+
+                        write (lu,1030) 'observed', pmode(id,ld)*1d2,
+     *                               (xptc(kd+cmeas(k)), k = 1, meas)
+                        if (runrm) write (lu,1030) 'residual', den,
+     *                                          (sres(k), k = 1, meas)
+                        if (rnorm) write (lu,1037) 'std_resid', 
+     *                                          den/(emode(id,ld)*1d2),
+     *                                          (sres2(k), k = 1, meas)
+                        if (rlsq.or.(lsqchm.eq.1.and.rcobj)) 
+     *                     write (lu,1037) 'LSQ', den**2,
+     *                                         (sres(k)**2, k = 1, meas)
+                        if (rchi.or.(lsqchm.eq.2.and.rcobj))
+     *                     write (lu,1037) 'Chi', den**2/mode, 
+     *                                        (sres1(k)**2, k = 1, meas)
+                        if (rwch.or.(lsqchm.eq.3.and.rcobj))  
+     *                     write (lu,1037) 'wChi', 
+     *                                      (den/(emode(id,ld)*1d2))**2,
+     *                                      (sres2(k)**2, k = 1, meas)
+
+                        write (lu,1025) 'Mode Misfit:', mscor(j)
+
                      else
-                        write (lu,1035) 'observed* ', (xptc(kd+k), 
-     *                                                    k = 1, lbulk)
-                        write (lu,1035) 'residual  ', 
-     *                                          (sres(k), k = 1, lbulk)
+
+                        write (lu,1035) 'observed',
+     *                                 (xptc(kd+cmeas(k)), k = 1, meas)
+                        if (runrm) write (lu,1035) 'residual', 
+     *                                           (sres(k), k = 1, meas)
+                        if (rnorm) write (lu,1036) 'std_resid.', 
+     *                                          (sres2(k), k = 1, meas)
+                        if (rlsq.or.(lsqchi.eq.1.and.rcobj)) 
+     *                     write (lu,1036) 'LSQ', 
+     *                                        (sres(k)**2, k = 1, meas)
+                        if (rchi.or.(lsqchi.eq.2.and.rcobj))
+     *                     write (lu,1036) 'Chi', 
+     *                                        (sres1(k)**2, k = 1, meas)
+                        if (rwch.or.(lsqchi.eq.3.and.rcobj))  
+     *                     write (lu,1036) 'wChi', 
+     *                                        (sres2(k)**2, k = 1, meas)
+
                      end if
 
-
-                     if (mcmode(id)) then
-                        write (lu,1055) 'Mode Misfit:', mscor(j), 
-     *                                  'Composition Misfit:', cscor(j)
-                     else
-                        write (lu,1025) 'Composition Misfit:', cscor(j)
-                     end if
+                     write (lu,1025) 'Composition Misfit:', cscor(j)
 
                   else
 c                                 a compound
-                     write (lu,1030) 'predicted ', mode
+                     write (lu,1030) 'predicted', mode
 
                      if (mcmode(id)) then
-                        write (lu,1030) 'observed  ', pmode(id,ld)*1d2
-                        write (lu,1030) 'residual  ',
-     *                                          pmode(id,ld)*1d2 - mode
-                        write (lu,1055) 'Mode Misfit:', mscor(j),
-     *                        'Composition Misfit zero by definition.'
-                     else
-                        write (lu,1025) 
-     *                        'Composition Misfit zero by definition.'
+
+                        den = pmode(id,ld)*1d2 - mode
+
+                        write (lu,1030) 'observed', pmode(id,ld)*1d2
+                        if (runrm) write (lu,1030) 'residual', den
+                        if (rnorm) write (lu,1031) 'std_resid.', 
+     *                                          den/(emode(id,ld)*1d2)
+                        if (rlsq.or.(lsqchm.eq.1.and.rcobj)) 
+     *                     write (lu,1031) 'LSQ', den**2
+                        if (rchi.or.(lsqchm.eq.2.and.rcobj))
+     *                     write (lu,1031) 'Chi', den**2/mode 
+                        if (rwch.or.(lsqchm.eq.3.and.rcobj))  
+     *                     write (lu,1031) 'wChi', 
+     *                                      (den/(emode(id,ld)*1d2))**2
+
+                        write (lu,1025) 'Mode Misfit:', mscor(j)
+
                      end if
+
+                     write (lu,1025) 
+     *                        'Composition Misfit zero by definition.'
 
                   end if
 c                                 end of mpred loop
                end do
+
+               write (lu,1011) 
 
             end if
 
@@ -4562,12 +4647,33 @@ c                                 phases observed but not predicted
 
             if (nmiss.gt.0) write (lu,1060) (bdname(j), j = 1, nmiss)
 
-            write (lu,1080)
+c                                 complete bulks and chemical potentials
+            write (lu,1080) (cname(j), j = 1, lbulk)
+
+            tot = 0d0
 
             do j = 1, lbulk
-               write (lu,1090) cname(j), fbulk(j)*1d3, mu(j)
+               tot = tot + fbulk(j)
+            end do
+c                                 bulk:
+            write (lu,1081) 'Bulk', (fbulk(j)/tot, j = 1, lbulk)
+c                                 phases:
+            do j = 1, mpred
+c                                 jd/kmin points to the phase in the predicted assemblage
+               jd = kmin(j)
+
+               tot = 0d0
+               do k = 1, lbulk
+                  tot = tot + pcomp(k,jd)
+               end do
+
+               write (lu,1081) pname(jd), 
+     *                         (pcomp(k,jd)/tot, k = 1, lbulk)
+
             end do
 
+            write (lu,1082) ('-----', j = 1, lbulk)
+            write (lu,1083) 'Potentials',(mu(j), j = 1, lbulk)
             write (lu,1010)
 
             if (nmcov.and.covar(1).ne.0d0) then
@@ -4600,26 +4706,38 @@ c                                 end double unit print loop
       if (.not.fprint)  write (*,'(a,1pg13.6,1x,i6,a,$)')
      *         'Misfit: ', miss + extra + comp + scmode, optct, char(13)
 
-1000  format ('The following observed phases are predicted:',/)
-1010  format (/,'*normalized molar units')
-1020  format (17x,'vol %    ',20(1x,a,2x))
-1025  format (2x,a,3x,g12.6,3x,a)
-1030  format (2x,a,3x,f7.3,3x,20(f7.4,1x))
-1035  format (2x,a,13x,20(f7.4,1x))
-1040  format (/,'The following predicted phases are not observed:',/)
+1000  format (/,'The following observed phases are predicted:*')
+1010  format (/,'**mole fractions')
+1011  format (/,'*mole fractions relative to measured components, compl'
+     *         ,'ete compositions below')  
+1020  format (t16,'vol %',t26,20(a,5x))
+1021  format (/,a,t16,'vol %',t26,20(a,5x))
+1025  format (2x,a,t24,1pg12.6e1,3x,a)
+1030  format (2x,a,t14,f7.3,3x,20(f8.6,2x))
+1031  format (2x,a,t14,1pg8.1e1)
+1035  format (2x,a,t24,20(f8.6,2x))
+1036  format (2x,a,t24,20(1pg8.1e1,2x))
+1037  format (2x,a,t14,1pg8.1e1,2x,20(1pg8.1e1,2x))
+1040  format (/,'The following predicted phases** are not observed:',/)
 1045  format (2x,a,13x,20(f7.3,1x))
-1050  format (a,t15,f7.3,3x,20(f7.4,1x))
-1055  format (2x,a,3x,g12.6,8x,a,3x,g12.6)
+1050  format (a,t14,f7.3,1x,20(2x,f8.6))
 1060  format (/,'The following observed phases are not predicted:',//,
      *           10(2x,a))
-1080  format (/,5x,'       Effective Bulk*      ',
-     *            '  Chemical Potentials (J/mol)')
+1080  format (/,'Complete compositions** and chemical potent'
+     *         ,'ials (J/mol)',//,t13,20(3x,a,2x))
+1081  format (a,t12,20(2x,f8.6))
+1082  format (t13,20(3x,a,2x))
+1083  format (a,t13,20(1x,f9.0))
+
+
+*1080  format (/,5x,'       Effective Bulk*      ',
+*     *            '  Chemical Potentials (J/mol)')
 1090  format (a5,10x,f8.3,20x,g13.6)
 1100  format (/,'Components of the Misfit Score',//,5x,
-     *          'Predicted compositions:      ',1pg13.6,/,5x,
-     *          'Extraneous predicted phases: ',1pg13.6,/,5x,
-     *          'Missed observed phases: ',2pg13.6)
-1105  format (5x,'Predicted modes: ',1pg13.6,/)
+     *          'Predicted compositions',t34,1pg13.6e1,/,5x,
+     *          'Extraneous predicted phases:',t34,1pg13.6e1,/,5x,
+     *          'Missed observed phases:',t34,1pg13.6e1)
+1105  format (5x,'Predicted modes:',t34,1pg13.6e1,/)
 1130  format (/,'Converged but because the predicted assemblage was in',
      *          'complete the model will not',/,'be counted. To includ',
      *          'e incomplete predictions set no_miss to miss_ok',//,
@@ -4898,6 +5016,19 @@ c                                 add central model Nelder-Meade variance to
 c                                 perturbation analysis variance
       unplus = .true.
 c                                 -------------------------------------
+c                                 output normalized residuals
+      rnorm = .true.
+c                                 output unormalized residuals
+      runrm = .false.
+c                                 output OBJ contribution per component
+      rcobj = .true. 
+c                                 output LSQ contribution per component
+      rlsq = .false.
+c                                 output Chi2
+      rchi = .false.
+c                                 output wChi
+      rwch = .false.
+c                                 -------------------------------------
 c                                 formerly imc file section 2:
 c                                 Objective function mode, tolerances, and weights
 c                                 -------------------------------------
@@ -4905,6 +5036,10 @@ c                                 1 - least square compositional scoring
 c                                 2 - Chi square scoring
 c                                 3 - weighted Chi square
       lsqchi = 2
+c
+      objnam(1) = 'LSQ'
+      objnam(2) = 'Chi'
+      objnam(3) = 'wChi'
 c                                 and for modes (same scheme):
       lsqchm = 2
 c                                 maximum value of the objective function, 
@@ -5083,7 +5218,39 @@ c                                 mchot => do perturbation analysis around a use
 
                bstout = 2
 
+            else if (val.eq.'all') then 
+
+               bstout = 0
+           
+            else 
+
+               call badopt (key,strg)
+
             end if
+
+         else if (key.eq.'residuals') then
+
+            if (val.eq.'T') runrm = .true.
+
+         else if (key.eq.'residuals_standardized') then
+
+            if (val.eq.'F') rnorm = .false.
+
+         else if (key.eq.'score_misfit') then 
+
+            if (val.eq.'F') rcobj = .false.
+
+         else if (key.eq.'score_LSQ') then 
+
+            if (val.eq.'T') rlsq = .true.
+
+         else if (key.eq.'score_Chi') then 
+
+            if (val.eq.'T') rchi = .true.
+
+         else if (key.eq.'score_wChi') then 
+
+            if (val.eq.'T') rwch = .true.
 
          else if (key.eq.'vital_sign') then
 
@@ -5108,7 +5275,11 @@ c                                 newstt => do perturbation analysis using rando
 
          else if (key.eq.'uncertainties') then
 
-            if (val.eq.'ana') then
+            if (val.eq.'all') then 
+
+               invunc = 1
+
+            else if (val.eq.'ana') then
 
                invunc = 2
 
@@ -5116,37 +5287,58 @@ c                                 newstt => do perturbation analysis using rando
 
                invunc = 3
 
+            else 
+
+               call badopt (key,strg)
+
             end if
 
          else if (key.eq.'Nelder-Mead_covariance') then
 
-            if (val.eq.'T') nmcov = .true.
+            if (strg.eq.'T') nmcov = .true.
 
          else if (key.eq.'uncertainty_plus') then
 
-            if (val.eq.'F') unplus = .false.
+            if (strg.eq.'F') unplus = .false.
 
-         else if (key.eq.'objective_composition') then
+         else if (key.eq.'objective_composition'.or.
+     *            key.eq.'misfit_composition') then
 
-            if (val.eq.'LSQ') then
+            if (strg.eq.'LSQ') then
 
                lsqchi = 1
 
-            else if (val.eq.'wChi') then
+            else if (strg.eq.'Chi') then
+
+               lsqchi = 2
+
+            else if (strg.eq.'wChi') then
 
                lsqchi = 3
 
+            else 
+
+               call badopt (key,strg)
+
             end if
 
-         else if (key.eq.'objective_mode') then
+         else if (key.eq.'objective_mode'.or.key.eq.'misfit_mode') then
 
-            if (val.eq.'LSQ') then
+            if (strg.eq.'LSQ') then
 
                lsqchm = 1
 
-            else if (val.eq.'wChi') then
+            else if (strg.eq.'Chi') then
+
+               lsqchm = 2
+
+            else if (strg.eq.'wChi') then
 
                lsqchm = 3
+
+            else 
+
+               call badopt (key,strg)
 
             end if
 
@@ -5244,7 +5436,7 @@ c                                 print modified options:
                read (strg,*) x
                write (*,1040) key, x
             else
-               write (*,1020) key, val
+               write (*,1020) key, strg
             end if
          end if
 
@@ -5283,6 +5475,23 @@ c                                 explicitly set.
      *      ' want the Nelder-Mead parameter correlation matrix and/or',
      *      /,' Nelder-Mead uncertainty estimates.',/,80('-'))
 1070  format ('MC_fit option: ',a,' has been automatically reset to ',a)
+
+      end 
+
+      subroutine badopt (key,strg)
+c----------------------------------------------------------------------
+c error diagnostic for bad values for an option keyword
+c----------------------------------------------------------------------
+      implicit none
+
+      character key*28, strg*40
+c----------------------------------------------------------------------
+      write (*,1000) strg, key
+
+1000  format (/,'**error ver324** Invalid value: ',a,
+     *        /,'for MC_fit option: ',a,/)
+
+      call errpau
 
       end 
 

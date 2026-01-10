@@ -2621,7 +2621,7 @@ end
 
 
 Ca(Ac)2, EoS = 16 | Gf = -1303609. Ca(CH3COO)2(0)  Shock & Koretsky (1993) with revised volume from the sum of the ion a1 values by Dimitri June 22, 2021 
-Ca(1)C(2)H2(1.5)O2(1.5) 
+Ca(1)C(4)H2(3)O2(2) 
 G0 = -1303609.  S0 = 135.1432  w = -15899.2  
 a1 = 8.266711  a2 = 6078.665  a3 = -30.72641  a4 = -141402.6  c1 = 484.5921  c2 = 1472763.  
 end
@@ -2929,7 +2929,7 @@ end
 
 
 Fe(Ac)2, EoS = 16 | Gf =  -844331. Fe(CH3COO)2(0)  Sverjensky et al. (1997) with revised volume increased in order that a1 of the complex is th
-Fe(1)C(2)H2(1.5)O2(1.5) 
+Fe(1)C(4)H2(3)O2(2) 
 G0 = -844331.2  S0 = 48.24152  w = -15899.2  
 a1 = 6.064634  a2 = 3982.069  a3 = -13.14665  a4 = -132735.2  c1 = 476.0099  c2 = 1442934.  
 end
@@ -3398,7 +3398,7 @@ end
 
 
 Na(Ac)2- EoS = 16 | Gf =  -997758. Na(CH3COO)2(-)  G, H, S, Cp, V from Shock & Koretsky (1993); a1 estimated with Sverjensky et al. (2014) 
-Na(1)C(2)H2(1.5)O2(1.5) 
+Na(1)C(4)H2(3)O2(2) 
 G0 = -997758.5  S0 = 184.096  w = 402820.5  q = -1  
 a1 = 9.21512  a2 = 6981.645  a3 = -38.29781  a4 = -145135.5  c1 = 479.7662  c2 = 1321910.  
 end

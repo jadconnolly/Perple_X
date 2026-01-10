@@ -594,22 +594,22 @@ c                                 MC_fit common block:
      *        relerr, mchot, lmass, nomiss, missng, nogood, kiso, 
      *        mcfit, ptonly, mcfrst, nmcov, unplus, mcmode, uncert,
      *        mustft, fitdat, simlim, simmol, needms, sftmax, sftpot,
-     *        sftc
+     *        sftc, rlsq, rchi, rwch, rnorm, runrm, rcobj
 
       integer mxpt, cxpt, random, cextra, optct, idxtra, ptry, unmeas,
      *        xptids, xptptr, xptnph, xpterr, mccpd, mcsol, mcid, 
      *        mcids, msloc, msolct, nparm, nunc, mcpct, mcpid, mctrm,
      *        mcj, mccoef, mccoid, lsqchi, blkptr, bstout, uncomp,
      *        skp, jkdiag, lsqchm, mpert, mresid, nmi1, nmi2, nmi3,
-     *        nmi4, nmi5, jfit, likfit, bayfit
+     *        nmi4, nmi5, jfit, likfit, bayfit, meas, cmeas
 
-      character xptnam*18
+      character xptnam*18, objnam
 
       double precision xptpt, xptblk, xptc, xpte, cprng, sprng, wcomp, 
      *                 wextra, wmiss, oktol, scores, plow, pdelta, rss,
      *                 cmpmin, cmpmax, xskp, pdqf, ra2zs, un2ft, covar,
      *                 pmode, emode, wmode, bstlco, bstbco, mxobjf, 
-     *                 xlow, xdelta, bay, lik, sftdel
+     *                 xlow, xdelta, bay, lik, sftdel, invwt
 
       common/ cst68 /xptpt(l11,l2), xptblk(l11,k5), xskp(h5), pdqf,
      *               xptc(k5*l11), xpte(k5*l11), xpterr(l11), ra2zs,
@@ -618,7 +618,8 @@ c                                 MC_fit common block:
      *               pdelta(l12), cmpmin(k5,k5), cmpmax(k5,k5), wmode,
      *               covar(l12**2), pmode(l11,k5), emode(l11,k5), 
      *               bstlco(l12** 2), bstbco(l12** 2), mxobjf, rss,
-     *               xlow(l12), xdelta(l12), bay, lik, sftdel,
+     *               xlow(l12), xdelta(l12), bay, lik, sftdel, 
+     *               invwt(l11,k5),
 c                                 integer
      *               mccpd, mcsol, mxpt, nparm, mresid, nunc(2), unmeas,
      *               mctrm(k5), cextra, optct, idxtra, lsqchi, lsqchm,
@@ -628,7 +629,7 @@ c                                 integer
      *               mccoef(k5,m1), mcj(k5,m1), mccoid(k5,m1,m3), cxpt,
      *               blkptr(l11), bstout, uncomp(k5), jkdiag(l12),
      *               nmi1, nmi2, nmi3, nmi4, nmi5, jfit, likfit, 
-     *               bayfit,
+     *               bayfit,meas,cmeas(k5),
 c                                 logical
      *               mcpert, oprt, mcflag(h9), random(3), grh, invxpt,
      *               fprint, grdsch, seed, mcgrid, grhobj, bayes,
@@ -636,15 +637,16 @@ c                                 logical
      *               relerr, mchot, lmass, nomiss, missng, nogood,
      *               ptonly, mcfrst, nmcov, unplus, mcmode(l11), mustft,
      *               fitdat, simlim(k5), simmol(k5), needms, sftmax, 
-     *               sftpot, sftc,
+     *               sftpot, sftc, rlsq, rchi, rwch, rnorm, runrm, 
+     *               rcobj,
 c                                 character
-     *               xptnam(l11)
+     *               xptnam(l11), objnam(3)
 c                                 the untrasnformed nelder-mead variables
 c                                 go in their own common so that the block
 c                                 can be used in minim. note this requires
 c                                 the dimension (l2+k5) to be hardwired in minim
-       double precision xinv
-       common/ cst67 /xinv(20)
+      double precision xinv
+      common/ cst67 /xinv(20)
 c                                 -------------------------------------
 c                                 minim parameters
       integer mtry, conchk, jprint, iquad, kcount 
