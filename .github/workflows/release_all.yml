@@ -123,6 +123,35 @@ jobs:
           done
       # ---------- Package artifacts per OS ----------
 
+      - name: Package Linux binaries
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          set -e
+          TAG=${{ github.event.release.tag_name }}
+          PKG=Perple_X_${TAG}_Linux_64_gfortran
+          rm -rf "$PKG"
+          mkdir -p "$PKG/bin"
+
+          # Copy executables
+          find src -maxdepth 1 -type f -perm -111 -exec cp {} "$PKG/bin/" \;
+
+          # Copy support directories if they exist
+          for d in datafiles optionfiles matlab_scripts; do
+            if [ -d "$d" ]; then
+              cp -r "$d" "$PKG/"
+            fi
+          done
+
+          tar -czf "${PKG}.tar.gz" "$PKG"
+
+      - name: Upload Linux artifact
+        if: matrix.os == 'ubuntu-22.04'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
+          path: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
+
+        
       - name: Package macOS binaries
         if: matrix.os == 'macos-latest'
         run: |
