@@ -142,6 +142,18 @@ jobs:
             fi
           done
 
+          # Sanity check: packaged Linux executables must not depend on gfortran/quadmath/gcc_s
+          for f in "$PKG/bin/"*; do
+            if [ -x "$f" ] && file "$f" | grep -q ELF; then
+              echo "== $f =="
+              if ldd "$f" | grep -Eiq "gfortran|quadmath|gcc_s"; then
+                echo "ERROR: unwanted runtime deps detected in packaged executable: $f"
+                ldd "$f"
+                exit 1
+              fi
+            fi
+          done
+
           tar -czf "${PKG}.tar.gz" "$PKG"
 
       - name: Upload Linux artifact
@@ -155,7 +167,8 @@ jobs:
       - name: Package macOS binaries
         if: matrix.os == 'macos-latest'
         run: |
-          set -e
+          set -euo pipefail
+
           TAG=${{ github.event.release.tag_name }}
           PKG=Perple_X_${TAG}_macOS_64_gfortran
           rm -rf "$PKG"
@@ -171,29 +184,54 @@ jobs:
             fi
           done
 
-          # Bundle Homebrew GCC quadmath dylib (Apple Silicon runner uses /opt/homebrew)
-          QMLIB="/opt/homebrew/opt/gcc/lib/gcc/current/libquadmath.0.dylib"
-          if [ -f "$QMLIB" ]; then
-            cp "$QMLIB" "$PKG/lib/"
-          else
-            echo "ERROR: Expected libquadmath not found at $QMLIB"
-            echo "Available candidates:"
-            ls -al /opt/homebrew/opt/gcc/lib/gcc/current/ || true
-            exit 1
-          fi
+          # Locate Homebrew GCC runtime directory (works on Apple Silicon and Intel runners)
+          BREW_PREFIX="$(brew --prefix)"
+          GCC_PREFIX="$(brew --prefix gcc)"
+          GCC_LIBDIR="${GCC_PREFIX}/lib/gcc/current"
+          echo "BREW_PREFIX=$BREW_PREFIX"
+          echo "GCC_PREFIX=$GCC_PREFIX"
+          echo "GCC_LIBDIR=$GCC_LIBDIR"
+          ls -al "$GCC_LIBDIR" || true
 
-          # Add rpath and rewrite absolute Homebrew path -> @rpath
+          # Bundle required GCC runtime dylibs
+          NEED_LIBS=("libgfortran.5.dylib" "libquadmath.0.dylib" "libgcc_s.1.1.dylib")
+          for lib in "${NEED_LIBS[@]}"; do
+            src="${GCC_LIBDIR}/${lib}"
+            if [ -f "$src" ]; then
+              cp "$src" "$PKG/lib/"
+            else
+              echo "ERROR: expected $lib not found at $src"
+              exit 1
+            fi
+          done
+
+          # Ensure executables can find bundled dylibs
           for exe in "$PKG/bin/"*; do
             if file "$exe" | grep -q Mach-O; then
-              # Ensure @rpath points to ../lib relative to the executable
               install_name_tool -add_rpath "@executable_path/../lib" "$exe" 2>/dev/null || true
+            fi
+          done
 
-              # Rewrite quadmath load command
-              install_name_tool -change \
-                "$QMLIB" \
-                "@rpath/libquadmath.0.dylib" \
-                "$exe"
+          # Set dylib IDs to @rpath/<name> (important for relocatable bundles)
+          for dylib in "$PKG/lib/"*.dylib; do
+            base="$(basename "$dylib")"
+            install_name_tool -id "@rpath/$base" "$dylib" 2>/dev/null || true
+          done
 
+          # Rewrite references from Homebrew absolute paths -> @rpath for BOTH executables and dylibs
+          # (libgfortran itself depends on libquadmath and libgcc_s)
+          TARGETS=( "$PKG/bin/"* "$PKG/lib/"*.dylib )
+          for t in "${TARGETS[@]}"; do
+            if [ -e "$t" ] && file "$t" | grep -q Mach-O; then
+              for lib in "${NEED_LIBS[@]}"; do
+                install_name_tool -change "${GCC_LIBDIR}/${lib}" "@rpath/${lib}" "$t" 2>/dev/null || true
+              done
+            fi
+          done
+
+          # Diagnostics: show what the binaries will load
+          for exe in "$PKG/bin/"*; do
+            if file "$exe" | grep -q Mach-O; then
               echo "== otool -L $exe =="
               otool -L "$exe"
             fi
@@ -204,6 +242,15 @@ jobs:
           ARCHIVE=${PKG}.tar.gz
           tar -C . -czf "$ARCHIVE" "$PKG"
 
+          # Sanity check: ensure no Homebrew paths remain
+          for exe in "$PKG/bin/"*; do
+            if file "$exe" | grep -q Mach-O; then
+              if otool -L "$exe" | grep -E "/opt/homebrew|/usr/local"; then
+                echo "ERROR: non-system library path detected in $exe"
+                exit 1
+              fi
+            fi
+          done
 
       - name: Upload macOS artifact
         if: matrix.os == 'macos-latest'
@@ -242,12 +289,17 @@ jobs:
     needs: build
     runs-on: ubuntu-22.04
     steps:
-      - name: Download Linux artifact (tolerant)
+      
+      - name: Download Linux artifact
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
           path: artifacts
+
+      - name: Verify Linux artifact exists
+        run: |
+          ls -al dist
+          test -f "dist/Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz"
 
       - name: Download macOS artifact (tolerant)
         uses: actions/download-artifact@v4
