@@ -289,7 +289,7 @@ jobs:
     needs: build
     runs-on: ubuntu-22.04
     steps:
-      
+
       - name: Download Linux artifact
         uses: actions/download-artifact@v4
         with:
@@ -298,8 +298,8 @@ jobs:
 
       - name: Verify Linux artifact exists
         run: |
-          ls -al dist
-          test -f "dist/Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz"
+          ls -al artifacts
+          test -f "artifacts/Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz"
 
       - name: Download macOS artifact (tolerant)
         uses: actions/download-artifact@v4
