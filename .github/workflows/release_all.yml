@@ -142,6 +142,10 @@ jobs:
             fi
           done
 
+          # Include source tree (for reference / rebuilds)
+          cp -r src "$PKG/"
+
+
           # Sanity check: packaged Linux executables must not depend on gfortran/quadmath/gcc_s
           for f in "$PKG/bin/"*; do
             if [ -x "$f" ] && file "$f" | grep -q ELF; then
@@ -166,8 +170,7 @@ jobs:
         
       - name: Package macOS binaries
         if: matrix.os == 'macos-latest'
-        shell: bash
-        run: |-
+        run: |
           set -euo pipefail
 
           TAG=${{ github.event.release.tag_name }}
@@ -184,6 +187,10 @@ jobs:
               cp -r "$d" "$PKG/"
             fi
           done
+
+          # Include source tree (for reference / rebuilds)
+          cp -r src "$PKG/"
+
 
           # Locate Homebrew GCC runtime directory (works on Apple Silicon and Intel runners)
           BREW_PREFIX="$(brew --prefix)"
@@ -239,11 +246,7 @@ jobs:
           done
 
           # remove any existing archives inside package to avoid nesting
-
-          # README for macOS users
-          printf '%s\n' 'Perple_X (macOS) — quick start' '' '1) Unpack the archive' '   tar -xzf Perple_X_<tag>_macOS_64_gfortran.tar.gz' '' '2) Run programs from the bin/ directory (Terminal)' '   cd Perple_X_<tag>_macOS_64_gfortran/bin' '   ./pssect   (or ./vertex, ./werami, etc.)' '' 'Notes' '- Keep the bin/ and lib/ directories together. The executables in bin/ load' '  required runtime libraries from ../lib.' '- If macOS blocks execution because the files were downloaded from the internet,' '  you can remove the quarantine attribute on the unpacked folder:' '    xattr -dr com.apple.quarantine Perple_X_<tag>_macOS_64_gfortran' > "$PKG/README_macOS.txt"
-
-          find "$PKG" -maxdepth 1 -type f \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.tgz' \) -delete || true
+          find "$PKG" -type f \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.tgz' \) -delete || true
           ARCHIVE=${PKG}.tar.gz
           tar -C . -czf "$ARCHIVE" "$PKG"
 
@@ -273,15 +276,24 @@ jobs:
           $pkg = "Perple_X_${tag}_Windows_64_gfortran"
           if (Test-Path $pkg) { Remove-Item -Recurse -Force $pkg }
           New-Item -ItemType Directory -Path "$pkg\bin" -Force | Out-Null
-          Get-ChildItem -Path src -Filter *.exe -File | ForEach-Object { Copy-Item -Path $_.FullName -Destination "$pkg\bin\" }
+
+          # Copy executables
+          Get-ChildItem -Path src -Filter *.exe -File | ForEach-Object {
+            Copy-Item -Path $_.FullName -Destination "$pkg\bin\"
+          }
+
+          # Copy support directories if they exist
           foreach ($d in @('datafiles','optionfiles','matlab_scripts')) {
             if (Test-Path $d) { Copy-Item -Recurse -Path $d -Destination $pkg }
           }
+
+          # Include source tree (for reference / rebuilds)
+          if (Test-Path 'src') { Copy-Item -Recurse -Path 'src' -Destination $pkg }
+
+          # Create archive (do not delete nested zips inside the package)
           $zip = "$pkg.zip"
           if (Test-Path $zip) { Remove-Item -Force $zip }
           Compress-Archive -Path "$pkg\*" -DestinationPath $zip -Force
-
-
       - name: Upload Windows artifact
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
