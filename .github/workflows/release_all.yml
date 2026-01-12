@@ -166,7 +166,8 @@ jobs:
         
       - name: Package macOS binaries
         if: matrix.os == 'macos-latest'
-        run: |
+        shell: bash
+        run: |-
           set -euo pipefail
 
           TAG=${{ github.event.release.tag_name }}
@@ -240,24 +241,7 @@ jobs:
           # remove any existing archives inside package to avoid nesting
 
           # README for macOS users
-          cat > "$PKG/README_macOS.txt" <<'EOF'
-Perple_X (macOS) — quick start
-
-1) Unpack the archive
-   tar -xzf Perple_X_<tag>_macOS_64_gfortran.tar.gz
-
-2) Run programs from the bin/ directory (Terminal)
-   cd Perple_X_<tag>_macOS_64_gfortran/bin
-   ./pssect   (or ./vertex, ./werami, etc.)
-
-Notes
-- Keep the bin/ and lib/ directories together. The executables in bin/ load
-  required runtime libraries from ../lib.
-- If macOS blocks execution because the files were downloaded from the internet,
-  you can remove the quarantine attribute on the unpacked folder:
-    xattr -dr com.apple.quarantine Perple_X_<tag>_macOS_64_gfortran
-
-EOF
+          printf '%s\n' 'Perple_X (macOS) — quick start' '' '1) Unpack the archive' '   tar -xzf Perple_X_<tag>_macOS_64_gfortran.tar.gz' '' '2) Run programs from the bin/ directory (Terminal)' '   cd Perple_X_<tag>_macOS_64_gfortran/bin' '   ./pssect   (or ./vertex, ./werami, etc.)' '' 'Notes' '- Keep the bin/ and lib/ directories together. The executables in bin/ load' '  required runtime libraries from ../lib.' '- If macOS blocks execution because the files were downloaded from the internet,' '  you can remove the quarantine attribute on the unpacked folder:' '    xattr -dr com.apple.quarantine Perple_X_<tag>_macOS_64_gfortran' > "$PKG/README_macOS.txt"
 
           find "$PKG" -maxdepth 1 -type f \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.tgz' \) -delete || true
           ARCHIVE=${PKG}.tar.gz
