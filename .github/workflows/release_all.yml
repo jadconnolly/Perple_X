@@ -142,11 +142,28 @@ jobs:
             fi
           done
 
-          # Clean src tree
-          find src -type f \( -name '*.o' -o -name '*.exe' \) -delete
-
           # Include source tree (for reference / rebuilds)
-          cp -r src "$PKG/"
+          if [ -d src ]; then
+            # Remove common build by-products
+            find src -type f \( \
+                -name '*.o' \
+                -o -name '*.mod' \
+                -o -name '*.a' \
+                -o -name '*.so' \
+                -o -name '*.dylib' \
+                -o -name '*.exe' \
+            \) -delete
+
+            # Remove compiled binaries without extensions (ELF / Mach-O)
+            while IFS= read -r -d '' f; do
+              if file "$f" | grep -qE 'ELF|Mach-O'; then
+                rm -f "$f"
+              fi
+            done < <(find src -type f -perm -111 -print0)
+
+            # Copy cleaned sources
+            cp -r src "$PKG/"
+          fi
 
           # Sanity check: packaged Linux executables must not depend on gfortran/quadmath/gcc_s
           for f in "$PKG/bin/"*; do
@@ -190,13 +207,29 @@ jobs:
             fi
           done
 
-          # Clean src tree
-          find src -type f \( -name '*.o' -o -name '*.exe' \) -delete
-
           # Include source tree (for reference / rebuilds)
-          cp -r src "$PKG/"
+          if [ -d src ]; then
+            # Remove common build by-products
+            find src -type f \( \
+                -name '*.o' \
+                -o -name '*.mod' \
+                -o -name '*.a' \
+                -o -name '*.so' \
+                -o -name '*.dylib' \
+                -o -name '*.exe' \
+            \) -delete
 
+            # Remove compiled binaries without extensions (ELF / Mach-O)
+            while IFS= read -r -d '' f; do
+              if file "$f" | grep -qE 'ELF|Mach-O'; then
+                rm -f "$f"
+              fi
+            done < <(find src -type f -perm -111 -print0)
 
+            # Copy cleaned sources
+            cp -r src "$PKG/"
+          fi
+          
           # Locate Homebrew GCC runtime directory (works on Apple Silicon and Intel runners)
           BREW_PREFIX="$(brew --prefix)"
           GCC_PREFIX="$(brew --prefix gcc)"
