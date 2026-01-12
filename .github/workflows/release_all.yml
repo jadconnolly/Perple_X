@@ -142,9 +142,11 @@ jobs:
             fi
           done
 
+          # Clean src tree
+          find src -type f \( -name '*.o' -o -name '*.exe' \) -delete
+
           # Include source tree (for reference / rebuilds)
           cp -r src "$PKG/"
-
 
           # Sanity check: packaged Linux executables must not depend on gfortran/quadmath/gcc_s
           for f in "$PKG/bin/"*; do
@@ -187,6 +189,9 @@ jobs:
               cp -r "$d" "$PKG/"
             fi
           done
+
+          # Clean src tree
+          find src -type f \( -name '*.o' -o -name '*.exe' \) -delete
 
           # Include source tree (for reference / rebuilds)
           cp -r src "$PKG/"
@@ -288,7 +293,15 @@ jobs:
           }
 
           # Include source tree (for reference / rebuilds)
-          if (Test-Path 'src') { Copy-Item -Recurse -Path 'src' -Destination $pkg }
+          if (Test-Path 'src') {
+
+              # Remove build artifacts from src before packaging
+              Get-ChildItem -Path src -Recurse -Include *.o,*.exe -File -ErrorAction SilentlyContinue |
+                  Remove-Item -Force
+
+              # Copy sources
+              Copy-Item -Recurse -Path 'src' -Destination $pkg
+          }
 
           # Create archive (do not delete nested zips inside the package)
           $zip = "$pkg.zip"
