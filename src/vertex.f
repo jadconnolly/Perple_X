@@ -778,14 +778,20 @@ c                                 computation
                vox(i) = 0.5d0
             else if (cname(i).eq.'Si') then 
                vox(i) = 1d0
+            else if (cname(i).eq.'Ti') then 
+               vox(i) = 1d0
+            else if (cname(i).eq.'Mn') then 
+               vox(i) = 0.5
             else if (cname(i).eq.'Al') then 
                vox(i) = 0.75d0
             else if (cname(i).eq.'Fe') then 
-               vox(i) = 1d0
+               vox(i) = 0.5
             else if (cname(i).eq.'Mg') then 
-               vox(i) = 1d0
+               vox(i) = 0.5
+            else if (cname(i).eq.'Mn') then 
+               vox(i) = 0.5
             else if (cname(i).eq.'Ca') then 
-               vox(i) = 1d0
+               vox(i) = 0.5
             else if (cname(i).eq.'Na') then 
                vox(i) = 0.25d0
             else if (cname(i).eq.'K') then 

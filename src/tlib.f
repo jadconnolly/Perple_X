@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.18 January 8, 2026.',
+     *     'Perple_X release 7.1.19 January 13, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -10268,7 +10268,11 @@ c                                 to 1 (the independent path variable must
 c                                 be variable jv(1), and the dependent path
 c                                 variable must be jv(2), the path variables
 c                                 can only be pressure and temperature
-      ipot = 1
+
+c                                ipot was not originally set = 1 and i'm 
+c                                not sure there's any reason to do so. 7.1.19
+c                                experimenatally sets to 2. 
+      ipot = 2
 
       jbulk = icp
       kbulk = icp
