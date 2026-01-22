@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.19 January 13, 2026.',
+     *     'Perple_X release 7.1.20 January 21, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -785,7 +785,7 @@ c                                 interpolation key
                iopt(4) = 0
                valu(4) = val
             else 
-               read (nval1,*) iopt(4)
+               read (nval1,*,iostat=ier) iopt(4)
             end if 
 
          else if (key.eq.'bounds') then 
@@ -1077,7 +1077,7 @@ c                                 final_resolution keys
 c                                 p threshold
             read (strg,*) nopt(26)
 c                                 p fraction
-            read (nval1,*) nopt(27)
+            read (nval1,*,iostat=ier) nopt(27)
 
          else if (key.eq.'global_reach_increment') then
           
@@ -1185,17 +1185,11 @@ c                                 number of x nodes at level 1 before autorefine
 c                                 number of x nodes for autorefine
             read (nval1,*,iostat=ier) grid(1,2)
 
-            if (ier.ne.0) call error (72,r1,i,'the x_nodes option '//
-     *                               'requires two values')
-
          else if (key.eq.'y_nodes') then
 c                                 number of y nodes at level 1
             read (strg,*) grid(2,1)
 c                                 number of y nodes for autorefine
             read (nval1,*,iostat=ier) grid(2,2)
-
-            if (ier.ne.0) call error (72,r1,i,'the y_nodes option '//
-     *                               'requires two values')
 
          else if (key.eq.'grid_levels') then 
 c                                 number of grid levels before autorefine
@@ -1203,17 +1197,11 @@ c                                 number of grid levels before autorefine
 c                                 number of grid levels for autorefine
             read (nval1,*,iostat=ier) grid(3,2)
 
-            if (ier.ne.0) call error (72,r1,i,'the grid_levels option'//
-     *                               ' requires two values')
-
          else if (key.eq.'1d_path') then 
 c                                 number of grid points for 1d path before autorefine
             read (strg,*) grid(4,1)
 c                                 number of grid points for 1d path for autorefine
             read (nval1,*,iostat=ier) grid(4,2)
-
-            if (ier.ne.0) call error (72,r1,i,'the 1d_path option '//
-     *                               'requires two values')
 
          else if (key.eq.'variance') then 
 c                                 max variance of traced equilibria before autorefine
@@ -1221,17 +1209,11 @@ c                                 max variance of traced equilibria before autor
 c                                 max variance of traced equilibria for autorefine
             read (nval1,*,iostat=ier) grid(5,2)
 
-            if (ier.ne.0) call error (72,r1,i,'the variance option '//
-     *                               'requires two values')
-
          else if (key.eq.'increment') then 
 c                                 default exploratory relative increment    
             read (strg,*) rid(1,1)  
 c                                 default autorefine relative increment
             read (nval1,*,iostat=ier) rid(1,2)
-
-            if (ier.ne.0) call error (72,r1,i,'the increment option '//
-     *                               'requires two values')
 
          else if (key.eq.'reaction_format') then 
 
@@ -1405,12 +1387,12 @@ c                                 perturbation to eliminate pseudocompound degen
          else if (key.eq.'poisson_ratio') then 
 c                                 handle missing shear moduli
             if (val.eq.'on ') then
-               read (nval1,*) nopt(16)
+               read (nval1,*,iostat=ier) nopt(16)
             else if (val.eq.'off') then 
                valu(15) = val
                iopt(16) = 0
             else if (val.eq.'all') then 
-               read (nval1,*) nopt(16)
+               read (nval1,*,iostat=ier) nopt(16)
                valu(15) = val
                iopt(16) = 2
             end if   
@@ -1445,11 +1427,15 @@ c                                 reserved values for debugging, etc
             read (strg,*) nopt(30) 
          else if (key.ne.'|') then
 
-            call error (72,nopt(1),iopt(1),key//' is not a valid Perpl'
-     *                 //'e_X option file keyword and must be deleted '
-     *                 //'or corrected.')
+         call error (72,nopt(1),iopt(1),key//' is not a valid Perpl'
+     *               //'e_X option file keyword and must be deleted '
+     *               //'or corrected.')
 
          end if
+c                                 if here and ier ne 0, the second value of a 
+c                                 keyword is missing, write error msg:
+         if (ier.ne.0) call error (72,r1,i,'the '//key(1:nblen(key))//
+     *                            ' option requires two numeric values')
 
       end do
 
@@ -2353,7 +2339,7 @@ c                                 load chars into key
 c                                 initialize other values
       strg = ' '
       strg1 = ' '
-      nval1 = '0'
+      nval1 = ' '
       nval2 = '0'
       nval3 = '0'
 

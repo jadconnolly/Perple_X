@@ -1781,7 +1781,10 @@ c                                 get optional inversion weighting
 
          if (key.eq.'inversion_weight') then     
 
-            read (strg,*) invwt(mxpt,nph)
+            read (strg,*,iostat=ier) invwt(mxpt,nph)
+
+            if (ier.ne.0) call errdbg ('the '//key(1:nblen(key))//
+     *                        ' keyword requires a numeric value')
 
          else 
 
@@ -1794,8 +1797,12 @@ c                                 invptx, so 1d arrays
 
          if (key.eq.'phase_mode') then
 c                                 modal data
-            read (strg,*) pmode(mxpt,nph)
-            read (nval1,*) emode(mxpt,nph)
+            read (strg,*,iostat=ier) pmode(mxpt,nph)
+            read (nval1,*,iostat=ier) emode(mxpt,nph)
+
+            if (ier.ne.0) call errdbg ('the '//key(1:nblen(key))//
+     *                     ' keyword requires two numeric values')
+
             mcmode(mxpt) = .true.
 
             if (pmode(mxpt,nph).le.0d0) call errdbg ('modes must be '//

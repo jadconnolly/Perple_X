@@ -142,6 +142,9 @@ ctransf: ctransf.o $(LIBRARY)
 DEW_2_ver: DEW_2_ver.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
+STX_2_ver: STX_2_ver.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
+
 frendly: frendly.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
@@ -196,6 +199,8 @@ resub.o: resub.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c resub.f
 rlib.o: rlib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c rlib.f
+STX_2_ver.o: STX_2_ver.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c STX_2_ver.f
 tlib.o: tlib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c tlib.f
 vertex.o: vertex.f perplex_parameters.h
