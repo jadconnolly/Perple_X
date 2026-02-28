@@ -798,6 +798,13 @@ c                                 local dqf and solvus tolerance values
 
       double precision dcp, soltol, loctol
       common/ cst57 /dcp(k5,k19), soltol(h9), loctol
+c                                 endmember special operation instructions
+      character sopchr*1
+      logical lsop
+      integer isop, insop, soptyp
+      double precision sopq
+      common/ cst64 /sopq(m4, m3), isop, insop(m4), soptyp(m4), 
+     *               lsop(k10),sopchr(m4)
 c                                 invariant point coordinates for CONVEX and
 c                                 1d grid coordinates for VERTEX
       double precision vip
@@ -814,3 +821,7 @@ c                                 CONVEX junk:
 
       integer irv
       common/ cst35 /irv(k2)
+
+      logical newdat
+      character commnt*400
+      common/ cst99 /commnt, newdat

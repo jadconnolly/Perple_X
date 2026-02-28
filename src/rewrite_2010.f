@@ -2,9 +2,23 @@ c----------------------------------------------------------------------
 c rewrite 2010 is a program to rewrite *ver.dat thermodynami data files
 c from before May 2010 to the current format.
 
+c 1) run hp_2_ver to make pre 666 format data
+c 2) paste a post 666 header into the file
+c 3) verify the component counts and disable uncertainty
+c 4) run
+c 5) change g0 to gh 
+c 6) read_hp_covariance
+c 7) read_666_data 
+
 c to run this code you must temporarily modify perplex_parameters such that:
 
 c k5 = max number of components in the data base (<=k0)
+c      beware most perplex headers have more components than in the hp data files
+
+
+c the m7 modification is no longer required because the number of transition
+c parameters is now hardwired to 10 (< m7) in ogtphi
+
 c m7 = number of parameters in a transition (reduce to value in the data 
 c      base to be translated and modify initialization of tstrg in block data)
 
@@ -23,9 +37,6 @@ c----------------------------------------------------------------------
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
-
-      integer icomp,istct,iphct,icp
-      common/ cst6 /icomp,istct,iphct,icp
 
       integer cl
       character cmpnt*5, dname*80
@@ -81,6 +92,8 @@ c------------------------------------------------------------------------
       character name*8 
 
       logical eof
+
+      double precision dh
  
       integer ilam,jlam,idiso,lamin,idsin
       double precision tm,td
@@ -91,8 +104,8 @@ c------------------------------------------------------------------------
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
 
       integer length,com
-      character chars*1
-      common/ cst51 /length,com,chars(lchar)
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
 
       double precision cp
       common/ cst12 /cp(k5,k1)
@@ -103,7 +116,7 @@ c                                 need to eliminate hsc conversion.
 
          if (eof) exit
 
-         call outdat (n8,1,1)
+         call outdat (n8,1,1,dh)
 
       end do 
  
@@ -114,6 +127,7 @@ c                                 need to eliminate hsc conversion.
       subroutine ogtphi (name,eof)
 c-----------------------------------------------------------------------
 c old getphi, modified for routine outdat
+c tm input now hardwired to ignore m7 (so only meant for hp conversions)
 c-----------------------------------------------------------------------
       implicit none
  
@@ -126,6 +140,10 @@ c-----------------------------------------------------------------------
       logical eof
 
       character*8 name, oname, record*1
+
+      integer nblen
+
+      external nblen
  
       double precision emodu
       common/ cst318 /emodu(k15)
@@ -133,9 +151,6 @@ c-----------------------------------------------------------------------
       integer ilam,jlam,idiso,lamin,idsin
       double precision tm,td
       common/ cst202 /tm(m7,m6),td(m8),ilam,jlam,idiso,lamin,idsin
-
-      double precision therlm,therdi
-      common/ cst203 /therdi(m8,m9),therlm(m7,m6,k9)
 
       integer ictr, itrans
       double precision ctrans
@@ -156,12 +171,6 @@ c-----------------------------------------------------------------------
 
       double precision cp
       common/ cst12 /cp(k5,k1)
-
-      integer eos
-      common/ cst303 /eos(k10)
-
-      character*80 com
-      common/delet/com 
 
       save oname
  
@@ -194,8 +203,9 @@ c                          with a blank 1st character
 
             backspace (n2)
 
-            read (n2,'(a)') com
-            if (com.ne.' ') write (n8,1111) com
+            read (n2,'(a)') commnt
+            if (commnt.ne.' ') write (n8,1111) commnt(1:nblen(commnt))
+
 1111     format (5x,'| ',a)
 
             cycle
@@ -205,7 +215,10 @@ c                          with a blank 1st character
          backspace (n2)
 
 1010     format (a,i2,i2,i2,i2,a)
-         read (n2,1010) names(1),ieos,ikind,ilam,idiso,com          
+
+         commnt = ' '
+
+         read (n2,1010) names(1),ieos,ikind,ilam,idiso,commnt        
          read (n2,*,iostat=ier) (cp(i,1), i= 1, icmpn), 
      *                          (thermo(i,1), i= 1, 18)
 
@@ -232,7 +245,7 @@ c                                 hp2010
             lmda(1) = 1
  
             do i= 1, jlam
-               read (n2,*,iostat=ier) (tm(j,i), j = 1, m7 - 2)
+               read (n2,*,iostat=ier) (tm(j,i), j = 1, 10)
                if (ier.ne.0) exit 
             end do 
 
@@ -358,7 +371,7 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
  
-      character*5 tag*11, n2name*100, string*140
+      character*5 tag*11, string*140
 
       integer icod, ig(3), jopt, i
 
@@ -368,9 +381,6 @@ c----------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps,v(l2)
       common/ cst5  /p,t,xco2,u1,u2,tr,pr,r,ps
 
-      integer io3,io4,io9
-      common/ cst41 /io3,io4,io9
-
       double precision ctrans
       integer ictr,itrans
       common/ cst207 /ctrans(k0,k5),ictr(k5),itrans
@@ -378,8 +388,6 @@ c----------------------------------------------------------------------
       integer ikind,icmpn,icout,ieos
       double precision comp,tot
       common/ cst43 /comp(k0),tot,icout(k0),ikind,icmpn,ieos
-  
-      common/ cst41a /n2name
 
       integer cl
       character cmpnt*5, dname*80
@@ -387,12 +395,6 @@ c----------------------------------------------------------------------
 
       character tcname*5,xcmpnt*5
       common/ csta9 /tcname(k0),xcmpnt(k0)
-
-      double precision atwt
-      common/ cst45 /atwt(k0)
-
-      integer idspe,ispec
-      common/ cst19 /idspe(2),ispec
 c-----------------------------------------------------------------------
       rewind n2
 c                               read the number of data bases

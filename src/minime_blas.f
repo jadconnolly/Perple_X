@@ -381,6 +381,12 @@ c-----------------------------------------------------------------------
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c-----------------------------------------------------------------------
+c                                in calculations with mobile components
+c                                reject phases with no thermodyamic components:
+      if (rsum.eq.0d0) then
+         return
+      end if
+
       ntot = nstot(rids)
       ltot = lstot(rids)
       ttot = tstot(rids)

@@ -1,0 +1,2811 @@
+720 DO NOT DELETE THIS LINE
+
+| for documentation of Perple_X thermodynamic data file structure and content refer to:
+
+| www.perplex.ethz.ch/perplex_thermodynamic_data_file.html
+
+| comments are indicated by the | character.
+| check for warnings at the end of the header section.
+
+| this file can only be read by Perple_X 6.7.8+
+
+Holland & Powell, JMG 2011 (TC-DS636, May 3, 2023) + additional data             |<= data base title
+
+| WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING!!!
+| WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING!!!
+| WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING!!!
+
+| Data for the following endmembers in this file has been eliminated by 
+| commenting, to make the data accessible remove the comment characters:
+
+| nta - Na-talc
+| tap - talc-pyrophyllite
+| tan - talc-phlogopite
+
+| Additionally the "fact" (ferro-actinolite) endmember has been renamed 
+| "ftr" to maintain consistency with ds5 data files.
+
+| data from other sources (HSC, SUPCRT, etc) has been added at the end of this
+| file. JADC, January 29, 2026
+
+begin_standard_variables |<= name (<9 characters), reference value, tolerance
+P(bar)      1.00   0.1E-3
+T(K)      298.15   0.1E-4
+Y(CO2)      0.00   0.1E-6
+mu(C1)      0.00   0.1E-2
+mu(C2)      0.00   0.1E-2
+end_standard_variables
+
+tolerance  -.1E-2    |<= DTOL for unconstrained minimization, energy units
+
+HSC_conversion       |<= tag enabling HSC to SUP apparent energy conversion, requires elemental entropies in the component list below
+
+uncertainty_enabled  |<= tag undicating uncertainty data is present
+
+begin_components | < 6 chars, molar mass (g),  elemental entropy (R)
+Na2O     61.9790    205.1750
+MgO      40.3040    135.2550
+Al2O3   101.9610    364.4250
+SiO2     60.0840    223.9600
+K2O      94.1960    231.9350
+CaO      56.0770    144.2050
+TiO2     79.8660    235.8700
+MnO      70.9370    134.7950
+FeO      71.8440    129.8550
+NiO      74.6930    132.3750
+ZrO2    123.2200    244.3300
+Cl2      70.9060    223.0800
+O2       31.9990    205.1500
+H2O      18.0150    233.2550
+CO2      44.0100    210.8900
+CuO      79.5450    135.7250
+Cr2O3   151.9900    358.8110
+S2       64.1300     64.1000
+F2       37.9968    202.7900
+N2       28.0130    191.6100
+end_components
+
+begin_special_components
+H2O  
+CO2  
+end_special_components
+
+
+begin_makes
+                                 | the make definitions segment of the thermodynamic
+                                 | data file is preceded by the "begin_makes" keyword,
+                                 | and terminated by the "end_makes" keyword. Within
+                                 | this segment comments must be preceded by a "|"
+                                 | character.
+ 
+                                 | the make definitions define new thermodynamic entities
+                                 | (e.g., fO2 buffers, endmembers etc) as a linear combination of
+                                 | the "real" entities in the thermodynamic file. the definition
+                                 | includes a "DQF" correction that is used to increment the
+                                 | G of the linearly combined G's as a function of pressure and
+                                 | temperature, i.e., the total G computed for a made entity is
+                                 | the G of the right-hand-side of the make reaction + Gdqf.
+ 
+                                 | the format assumes data on two lines of less than 240 characters,
+                                 | the format for the first line of a make definition is
+ 
+                                 | name = num_1 * name_1 + num_2 * name_2 + num_int * name_int
+ 
+                                 | where i num_j is a number or fraction (i.e., two numbers separated
+                                 | by a '/') and name_j are the names of the j existing entities.
+
+                                 | the format of the second line is 
+
+                                 | [tag1] [=] dnum_1 [+] [dnum_2] [*] [tag2] [+] [dnum_3] [*] [tag3]
+
+                                 | where the text in [] is optional with the exception that if only
+                                 | dnum_2 or d_num3 is provided than the corresponding tag must also 
+                                 | be provided and the tag must begin with 'p', 'P', 't', or 'T', to
+                                 | indicate whether the coeffiecient gives a pressure or temperature
+                                 | dependence. Unspecified coefficients are set to zero.
+
+                                 | the dqf correction to the entity 'name' is then
+                                 | Gdqf(J/mol) = dnum_1 + T[K]*dnum_2 + P[bar]*dnum_3
+ 
+                                 | made entities are excluded from calculations in vertex if they
+                                 | are included in the excluded phase list in the computational option
+                                 | file (e.g., "in"); however, real entities to the right of the equals
+                                 | sign in a make definition are not effected by the excluded phase list.
+                                 | for example, if qL (liquid silica) is excluded, the make definition
+                                 | q8L = 4 qL
+                                 | will function, but qL will not be considered as a possible phase.
+
+                                 |--------------------------------------------------------
+                                 | O2 buffer equations, these definitions create an entity
+                                 | with the O2 composition and O2 chemical potential of the
+                                 | assemblage on the RHS of the make.
+
+                                 | mthm O2 buffer
+|mthm = 6 hem - 4 mt  
+|  DQF(J/mol) = 0
+                                 | qfm O2 buffer
+|qfm = 2 mt + 3 q  -3 fa
+|  DQF(J/mol) = 0
+                                 | EMOG O2 buffer
+|emog = -1 fo - 2 gph + 1 mag + 1/2 en 
+|  DQF(J/mol) = 0
+                                 | ffm O2 buffer
+|ffm = -6 fa + 3 fs + 2 mt       
+|  DQF(J/mol) = 0 |0
+                                 | iron fa fs O2 buffer
+|fff = 2 fa - 2 iron - 1 fs         
+|  DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | SiO2 buffer equations, these definitions create an entity
+                                 | with the SiO2 composition and SiO2 chemical potential of the
+                                 | assemblage on the RHS of the make.
+
+                                 |ky + co silica buffer
+|kyco = 1 ky - 1 cor
+|  DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | CO2 buffer equations, these definitions create an entity
+                                 | with the CO2 composition and CO2 chemical potential of the
+                                 | assemblage on the RHS of the make.
+
+                                 |sphene + cc + ru + q CO2 buffer
+|tcrq = 1 cc + 1 ru + 1 q - 1 sph
+|  DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | Generic HP liquid endmembers. Because these occur in 
+                                 | many melt models no DQF is specified here and the "true"
+                                 | DQF must be added in the solution model. JADC 2/2026
+siL_q = 8/5 silL
+       DQF(J/mol) = 0
+foL_q = 2 foL
+       DQF(J/mol) = 0
+faL_q = 2 faL
+       DQF(J/mol) = 0
+fo1L_q = 1 foL
+       DQF(J/mol) = 0
+fa1L_q = 1 faL
+       DQF(J/mol) = 0
+qL_q  = 4 qL
+       DQF(J/mol) = 0
+q2L_q = 2 qL
+       DQF(J/mol) = 0
+q3L_q = 3 qL
+       DQF(J/mol) = 0
+wiL_q = 2 wiL
+       DQF(J/mol) = 0
+hmL_q = 1/2 hemL
+       DQF(J/mol) = 0
+kjL_q = 1 kspL - 1 qL
+       DQF(J/mol) = 0
+jdL_q = 1 abL - 1 qL
+       DQF(J/mol) = 0
+ekL_q = 1/2 eskL
+       DQF(J/mol) = 0
+tiL_q = 1/2 ruL
+       DQF(J/mol) = 0
+neL_q = 1 abL - 2 qL
+       DQF(J/mol) = 0
+diL_q  = 1 diL
+       DQF(J/mol) = 0
+woL_q  = 1 woL
+       DQF(J/mol) = 0
+silL_q  = 1 silL
+       DQF(J/mol) = 0
+wL_q    = 1 h2oL
+       DQF(J/mol) = 0
+ctL_q = 1 anL - 1 qL
+       DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for Opx:
+odi_q   = 1 di
+           DQF(J/mol) = 0
+ojd_q   = 1 jd
+           DQF(J/mol) = 0
+obuf_q  = 1 mgts + 1/2 per + 1/2 ru - 1/2 cor 
+           DQF(J/mol) = 0
+macm_q  = 1 mgts + 1 acm - 1 jd  | mess in HP models
+           DQF(J/mol) = 0
+cren_q  = 1 mgts + 1 kos - 1 jd
+           DQF(J/mol) = 0
+cren1_q = 1 en + 1 cats + 1 kos - 1 jd - 1 di
+           DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | specific makes for Opx:
+                                 | ferric Opx(HP)
+mots  = 1 mgts - 1/2 cor + 1/2 hem
+       22d3
+                                 | ferric Opx(W)
+mots1    = 1 mgts + 1/2  andr  - 1/2 gr
+       DQF(J/mol) = 2d3
+                                 | ferric Opx(JH)
+oen   = 1 mgts + 1 acm - 1 jd
+       DQF(J/mol) = -15d3 + 0.15 * p_bar
+                                 | Mn Opx(W) 
+mnopx = 2 pxmn
+       DQF(J/mol) = 6680
+                                 |--------------------------------------------------------
+                                 | generic makes for Cpx:
+cen_q   = 1 en
+           DQF(J/mol) = 0
+cfs_q   = 1 fs
+           DQF(J/mol) = 0
+cess_q  = 1 cats + 1 acm - 1 jd
+           DQF(J/mol) = 0
+crdi_q  = 1 cats + 1 kos - 1 jd
+           DQF(J/mol) = 0
+mcbuf_q = 1 cats + 1/2 per + 1/2 ru -1/2 cor
+           DQF(J/mol) = 0
+kjd_q   = 1 jd + 1 san - 1 abh
+           DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for hydoxylated ultramafic minerals
+atgts_q = 4 clin + 9/17 atg - 24/17 br
+    DQF(J/mol) = 0
+
+fatg_q  = 1 atg - 16 ta + 16 fta
+    DQF(J/mol) = 0
+
+atgAl_q = 1 atg - 17 ta + 17 tats
+     DQF(J/mol) = 0
+
+f3atg_q = 1 atg - 17 ta + 17 tats - 8.5 gr + 8.5 andr
+     DQF(J/mol) = 0
+
+fbr_q   = 1 br - 1/3 ta + 1/3 fta
+    DQF(J/mol) = 0
+ 
+fchum_q = 1 chum - 3 ta + 3 fta
+    DQF(J/mol) = 0
+ 
+fphA_q  = 1 phA - 7/3 ta + 7/3 fta
+    DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for clinoamphibole
+ts_q    = 1 ts
+           DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | specific makes for clinoamphibole
+                                 | Green et al., JMG, 2016 
+mrbG  = 1 gl - 1 gr + 1 andr
+   DQF = 0
+kprg  = 1 mu - 1 pa + 1 parg
+   DQF = -7060 + 20 * T_K
+tts   = -2 dsp + 2 ru + 1 ts
+   DQF =   95000
+                                 |--------------------------------------------------------
+                                 | generic makes for orthoamphibole (Diener et al. 2011)
+mrb_q   = 1 gl - 2 jd +2 acm
+    DQF(J/mol) = 0
+mpa_q   = 1 parg - 1 tr +1 anth
+    DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for garnet
+kho_q    = 1 py - 1 gr + 1 andr
+    DQF(J/mol) = 0
+
+tig_q     = 1 py + 1/2 per + 1/2 ru - 1/2 cor
+    DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for biotite
+                                 | Ti-biotite, Bi(W)
+tbi_q = 1 phl - 1 br + 1 ru 
+       DQF(J/mol) = 0
+                                 | Ferri-biotite, Bi(W)
+fbi_q = 1 east - 1/2 gr + 1/2 andr
+       DQF(J/mol) = 0
+                                 | Fe3+ Biotite, Bio(TCC)
+f3b_q = 1 east - 1/2 cor + 1/2 hem
+       DQF(J/mol) = 0
+                                 | G25 make for Bio(HGP), formerly fbi_q
+fbi1_q  = 1 east + 1 acm - 1 jd
+       DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | Generic makes for Holland et al., 2013; dx.doi.org/10.1093/petrology/egt035
+                                 | mantle transition zone mineralogical model. Waste of space and resources.
+nacfb_q = 1 nacf
+       DQF(J/mol) = 0
+mfpv_q = 1 fpv
+       DQF(J/mol) = 0
+mcpv_q = 1 cpv
+       DQF(J/mol) = 0
+mnpv_q = 1 npv
+       DQF(J/mol) = 0
+cmpv_q = 1 mpv
+       DQF(J/mol) = 0
+cfpv_q = 1 fpv
+       DQF(J/mol) = 0
+capv_q = 1 apv
+       DQF(J/mol) = 0
+cnpv_q = 1 npv
+       DQF(J/mol) = 0
+fcor_q = 1 mcor + 1 fak - 1 mak   | FeSi corundum
+       DQF(J/mol) = 0
+hmgts  = 1 mgts + 1 hen - 1 en
+       DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | specific Make definitions for Kelsey & Powell (JMG, 2011) Zr 
+                                 | melting relations. JADC, 2/6/12
+
+zr8L = 2 zrc                     | Zr-melt endmember
+       DQF(J/mol) = 69e3
+zrg  = 1 gr + 3 zrc - 6 q        | Zr garnet endmember
+       DQF(J/mol) = 96e3 0.165e3 2.7
+zrru = 1 bdy                     | Zr rutile endmember
+       52.84e3 -0.01829e3 -0.074
+                                 |--------------------------------------------------------
+                                 | generic make definitions for White et al. (JMG 32:261-286, 2014) models
+f3cl_q = 1 clin - 1/2 gr + 1/2 andr
+       DQF(J/mol) = 0
+                                 | specific make definitions for White et al. (JMG 32:261-286, 2014) models
+fmu = 1 mu + 1/2 andr - 1/2 gr
+       DQF(J/mol) = 25d3
+ctdo = 1 mctd + 1/4 andr - 1/4 gr
+       DQF(J/mol) = 25d3
+msto   = 1 andr  -1 gr  + 1 mst
+       DQF(J/mol) = 9d3
+mstt   = 1 mst - 1 cor   +3/2   ru
+       DQF(J/mol) = 13d3
+ospr = 1/2 andr - 1/2 gr + 1 spr5
+       DQF(J/mol) = -16d3
+                                 |--------------------------------------------------------
+                                 | Ti phengite endmember for Auzanneau et al. (CMP 159:1-24, 2010) mica model
+                                 | Gdqf corrected from -482876. to -13469.8 J/mol, D. Dolejs, Mar 6, 2010.
+|tip = 1 fcel + 1 geik - 1/2 fs
+|-13469.8  -14.694 .84
+                                 |--------------------------------------------------------
+                                 | Ettore Franzolin specific makes for ternary carbonate 
+|odo = 1/2 mag 1/2 cc
+|-1000
+|oank = 1/4 sid 1/2 cc 1/4 mag
+|-750
+                                 |--------------------------------------------------------
+                                 | ordered dolmite specific make for H&P dolomite model
+|odo = 1/2 mag + 1/2 cc
+|-13.5d3
+                                 |-------------------------------------------------------
+                                 | specific make for unpublished thermocalc scapolite model
+coma = 3 ab + 1 cc
+       DQF(J/mol) = 25000.
+                                 |-------------------------------------------------------
+                                 | Make definitions for the Smye et al (JMG, 2011, 28:753-768)
+                                 | models for Mica, Carpholite and Chloritoid, to use these
+                                 | make definitions delete the leading "|" comment characters:
+ocar  = 1 fcar + 1/2 hem - 1/2 cor
+      DQF(J/mol) = 45d3
+mncar = 1 mcar + 1 mang - 1 per   | corrected from 1 mcar + 1 mang - 1/2 cor, G Hoschek, 10/24/11.
+      DQF(J/mol) = 30d3
+                                 |-------------------------------------------------------
+                                 | Special makes for Golubkova et al. data in FOCver.dat and 
+                                 | metal_mix.dat                                  
+| fcrm = 1 herc 1 mcrm -1 sp 
+|        DQF(J/mol) = 0
+FeCA1 = 1 FeA1 1 CA1 
+        DQF(J/mol) = 77207 -15.877 0 
+FeCA2 = 1 FeA2 3 CA2 
+       DQF(J/mol) =  322050 75.667 0 
+Cliq = 1 Cliq1 1 Cliq2 
+       DQF(J/mol) = 0
+
+end_makes
+ 
+end
+ 
+fo       EoS = 8 | H = -2172474      forsterite
+MgO(2)SiO2(1)
+GH = -2200828  S0 = 95.1  V0 = 4.366  
+c1 = 233.3  c2 = .1494E-2  c3 = -603800 c5 = -1869.7  
+b1 = .285E-4  b5 = 531.1171  b6 = 1285000  b7 = -.2988327E-5  b8 = 3.84  
+dH = 289.700 
+end
+
+ 
+fa       EoS = 8 | H = -1477408      fayalite
+SiO2(1)FeO(2)
+GH = -1522429  S0 = 151  V0 = 4.631  
+c1 = 201.1  c2 = .1733E-1  c3 = -1960600  c5 = -900.9  
+b1 = .282E-4  b5 = 379.7022  b6 = 1256000  b7 = -.3726115E-5  b8 = 4.68  
+dH = 398.200 
+end
+
+ 
+teph     EoS = 8 | H = -1733884      tephroite
+SiO2(1)MnO(2)
+GH = -1780366  S0 = 155.9  V0 = 4.899  
+c1 = 219.6  c3 = -1292700  c5 = -1308.3  
+b1 = .286E-4  b5 = 370.4448  b6 = 1256000  b7 = -.3726115E-5  b8 = 4.68  
+dH = 1038.50 
+end
+
+ 
+lrn      EoS = 8 | H = -2306906      larnite
+SiO2(1)CaO(2)
+GH = -2344950  S0 = 127.6  V0 = 5.16  
+c1 = 247.5  c2 = -.3206E-2  c5 = -2051.9  
+b1 = .29E-4  b5 = 431.1559  b6 = 985000 b7 = -.413198E-5  b8 = 4.07  
+dH = 768.800 
+transition = 1  type = 4  t1 = 1710 t2 = 10.03  t3 = .5E-1  
+end
+
+ 
+mont     EoS = 8 | H = -2251194      monticellite
+MgO(1)SiO2(1)CaO(1)
+GH = -2283841  S0 = 109.5  V0 = 5.148  
+c1 = 250.7  c2 = -.10433E-1  c3 = -797200 c5 = -1996.1  
+b1 = .287E-4  b5 = 481.6406  b6 = 1134000  b7 = -.3412698E-5  b8 = 3.87  
+dH = 252.700 
+end
+
+ 
+chum     EoS = 8 | H = -9613094      clinohumite-OH
+MgO(9)SiO2(4)H2O(1)
+GH = -9744429  S0 = 440.5  V0 = 19.801  
+c1 = 1071  c2 = -.16533E-1  c3 = -7899600  c5 = -7373.9  
+b1 = .32E-4  b5 = 537.4843  b6 = 1199000  b7 = -.381985E-5  b8 = 4.58  
+dH = 5536.80 
+end
+
+ 
+chdr     EoS = 8 | H = -5254676      chondrodite-OH
+MgO(5)SiO2(2)H2O(1)
+GH = -5332195  S0 = 260 V0 = 11.084  
+c1 = 625  c2 = -.1088E-2  c3 = -2259900  c5 = -4910.7  
+b1 = .182E-4  b5 = 528.5176  b6 = 1161000  b7 = -.4134367E-5  b8 = 4.8  
+dH = 2019.80 
+end
+
+ 
+mwd      EoS = 8 | H = -2138086      Mg-wadsleyite
+MgO(2)SiO2(1)
+GH = -2166082  S0 = 93.9  V0 = 4.051  
+c1 = 208.7  c2 = .3942E-2  c3 = -1709500  c5 = -1302.8  
+b1 = .237E-4  b5 = 535.703  b6 = 1726000  b7 = -.2224797E-5  b8 = 3.84  
+dH = 402.100 
+end
+
+ 
+fwd      EoS = 8 | H = -1467539      Fe-Wadsleyite
+SiO2(1)FeO(2)
+GH = -1511069  S0 = 146  V0 = 4.321  
+c1 = 201.1  c2 = .1733E-1  c3 = -1960600  c5 = -900.9  
+b1 = .273E-4  b5 = 389.6378  b6 = 1690000  b7 = -.2573964E-5  b8 = 4.35  
+dH = 837.300 
+end
+
+ 
+mrw      EoS = 8 | H = -2126795      Mg-ringwoodite
+MgO(2)SiO2(1)
+GH = -2153628  S0 = 90 V0 = 3.949  
+c1 = 213.3  c2 = .269E-2  c3 = -1410400  c5 = -1495.9  
+b1 = .201E-4  b5 = 551.1697  b6 = 1781000  b7 = -.2442448E-5  b8 = 4.35  
+dH = 415.100 
+end
+
+ 
+frw      EoS = 8 | H = -1471387      Fe-ringwoodite_gamma
+SiO2(1)FeO(2)
+GH = -1513128  S0 = 140 V0 = 4.203  
+c1 = 166.8  c2 = .4261E-1  c3 = -1705400  c5 = -541.4  
+b1 = .222E-4  b5 = 402.2693  b6 = 1977000  b7 = -.2488619E-5  b8 = 4.92  
+dH = 506.800 
+end
+
+ 
+mpv      EoS = 8 | H = -1442136      MgSiO3_perovskite
+MgO(1)SiO2(1)
+GH = -1460800  S0 = 62.6  V0 = 2.445  
+c1 = 149.3  c2 = .2918E-2  c3 = -2983000  c5 = -799.1  
+b1 = .187E-4  b5 = 560.9705  b6 = 2510000  b7 = -.1649402E-5  b8 = 4.14  
+dH = 234.800 
+end
+
+ 
+fpv      EoS = 8 | H = -1082880      FeSiO3_perovskite
+SiO2(1)FeO(1)
+GH = -1111204  S0 = 95  V0 = 2.534  
+c1 = 133.2  c2 = .1083E-1  c3 = -3661400  c5 = -314.7  
+b1 = .187E-4  b5 = 418.0818  b6 = 2810000  b7 = -.147331E-5  b8 = 4.14  
+dH = 619.200 
+end
+
+ 
+apv      EoS = 8 | H = -1619817      Al-perovskite
+Al2O3(1)
+GH = -1635261  S0 = 51.8  V0 = 2.54  
+c1 = 139.5  c2 = .589E-2  c3 = -2460600  c5 = -589.2  
+b1 = .18E-4  b5 = 633.0952  b6 = 2030000  b7 = -.1970443E-5  b8 = 4  
+dH = 547.600 
+end
+
+ 
+npv      EoS = 8 | H = -1365000      NaAl-perovskite
+Na2O(.25)Al2O3(.25)SiO2(1)
+GH = -1383783  S0 = 63  V0 = 2.334  
+c1 = 135  c2 = .846E-2  c3 = -1850300  c5 = -600.8  
+b1 = .18E-4  b5 = 558.6134  b6 = 2030000  b7 = -.1970443E-5  b8 = 4  
+dH = 111742    
+end
+
+ 
+ppv      EoS = 8 | H = -1418162      MgSiO3_postperovskite
+MgO(1)SiO2(1)
+GH = -1436170  S0 = 60.4  V0 = 2.442  
+c1 = 149.3  c2 = .2918E-2  c3 = -2983000  c5 = -799.1  
+b1 = .187E-4  b5 = 574.2981  b6 = 2312000  b7 = -.1730104E-5  b8 = 4  
+dH = 600.300 
+end
+
+ 
+cpv      EoS = 8 | H = -1533665      CaSiO3_perovskite
+SiO2(1)CaO(1)
+GH = -1555877  S0 = 74.5  V0 = 2.745  
+c1 = 159.3  c3 = -967300 c5 = -1075.4  
+b1 = .2E-4  b5 = 498.4067  b6 = 2360000  b7 = -.1652542E-5  b8 = 3.9  
+dH = 1275.50 
+end
+
+ 
+mak      EoS = 8 | H = -1489549      akimotoite
+MgO(1)SiO2(1)
+GH = -1507229  S0 = 59.3  V0 = 2.635  
+c1 = 147.8  c2 = .2015E-2  c3 = -2395000  c5 = -801.8  
+b1 = .212E-4  b5 = 581.2022  b6 = 2110000  b7 = -.2156398E-5  b8 = 4.55  
+dH = 181.800 
+end
+
+ 
+fak      EoS = 8 | H = -1142119      Fe-akimotoite
+SiO2(1)FeO(1)
+GH = -1169400  S0 = 91.5  V0 = 2.76  
+c1 = 100.3  c2 = .13328E-1  c3 = -4364900  c5 = 419.8  
+b1 = .212E-4  b5 = 429.9111  b6 = 2180000  b7 = -.2087156E-5  b8 = 4.55  
+dH = 98838.2    
+end
+
+ 
+maj      EoS = 8 | H = -6042015      majorite
+MgO(4)SiO2(4)
+GH = -6119594  S0 = 260.2  V0 = 11.457  
+c1 = 713.6  c2 = -.997E-3  c3 = -1158200  c5 = -6622.3  
+b1 = .183E-4  b5 = 546.838  b6 = 1600000  b7 = -.285E-5  b8 = 4.56  
+dH = 5275.60 
+end
+
+ 
+nagt     EoS = 8 | H = -5985000      NaMg-garnet
+Na2O(.5)MgO(2)Al2O3(.5)SiO2(4)
+GH = -6062698  S0 = 260.6  V0 = 11.09  
+c1 = 620.8  c2 = .112E-1  c3 = -3755900  c5 = -4421.3  
+b1 = .21E-4  b5 = 546.2763  b6 = 1700000  b7 = -.2352941E-5  b8 = 4  
+dH = 27935.4    
+end
+
+ 
+py       EoS = 8 | H = -6284651      pyrope
+MgO(3)Al2O3(1)SiO2(3)
+GH = -6364257  S0 = 267  V0 = 11.313  
+c1 = 633.5  c3 = -5196100  c5 = -4315.2  
+b1 = .237E-4  b5 = 537.4432  b6 = 1743000  b7 = -.232358E-5  b8 = 4.05  
+dH = 993.500 
+end
+
+ 
+alm      EoS = 8 | H = -5266991      almandine
+Al2O3(1)SiO2(3)FeO(3)
+GH = -5367378  S0 = 336.7  V0 = 11.525  
+c1 = 716.2  c2 = -.1241E-1  c3 = -3160800  c5 = -5863.5  
+b1 = .212E-4  b5 = 456.971  b6 = 1900000  b7 = -.1568421E-5  b8 = 2.98  
+dH = 1376.30 
+end
+
+ 
+spss     EoS = 8 | H = -5692332      spessartine
+Al2O3(1)SiO2(3)MnO(3)
+GH = -5792302  S0 = 335.3  V0 = 11.792  
+c1 = 646.9  c3 = -4525800  c5 = -4452.8  
+b1 = .227E-4  b5 = 458.3495  b6 = 1740000  b7 = -.383908E-5  b8 = 6.68  
+dH = 9185.50 
+end
+
+ 
+gr       EoS = 8 | H = -6642506      grossular
+Al2O3(1)SiO2(3)CaO(3)
+GH = -6718534  S0 = 255  V0 = 12.535  
+c1 = 626  c3 = -5779200  c5 = -4002.9  
+b1 = .22E-4  b5 = 554.247  b6 = 1720000  b7 = -.3215116E-5  b8 = 5.53  
+dH = 1977.20 
+end
+
+ 
+andr     EoS = 8 | H = -5768971      andradite
+SiO2(3)CaO(3)FeO(2)O2(.5)
+GH = -5863306  S0 = 316.4  V0 = 13.204  
+c1 = 638.6  c3 = -4955100  c5 = -3989.2  
+b1 = .286E-4  b5 = 477.8077  b6 = 1588000  b7 = -.3576826E-5  b8 = 5.68  
+dH = 2256.60 
+end
+
+ 
+ski      EoS = 8 | H = -4330858      skiagite
+SiO2(3)FeO(5)O2(.5)
+GH = -4451132  S0 = 403.4  V0 = 12.144  
+c1 = 689.9  c3 = -2948600  c5 = -5030.3  
+b1 = .285E-4  b5 = 399.6994  b6 = 1574000  b7 = -.4256671E-5  b8 = 6.7  
+dH = 3637.90 
+end
+
+ 
+knor     EoS = 8 | H = -5701413      knorringite_Mg3Cr2Si3O
+MgO(3)SiO2(3)Cr2O3(1)
+GH = -5791454  S0 = 302  V0 = 11.738  
+c1 = 613  c2 = .3606E-2  c3 = -4178000  c5 = -3729.4  
+b1 = .237E-4  b5 = 493.779  b6 = 1534000  b7 = -.2829205E-5  b8 = 4.34  
+dH = 3648.00 
+end
+
+ 
+uv       EoS = 8 | H = -6057807      uvarovite_Ca3Cr2Si3O12
+SiO2(3)CaO(3)Cr2O3(1)
+GH = -6153483  S0 = 320.9  V0 = 13.077  
+c1 = 605.1  c2 = .3606E-2  c3 = -4760600  c5 = -3417.1  
+b1 = .22E-4  b5 = 473.0265  b6 = 1620000  b7 = -.2901235E-5  b8 = 4.7  
+dH = 2765.60 
+end
+
+ 
+osma     EoS = 8 | H = -0.1489572E+08  osumilite_Mg-Al
+MgO(2)Al2O3(2.5)SiO2(10)K2O(.5)
+GH = -.1512083E+08  S0 = 755  V0 = 37.893  
+c1 = 1540.7  c2 = -.11359E-1  c3 = -.1033900E+08  c5 = -11699  
+b1 = .47E-5  b5 = 479.7654  b6 = 1290000  b7 = -.3178295E-5  b8 = 4.1  
+dH = 11088.0 
+end
+
+ 
+osmm     EoS = 8 | H = -0.1478634E+08  osumilite_Mg-Mg
+MgO(3)Al2O3(1.5)SiO2(11)K2O(.5)
+GH = -.1500697E+08  S0 = 740 V0 = 38.44  
+c1 = 1525.5  c2 = -.10267E-1  c3 = -.1053800E+08  c5 = -11337  
+b1 = .47E-5  b5 = 486.625  b6 = 1290000  b7 = -.3178295E-5  b8 = 4.1  
+dH = 11987.5    
+end
+
+ 
+osfa     EoS = 8 | H = -0.1421476E+08  osumilite_Fe-Al
+Al2O3(2.5)SiO2(10)K2O(.5)FeO(2)
+GH = -.1444731E+08  S0 = 780 V0 = 38.45  
+c1 = 1558.6  c2 = -.11359E-1  c3 = -9476500  c5 = -11845  
+b1 = .49E-5  b5 = 468.7528  b6 = 1290000  b7 = -.3178295E-5  b8 = 4.1  
+dH = 12298.2    
+end
+
+ 
+vsv      EoS = 8 | H = -0.4234350E+08  vesuvianite
+MgO(2)Al2O3(5.5)SiO2(18)CaO(19)H2O(4.5)
+GH = -.4290700E+08  S0 = 1890 V0 = 85.2  
+c1 = 4488  c2 = -.57952E-1  c3 = -.2226930E+08  c5 = -33478  
+b1 = .275E-4  b5 = 525.6078  b6 = 1255000  b7 = -.3824701E-5  b8 = 4.8  
+dH = 75169.9    
+end
+
+ 
+and      EoS = 8 | H = -2588280      andalusite
+Al2O3(1)SiO2(1)
+GH = -2615919  S0 = 92.7  V0 = 5.153  
+c1 = 277.3  c2 = -.6588E-2  c3 = -1914100  c5 = -2265.6  
+b1 = .181E-4  b5 = 589.9875  b6 = 1442000  b7 = -.4778086E-5  b8 = 6.89  
+dH = 354.600 
+end
+
+ 
+ky       EoS = 8 | H = -2592586      kyanite
+Al2O3(1)SiO2(1)
+GH = -2617482  S0 = 83.5  V0 = 4.414  
+c1 = 279.4  c2 = -.7124E-2  c3 = -2055600  c5 = -2289.4  
+b1 = .192E-4  b5 = 630.1881  b6 = 1601000  b7 = -.2529669E-5  b8 = 4.05  
+dH = 354.100 
+end
+
+ 
+sill     EoS = 8 | H = -2585390      sillimanite
+Al2O3(1)SiO2(1)
+GH = -2613834  S0 = 95.4  V0 = 4.986  
+c1 = 280.2  c2 = -.69E-2  c3 = -1375700  c5 = -2399.4  
+b1 = .112E-4  b5 = 579.1451  b6 = 1640000  b7 = -.3085366E-5  b8 = 5.06  
+dH = 356.500 
+transition = 1  type = 5  t1 = 4750 t2 = .1E-1  t3 = 4750 t4 = .1E-1  t5 = 1  t6 = .25  
+end
+
+ 
+smul     EoS = 8 | H = -2568979      Si-mullite
+Al2O3(1)SiO2(1)
+GH = -2599241  S0 = 101.5  V0 = 4.987  
+c1 = 280.2  c2 = -.69E-2  c3 = -1375700  c5 = -2399.4  
+b1 = .136E-4  b5 = 556.058  b6 = 1740000  b7 = -.2298851E-5  b8 = 4  
+dH = 377.000 
+end
+
+ 
+amul     EoS = 8 | H = -2485682      Al-mullite
+Al2O3(1.25)SiO2(.5)
+GH = -2519373  S0 = 113  V0 = 5.083  
+c1 = 244.8  c2 = .968E-3  c3 = -2533300  c5 = -1641.6  
+b1 = .136E-4  b5 = 505.9788  b6 = 1740000  b7 = -.2298851E-5  b8 = 4  
+dH = 640.600 
+end
+
+ 
+tpz      EoS = 8 | H = -2898413      hydroxy-topaz
+Al2O3(1)SiO2(1)H2O(1)
+GH = -2928377  S0 = 100.5  V0 = 5.339  
+c1 = 351.7  c2 = -.112E-1  c3 = -3908000  c5 = -2511.8  
+b1 = .157E-4  b5 = 682.8295  b6 = 1315000  b7 = -.3087452E-5  b8 = 4.06  
+dH = 793.200 
+end
+
+ 
+mst      EoS = 8 | H = -0.2512073E+08  Mg-staurolite
+MgO(4)Al2O3(9)SiO2(7.5)H2O(2)
+GH = -.2539204E+08  S0 = 910 V0 = 44.26  
+c1 = 2820.5  c2 = -.59366E-1  c3 = -.1377400E+08  c5 = -24126  
+b1 = .181E-4  b5 = 604.1244  b6 = 1684000  b7 = -.2404988E-5  b8 = 4.05  
+dH = 30481.4    
+end
+
+ 
+fst      EoS = 8 | H = -0.2375228E+08  Fe-staurolite
+Al2O3(9)SiO2(7.5)FeO(4)H2O(2)
+GH = -.2405341E+08  S0 = 1010 V0 = 44.88  
+c1 = 2880 c2 = -.56595E-1  c3 = -.1064200E+08  c5 = -25373  
+b1 = .183E-4  b5 = 564.7642  b6 = 1800000  b7 = -.2644444E-5  b8 = 4.76  
+dH = 30966.5    
+end
+
+ 
+mnst     EoS = 8 | H = -0.2424045E+08  Mn-staurolite
+Al2O3(9)SiO2(7.5)MnO(4)H2O(2)
+GH = -.2454874E+08  S0 = 1034  V0 = 45.46  
+c1 = 2873.3  c2 = -.89064E-1  c3 = -.1268800E+08  c5 = -24749  
+b1 = .209E-4  b5 = 556.0692  b6 = 1800000  b7 = -.2644444E-5  b8 = 4.76  
+dH = 62669.7    
+end
+
+ 
+mctd     EoS = 8 | H = -3548918      Mg-chloritoid
+MgO(1)Al2O3(1)SiO2(1)H2O(1)
+GH = -3592448  S0 = 146  V0 = 6.875  
+c1 = 417.4  c2 = -.3771E-2  c3 = -2920600  c5 = -3417.8  
+b1 = .263E-4  b5 = 601.898  b6 = 1456000  b7 = -.2788462E-5  b8 = 4.06  
+dH = 444.500 
+end
+
+ 
+fctd     EoS = 8 | H = -3208140      Fe-chloritoid
+Al2O3(1)SiO2(1)FeO(1)H2O(1)
+GH = -3257931  S0 = 167  V0 = 6.98  
+c1 = 416.1  c2 = -.3477E-2  c3 = -2835900  c5 = -3360.3  
+b1 = .28E-4  b5 = 551.4837  b6 = 1456000  b7 = -.2788462E-5  b8 = 4.06  
+dH = 508.800 
+end
+
+ 
+mnctd    EoS = 8 | H = -3335214      Mn-chloritoid
+Al2O3(1)SiO2(1)MnO(1)H2O(1)
+GH = -3384707  S0 = 166  V0 = 7.175  
+c1 = 464.4  c2 = -.12654E-1  c3 = -1147200  c5 = -4341  
+b1 = .26E-4  b5 = 553.6921  b6 = 1456000  b7 = -.2788462E-5  b8 = 4.06  
+dH = 2553.50 
+end
+
+ 
+merw     EoS = 8 | H = -4545595      merwinite
+MgO(1)SiO2(2)CaO(3)
+GH = -4621057  S0 = 253.1  V0 = 9.847  
+c1 = 417.5  c2 = .8117E-2  c3 = -2923000  c5 = -2320.3  
+b1 = .319E-4  b5 = 433.7936  b6 = 1200000  b7 = -.3391667E-5  b8 = 4.07  
+dH = 1738.20 
+end
+
+ 
+spu      EoS = 8 | H = -5846651      spurrite
+SiO2(2)CaO(5)CO2(1)
+GH = -5945637  S0 = 332  V0 = 14.697  
+c1 = 614.1  c2 = -.3508E-2  c3 = -2493100  c5 = -4168  
+b1 = .34E-4  b5 = 444.7663  b6 = 950000 b7 = -.4305263E-5  b8 = 4.09  
+dH = 4698.50 
+end
+
+ 
+zo       EoS = 8 | H = -6895573      zoisite
+Al2O3(1.5)SiO2(3)CaO(2)H2O(.5)
+GH = -6984422  S0 = 298  V0 = 13.575  
+c1 = 662  c2 = .10416E-1  c3 = -6006400  c5 = -4260.7  
+b1 = .312E-4  b5 = 532.187  b6 = 1044000  b7 = -.3831418E-5  b8 = 4  
+dH = 1487.20 
+end
+
+ 
+cz       EoS = 8 | H = -6894828      clinozoisite
+Al2O3(1.5)SiO2(3)CaO(2)H2O(.5)
+GH = -6984571  S0 = 301  V0 = 13.63  
+c1 = 630.9  c2 = .13693E-1  c3 = -6645800  c5 = -3731.1  
+b1 = .233E-4  b5 = 528.5805  b6 = 1197000  b7 = -.3400167E-5  b8 = 4.07  
+dH = 1492.80 
+end
+
+ 
+ep       EoS = 8 | H = -6473114      epidote(ordered)
+Al2O3(1)SiO2(3)CaO(2)FeO(1)O2(.25)H2O(.5)
+GH = -6567031  S0 = 315  V0 = 13.92  
+c1 = 613.3  c2 = .2207E-1  c3 = -7160000  c5 = -2987.7  
+b1 = .234E-4  b5 = 512.3763  b6 = 1340000  b7 = -.2985075E-5  b8 = 4  
+dH = 1247.80 
+end
+
+ 
+fep      EoS = 8 | H = -6028352      Fe-epidote
+Al2O3(.5)SiO2(3)CaO(2)FeO(2)O2(.5)H2O(.5)
+GH = -6126443  S0 = 329  V0 = 14.21  
+c1 = 584.7  c2 = .30447E-1  c3 = -7674200  c5 = -2244.3  
+b1 = .231E-4  b5 = 497.1361  b6 = 1513000  b7 = -.2643754E-5  b8 = 4  
+dH = 1415.10 
+end
+
+ 
+pmt      EoS = 8 | H = -6542317      piemontite_(ordered)
+Al2O3(1)SiO2(3)CaO(2)MnO(1)O2(.25)H2O(.5)
+GH = -6643688  S0 = 340 V0 = 13.82  
+c1 = 569.8  c2 = .2779E-1  c3 = -5442900  c5 = -2812.6  
+b1 = .238E-4  b5 = 485.7831  b6 = 1197000  b7 = -.3400167E-5  b8 = 4.07  
+dH = 6826.40 
+end
+
+ 
+law      EoS = 8 | H = -4868142      lawsonite
+Al2O3(1)SiO2(2)CaO(1)H2O(2)
+GH = -4936418  S0 = 229  V0 = 10.132  
+c1 = 687.8  c2 = .1566E-2  c3 = 375900 c5 = -7179.2  
+b1 = .265E-4  b5 = 575.148  b6 = 1229000  b7 = -.44345E-5  b8 = 5.45  
+dH = 571.800 
+end
+
+ 
+mpm      EoS = 8 | H = -0.1438571E+08  pumpellyite_(MgAl)
+MgO(1)Al2O3(2.5)SiO2(6)CaO(4)H2O(3.5)
+GH = -.1457324E+08  S0 = 629  V0 = 29.55  
+c1 = 1720.8  c2 = -.24928E-1  c3 = -5998700  c5 = -14620.3  
+b1 = .248E-4  b5 = 566.5483  b6 = 1615000  b7 = -.250774E-5  b8 = 4.05  
+dH = 5202.80 
+end
+
+ 
+fpm      EoS = 8 | H = -0.1403301E+08  pumpellyite_(FeAl)
+Al2O3(2.5)SiO2(6)CaO(4)FeO(1)H2O(3.5)
+GH = -.1422889E+08  S0 = 657  V0 = 29.68  
+c1 = 1737.2  c2 = -.24582E-1  c3 = -5161100  c5 = -14963  
+b1 = .249E-4  b5 = 550.4506  b6 = 1615000  b7 = -.250774E-5  b8 = 4.05  
+dH = 6206.40 
+end
+
+ 
+jgd      EoS = 8 | H = -0.1180785E+08  julgoldite_(FeFe
+SiO2(6)CaO(4)FeO(6)O2(1.25)H2O(3.5)
+GH = -.1205531E+08  S0 = 830 V0 = 31.08  
+c1 = 1795.4  c2 = -.37986E-1  c3 = -4455700  c5 = -14888  
+b1 = .249E-4  b5 = 468.247  b6 = 1615000  b7 = -.250774E-5  b8 = 4.05  
+dH = 67318.8    
+end
+
+ 
+geh      EoS = 8 | H = -3991724      gehlenite
+Al2O3(1)SiO2(1)CaO(2)
+GH = -4050907  S0 = 198.5  V0 = 9.024  
+c1 = 405.7  c2 = -.7099E-2  c3 = -1188300  c5 = -3174.4  
+b1 = .223E-4  b5 = 462.8037  b6 = 1080000  b7 = -.3777778E-5  b8 = 4.08  
+dH = 1595.80 
+transition = 1  type = 5  t1 = 7510 t2 = .9E-1  t3 = 7500 t4 = .9E-1  t5 = 1  t6 = .8  
+end
+
+ 
+ak       EoS = 8 | H = -3865640      akermanite
+MgO(1)SiO2(2)CaO(2)
+GH = -3928997  S0 = 212.5  V0 = 9.254  
+c1 = 385.4  c2 = .3209E-2  c3 = -247500 c5 = -2889.9  
+b1 = .257E-4  b5 = 440.4445  b6 = 1420000  b7 = -.2859155E-5  b8 = 4.06  
+dH = 823.100 
+end
+
+ 
+rnk      EoS = 8 | H = -3943870      rankinite
+SiO2(2)CaO(3)
+GH = -4006481  S0 = 210 V0 = 9.651  
+c1 = 372.3  c2 = -.2893E-2  c3 = -2462400  c5 = -2181.3  
+b1 = .328E-4  b5 = 444.2774  b6 = 950000 b7 = -.4305263E-5  b8 = 4.09  
+dH = 1749.90 
+end
+
+ 
+ty       EoS = 8 | H = -6368047      tilleyite
+SiO2(2)CaO(5)CO2(2)
+GH = -6484325  S0 = 390 V0 = 17.039  
+c1 = 741.7  c2 = -.5345E-2  c3 = -1434600  c5 = -5878.5  
+b1 = .342E-4  b5 = 440.0993  b6 = 950000 b7 = -.4305263E-5  b8 = 4.09  
+dH = 4644.50 
+end
+
+ 
+crd      EoS = 8 | H = -9162779      cordierite
+MgO(2)Al2O3(2)SiO2(5)
+GH = -9283261  S0 = 404.1  V0 = 23.322  
+c1 = 906.1  c3 = -7902000  c5 = -6293.4  
+b1 = .68E-5  b5 = 522.0255  b6 = 1290000  b7 = -.3178295E-5  b8 = 4.1  
+dH = 1999.30 
+transition = 1  type = 5  t1 = 36710 t2 = .1  t3 = 36700 t4 = .1  t5 = 2  t6 = 1.5  
+end
+
+ 
+hcrd     EoS = 8 | H = -9447792      hydrous-cordierite
+MgO(2)Al2O3(2)SiO2(5)H2O(1)
+GH = -9591798  S0 = 483  V0 = 23.322  
+c1 = 955.3  c3 = -8352600  c5 = -6301.2  
+b1 = .67E-5  b5 = 493.9223  b6 = 1290000  b7 = -.3178295E-5  b8 = 4.1  
+dH = 2099.20 
+transition = 1  type = 5  t1 = 36710 t2 = .1  t3 = 36700 t4 = .1  t5 = 2  t6 = 1.5  
+end
+
+ 
+fcrd     EoS = 8 | H = -8443320      Fe-cordierite
+Al2O3(2)SiO2(5)FeO(2)
+GH = -8580767  S0 = 461  V0 = 23.71  
+c1 = 924  c3 = -7039400  c5 = -6439.6  
+b1 = .67E-5  b5 = 476.1702  b6 = 1290000  b7 = -.3178295E-5  b8 = 4.1  
+dH = 2388.10 
+transition = 1  type = 5  t1 = 36710 t2 = .1  t3 = 36700 t4 = .1  t5 = 2  t6 = 1.5  
+end
+
+ 
+mncrd    EoS = 8 | H = -8691738      Mn-cordierite
+Al2O3(2)SiO2(5)MnO(2)
+GH = -8832763  S0 = 473  V0 = 24.027  
+c1 = 886.5  c3 = -8840000  c5 = -5590.4  
+b1 = .69E-5  b5 = 467.5094  b6 = 1290000  b7 = -.3178295E-5  b8 = 4.1  
+dH = 11934.7    
+transition = 1  type = 5  t1 = 36710 t2 = .1  t3 = 36700 t4 = .1  t5 = 2  t6 = 1.5  
+end
+
+ 
+phA      EoS = 8 | H = -7129505      phaseA
+MgO(7)SiO2(2)H2O(3)
+GH = -7234007  S0 = 350.5  V0 = 15.422  
+c1 = 962  c2 = -.11521E-1  c3 = -4517800  c5 = -7724.7  
+b1 = .355E-4  b5 = 574.1056  b6 = 1450000  b7 = -.28E-5  b8 = 4.06  
+dH = 3164.40 
+end
+
+ 
+phD      EoS = 8 | H = -2670427      phaseD
+MgO(1)SiO2(2)H2O(1)
+GH = -2703581  S0 = 111.2  V0 = 5.103  
+c1 = 294.6  c2 = .7944E-2  c3 = -5008700  c5 = -1335.5  
+b1 = .379E-4  b5 = 642.6939  b6 = 1650000  b7 = -.3030303E-5  b8 = 5  
+dH = 8330.80 
+end
+
+ 
+phE      EoS = 8 | H = -2931697      phaseE
+MgO(2.4)SiO2(1.2)H2O(1.2)
+GH = -2982084  S0 = 169  V0 = 6.435  
+c1 = 397.4  c2 = -.3533E-2  c3 = -1344400  c5 = -3290.2  
+b1 = .379E-4  b5 = 518.2394  b6 = 930000 b7 = -.5376344E-5  b8 = 5  
+dH = 2755.30 
+end
+
+ 
+shB      EoS = 8 | H = -9477597      superHyrdrousphaseB
+MgO(10)SiO2(3)H2O(2)
+GH = -9595664  S0 = 396  V0 = 18.615  
+c1 = 1077.7  c2 = .642E-3  c3 = -7407400  c5 = -7428.7  
+b1 = .356E-4  b5 = 599.0666  b6 = 1320000  b7 = -.4015152E-5  b8 = 5.3  
+dH = 48371.7    
+end
+
+ 
+sph      EoS = 8 | H = -2596377      sphene
+SiO2(1)CaO(1)TiO2(1)
+GH = -2634898  S0 = 129.2  V0 = 5.565  
+c1 = 227.9  c2 = .2924E-2  c3 = -3539500  c5 = -894.3  
+b1 = .158E-4  b5 = 470.8278  b6 = 1017000  b7 = -.9685349E-5  b8 = 9.85  
+dH = 862.400 
+transition = 1  type = 4  t1 = 485  t2 = .4  t3 = .5E-2  
+end
+
+ 
+cstn     EoS = 8 | H = -2483037      CaSi-Titanite
+SiO2(2)CaO(1)
+GH = -2512703  S0 = 99.5  V0 = 4.818  
+c1 = 205.6  c2 = .6034E-2  c3 = -5517700  c5 = -352.6  
+b1 = .158E-4  b5 = 563.4221  b6 = 1782000  b7 = -.2244669E-5  b8 = 4  
+dH = 2853.60 
+end
+
+ 
+zrc      EoS = 8 | H = -2035200      zircon
+SiO2(1)ZrO2(1)
+GH = -2059955  S0 = 83.03  V0 = 3.926  
+c1 = 232  c2 = -.14405E-1  c5 = -2238.2  
+b1 = .125E-4  b5 = 524.5007  b6 = 2301000  b7 = -.1755758E-5  b8 = 4.04  
+dH = 2579.80 
+end
+
+ 
+zrt      EoS = 8 | H = -1993172      ZrTiO4_in
+TiO2(1)ZrO2(1)
+GH = -2023822  S0 = 102.8  V0 = 4.42  
+c1 = 214.6  c2 = -.8226E-2  c3 = 190300 c5 = -1820.4  
+b1 = .125E-4  b5 = 451.1878  b6 = 2301000  b7 = -.1755758E-5  b8 = 4.04  
+dH = 3111.10 
+end
+
+ 
+tcn      EoS = 8 | H = -1762757      TiSiO4_in
+SiO2(1)TiO2(1)
+GH = -1786907  S0 = 81  V0 = 3.493  
+c1 = 208.6  c2 = -.3669E-2  c3 = 113000 c5 = -1906.9  
+b1 = .125E-4  b5 = 533.4002  b6 = 2301000  b7 = -.1755758E-5  b8 = 4.04  
+dH = 631.700 
+end
+
+ 
+en       EoS = 8 | H = -3090089      enstatite
+MgO(2)SiO2(2)
+GH = -3129594  S0 = 132.5  V0 = 6.262  
+c1 = 356.2  c2 = -.299E-2  c3 = -596900 c5 = -3185.3  
+b1 = .227E-4  b5 = 540.1727  b6 = 1059000  b7 = -.8168083E-5  b8 = 8.65  
+dH = 395.300 
+end
+
+ 
+pren     EoS = 8 | H = -3084427      protoenstatite
+MgO(2)SiO2(2)
+GH = -3125274  S0 = 137  V0 = 6.476  
+c1 = 356.2  c2 = -.299E-2  c3 = -596900 c5 = -3185.3  
+b1 = .23E-4  b5 = 528.1033  b6 = 1059000  b7 = -.8168083E-5  b8 = 8.65  
+dH = 396.900 
+end
+
+ 
+cen      EoS = 8 | H = -3090985      clino_enstatite
+MgO(2)SiO2(2)
+GH = -3130341  S0 = 132  V0 = 6.264  
+c1 = 306  c2 = -.3793E-2  c3 = -3041700  c5 = -1852.1  
+b1 = .211E-4  b5 = 541.5479  b6 = 1059000  b7 = -.8168083E-5  b8 = 8.65  
+dH = 396.100 
+end
+
+ 
+hen      EoS = 8 | H = -3082665      Hi-P_clinoenstatite
+MgO(2)SiO2(2)
+GH = -3121931  S0 = 131.7  V0 = 6.099  
+c1 = 356.2  c2 = -.299E-2  c3 = -596900 c5 = -3185.3  
+b1 = .226E-4  b5 = 542.3763  b6 = 1500000  b7 = -.3666667E-5  b8 = 5.5  
+dH = 397.600 
+end
+
+ 
+hfs      EoS = 8 | H = -2380492      Hi-P_clinoferrosilite
+SiO2(2)FeO(2)
+GH = -2436842  S0 = 189  V0 = 6.405  
+c1 = 398.7  c2 = -.6579E-2  c3 = 1290100  c5 = -4058  
+b1 = .237E-4  b5 = 419.7316  b6 = 1500000  b7 = -.3666667E-5  b8 = 5.5  
+dH = 621.100 
+end
+
+ 
+fs       EoS = 8 | H = -2388448      ferrosilite
+SiO2(2)FeO(2)
+GH = -2445067  S0 = 189.9  V0 = 6.592  
+c1 = 398.7  c2 = -.6579E-2  c3 = 1290100  c5 = -4058  
+b1 = .326E-4  b5 = 418.2462  b6 = 1010000  b7 = -.4039604E-5  b8 = 4.08  
+dH = 563.600 
+end
+
+ 
+mgts     EoS = 8 | H = -3200497      Mg-tschermaks_pyroxe
+MgO(1)Al2O3(1)SiO2(1)
+GH = -3238809  S0 = 128.5  V0 = 6.05  
+c1 = 371.4  c2 = -.4082E-2  c3 = -398400 c5 = -3547.1  
+b1 = .217E-4  b5 = 551.3738  b6 = 1028000  b7 = -.8317121E-5  b8 = 8.55  
+dH = 423.000 
+end
+
+ 
+di       EoS = 8 | H = -3202036      diopside
+MgO(1)SiO2(2)CaO(1)
+GH = -3244642  S0 = 142.9  V0 = 6.619  
+c1 = 314.5  c2 = .41E-4  c3 = -2745900  c5 = -2020.1  
+b1 = .273E-4  b5 = 513.0728  b6 = 1192000  b7 = -.4354027E-5  b8 = 5.19  
+dH = 350.200 
+end
+
+ 
+hed      EoS = 8 | H = -2842150      hedenbergite
+SiO2(2)CaO(1)FeO(1)
+GH = -2894326  S0 = 175  V0 = 6.795  
+c1 = 340.2  c2 = .812E-3  c3 = -1047800  c5 = -2646.7  
+b1 = .238E-4  b5 = 444.2774  b6 = 1192000  b7 = -.3330537E-5  b8 = 3.97  
+dH = 807.800 
+end
+
+ 
+jd       EoS = 8 | H = -3025384      jadeite
+Na2O(.5)Al2O3(.5)SiO2(2)
+GH = -3065187  S0 = 133.5  V0 = 6.04  
+c1 = 319.4  c2 = .3616E-2  c3 = -1173900  c5 = -2469.5  
+b1 = .21E-4  b5 = 537.4432  b6 = 1281000  b7 = -.2974239E-5  b8 = 3.81  
+dH = 2470.20 
+end
+
+ 
+kjd      EoS = 8 | H = -2932700      K-jadeite
+Al2O3(.5)SiO2(2)K2O(.5)
+GH = -2974811  S0 = 141.24  V0 = 6.479  
+c1 = 316.2  c2 = .6905E-2  c3 = -905300 c5 = -2489  
+b1 = .273E-4  b5 = 517.2145  b6 = 1450000  b7 = -.3448276E-5  b8 = 5  
+dH = 27935.4    
+end
+
+ 
+acm      EoS = 8 | H = -2583433      acmite
+Na2O(.5)SiO2(2)FeO(1)O2(.25)
+GH = -2634297  S0 = 170.6  V0 = 6.459  
+c1 = 307.1  c2 = .16758E-1  c3 = -1685500  c5 = -2125.8  
+b1 = .211E-4  b5 = 452.5957  b6 = 1060000  b7 = -.3849057E-5  b8 = 4.08  
+dH = 5365.10 
+end
+
+ 
+kos      EoS = 8 | H = -2745086      kosmochlor_NaCrSi2O6
+Na2O(.5)SiO2(2)Cr2O3(.5)
+GH = -2789704  S0 = 149.65  V0 = 6.309  
+c1 = 309.2  c2 = .5419E-2  c3 = -664600 c5 = -2176.6  
+b1 = .194E-4  b5 = 496.8932  b6 = 1308000  b7 = -.2293578E-5  b8 = 3  
+dH = 3033.20 
+end
+
+ 
+cats     EoS = 8 | H = -3309675      Ca-tschermaks_pyroxe
+Al2O3(1)SiO2(1)CaO(1)
+GH = -3349925  S0 = 135  V0 = 6.356  
+c1 = 347.6  c2 = -.6974E-2  c3 = -1781600  c5 = -2757.5  
+b1 = .208E-4  b5 = 533.4002  b6 = 1192000  b7 = -.4354027E-5  b8 = 5.19  
+dH = 522.700 
+transition = 1  type = 5  t1 = 3800 t2 = .1E-1  t3 = 3800 t4 = .1E-1  t5 = 1  t6 = .25  
+end
+
+ 
+caes     EoS = 8 | H = -2997268      Ca-eskola_pyroxene
+Al2O3(.5)SiO2(2)CaO(.5)
+GH = -3034119  S0 = 123.6  V0 = 6.05  
+c1 = 358.2  c2 = -.10213E-1  c3 = -880500 c5 = -3352.2  
+b1 = .231E-4  b5 = 546.8232  b6 = 1192000  b7 = -.4354027E-5  b8 = 5.19  
+dH = 2821.70 
+end
+
+ 
+rhod     EoS = 8 | H = -1322310      rhodonite
+SiO2(1)MnO(1)
+GH = -1352274  S0 = 100.5  V0 = 3.494  
+c1 = 138.4  c2 = .4088E-2  c3 = -1936000  c5 = -538.9  
+b1 = .281E-4  b5 = 400.7536  b6 = 840000 b7 = -.4761905E-5  b8 = 4  
+dH = 490.700 
+end
+
+ 
+pxmn     EoS = 8 | H = -1323096      pyroxmangite
+SiO2(1)MnO(1)
+GH = -1352702  S0 = 99.3  V0 = 3.472  
+c1 = 138.4  c2 = .4088E-2  c3 = -1936000  c5 = -538.9  
+b1 = .28E-4  b5 = 404.4106  b6 = 840000 b7 = -.4761905E-5  b8 = 4  
+dH = 490.600 
+end
+
+ 
+wo       EoS = 8 | H = -1633825      wollastonite
+SiO2(1)CaO(1)
+GH = -1658422  S0 = 82.5  V0 = 3.993  
+c1 = 159.3  c3 = -967300 c5 = -1075.4  
+b1 = .254E-4  b5 = 463.6443  b6 = 795000 b7 = -.5157233E-5  b8 = 4.1  
+dH = 206.300 
+end
+
+ 
+pswo     EoS = 8 | H = -1628028      pseudowollastonite
+SiO2(1)CaO(1)
+GH = -1654206  S0 = 87.8  V0 = 4.008  
+c1 = 157.8  c3 = -967300 c5 = -1075.4  
+b1 = .285E-4  b5 = 443.1667  b6 = 1100000  b7 = -.3709091E-5  b8 = 4.08  
+dH = 206.700 
+end
+
+ 
+wal      EoS = 8 | H = -1625665      walstromite
+SiO2(1)CaO(1)
+GH = -1650859  S0 = 84.5  V0 = 3.7633  
+c1 = 159.3  c3 = -967300 c5 = -1075.4  
+b1 = .32E-4  b5 = 455.6984  b6 = 860000 b7 = -.4651163E-5  b8 = 4  
+dH = 211.600 
+end
+
+ 
+tr       EoS = 8 | H = -0.1230514E+08  tremolite
+MgO(5)SiO2(8)CaO(2)H2O(1)
+GH = -.1247002E+08  S0 = 553  V0 = 27.27  
+c1 = 1260.2  c2 = .383E-2  c3 = -.1145500E+08  c5 = -8237.6  
+b1 = .261E-4  b5 = 533.7266  b6 = 762000 b7 = -.5380577E-5  b8 = 4.1  
+dH = 4254.40 
+end
+
+ 
+fact     EoS = 8 | H = -0.1050380E+08  ferroactinolite
+SiO2(8)CaO(2)FeO(5)H2O(1)
+GH = -.1071549E+08  S0 = 710 V0 = 28.42  
+c1 = 1290 c2 = .29992E-1  c3 = -8447500  c5 = -8947  
+b1 = .288E-4  b5 = 447.6982  b6 = 760000 b7 = -.5394737E-5  b8 = 4.1  
+dH = 7375.60 
+end
+
+ 
+ts       EoS = 8 | H = -0.1255396E+08  tschermakite
+MgO(3)Al2O3(2)SiO2(6)CaO(2)H2O(1)
+GH = -.1271287E+08  S0 = 533  V0 = 26.739  
+c1 = 1244.8  c2 = .24348E-1  c3 = -.1196500E+08  c5 = -8112.1  
+b1 = .266E-4  b5 = 547.1193  b6 = 760000 b7 = -.5394737E-5  b8 = 4.1  
+dH = 2804.00 
+end
+
+ 
+parg     EoS = 8 | H = -0.1266448E+08  pargasite
+Na2O(.5)MgO(4)Al2O3(1.5)SiO2(6)CaO(2)H2O(1)
+GH = -.1285381E+08  S0 = 635  V0 = 27.19  
+c1 = 1280.2  c2 = .22997E-1  c3 = -.1235950E+08  c5 = -8065.8  
+b1 = .28E-4  b5 = 493.3428  b6 = 912000 b7 = -.4484649E-5  b8 = 4.09  
+dH = 4627.90 
+end
+
+ 
+gl       EoS = 8 | H = -0.1195622E+08  glaucophane
+Na2O(1)MgO(3)Al2O3(1)SiO2(8)H2O(1)
+GH = -.1211424E+08  S0 = 530 V0 = 25.98  
+c1 = 1717.5  c2 = -.12107  c3 = 7075000  c5 = -19272  
+b1 = .158E-4  b5 = 549.1864  b6 = 883000 b7 = -.4631937E-5  b8 = 4.09  
+dH = 11054.0 
+end
+
+ 
+fgl      EoS = 8 | H = -0.1087957E+08  ferroglaucophane
+Na2O(1)Al2O3(1)SiO2(8)FeO(3)H2O(1)
+GH = -.1106561E+08  S0 = 624  V0 = 26.59  
+c1 = 1762.9  c2 = -.118992  c3 = 9423700  c5 = -20207.1  
+b1 = .183E-4  b5 = 491.0545  b6 = 890000 b7 = -.4595506E-5  b8 = 4.09  
+dH = 24283.2    
+end
+
+ 
+nyb      EoS = 8 | H = -0.1216556E+08  nyboite
+Na2O(1.5)MgO(3)Al2O3(1.5)SiO2(7)H2O(1)
+GH = -.1235101E+08  S0 = 622  V0 = 26.314  
+c1 = 1745.2  c2 = -.112162  c3 = 6425500  c5 = -19163  
+b1 = .22E-4  b5 = 500.5289  b6 = 910000 b7 = -.4494505E-5  b8 = 4.09  
+dH = 63250.7    
+end
+
+ 
+rieb     EoS = 8 | H = -0.1002413E+08  riebeckite
+Na2O(1)SiO2(8)FeO(5)O2(.5)H2O(1)
+GH = -.1023134E+08  S0 = 695  V0 = 27.49  
+c1 = 1787.3  c2 = -.124882  c3 = 9627100  c5 = -20275.5  
+b1 = .181E-4  b5 = 454.7005  b6 = 890000 b7 = -.4595506E-5  b8 = 4.09  
+dH = 25496.5    
+end
+
+ 
+anth     EoS = 8 | H = -0.1206640E+08  anthophyllite
+MgO(7)SiO2(8)H2O(1)
+GH = -.1222651E+08  S0 = 537  V0 = 26.54  
+c1 = 1277.3  c2 = .25825E-1  c3 = -9704600  c5 = -9074.7  
+b1 = .252E-4  b5 = 544.3873  b6 = 700000 b7 = -.5871429E-5  b8 = 4.11  
+dH = 5515.00 
+end
+
+ 
+fanth    EoS = 8 | H = -9623633      Fe-anthophyllite
+SiO2(8)FeO(7)H2O(1)
+GH = -9839792  S0 = 725  V0 = 27.87  
+c1 = 1383.1  c2 = .30669E-1  c3 = -4224700  c5 = -11257.6  
+b1 = .274E-4  b5 = 440.9084  b6 = 700000 b7 = -.5871429E-5  b8 = 4.11  
+dH = 71896.5    
+end
+
+ 
+cumm     EoS = 8 | H = -0.1206426E+08  cummingtonite
+MgO(7)SiO2(8)H2O(1)
+GH = -.1222466E+08  S0 = 538  V0 = 26.33  
+c1 = 1277.3  c2 = .25825E-1  c3 = -9704600  c5 = -9074.7  
+b1 = .252E-4  b5 = 543.7085  b6 = 700000 b7 = -.5871429E-5  b8 = 4.11  
+dH = 5517.60 
+end
+
+ 
+grun     EoS = 8 | H = -9606187      grunerite
+SiO2(8)FeO(7)H2O(1)
+GH = -9825327  S0 = 735  V0 = 27.84  
+c1 = 1383.1  c2 = .30669E-1  c3 = -4224700  c5 = -11257.6  
+b1 = .274E-4  b5 = 436.495  b6 = 648000 b7 = -.6358025E-5  b8 = 4.12  
+dH = 7903.00 
+end
+
+ 
+ged      EoS = 8 | H = -0.1230637E+08  gedrite_(526)
+MgO(5)Al2O3(2)SiO2(6)H2O(1)
+GH = -.1246588E+08  S0 = 535  V0 = 25.956  
+c1 = 1307.7  c2 = .23642E-1  c3 = -9307400  c5 = -9799  
+b1 = .241E-4  b5 = 545.7499  b6 = 700000 b7 = -.5871429E-5  b8 = 4.11  
+dH = 7604.60 
+end
+
+ 
+spr4     EoS = 8 | H = -0.1101929E+08  sapphirine(221)
+MgO(4)Al2O3(4)SiO2(2)
+GH = -.1114615E+08  S0 = 425.5  V0 = 19.9  
+c1 = 1133.1  c2 = -.7596E-2  c3 = -8816600  c5 = -8180.6  
+b1 = .205E-4  b5 = 561.1271  b6 = 2500000  b7 = -.1616E-5  b8 = 4.04  
+dH = 7388.40 
+end
+
+ 
+spr5     EoS = 8 | H = -0.1113304E+08  sapphirine(351)
+MgO(3)Al2O3(5)SiO2(1)
+GH = -.1125812E+08  S0 = 419.5  V0 = 19.75  
+c1 = 1103.4  c2 = .1015E-2  c3 = -.1095700E+08  c5 = -7409.2  
+b1 = .206E-4  b5 = 566.4004  b6 = 2500000  b7 = -.1616E-5  b8 = 4.04  
+dH = 11126.6    
+end
+
+ 
+fspr     EoS = 8 | H = -9656545      Fe-sapphirine(221)
+Al2O3(4)SiO2(2)FeO(4)
+GH = -9801148  S0 = 485  V0 = 19.923  
+c1 = 1132.9  c2 = -.7348E-2  c3 = -.1042020E+08  c5 = -7036.6  
+b1 = .196E-4  b5 = 513.6996  b6 = 2500000  b7 = -.1616E-5  b8 = 4.04  
+dH = 30713.2    
+end
+
+ 
+mcar     EoS = 8 | H = -4770703      magnesiocarpholite
+MgO(1)Al2O3(1)SiO2(2)H2O(2)
+GH = -4836743  S0 = 221.5  V0 = 10.59  
+c1 = 683  c2 = -.14054E-1  c3 = 291000 c5 = -6976.4  
+b1 = .243E-4  b5 = 587.6927  b6 = 525000 b7 = -.7885714E-5  b8 = 4.14  
+dH = 530.300 
+end
+
+ 
+fcar     EoS = 8 | H = -4411277      ferrocarpholite
+Al2O3(1)SiO2(2)FeO(1)H2O(2)
+GH = -4486142  S0 = 251.1  V0 = 10.695  
+c1 = 686.6  c2 = -.12415E-1  c3 = 186000 c5 = -6884  
+b1 = .221E-4  b5 = 541.1128  b6 = 525000 b7 = -.7885714E-5  b8 = 4.14  
+dH = 873.500 
+end
+
+ 
+deer     EoS = 8 | H = -0.1833899E+08  deerite
+SiO2(12)FeO(18)O2(1.5)H2O(5)
+GH = -.1883094E+08  S0 = 1650 V0 = 55.74  
+c1 = 3164.4  c2 = -.27883E-1  c3 = -5039100  c5 = -26721  
+b1 = .275E-4  b5 = 429.3326  b6 = 630000 b7 = -.6539683E-5  b8 = 4.12  
+dH = 36315.7    
+end
+
+ 
+mu       EoS = 8 | H = -5976173      muscovite
+Al2O3(1.5)SiO2(3)K2O(.5)H2O(1)
+GH = -6063233  S0 = 292  V0 = 14.083  
+c1 = 756.4  c2 = -.1984E-1  c3 = -2170000  c5 = -6979.2  
+b1 = .307E-4  b5 = 522.7881  b6 = 490000 b7 = -.8469388E-5  b8 = 4.15  
+dH = 7758.90 
+end
+
+ 
+cel      EoS = 8 | H = -5834631      celadonite
+MgO(1)Al2O3(.5)SiO2(4)K2O(.5)H2O(1)
+GH = -5921094  S0 = 290 V0 = 13.957  
+c1 = 741.2  c2 = -.18748E-1  c3 = -2368800  c5 = -6616.9  
+b1 = .307E-4  b5 = 525.2469  b6 = 700000 b7 = -.5871429E-5  b8 = 4.11  
+dH = 7478.30 
+end
+
+ 
+fcel     EoS = 8 | H = -5468672      ferroceladonite
+Al2O3(.5)SiO2(4)K2O(.5)FeO(1)H2O(1)
+GH = -5567061  S0 = 330 V0 = 14.07  
+c1 = 756.3  c2 = -.19147E-1  c3 = -1586100  c5 = -6928.7  
+b1 = .318E-4  b5 = 480.0877  b6 = 700000 b7 = -.5871429E-5  b8 = 4.11  
+dH = 7617.70 
+end
+
+ 
+pa       EoS = 8 | H = -5942421      paragonite
+Na2O(.5)Al2O3(1.5)SiO2(3)H2O(1)
+GH = -6025009  S0 = 277  V0 = 13.211  
+c1 = 803  c2 = -.3158E-1  c3 = 217000 c5 = -8151  
+b1 = .37E-4  b5 = 541.8106  b6 = 515000 b7 = -.1264078E-4  b8 = 6.51  
+dH = 2846.10 
+end
+
+ 
+ma       EoS = 8 | H = -6241205      margarite
+Al2O3(2)SiO2(2)CaO(1)H2O(1)
+GH = -6320215  S0 = 265  V0 = 12.964  
+c1 = 744.4  c2 = -.168E-1  c3 = -2074400  c5 = -6783.2  
+b1 = .233E-4  b5 = 558.0552  b6 = 1000000  b7 = -.408E-5  b8 = 4.08  
+dH = 1547.20 
+end
+
+ 
+phl      EoS = 8 | H = -6214793      phlogopite
+MgO(3)Al2O3(.5)SiO2(3)K2O(.5)H2O(1)
+GH = -6311990  S0 = 326  V0 = 14.964  
+c1 = 770.3  c2 = -.36939E-1  c3 = -2328900  c5 = -6531.6  
+b1 = .38E-4  b5 = 500.325  b6 = 513000 b7 = -.142885E-4  b8 = 7.33  
+dH = 7858.70 
+end
+
+ 
+ann      EoS = 8 | H = -5140924      annite
+Al2O3(.5)SiO2(3)K2O(.5)FeO(3)H2O(1)
+GH = -5266147  S0 = 420 V0 = 15.432  
+c1 = 815.7  c2 = -.34861E-1  c3 = 19800 c5 = -7466.7  
+b1 = .38E-4  b5 = 416.5931  b6 = 513000 b7 = -.142885E-4  b8 = 7.33  
+dH = 8531.80 
+end
+
+| not clear why these are here, an output error on the TC side?
+
+|fbi      EoS = 8 | H = -5896080      ferri-bi_=
+|MgO(2)Al2O3(1)SiO2(2)K2O(.5)FeO(1)O2(.25)H2O(1)
+|GH = -6000045  S0 = 348.7  V0 = 15.0725  
+|c1 = 791.8  c2 = -.38031E-1  c3 = -1718300  c5 = -6886.9  
+|b1 = .38E-4  b5 = 477.1646  b6 = 513000 b7 = -.142885E-4  b8 = 7.33  
+|dH = 1117.40 
+|end
+
+ 
+|obi      EoS = 8 | H = -5862620      ordered_bi
+|MgO(2)Al2O3(.5)SiO2(3)K2O(.5)FeO(1)H2O(1)
+|GH = -5969158  S0 = 357.33  V0 = 15.12  
+|c1 = 785.4  c2 = -.36246E-1  c3 = -1546000  c5 = -6843.3  
+|b1 = .38E-4  b5 = 468.9124  b6 = 513000 b7 = -.142885E-4  b8 = 7.33  
+|dH = 1117.40 
+|end
+
+ 
+mnbi     EoS = 8 | H = -5475624      Mn-biotite
+Al2O3(.5)SiO2(3)K2O(.5)MnO(3)H2O(1)
+GH = -5604723  S0 = 433  V0 = 15.264  
+c1 = 809.9  c2 = -.59213E-1  c3 = -1514400  c5 = -6998.7  
+b1 = .38E-4  b5 = 407.1692  b6 = 530000 b7 = -.1383019E-4  b8 = 7.33  
+dH = 21876.3    
+end
+
+ 
+east     EoS = 8 | H = -6330516      eastonite
+MgO(2)Al2O3(1.5)SiO2(2)K2O(.5)H2O(1)
+GH = -6425328  S0 = 318  V0 = 14.738  
+c1 = 785.5  c2 = -.38031E-1  c3 = -2130300  c5 = -6893.7  
+b1 = .38E-4  b5 = 509.0324  b6 = 530000 b7 = -.1383019E-4  b8 = 7.33  
+dH = 8396.70 
+end
+
+ 
+|naph     EoS = 8 | H = -6164513      sodaphlogopite
+|Na2O(.5)MgO(3)Al2O3(.5)SiO2(3)H2O(1)
+|GH = -6259325  S0 = 318  V0 = 14.45  
+|c1 = 773.5  c2 = -.40229E-1  c3 = -2597900  c5 = -6512.6  
+|b1 = .328E-4  b5 = 509.0324  b6 = 513000 b7 = -.142885E-4  b8 = 7.33  
+|dH = 3326.90 
+|end
+
+ 
+|tan      EoS = 8 | H = -5900145      talc-phlogopite
+|MgO(3)SiO2(4)H2O(1)
+|GH = -5977366  S0 = 259  V0 = 13.665  
+|c1 = 622.2  c3 = -6385500  c5 = -3916.3  
+|b1 = .18E-4  b5 = 566.5483  b6 = 430000 b7 = -.1434884E-4  b8 = 6.17  
+|dH = 1538.60 
+|end
+
+ 
+clin     EoS = 8 | H = -8908688      clinochlore(ordered)
+MgO(5)Al2O3(1)SiO2(3)H2O(4)
+GH = -9038980  S0 = 437  V0 = 21.14  
+c1 = 1170.8  c2 = -.1508E-2  c3 = -3825800  c5 = -10315  
+b1 = .204E-4  b5 = 572.4777  b6 = 870000 b7 = -.4701149E-5  b8 = 4.09  
+dH = 2105.80 
+end
+
+ 
+ames     EoS = 8 | H = -9040581      amesite(14A)
+MgO(4)Al2O3(2)SiO2(2)H2O(4)
+GH = -9163419  S0 = 412  V0 = 20.71  
+c1 = 1186  c2 = -.2599E-2  c3 = -3627200  c5 = -10677  
+b1 = .2E-4  b5 = 594.7068  b6 = 870000 b7 = -.4701149E-5  b8 = 4.09  
+dH = 2802.50 
+end
+
+ 
+afchl    EoS = 8 | H = -8726794      Al-free_chlorite
+MgO(6)SiO2(4)H2O(4)
+GH = -8857682  S0 = 439  V0 = 21.57  
+c1 = 1155  c2 = -.417E-3  c3 = -4024400  c5 = -9952.9  
+b1 = .204E-4  b5 = 570.771  b6 = 870000 b7 = -.4701149E-5  b8 = 4.09  
+dH = 4369.60 
+end
+
+ 
+daph     EoS = 8 | H = -7117324      daphnite
+Al2O3(1)SiO2(3)FeO(5)H2O(4)
+GH = -7291444  S0 = 584  V0 = 21.62  
+c1 = 1192  c2 = -.594E-2  c3 = -4826400  c5 = -9768.3  
+b1 = .227E-4  b5 = 469.3273  b6 = 870000 b7 = -.4701149E-5  b8 = 4.09  
+dH = 8932.00 
+end
+
+ 
+mnchl    EoS = 8 | H = -7698827      Mn-chlorite
+Al2O3(1)SiO2(3)MnO(5)H2O(4)
+GH = -7876226  S0 = 595  V0 = 22.59  
+c1 = 1136.5  c2 = -.5243E-2  c3 = -5548100  c5 = -8911.5  
+b1 = .223E-4  b5 = 463.0835  b6 = 870000 b7 = -.4701149E-5  b8 = 4.09  
+dH = 65098.5    
+end
+
+ 
+sud      EoS = 8 | H = -8625854      sudoite
+MgO(2)Al2O3(2)SiO2(3)H2O(4)
+GH = -8743623  S0 = 395  V0 = 20.3  
+c1 = 1436.1  c2 = -.48749E-1  c3 = -2748500  c5 = -13764  
+b1 = .199E-4  b5 = 600.0322  b6 = 870000 b7 = -.4701149E-5  b8 = 4.09  
+dH = 2278.10 
+end
+
+ 
+fsud     EoS = 8 | H = -7899515      ferrosudoite
+Al2O3(2)SiO2(3)FeO(2)H2O(4)
+GH = -8035471  S0 = 456  V0 = 20.4  
+c1 = 1466.3  c2 = -.47365E-1  c3 = -1182800  c5 = -14388  
+b1 = .208E-4  b5 = 546.3164  b6 = 870000 b7 = -.4701149E-5  b8 = 4.09  
+dH = 3690.30 
+end
+
+ 
+prl      EoS = 8 | H = -5640503      pyrophyllite
+Al2O3(1)SiO2(4)H2O(1)
+GH = -5711761  S0 = 239  V0 = 12.804  
+c1 = 784.5  c2 = -.42948E-1  c3 = 1251000  c5 = -8495.9  
+b1 = .45E-4  b5 = 578.3578  b6 = 370000 b7 = -.2702703E-4  b8 = 10 
+dH = 932.600 
+end
+
+ 
+ta       EoS = 8 | H = -5896996      talc
+MgO(3)SiO2(4)H2O(1)
+GH = -5974217  S0 = 259  V0 = 13.665  
+c1 = 622.2  c3 = -6385500  c5 = -3916.3  
+b1 = .18E-4  b5 = 566.5483  b6 = 430000 b7 = -.1434884E-4  b8 = 6.17  
+dH = 1212.60 
+end
+
+ 
+fta      EoS = 8 | H = -4798896      ferrotalc
+SiO2(4)FeO(3)H2O(1)
+GH = -4903845  S0 = 352  V0 = 14.225  
+c1 = 579.7  c2 = .39494E-1  c3 = -6459300  c5 = -3088.1  
+b1 = .18E-4  b5 = 458.4106  b6 = 430000 b7 = -.1434884E-4  b8 = 6.17  
+dH = 16598.5    
+end
+
+ 
+tats     EoS = 8 | H = -6000834      tschermak-talc
+MgO(2)Al2O3(1)SiO2(3)H2O(1)
+GH = -6078055  S0 = 259  V0 = 13.51  
+c1 = 549.5  c2 = .36324E-1  c3 = -8606600  c5 = -2515.3  
+b1 = .18E-4  b5 = 566.5483  b6 = 430000 b7 = -.1434884E-4  b8 = 6.17  
+dH = 839.600 
+end
+
+ 
+|tap      EoS = 8 | H = -5649387      prl_with
+|Al2O3(1)SiO2(4)H2O(1)
+|GH = -5719452  S0 = 235  V0 = 13.45  
+|c1 = 784.5  c2 = -.42948E-1  c3 = 1251000  c5 = -8495.9  
+|b1 = .45E-4  b5 = 584.7169  b6 = 370000 b7 = -.2702703E-4  b8 = 10 
+|dH = 1020.80 
+|end
+
+ 
+|nta      EoS = 8 | H = -6163634      NaAl_talc
+|Na2O(.5)MgO(3)Al2O3(.5)SiO2(3)H2O(1)
+|GH = -6258446  S0 = 318  V0 = 14.45  
+|c1 = 773.5  c2 = -.40229E-1  c3 = -2597900  c5 = -6512.6  
+|b1 = .328E-4  b5 = 509.0324  b6 = 513000 b7 = -.142885E-4  b8 = 7.33  
+|dH = 3564.20 
+|end
+
+ 
+minn     EoS = 8 | H = -4818832      minnesotaite
+SiO2(4)FeO(3)H2O(1)
+GH = -4924675  S0 = 355  V0 = 14.851  
+c1 = 579.7  c2 = .39494E-1  c3 = -6459300  c5 = -3088.1  
+b1 = .18E-4  b5 = 455.6054  b6 = 430000 b7 = -.1434884E-4  b8 = 6.17  
+dH = 1953.50 
+end
+
+ 
+minm     EoS = 8 | H = -5865883      Mg-minnesotaite
+MgO(3)SiO2(4)H2O(1)
+GH = -5944565  S0 = 263.9  V0 = 14.291  
+c1 = 622.2  c3 = -6385500  c5 = -3916.3  
+b1 = .18E-4  b5 = 559.5931  b6 = 430000 b7 = -.1434884E-4  b8 = 6.17  
+dH = 98405.1    
+end
+
+ 
+kao      EoS = 8 | H = -4121865      kaolinite
+Al2O3(1)SiO2(2)H2O(2)
+GH = -4182598  S0 = 203.7  V0 = 9.934  
+c1 = 436.7  c2 = -.34295E-1  c3 = -4055900  c5 = -2699.1  
+b1 = .251E-4  b5 = 577.3421  b6 = 645000 b7 = -.6387597E-5  b8 = 4.12  
+dH = 529.300 
+end
+
+ 
+pre      EoS = 8 | H = -6201671      prehnite
+Al2O3(1)SiO2(3)CaO(2)H2O(1)
+GH = -6288969  S0 = 292.8  V0 = 14.026  
+c1 = 724.9  c2 = -.13865E-1  c3 = -2059000  c5 = -6323.9  
+b1 = .158E-4  b5 = 521.811  b6 = 1093000  b7 = -.3668801E-5  b8 = 4.01  
+dH = 1121.70 
+end
+
+ 
+fpre     EoS = 8 | H = -5766124      ferri-prehnite
+Al2O3(.5)SiO2(3)CaO(2)FeO(1)O2(.25)H2O(1)
+GH = -5861532  S0 = 320 V0 = 14.8  
+c1 = 737.1  c2 = -.1681E-1  c3 = -1957300  c5 = -6358.1  
+b1 = .158E-4  b5 = 490.6335  b6 = 1093000  b7 = -.3668801E-5  b8 = 4.01  
+dH = 1716.20 
+end
+
+ 
+chr      EoS = 8 | H = -4360815      chrysotile
+MgO(3)SiO2(2)H2O(2)
+GH = -4426796  S0 = 221.3  V0 = 10.746  
+c1 = 624.7  c2 = -.2077E-1  c3 = -1721800  c5 = -5619.4  
+b1 = .22E-4  b5 = 567.7243  b6 = 628000 b7 = -.6369427E-5  b8 = 4  
+dH = 857.300 
+end
+
+ 
+liz      EoS = 8 | H = -4369004      lizardite
+MgO(3)SiO2(2)H2O(2)
+GH = -4432212  S0 = 212  V0 = 10.645  
+c1 = 614.7  c2 = -.2077E-1  c3 = -1721800  c5 = -5619.4  
+b1 = .22E-4  b5 = 583.8253  b6 = 710000 b7 = -.4507042E-5  b8 = 3.2  
+dH = 1044.10 
+end
+
+ 
+glt      EoS = 8 | H = -3297231      greenalite
+SiO2(2)FeO(3)H2O(2)
+GH = -3389657  S0 = 310 V0 = 11.98  
+c1 = 576.4  c2 = .2984E-2  c3 = -3757000  c5 = -4166.2  
+b1 = .228E-4  b5 = 449.4929  b6 = 630000 b7 = -.6349206E-5  b8 = 4  
+dH = 2572.10 
+end
+
+ 
+fstp     EoS = 8 | H = -0.1255060E+08  ferrostilpnomelane
+Al2O3(1)SiO2(8)K2O(.25)FeO(5)H2O(6.25)
+GH = -.1282794E+08  S0 = 930.2  V0 = 37.239  
+c1 = 1944.3  c2 = -.12289E-1  c3 = -4840200  c5 = -16635  
+b1 = .368E-4  b5 = 476.0785  b6 = 513000 b7 = -.142885E-4  b8 = 7.33  
+dH = 74479.0 
+end
+
+ 
+mstp     EoS = 8 | H = -0.1428701E+08  Mg-stilpnomelane
+MgO(5)Al2O3(1)SiO2(8)K2O(.25)H2O(6.25)
+GH = -.1453966E+08  S0 = 847.4  V0 = 36.577  
+c1 = 1862.2  c2 = -.14018E-1  c3 = -8983100  c5 = -14923  
+b1 = .371E-4  b5 = 508.2801  b6 = 513000 b7 = -.142885E-4  b8 = 7.33  
+dH = 607025    
+end
+
+ 
+atg      EoS = 8 | H = -0.7140188E+08  antigorite
+MgO(48)SiO2(34)H2O(31)
+GH = -.7248118E+08  S0 = 3620 V0 = 175.48  
+c1 = 9621  c2 = -.91183E-1  c3 = -.3594160E+08  c5 = -83034.2  
+b1 = .28E-4  b5 = 563.3516  b6 = 631000 b7 = -.9381933E-5  b8 = 5.92  
+dH = 205253    
+end
+
+ 
+ab       EoS = 8 | H = -3935388      albite
+Na2O(.5)Al2O3(.5)SiO2(3)
+GH = -3997224  S0 = 207.4  V0 = 10.067  
+c1 = 452  c2 = -.13364E-1  c3 = -1275900  c5 = -3953.6  
+b1 = .236E-4  b5 = 474.9519  b6 = 541000 b7 = -.1092421E-4  b8 = 5.91  
+dH = 2531.90 
+transition = 1  type = 5  t1 = 14000 t2 = .42E-1  t3 = 13000 t4 = .42E-1  t5 = 3  t6 = .9  
+end
+
+ 
+abh      EoS = 8 | H = -3921383      albite(high)
+Na2O(.5)Al2O3(.5)SiO2(3)
+GH = -3988258  S0 = 224.3  V0 = 10.105  
+c1 = 452  c2 = -.13364E-1  c3 = -1275900  c5 = -3953.6  
+b1 = .241E-4  b5 = 448.8929  b6 = 541000 b7 = -.1092421E-4  b8 = 5.91  
+dH = 2529.70 
+end
+
+ 
+mic      EoS = 8 | H = -3975367      microcline
+Al2O3(.5)SiO2(3)K2O(.5)
+GH = -4039261  S0 = 214.3  V0 = 10.871  
+c1 = 448.8  c2 = -.10075E-1  c3 = -1007300  c5 = -3973.1  
+b1 = .166E-4  b5 = 463.9554  b6 = 583000 b7 = -.6895369E-5  b8 = 4.02  
+dH = 7333.70 
+end
+
+ 
+san      EoS = 8 | H = -3966717      sanidine
+Al2O3(.5)SiO2(3)K2O(.5)
+GH = -4030611  S0 = 214.3  V0 = 10.871  
+c1 = 448.8  c2 = -.10075E-1  c3 = -1007300  c5 = -3973.1  
+b1 = .166E-4  b5 = 463.9554  b6 = 583000 b7 = -.6895369E-5  b8 = 4.02  
+dH = 7332.10 
+transition = 1  type = 5  t1 = 8650 t2 = .24E-1  t3 = 8500 t4 = .24E-1  t5 = 3  t6 = .8  
+end
+
+ 
+an       EoS = 8 | H = -4232191      anorthite
+Al2O3(1)SiO2(2)CaO(1)
+GH = -4291970  S0 = 200.5  V0 = 10.079  
+c1 = 370.5  c2 = .1001E-1  c3 = -4339100  c5 = -1960.6  
+b1 = .141E-4  b5 = 486.4823  b6 = 860000 b7 = -.4755814E-5  b8 = 4.09  
+dH = 537.700 
+transition = 1  type = 5  t1 = 42010 t2 = .1  t3 = 42000 t4 = .1  t5 = 1  t6 = 2  
+end
+
+ 
+kcm      EoS = 8 | H = -4232657      K-Cymrite
+Al2O3(.5)SiO2(3)K2O(.5)H2O(1)
+GH = -4316586  S0 = 281.5  V0 = 11.438  
+c1 = 536.5  c2 = -.1009E-1  c3 = -980400 c5 = -4735  
+b1 = .321E-4  b5 = 442.5443  b6 = 425000 b7 = -.4705882E-5  b8 = 2  
+dH = 7404.00 
+end
+
+ 
+wa       EoS = 8 | H = -4272106      Si-wadeite
+SiO2(4)K2O(1)
+GH = -4347836  S0 = 254  V0 = 10.844  
+c1 = 499.1  c5 = -4350.1  
+b1 = .266E-4  b5 = 455.0485  b6 = 900000 b7 = -.4444444E-5  b8 = 4  
+dH = 38999.8    
+end
+
+ 
+hol      EoS = 8 | H = -3791972      hollandite
+Al2O3(.5)SiO2(3)K2O(.5)
+GH = -3841525  S0 = 166.2  V0 = 7.128  
+c1 = 417.6  c2 = -.3617E-2  c3 = -4748100  c5 = -2819.9  
+b1 = .28E-4  b5 = 553.249  b6 = 1800000  b7 = -.2222222E-5  b8 = 4  
+dH = 26007.3    
+end
+
+ 
+q        EoS = 8 | H = -910694.0   quartz
+SiO2(1)
+GH = -923046.4  S0 = 41.43  V0 = 2.269  
+c1 = 92.8  c2 = -.642E-3  c3 = -714900 c5 = -716.1  
+b5 = 525.2346  b6 = 584000 b7 = -.1534247E-4  b8 = 8.96  
+dH = 65.8000 
+transition = 1  type = 4  t1 = 847  t2 = 5.35  t3 = .1267  
+end
+
+ 
+trd      EoS = 8 | H = -907056.0   tridymite(high)
+SiO2(1)
+GH = -920234.2  S0 = 44.2  V0 = 2.8  
+c1 = 74.9  c2 = .31E-2  c3 = -1174000  c5 = -236.7  
+b5 = 502.33  b6 = 150000 b7 = -.2906667E-4  b8 = 4.36  
+dH = 66.0000 
+end
+
+ 
+crst     EoS = 8 | H = -904215.0   cristobalite(high)
+SiO2(1)
+GH = -919408.7  S0 = 50.96  V0 = 2.745  
+c1 = 72.7  c2 = .1304E-2  c3 = -4129000  
+b5 = 454.0125  b6 = 160000 b7 = -.271875E-4  b8 = 4.35  
+dH = 66.0000 
+end
+
+ 
+coe      EoS = 8 | H = -907043.0   coesite
+SiO2(1)
+GH = -918879.6  S0 = 39.7  V0 = 2.064  
+c1 = 107.8  c2 = -.3279E-2  c3 = -190300 c5 = -1041.6  
+b1 = .123E-4  b5 = 540.6303  b6 = 979000 b7 = -.4279877E-5  b8 = 4.19  
+dH = 67.0000 
+end
+
+ 
+stv      EoS = 8 | H = -876846.0   stishovite
+SiO2(1)
+GH = -884001.6  S0 = 24  V0 = 1.401  
+c1 = 68.1  c2 = .601E-2  c3 = -1978200  c5 = -82.1  
+b1 = .158E-4  b5 = 736.5651  b6 = 3090000  b7 = -.1488673E-5  b8 = 4.6  
+dH = 185.800 
+end
+
+ 
+ne       EoS = 8 | H = -2094676      nepheline
+Na2O(.5)Al2O3(.5)SiO2(1)
+GH = -2131766  S0 = 124.4  V0 = 5.419  
+c1 = 272.7  c2 = -.12398E-1  c5 = -2763.1  
+b1 = .463E-4  b5 = 439.2967  b6 = 465000 b7 = -.8946237E-5  b8 = 4.16  
+dH = 2746.10 
+transition = 1  type = 4  t1 = 467  t2 = 10 t3 = .8E-1  
+end
+
+ 
+cg       EoS = 8 | H = -2091910      carnegieite_(low)
+Na2O(.5)Al2O3(.5)SiO2(1)
+GH = -2127300  S0 = 118.7  V0 = 5.603  
+c1 = 116.1  c2 = .86021E-1  c3 = -1992700  
+b1 = .45E-4  b5 = 454.5854  b6 = 465000 b7 = -.8946237E-5  b8 = 4.16  
+dH = 2755.00 
+end
+
+ 
+cgh      EoS = 8 | H = -2078194      carnegieite_high
+Na2O(.5)Al2O3(.5)SiO2(1)
+GH = -2118444  S0 = 135  V0 = 5.67  
+c1 = 229.2  c2 = .11876E-1  c5 = -1970.7  
+b1 = .467E-4  b5 = 413.4385  b6 = 465000 b7 = -.8946237E-5  b8 = 4.16  
+dH = 2753.20 
+end
+
+ 
+macf     EoS = 8 | H = -2246040      Mg-Al-Ferrite
+MgO(1)Al2O3(1)
+GH = -2269892  S0 = 80 V0 = 3.614  
+c1 = 200 c2 = .6252E-2  c3 = -2996400  c5 = -888.4  
+b1 = .193E-4  b5 = 595.235  b6 = 2120000  b7 = -.1886792E-5  b8 = 4  
+dH = 1126.40 
+end
+
+ 
+mscf     EoS = 8 | H = -2061501      Mg-Si-ferrite
+MgO(2)SiO2(1)
+GH = -2087589  S0 = 87.5  V0 = 3.649  
+c1 = 213.3  c2 = .269E-2  c3 = -1410400  c5 = -1495.9  
+b1 = .201E-4  b5 = 561.5628  b6 = 1850000  b7 = -.2162162E-5  b8 = 4  
+dH = 1778.90 
+end
+
+ 
+fscf     EoS = 8 | H = -1402500      Fe-Si-ferrite
+SiO2(1)FeO(2)
+GH = -1445255  S0 = 143.4  V0 = 3.914  
+c1 = 181.1  c2 = .18526E-1  c3 = -2767200  c5 = -527.1  
+b1 = .201E-4  b5 = 395.0127  b6 = 1850000  b7 = -.2162162E-5  b8 = 4  
+dH = 111742    
+end
+
+ 
+nacf     EoS = 8 | H = -1965599      Na-Al-ferrite
+Na2O(.5)Al2O3(.5)SiO2(1)
+GH = -1998395  S0 = 110 V0 = 3.631  
+c1 = 272.7  c2 = -.12398E-1  c5 = -2763.1  
+b1 = .21E-4  b5 = 480.0877  b6 = 1850000  b7 = -.2486486E-5  b8 = 4.6  
+dH = 12624.8    
+end
+
+ 
+cacf     EoS = 8 | H = -2325600      Ca-Al-Ferrite
+Al2O3(1)CaO(1)
+GH = -2351718  S0 = 87.6  V0 = 3.976  
+c1 = 191.9  c2 = .9563E-2  c3 = -3211300  c5 = -640.2  
+b1 = .193E-4  b5 = 561.1396  b6 = 1900000  b7 = -.2105263E-5  b8 = 4  
+dH = 111742    
+end
+
+ 
+manal    EoS = 8 | H = -6796630      MgAl-NAL
+MgO(3)Al2O3(3)
+GH = -6871167  S0 = 250 V0 = 11.166  
+c1 = 600 c2 = .18756E-1  c3 = -8989200  c5 = -2665.2  
+b1 = .193E-4  b5 = 579.784  b6 = 1840000  b7 = -.2173913E-5  b8 = 4  
+dH = 27935.4    
+end
+
+ 
+nanal    EoS = 8 | H = -6610270      NaSi-NAL
+Na2O(.5)MgO(2)Al2O3(2.5)SiO2(1)
+GH = -6693752  S0 = 280 V0 = 11.322  
+c1 = 672.7  c2 = .106E-3  c3 = -5992800  c5 = -4539.9  
+b1 = .201E-4  b5 = 537.8962  b6 = 1840000  b7 = -.2173913E-5  b8 = 4  
+dH = 27935.4    
+end
+
+ 
+msnal    EoS = 8 | H = -6172380      MgSi-NAL
+MgO(6)SiO2(3)
+GH = -6253626  S0 = 272.5  V0 = 11.061  
+c1 = 639.9  c2 = .807E-2  c3 = -4231200  c5 = -4487.7  
+b1 = .21E-4  b5 = 547.7903  b6 = 1850000  b7 = -.2162162E-5  b8 = 4  
+dH = 27935.4    
+end
+
+ 
+fsnal    EoS = 8 | H = -4146000      MFeSi-NAL
+SiO2(3)FeO(6)
+GH = -4277246  S0 = 440.2  V0 = 11.856  
+c1 = 543.3  c2 = .55578E-1  c3 = -8301600  c5 = -1581.3  
+b1 = .21E-4  b5 = 388.1482  b6 = 1850000  b7 = -.2162162E-5  b8 = 4  
+dH = 111742    
+end
+
+ 
+canal    EoS = 8 | H = -6840000      CaAl-NAL
+MgO(2)Al2O3(3)CaO(1)
+GH = -6916803  S0 = 257.6  V0 = 11.159  
+c1 = 591.9  c2 = .22067E-1  c3 = -9204100  c5 = -2417  
+b1 = .193E-4  b5 = 568.5674  b6 = 1770000  b7 = -.2259887E-5  b8 = 4  
+dH = 27935.4    
+end
+
+ 
+sdl      EoS = 8 | H = -0.1340726E+08  sodalite
+Na2O(4)Al2O3(3)SiO2(6)Cl2(1)O2(-.5)
+GH = -.1367857E+08  S0 = 910 V0 = 42.13  
+c1 = 1532.7  c2 = .47747E-1  c3 = -2972800  c5 = -12427  
+b1 = .463E-4  b5 = 405.6042  b6 = 465000 b7 = -.8946237E-5  b8 = 4.16  
+dH = 99296.3    
+end
+
+ 
+kls      EoS = 8 | H = -2122890      kalsilite
+Al2O3(.5)SiO2(1)K2O(.5)
+GH = -2163438  S0 = 136  V0 = 6.052  
+c1 = 242  c2 = -.4482E-2  c3 = -895800 c5 = -1935.8  
+b1 = .316E-4  b5 = 411.1553  b6 = 514000 b7 = -.3891051E-5  b8 = 2  
+dH = 7905.30 
+end
+
+ 
+lc       EoS = 8 | H = -3029249      leucite
+Al2O3(.5)SiO2(2)K2O(.5)
+GH = -3088432  S0 = 198.5  V0 = 8.826  
+c1 = 369.8  c2 = -.16332E-1  c3 = 684700 c5 = -3683.1  
+b1 = .185E-4  b5 = 404.5645  b6 = 450000 b7 = -.1266667E-4  b8 = 5.7  
+dH = 7461.30 
+transition = 1  type = 5  t1 = 11610 t2 = .4  t3 = 11600 t4 = .4  t5 = 2  t6 = .7  
+end
+
+ 
+me       EoS = 8 | H = -0.1384032E+08  meionite
+Al2O3(3)SiO2(6)CaO(4)CO2(1)
+GH = -.1406453E+08  S0 = 752  V0 = 33.985  
+c1 = 1359  c2 = .36442E-1  c3 = -8594700  c5 = -9598.2  
+b1 = .182E-4  b5 = 452.0012  b6 = 870000 b7 = -.4701149E-5  b8 = 4.09  
+dH = 5915.90 
+end
+
+ 
+wrk      EoS = 8 | H = -6661904      wairakite
+Al2O3(1)SiO2(4)CaO(1)H2O(2)
+GH = -6775201  S0 = 380 V0 = 19.04  
+c1 = 838.3  c2 = -.2146E-1  c3 = -2272000  c5 = -7292.3  
+b1 = .149E-4  b5 = 491.4972  b6 = 860000 b7 = -.4755814E-5  b8 = 4.09  
+dH = 1142.30 
+end
+
+ 
+lmt      EoS = 8 | H = -7262155      laumontite
+Al2O3(1)SiO2(4)CaO(1)H2O(4)
+GH = -7400795  S0 = 465  V0 = 20.37  
+c1 = 1013.4  c2 = -.21413E-1  c3 = -2235800  c5 = -8806.7  
+b1 = .137E-4  b5 = 496.0821  b6 = 860000 b7 = -.4755814E-5  b8 = 4.09  
+dH = 1156.40 
+end
+
+ 
+heu      EoS = 8 | H = -0.1054459E+08  heulandite
+Al2O3(1)SiO2(7)CaO(1)H2O(6)
+GH = -.1077804E+08  S0 = 783  V0 = 31.7  
+c1 = 1504.8  c2 = -.33224E-1  c3 = -2959300  c5 = -13297.2  
+b1 = .157E-4  b5 = 453.3338  b6 = 274000 b7 = -.1459854E-4  b8 = 4  
+dH = 2994.40 
+end
+
+ 
+stlb     EoS = 8 | H = -0.1089616E+08  stilbite
+Al2O3(1)SiO2(7)CaO(1)H2O(7)
+GH = -.1110785E+08  S0 = 710 V0 = 32.87  
+c1 = 1588.4  c2 = -.32043E-1  c3 = -3071600  c5 = -13966.9  
+b1 = .151E-4  b5 = 508.175  b6 = 860000 b7 = -.4755814E-5  b8 = 4.09  
+dH = 4614.40 
+end
+
+ 
+anl      EoS = 8 | H = -3307153      analcite
+Na2O(.5)Al2O3(.5)SiO2(2)H2O(1)
+GH = -3376324  S0 = 232  V0 = 9.74  
+c1 = 643.5  c2 = -.16067E-1  c3 = 9302300  c5 = -9179.6  
+b1 = .276E-4  b5 = 437.945  b6 = 400000 b7 = -.1045E-4  b8 = 4.18  
+dH = 2510.30 
+end
+
+ 
+lime     EoS = 8 | H = -634565.0   lime
+CaO(1)
+GH = -645924.5  S0 = 38.1  V0 = 1.676  
+c1 = 52.4  c2 = .3673E-2  c3 = -750700 c5 = -51  
+b1 = .341E-4  b5 = 417.2617  b6 = 1130000  b7 = -.3424779E-5  b8 = 3.87  
+dH = 231.600 
+end
+
+ 
+ru       EoS = 8 | H = -943805.0   rutile
+TiO2(1)
+GH = -958801.9  S0 = 50.3  V0 = 1.882  
+c1 = 80.9  c2 = .1658E-2  c3 = -1243900  c5 = -211.1  
+b1 = .224E-4  b5 = 458.3166  b6 = 2220000  b7 = -.190991E-5  b8 = 4.24  
+dH = 524.100 
+end
+
+ 
+per      EoS = 8 | H = -601583.0   periclase
+MgO(1)
+GH = -609484  S0 = 26.5  V0 = 1.125  
+c1 = 60.5  c2 = .362E-3  c3 = -535800 c5 = -299.2  
+b1 = .311E-4  b5 = 540.1727  b6 = 1616000  b7 = -.2444307E-5  b8 = 3.95  
+dH = 68.0000 
+end
+
+ 
+fper     EoS = 8 | H = -262300.0   Fe-periclase
+FeO(1)
+GH = -279771.6  S0 = 58.6  V0 = 1.206  
+c1 = 44.4  c2 = .828E-2  c3 = -1214200  c5 = 185.2  
+b1 = .322E-4  b5 = 297.5937  b6 = 1520000  b7 = -.3223684E-5  b8 = 4.9  
+dH = 489.900 
+end
+
+ 
+wu       EoS = 8 | H = -262364.0   wustite_FeO
+FeO(1)
+GH = -281147.4  S0 = 63  V0 = 1.206  
+c1 = 67.4  c2 = .3758E-2  c3 = 315700 c5 = -381.7  
+b1 = .322E-4  b5 = 280.3374  b6 = 1520000  b7 = -.2631579E-5  b8 = 4  
+dH = 71.6000 
+end
+
+ 
+mang     EoS = 8 | H = -385567.0   manganosite_MnO
+MnO(1)
+GH = -403366.6  S0 = 59.7  V0 = 1.322  
+c1 = 59.8  c2 = .36E-2  c3 = -31400 c5 = -282.6  
+b1 = .369E-4  b5 = 293.0835  b6 = 1645000  b7 = -.2711246E-5  b8 = 4.46  
+dH = 159.700 
+end
+
+ 
+cor      EoS = 8 | H = -1674875      corundum
+Al2O3(1)
+GH = -1690051  S0 = 50.9  V0 = 2.558  
+c1 = 139.5  c2 = .589E-2  c3 = -2460600  c5 = -589.2  
+b1 = .18E-4  b5 = 639.9519  b6 = 2540000  b7 = -.1708661E-5  b8 = 4.34  
+dH = 424.900 
+end
+
+ 
+mcor     EoS = 8 | H = -1468382      MgSiO3-corundum
+MgO(1)SiO2(1)
+GH = -1486062  S0 = 59.3  V0 = 2.635  
+c1 = 147.8  c2 = .2015E-2  c3 = -2395000  c5 = -801.8  
+b1 = .212E-4  b5 = 581.2022  b6 = 2110000  b7 = -.2156398E-5  b8 = 4.55  
+dH = 643.600 
+end
+
+ 
+hem      EoS = 8 | H = -825332.0   hematite
+FeO(2)O2(.5)
+GH = -851390.3  S0 = 87.4  V0 = 3.027  
+c1 = 163.9  c3 = -2257200  c5 = -657.6  
+b1 = .279E-4  b5 = 444.6488  b6 = 2230000  b7 = -.1811659E-5  b8 = 4.04  
+dH = 400.900 
+transition = 1  type = 4  t1 = 955  t2 = 15.6  
+end
+
+ 
+esk      EoS = 8 | H = -1128173      eskolaite_Cr2O3
+Cr2O3(1)
+GH = -1152919  S0 = 83  V0 = 2.898  
+c1 = 119  c2 = .9496E-2  c3 = -1442000  c5 = -3.4  
+b1 = .159E-4  b5 = 461.6319  b6 = 2450000  b7 = -.1469388E-5  b8 = 3.6  
+dH = 175.700 
+end
+
+ 
+bix      EoS = 8 | H = -959000.0   bixbyite_Mn2O3
+MnO(2)O2(.5)
+GH = -992899.7  S0 = 113.7  V0 = 3.137  
+c1 = 145.1  c2 = .23534E-1  c3 = 721600 c5 = -1008.4  
+b1 = .291E-4  b5 = 364.4962  b6 = 2230000  b7 = -.1811659E-5  b8 = 4.04  
+dH = 1117.40 
+end
+
+ 
+NiO      EoS = 8 | H = -239478.0   nickel_oxide
+NiO(1)
+GH = -250807.7  S0 = 38  V0 = 1.097  
+c1 = 47.7  c2 = .7824E-2  c3 = -392500 
+b1 = .33E-4  b5 = 418.0818  b6 = 2000000  b7 = -.197E-5  b8 = 3.94  
+dH = 123.200 
+transition = 1  type = 4  t1 = 520 t2 = 5.7  
+end
+
+ 
+pnt      EoS = 8 | H = -1361447      pyrophanite
+TiO2(1)MnO(1)
+GH = -1393200  S0 = 106.5  V0 = 3.288  
+c1 = 143.5  c2 = .3373E-2  c3 = -1940700  c5 = -407.6  
+b1 = .24E-4  b5 = 383.4174  b6 = 1700000  b7 = -.4882353E-5  b8 = 8.3  
+dH = 4397.30 
+end
+
+ 
+geik     EoS = 8 | H = -1568656      geikielite
+MgO(1)TiO2(1)
+GH = -1590898  S0 = 74.6  V0 = 3.086  
+c1 = 136.1  c2 = .1656E-2  c3 = -2533000  c5 = -283.9  
+b1 = .215E-4  b5 = 497.9401  b6 = 1700000  b7 = -.4882353E-5  b8 = 8.3  
+dH = 660.500 
+transition = 1  type = 5  t1 = 8310 t3 = 8300 t5 = 1  t6 = .5  
+end
+
+ 
+ilm      EoS = 8 | H = -1232276      ilmenite
+TiO2(1)FeO(1)
+GH = -1264327  S0 = 107.5  V0 = 3.169  
+c1 = 125.3  c2 = .9938E-2  c3 = -2458100  c5 = -25.9  
+b1 = .24E-4  b5 = 380.6729  b6 = 1700000  b7 = -.4882353E-5  b8 = 8.3  
+dH = 587.900 
+transition = 1  type = 5  t1 = 7050 t2 = .13  t3 = 7050 t4 = .13  t5 = 1  t6 = .5  
+end
+
+ 
+bdy      EoS = 8 | H = -1100299      baddeleyite
+ZrO2(1)
+GH = -1115326  S0 = 50.4  V0 = 2.115  
+c1 = 89.6  c2 = .354E-3  c3 = -853100 c5 = -413.7  
+b1 = .2E-4  b5 = 457.6592  b6 = 953000 b7 = -.4071354E-5  b8 = 3.88  
+dH = 2491.50 
+end
+
+ 
+bdyT     EoS = 8 | H = -1095995      baddeleyite_tetragonal
+ZrO2(1)
+GH = -1111916  S0 = 53.4  V0 = 2.115  
+c1 = 89.6  c2 = .354E-3  c3 = -853100 c5 = -413.7  
+b1 = .2E-4  b5 = 438.7789  b6 = 953000 b7 = -.4071354E-5  b8 = 3.88  
+dH = 2495.70 
+end
+
+ 
+bdyC     EoS = 8 | H = -1085935      baddeleyite_cubic
+ZrO2(1)
+GH = -1102989  S0 = 57.2  V0 = 2.495  
+c1 = 89.6  c2 = .354E-3  c3 = -853100 c5 = -413.7  
+b1 = .2E-4  b5 = 416.989  b6 = 953000 b7 = -.4071354E-5  b8 = 3.88  
+dH = 2497.70 
+end
+
+ 
+ten      EoS = 8 | H = -156100.0   tenorite_CuO
+CuO(1)
+GH = -168801.2  S0 = 42.6  V0 = 1.222  
+c1 = 31  c2 = .1374E-1  c3 = -1258000  c5 = 369.3  
+b1 = .357E-4  b5 = 383.4174  b6 = 2000000  b7 = -.197E-5  b8 = 3.94  
+dH = 4469.70 
+end
+
+ 
+cup      EoS = 8 | H = -170600.0   cuprite_Cu2O
+O2(-.5)CuO(2)
+GH = -198149.1  S0 = 92.4  V0 = 2.344  
+c1 = 110.3  c5 = -674.8  
+b1 = .333E-4  b5 = 285.6069  b6 = 1310000  b7 = -.4351145E-5  b8 = 5.7  
+dH = 11.2000 
+end
+
+ 
+sp       EoS = 8 | H = -2299712      spinel
+MgO(1)Al2O3(1)
+GH = -2323752  S0 = 80.63  V0 = 3.978  
+c1 = 200.5  c2 = .6252E-2  c3 = -2996400  c5 = -888.4  
+b1 = .193E-4  b5 = 592.252  b6 = 1922000  b7 = -.2101977E-5  b8 = 4.04  
+dH = 538.000 
+transition = 1  type = 5  t1 = 13930 t3 = -3600 t5 = 2  t6 = -0.5
+end
+
+ 
+herc     EoS = 8 | H = -1949047      hercynite
+Al2O3(1)FeO(1)
+GH = -1983006  S0 = 113.9  V0 = 4.075  
+c1 = 184.9  c2 = .1417E-1  c3 = -3674800  c5 = -404  
+b1 = .206E-4  b5 = 468.3105  b6 = 1922000  b7 = -.2101977E-5  b8 = 4.04  
+dH = 554.300 
+transition = 1  type = 5  t1 = 13930 t3 = -3600 t5 = 2  t6 = -0.5
+end
+
+ 
+mt       EoS = 8 | H = -1114012      magnetite
+FeO(3)O2(.5)
+GH = -1157810  S0 = 146.9  V0 = 4.452  
+c1 = 262.5  c2 = -.7205E-2  c3 = -1926200  c5 = -1655.7  
+b1 = .371E-4  b5 = 387.8112  b6 = 1857000  b7 = -.2180937E-5  b8 = 4.05  
+dH = 798.200 
+transition = 1  type = 4  t1 = 848  t2 = 35  
+end
+
+ 
+mft      EoS = 8 | H = -1442162      magnesioferrite
+MgO(1)FeO(2)O2(.5)
+GH = -1478238  S0 = 121  V0 = 4.457  
+c1 = 270.5  c2 = -.7505E-2  c3 = -999200 c5 = -2022.4  
+b1 = .363E-4  b5 = 448.29  b6 = 1857000  b7 = -.2180937E-5  b8 = 4.05  
+dH = 6861.10 
+transition = 1  type = 4  t1 = 665  t2 = 17  
+end
+
+ 
+qnd      EoS = 8 | H = -2157482      qandilite_(Mg2TiO4)
+MgO(2)TiO2(1)
+GH = -2190785  S0 = 111.7  V0 = 4.529  
+c1 = 161.7  c2 = .3286E-1  c3 = -2382200  c5 = -278.6  
+b1 = .263E-4  b5 = 474.882  b6 = 1470000  b7 = -.2721088E-5  b8 = 4  
+dH = 831.700 
+end
+
+ 
+usp      EoS = 8 | H = -1495677      ulvospinel_(Fe2TiO4)
+TiO2(1)FeO(2)
+GH = -1546661  S0 = 171  V0 = 4.682  
+c1 = 129.5  c2 = .48696E-1  c3 = -3739000  c5 = 690.2  
+b1 = .386E-4  b5 = 344.5576  b6 = 1470000  b7 = -.2721088E-5  b8 = 4  
+dH = 845.800 
+transition = 1  type = 5  t1 = 1000 t3 = 900 t5 = 1  t6 = .5  
+end
+
+ 
+picr     EoS = 8 | H = -1764136      picrochromite_MgCr2O4
+MgO(1)Cr2O3(1)
+GH = -1799407  S0 = 118.3  V0 = 4.356  
+c1 = 196.1  c2 = .5398E-2  c3 = -3126000  c5 = -616.9  
+b1 = .26E-4  b5 = 455.6984  b6 = 1922000  b7 = -.2101977E-5  b8 = 4.04  
+dH = 267.900 
+end
+
+ 
+br       EoS = 8 | H = -925607.0   brucite
+MgO(1)H2O(1)
+GH = -944450.1  S0 = 63.2  V0 = 2.463  
+c1 = 158.4  c2 = -.4076E-2  c3 = -1052300  c5 = -1171.3  
+b1 = .62E-4  b5 = 557.4423  b6 = 415000 b7 = -.1554217E-4  b8 = 6.45  
+dH = 82.3000 
+end
+
+ 
+dsp      EoS = 8 | H = -999590.0   diaspore
+Al2O3(.5)H2O(.5)
+GH = -1009876  S0 = 34.5  V0 = 1.786  
+c1 = 145.1  c2 = .8709E-2  c3 = 584400 c5 = -1741.1  
+b1 = .357E-4  b5 = 706.0073  b6 = 2280000  b7 = -.177193E-5  b8 = 4.04  
+dH = 111.600 
+end
+
+ 
+gth      EoS = 8 | H = -561632.0   goethite
+FeO(1)O2(.25)H2O(.5)
+GH = -579610.4  S0 = 60.3  V0 = 2.082  
+c1 = 139.3  c2 = .147E-3  c3 = -212700 c5 = -1077.8  
+b1 = .435E-4  b5 = 494.3528  b6 = 2500000  b7 = -.1612E-5  b8 = 4.03  
+dH = 109.700 
+end
+
+ 
+cc       EoS = 8 | H = -1207739      calcite
+CaO(1)CO2(1)
+GH = -1235318  S0 = 92.5  V0 = 3.689  
+c1 = 140.9  c2 = .5029E-2  c3 = -950700 c5 = -858.4  
+b1 = .252E-4  b5 = 426.4635  b6 = 733000 b7 = -.5538881E-5  b8 = 4.06  
+dH = 204.300 
+transition = 1  type = 4  t1 = 1240 t2 = 10 t3 = .4E-1  
+end
+
+ 
+arag     EoS = 8 | H = -1207634      aragonite
+CaO(1)CO2(1)
+GH = -1234408  S0 = 89.8  V0 = 3.415  
+c1 = 167.1  c2 = .10695E-1  c3 = 162000 c5 = -1564.9  
+b1 = .614E-4  b5 = 435.9016  b6 = 614000 b7 = -.9560261E-5  b8 = 5.87  
+dH = 204.500 
+end
+
+ 
+mag      EoS = 8 | H = -1110858      magnesite
+MgO(1)CO2(1)
+GH = -1130387  S0 = 65.5  V0 = 2.803  
+c1 = 186.4  c2 = -.3772E-2  c5 = -1886.2  
+b1 = .338E-4  b5 = 544.3193  b6 = 1028000  b7 = -.5262646E-5  b8 = 5.41  
+dH = 89.5000 
+end
+
+ 
+sid      EoS = 8 | H = -762039.0   siderite
+FeO(1)CO2(1)
+GH = -789856.4  S0 = 93.3  V0 = 2.943  
+c1 = 168.4  c5 = -1483.6  
+b1 = .439E-4  b5 = 423.745  b6 = 1200000  b7 = -.3391667E-5  b8 = 4.07  
+dH = 295.600 
+end
+
+ 
+rhc      EoS = 8 | H = -892285.0   rhodochrosite
+MnO(1)CO2(1)
+GH = -921503.7  S0 = 98  V0 = 3.107  
+c1 = 169.5  c5 = -1534.3  
+b1 = .244E-4  b5 = 408.4485  b6 = 953000 b7 = -.4071354E-5  b8 = 3.88  
+dH = 160.700 
+end
+
+ 
+dol      EoS = 8 | H = -2326181      dolomite
+MgO(1)CaO(1)CO2(2)
+GH = -2372722  S0 = 156.1  V0 = 6.429  
+c1 = 358.9  c2 = -.4905E-2  c5 = -3456.2  
+b1 = .328E-4  b5 = 482.3583  b6 = 943000 b7 = -.3966066E-5  b8 = 3.74  
+dH = 312.700 
+transition = 1  type = 5  t1 = 11910 t2 = .16E-1  t3 = 11900 t4 = .16E-1  t5 = 1  t6 = 1  
+end
+
+ 
+ank      EoS = 8 | H = -1971213      ankerite
+CaO(1)FeO(1)CO2(2)
+GH = -2027402  S0 = 188.46  V0 = 6.606  
+c1 = 341  c2 = -.1161E-2  c5 = -3054.8  
+b1 = .346E-4  b5 = 420.628  b6 = 914000 b7 = -.4245077E-5  b8 = 3.88  
+dH = 543.400 
+transition = 1  type = 5  t1 = 11910 t2 = .16E-1  t3 = 11900 t4 = .16E-1  t5 = 1  t6 = 1  
+end
+
+ 
+syv      EoS = 8 | H = -436500.0   sylvite
+K2O(.5)Cl2(.5)O2(-.25)
+GH = -461127.2  S0 = 82.6  V0 = 3.752  
+c1 = 46.2  c2 = .1797E-1  
+b1 = .1109E-3  b5 = 222.7901  b6 = 170000 b7 = -.2941176E-4  b8 = 5  
+dH = 44.7000 
+end
+
+ 
+hlt      EoS = 8 | H = -411300.0   halite
+Na2O(.5)Cl2(.5)O2(-.25)
+GH = -432796.6  S0 = 72.1  V0 = 2.702  
+c1 = 45.2  c2 = .1797E-1  
+b1 = .1147E-3  b5 = 250.3177  b6 = 238000 b7 = -.210084E-4  b8 = 5  
+dH = 44.7000 
+end
+
+ 
+pyr      EoS = 8 | H = -171640.0   pyrite
+FeO(1)O2(-.5)S2(1)
+GH = -187412.1  S0 = 52.9  V0 = 2.394  
+c1 = 37.3  c2 = .26715E-1  c3 = -1817000  c5 = 649.3  
+b1 = .31E-4  b5 = 441.8167  b6 = 1395000  b7 = -.29319E-5  b8 = 4.09  
+dH = 1541.20 
+end
+
+ 
+trot     EoS = 8 | H = -99004.00   troilite_(in
+FeO(1)O2(-.5)S2(.5)
+GH = -118532.8  S0 = 65.5  V0 = 1.819  
+c1 = 50.2  c2 = .11052E-1  c3 = -940000 
+b1 = .568E-4  b5 = 271.3958  b6 = 658000 b7 = -.6337386E-5  b8 = 4.17  
+dH = 1675.60 
+transition = 1  type = 4  t1 = 598  t2 = 12  t3 = .41E-1  
+end
+
+ 
+tro      EoS = 8 | H = -97776.00   troilite
+FeO(1)O2(-.5)S2(.5)
+GH = -118885  S0 = 70.8  V0 = 1.819  
+c1 = 50.2  c2 = .11052E-1  c3 = -940000 
+b1 = .573E-4  b5 = 254.2065  b6 = 658000 b7 = -.6337386E-5  b8 = 4.17  
+dH = 213.100 
+transition = 1  type = 4  t1 = 598  t2 = 12  t3 = .41E-1  
+end
+
+ 
+lot      EoS = 8 | H = -102183.0   low_troilite
+FeO(1)O2(-.5)S2(.5)
+GH = -120072  S0 = 60 V0 = 1.818  
+c1 = 50.2  c2 = .11052E-1  c3 = -940000 
+b1 = .493E-4  b5 = 291.8771  b6 = 658000 b7 = -.6337386E-5  b8 = 4.17  
+dH = 215.400 
+transition = 1  type = 4  t1 = 420 t2 = 10 
+end
+
+ 
+trov     EoS = 8 | H = -95997.00   pyrrhotite
+FeO(.88)O2(-.44)S2(.5)
+GH = -113140.6  S0 = 57.5  V0 = 1.738  
+c1 = 51.1  c2 = .8307E-2  c3 = -669700 
+b1 = .594E-4  b5 = 287.2645  b6 = 658000 b7 = -.6337386E-5  b8 = 4.17  
+dH = 1279.00 
+transition = 1  type = 4  t1 = 595  t2 = 10 t3 = .16E-1  
+end
+
+ 
+any      EoS = 8 | H = -1434400      anhydrite
+CaO(1)O2(1.5)S2(.5)
+GH = -1466272  S0 = 106.9  V0 = 4.594  
+c1 = 128.7  c2 = .48545E-1  c3 = -1223000  c5 = -560.5  
+b1 = .418E-4  b5 = 438.4774  b6 = 543800 b7 = -.7705039E-5  b8 = 4.19  
+dH = 11442.4    
+end
+
+ 
+iron     EoS = 8 | H = 0.000000   iron
+FeO(1)O2(-.5)
+GH = -8076.883  S0 = 27.09  V0 = .709  
+c1 = 46.2  c2 = .5159E-2  c3 = 723100 c5 = -556.2  
+b1 = .356E-4  b5 = 317.2085  b6 = 1640000  b7 = -.3146341E-5  b8 = 5.16  
+dH = 0.00000 
+transition = 1  type = 4  t1 = 1042  t2 = 8.3  
+end
+
+ 
+Ni       EoS = 8 | H = 0.000000   nickel
+NiO(1)O2(-.5)
+GH = -8905.74  S0 = 29.87  V0 = .659  
+c1 = 49.8  c3 = 585900 c5 = -533.9  
+b1 = .428E-4  b5 = 292.9221  b6 = 1905000  b7 = -.2230971E-5  b8 = 4.25  
+dH = 0.00000 
+transition = 1  type = 4  t1 = 631  t2 = 3  
+end
+
+ 
+Cu       EoS = 8 | H = 0.000000   copper
+O2(-.5)CuO(1)
+GH = -9880.691  S0 = 33.14  V0 = .711  
+c1 = 12.4  c2 = .922E-2  c3 = -379900 c5 = 233.5  
+b1 = .358E-4  b5 = 268.7216  b6 = 1625000  b7 = -.2609231E-5  b8 = 4.24  
+dH = 0.00000 
+end
+
+ 
+gph      EoS = 8 | H = 0.000000   graphite
+O2(-1)CO2(1)
+GH = -1717.344  S0 = 5.76  V0 = .53  
+c1 = 34.3  c3 = -240700 c5 = -403.8  
+b1 = .165E-4  b5 = 871.8033  b6 = 312000 b7 = -.125E-4  b8 = 3.9  
+dH = 0.00000 
+end
+
+ 
+diam     EoS = 8 | H = 1893.000   diamond
+O2(-1)CO2(1)
+GH = 1189.366  S0 = 2.36  V0 = .342  
+c1 = 40 c3 = -28500 c5 = -580.5  
+b1 = .4E-5  b5 = 1208.636  b6 = 4465000  b7 = -.3605823E-6  b8 = 1.61  
+dH = 2.70000 
+end
+
+ 
+S        EoS = 8 | H = 0.000000   sulphur
+S2(.5)
+GH = -9555.707  S0 = 32.05  V0 = 1.551  
+c1 = 56.6  c2 = -.4557E-2  c3 = 638000 c5 = -681.8  
+b1 = .64E-4  b5 = 276.3315  b6 = 145000 b7 = -.4827586E-4  b8 = 7  
+dH = 0.00000 
+end
+
+ 
+H2O      EoS = 101 | H=  -241810.0 
+H2O(1)
+GH = -298100.7  S0 = 188.8  
+c1 = 40.1  c2 = .8656E-2  c3 = 487500  c5 = -251.2  
+dH = 0.400000    
+end
+
+ 
+CO2      EoS = 102 | H=  -393510.0 
+CO2(1)
+GH = -457224.7  S0 = 213.7  
+c1 = 87.8  c2 = -.2644E-2  c3 = 706400  c5 = -998.9  
+dH =  5.30000    
+end
+
+ 
+CO       EoS = 103 | H=  -110530.0 
+O2(-.5)CO2(1)
+GH = -169465.3  S0 = 197.67  
+c1 = 45.7  c2 = -.97E-4  c3 = 662700  c5 = -414.7  
+dH =  31.8000    
+end
+
+ 
+CH4      EoS = 104 | H=  -74810.00 
+O2(-2)H2O(2)CO2(1)
+GH = -130343.4  S0 = 186.26  
+c1 = 150.1  c2 = .2063E-2  c3 = 3427700.  c5 = -2650.4  
+dH =  127.000    
+end
+
+ 
+C2H6     EoS = 116 | HSC/MRK Ethane 
+O2(-3.5)H2O(3)CO2(2)
+GH = -152135.4  S0 = 229.6009  
+c1 = -6.566  c2 = .175454  c3 = 587800  c4 = -.64885E-4  
+dH = 0
+transition = 1  type = 2  t1 = 1400  t4 = 39.896  t5 = .92427E-1  t6 = -3822200.  t7 = -.22727E-4  
+transition = 2  type = 2  t1 = 3400  t4 = 127.129  t5 = .12005E-1  t6 = -.3547850E+08  t7 = -.155E-5  
+end
+
+ 
+O2       EoS = 107 | H=   0.000000 
+O2(1)
+GH = -61180.38  S0 = 205.2  
+c1 = 48.3  c2 = -.691E-3  c3 = 499200  c5 = -420.7  
+dH = 0
+end
+
+ 
+H2       EoS = 105 | H=   0.000000 
+O2(-.5)H2O(1)
+GH = -38968.2  S0 = 130.7  
+c1 = 23.3  c2 = .4627E-2  c5 = 76.3  
+dH = 0
+end
+
+ 
+S2       EoS = 1 | H=   128540.0 
+S2(1)
+GH = 59667.35  S0 = 231  
+c1 = 37.1  c2 = .2398E-2  c3 = -161000  c5 = -65  
+dH =  96.8000    
+end
+
+ 
+H2S      EoS = 106 | H=  -20300.00 
+O2(-.5)H2O(1)S2(.5)
+GH = -81650.32  S0 = 205.77  
+c1 = 47.4  c2 = .1024E-1  c3 = 615900  c5 = -397.8  
+dH =  177.700    
+end
+
+ 
+syvL     EoS = 9 | H =  -417409.0      sylvite_(liquid) 
+K2O(.5)Cl2(.5)O2(-.25)
+GH = -445584.2  S0 = 94.5  V0 = 3.822  
+c1 = 66.9  
+b1 = .301E-3  b5 = -20  b6 = 56000  b7 = -.8303571E-4  b8 = 4.65  
+dH =  48.6000    
+end
+
+ 
+hltL     EoS = 9 | H =  -392991.0      halite_liquid) 
+Na2O(.5)Cl2(.5)O2(-.25)
+GH = -416872.8  S0 = 80.1  V0 = 2.938  
+c1 = 72  c2 = -.3223E-2  
+b1 = .295E-3  b5 = -15  b6 = 64000  b7 = -.7203125E-4  b8 = 4.61  
+dH =  50.4000    
+end
+
+ 
+perL     EoS = 9 | H =  -654174.0      MgO_liquid 
+MgO(1)
+GH = -635003  S0 = -64.3  V0 = .839  
+c1 = 99  
+b1 = .226E-3  b5 = -41  b6 = 362000  b7 = -.2779006E-4  b8 = 10.06  
+dH =  117.200    
+end
+
+ 
+limL     EoS = 9 | H =  -692319.0      CaO_liquid 
+CaO(1)
+GH = -678156.9  S0 = -47.5  V0 = 1.303  
+c1 = 99  
+b1 = .175E-3  b5 = -41  b6 = 362000  b7 = -.2779006E-4  b8 = 10.06  
+dH =  257.600    
+end
+
+ 
+corL     EoS = 9 | H =  -1632862.      corundum_liquid 
+Al2O3(1)
+GH = -1637304.  S0 = 14.9  V0 = 3.369  
+c1 = 157.6  
+b1 = .703E-4  b5 = -35  b6 = 150000  b7 = -.4E-4  b8 = 6  
+dH =  573.700    
+end
+
+ 
+eskL     EoS = 9 | H =  -1062178.      Cr2O3_liquid 
+Cr2O3(1)
+GH = -1081051.  S0 = 63.3  V0 = 3.709  
+c1 = 157.6  
+b1 = .703E-4  b5 = -35  b6 = 150000  b7 = -.4E-4  b8 = 6  
+dH =  368.700    
+end
+
+ 
+hemL     EoS = 9 | H =  -875035.0      Fe2O3_liquid 
+FeO(2)O2(.5)
+GH = -865136.4  S0 = -33.2  V0 = 3.2208  
+c1 = 229  
+b1 = .1953E-3  b5 = -46  b6 = 230000  b7 = -.173913E-4  b8 = 4  
+dH =  558.900    
+end
+
+ 
+qL       EoS = 9 | H =  -921102.0      quartz_liquid 
+SiO2(1)
+GH = -925991.7  S0 = 16.4  V0 = 2.73  
+c1 = 82.5  
+b5 = -35  b6 = 220000  b7 = -.43E-4  b8 = 9.46  
+dH =  65.9000    
+end
+
+ 
+h2oL     EoS = 9 | H =  -281655.0      H2O_liquid 
+H2O(1)
+GH = -301511.8  S0 = 66.6  V0 = 1.3355  
+c1 = 65  
+b1 = .626E-3  b5 = -10.6  b6 = 42280  b7 = -.9460738E-4  b8 = 4  
+dH = 0.700000    
+end
+
+ 
+foL      EoS = 9 | H =  -2237206.      forsterite_liquid 
+MgO(2)SiO2(1)
+GH = -2218721.  S0 = -62  V0 = 4.312  
+c1 = 269.4  
+b1 = .92E-4  b5 = -44  b6 = 362000  b7 = -.2779006E-4  b8 = 10.06  
+dH =  322.200    
+end
+
+ 
+faL      EoS = 9 | H =  -1462697.      fayalite_liquid 
+SiO2(1)FeO(2)
+GH = -1491319.  S0 = 96  V0 = 4.677  
+c1 = 243.7  
+b1 = .1071E-3  b5 = -55  b6 = 290000  b7 = -.3593103E-4  b8 = 10.42  
+dH =  440.100    
+end
+
+ 
+woL      EoS = 9 | H =  -1642633.      wollastonite_liquid 
+SiO2(1)CaO(1)
+GH = -1649341.  S0 = 22.5  V0 = 3.985  
+c1 = 167.4  
+b1 = .669E-4  b5 = -20  b6 = 325000  b7 = -.2886154E-4  b8 = 9.38  
+dH =  243.500    
+end
+
+ 
+enL      EoS = 9 | H =  -3096446.      enstatite_liquid 
+MgO(2)SiO2(2)
+GH = -3095253.  S0 = -4  V0 = 6.984  
+c1 = 353.6  
+b1 = .681E-4  b5 = -24  b6 = 218000  b7 = -.3302752E-4  b8 = 7.2  
+dH =  585.900    
+end
+
+ 
+diL      EoS = 9 | H =  -3194039.      diopside_liquid 
+MgO(1)SiO2(2)CaO(1)
+GH = -3206591.  S0 = 42.1  V0 = 7.288  
+c1 = 334  
+b1 = .851E-4  b5 = -37.3  b6 = 249000  b7 = -.3228916E-4  b8 = 8.04  
+dH =  457.100    
+end
+
+ 
+silL     EoS = 9 | H =  -2593972.      sillimanite_liquid 
+Al2O3(1)SiO2(1)
+GH = -2596953.  S0 = 10  V0 = 6.051  
+c1 = 253  
+b1 = .408E-4  b5 = -29  b6 = 220000  b7 = -.2890909E-4  b8 = 6.36  
+dH =  499.900    
+end
+
+ 
+anL      EoS = 9 | H =  -4277499.      anorthite_liquid 
+Al2O3(1)SiO2(2)CaO(1)
+GH = -4286145.  S0 = 29  V0 = 10.014  
+c1 = 430  
+b1 = .514E-4  b5 = -55  b6 = 210000  b7 = -.3038095E-4  b8 = 6.38  
+dH =  603.900    
+end
+
+ 
+kspL     EoS = 9 | H =  -3985140.      K-feldspar_liquid 
+Al2O3(.5)SiO2(3)K2O(.5)
+GH = -4023661.  S0 = 129.2  V0 = 11.431  
+c1 = 368  
+b1 = .493E-4  b5 = -9  b6 = 173000  b7 = -.3953757E-4  b8 = 6.84  
+dH =  7341.50    
+end
+
+ 
+abL      EoS = 9 | H =  -3925460.      albite_liquid 
+Na2O(.5)Al2O3(.5)SiO2(3)
+GH = -3970153.  S0 = 149.9  V0 = 10.858  
+c1 = 358  
+b1 = .337E-4  b5 = -26  b6 = 176000  b7 = -.8153409E-4  b8 = 14.35  
+dH =  2549.60    
+end
+
+ 
+neL      EoS = 9 | H =  -2116911.      nepheline_liquid 
+Na2O(.5)Al2O3(.5)SiO2(1)
+GH = -2132683.  S0 = 52.9  V0 = 5.2  
+c1 = 216.5  
+b1 = .137E-3  b5 = -8  b6 = 250000  b7 = -.2948E-4  b8 = 7.37  
+dH =  2763.40    
+end
+
+ 
+ksL      EoS = 9 | H =  -2149075.      kalsilite_liquid 
+Al2O3(.5)SiO2(1)K2O(.5)
+GH = -2166248.  S0 = 57.6  V0 = 6.0818  
+c1 = 217  
+b1 = .7E-4  b5 = -9  b6 = 250000  b7 = -.3348E-4  b8 = 8.37  
+dH =  7984.40    
+end
+
+ 
+ruL      EoS = 9 | H =  -947875.0      rutile_liquid 
+TiO2(1)
+GH = -948173.1  S0 = 1  V0 = 1.7032  
+c1 = 111.8  
+b1 = .2901E-3  b5 = -35  b6 = 149000  b7 = -.5369128E-4  b8 = 8  
+dH =  595.300    
+end
+
+ 
+bdyL     EoS = 9 | H =  -1031851.      baddeleyite_liquid 
+ZrO2(1)
+GH = -1046431.  S0 = 48.9  V0 = 1.83  
+c1 = 90  
+b1 = .2E-3  b5 = -30  b6 = 149000  b7 = -.5369128E-4  b8 = 8  
+dH =  2758.90    
+end

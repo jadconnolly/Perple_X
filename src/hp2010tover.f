@@ -6,7 +6,7 @@ c   rewrite_2010.f). hp2010tover.f has no dependencies. JADC, 10/2022
 
       program trans
 
-      open (9, file='tc-ds634.txt', status= 'old')
+      open (9, file='tc-ds636.txt', status= 'old')
       open (10,file='junk.dat')
 
       call rdin
@@ -20,7 +20,7 @@ c   this subroutine reads part of the H&P data
 
 
       character     text(132)*1, name*8, cnum*80, gnum*80, twod*80 
-      character     snum*80, vnum*80
+      character     snum*80, vnum*80, lname*40
       logical aq
       double precision rnum, comp(19), rgib, g, reas, s, reav,sfe,
      *                 tr,b1,b5,b6,b7,b8,dsf,atoms,l4,l5,l6,
@@ -30,7 +30,7 @@ c   this subroutine reads part of the H&P data
       integer       index, igst, igen, isst, isen, ivst, iven
       integer       ihptov(19),i,inen,nst,j,inst,icomp,ilam,itype
 c     hp ind      1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
-      data ihptov/4,7,3,9,2,8,6,1,5,13,14,15,12,19,10,11,18,16,17/                2016
+      data ihptov/4,7,3,9,2,8,6,1,5,13,14,15,12,19,10,11,18,16,17/            !    2016
       data catoms/3.,2.,5.,3.,3.,2.,3.,2.,2.,2.,3.,2.,2.,3.,3.,2.,5.,2.,
      *            0./
 
@@ -109,6 +109,43 @@ c                          file.
       goto 900 
 
 20      write(name,1000) (text(i), i = inst, inen)
+c                          ds636 adds long name, locate first number
+      do i = 21, 132
+            if (text(i) .ge. '0'.and.text(i).le.'9') then
+
+               if (text(i).ne.'0') then 
+                  write (*,*) 'hm'
+               end if
+c                          the first integer is some code, jump it
+               inst = i + 3
+               exit 
+            end if
+      end do
+c                          ds636 adds long name starting in column 8, 
+c                          locate the next blank
+      do i = 8, 132
+            if (text(i) .eq. ' ') then
+
+c                          the first integer is some code, jump it
+               inen = i - 1
+               exit 
+            end if
+      end do
+
+      write(lname,1000) (text(i), i = 8, inen)
+c                          now find the next number
+      do i = inen + 1, 132
+            if (text(i) .ge. '0'.and.text(i).le.'9') then
+
+               if (text(i).ne.'0') then 
+                  write (*,*) 'hm'
+               end if
+c                          the first integer is some code, jump it
+               inst = i + 3
+               exit 
+            end if
+      end do
+       
 
 c      reading indices and real volues of components from the array called text
 c      indices are read and then written into the variable index as integers.
@@ -118,10 +155,13 @@ c      cnum is written to rnum which is then assigned to the corresponding
 c      element of the array compon.
 
       atoms = 0
-      comps(:) = 0d0
+      comp(:) = 0d0
 
       do i = 1, 19
-            nst = 15 + (i-1)*12
+            nst = inst + (i-1)*12
+c                                            end of composition signalled by zero
+
+
             if (text(nst).eq.'0'.and.text(nst-1).eq.' ') goto 50
            write(twod,1000) text(nst-1), text(nst)
            read(twod,*) index
@@ -130,94 +170,44 @@ c      element of the array compon.
             comp(ihptov(index)) = rnum
             atoms = atoms + rnum
       end do
+c                                            ds6.36: the first card is lam, g, s, v
+c                                            and can be read in the standard fortran way
+        
+50       read (9,*) lam, g, s, v
+c                                            end of first line in h&p data file
 
+c                                            as the 2nd and 3rd line of the data file have a fixed format, 
+c                                            they are read in a standard fortran way
+         read(9,*) a, b, c, e
+         read(9,*) newa, k298, kp
 
+         if (k298.ne.0) then 
+            kpp = -kp/k298
+         else 
+c                                            a gas
+            kpp = 0
+         end if
 
-c   finding, reading and writing the values for g
-
-50       read(9,1000,end=900) text
-
-         nst = 0 
-
-         do i=nst+1, 132
-                if(text(i).ne.' ') then
-                        igst = i
-                        goto 60
-                end if
-        end do
-60      do i=igst+1, 132
-                if(text(i).eq.' ') then
-                        igen = i-1
-                        goto 70
-                end if
-        end do
-
-70      write(gnum,1000)(text(j),j=igst, igen)
-        read(gnum,*) rgib
-        g = rgib
-
-c   finding, reading and writing values for s
-
-        do i = igen+1, 132
-                if(text(i).ne.' ') then
-                        isst = i
-                        goto 80
-                end if
-        end do    
-80      do i = isst+1, 132
-                if(text(i).eq.' ') then
-                        isen = i-1
-                        goto 90
-                end if
-        end do
-90      write(snum,1000)(text(j), j = isst, isen)
-        read(snum,*) reas
-        s = reas
-
-c   finding, reading and writing the values for v
-
-        do i = isen+1, 132
-                if(text(i).ne.' ') then
-                        ivst = i
-                        goto 100
-                end if
-        end do    
-100     do i = ivst+1, 132
-                if(text(i).eq.' ') then
-                        iven = i-1
-                        goto 110
-                end if
-        end do
-110     write(vnum,1000)(text(j), j = ivst, iven)
-        read(vnum,*) reav
-        v = reav
-
-
-c   end of first line in h&p data file
-
-c   as the second line of the data file has a fixed format, it will be read in a standard
-c   fortran way
-
-      read(9,*) a, b, c, e
-      read(9,*) newa, k298, kp, kpp, lam
-
-      dkdt = 0d0
-      itype = 8
-      aq = .false.
+         dkdt = 0d0
+         itype = 8
+         aq = .false.
 
       if(lam.gt.0) then
-
+c                                            ds6.36 transition data is 
          backspace(9)
-         read(9,*) newa, k298, kp, kpp, lam, 
-     *             l1, l2, l3
+
          if (lam.eq.1) then 
+
+c            text = ' '
+c            read (9,1000) text
+c            read (text,*) newa, k298, kp, l1, l2, l3
 c                             distinguish type by landau entropy 
+            read(9,*) newa, k298, kp, l1, l2, l3
             write (*,*) 'landau ',name
 
          else if (lam.eq.2) then 
 
-            backspace (9)
-            read(9,*) newa, k298, kp, kpp, lam, l1, l2, l3,l4,l5,l6
+            read(9,*) newa, k298, kp, l1, l2, l3,l4,l5,l6
             write (*,*) 'bragg ',name
 c                             correction for -fac
             if (l6.lt.0d0) l6 = (-l6*l5 + 1d0)/(l5 + 1d0)
@@ -225,6 +215,7 @@ c                             correction for -fac
          else 
 
             write (*,*) 'unknown transition code lam = ',lam,name
+            call errpau
 
          end if 
 
@@ -245,6 +236,9 @@ c                             hp98 style eos
       else if (lam.gt.2) then 
          write (*,*) 'ugga bugga ',name
       end if
+
+c                                            ds6.36 adds a blank line, skip it:
+         read(9,*)
 
        ilam = lam * 10
 

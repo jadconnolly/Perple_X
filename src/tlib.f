@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.1.20 January 21, 2026.',
+     *     'Perple_X release 7.2.0 February 27, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -51,6 +51,8 @@ c from crashing while reading a new solution model format
 c----------------------------------------------------------------------
       implicit none
 
+      include 'perplex_parameters.h'
+
       character*3 new
 
       if (new.eq.'682'.or.new.eq.'683'.or.new.eq.'688'.or.
@@ -62,15 +64,32 @@ c----------------------------------------------------------------------
      *         new.eq.'672'.or.new.eq.'673'.or.new.eq.'674'.or.
      *         new.eq.'675'.or.new.eq.'676'.or.new.eq.'678'.or.
      *         new.eq.'679'.or.new.eq.'689'.or.new.eq.'690'.or.
-     *         new.eq.'691'.or.new.eq.'719') then 
+     *         new.eq.'691'.or.new.eq.'719'.or.new.eq.'720') then 
 
          chksol = .true.
+c                                  check data/solution model
+c                                  file compatability 720+
+         if (.not.newdat.and.new.eq.'720') then
+            write (*,1000) 
+            call wrnstp
+         else if (newdat.and.new.ne.'720') then 
+            write (*,1010) 
+            call wrnstp
+         end if 
 
       else 
 
          chksol = .false.
 
       end if 
+
+1000  format (/,'**warning ver209** you are using a 7.2.0+ solution mo',
+     *       'del file but your thermodynamic',/,'data file has not be',
+     *       'en updated to include version information and may specify'
+     *       ,/,'inconsistent DQF instructions.',/)
+1010  format (/,'**warning ver210** you are using a 7.2.0+ thermodynam',
+     *       'ic data file but your solution',/,'model file is not con',
+     *       'sistent with 7.2.0+ DQF instructions.',/)
 
       end 
 
@@ -3869,9 +3888,11 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer ibeg, iend, ier, iscan, i, nreact, jopt
+      integer ibeg, iend, ier, iscan, i, nreact, jopt, nblen
 
-      external iscan
+      logical qdef
+
+      external iscan, nblen
 
       double precision rnum, nums(m3)
 
@@ -3884,7 +3905,6 @@ c----------------------------------------------------------------------
       character chars*1, card*400
       common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
-
       call readcd (n2,ier,.true.)
       if (ier.ne.0) goto 90 
 c                                 echo data for ctransf/actcor
@@ -3903,6 +3923,10 @@ c                                 get first name
          ibeg = 1
          call readnm (ibeg,iend,com,ier,tname)
          if (ier.ne.0) goto 90
+c                                 check for _q makes
+         qdef = .false.
+         iend = nblen(tname)
+         if (tname(iend-1:iend).eq.'_q') qdef = .true.
 c                                 find start of data marker '='
          ibeg = iscan (1,com,'=') + 1
 c                                 the rest of the data should
@@ -3937,6 +3961,7 @@ c                                 find the name
          mknum(nmak) = nreact
 c                                 now the dqf
          call readcd (n2,ier,.true.)
+
          if (ier.ne.0) goto 90
 c                                 echo data for ctransf/actcor 
          if (jopt.gt.3) write (n8,'(400a)') chars(1:com)
@@ -3944,6 +3969,8 @@ c                                 read the DQF coefficients
          ibeg = 1
          call redlpt (nums,ibeg,iend,ier) 
          if (ier.ne.0) goto 90
+
+         if (qdef) nums(1) = nums(1) + 1d6
 
          do i = 1, m3 
             mdqf(nmak,i) = nums(i)
@@ -4440,9 +4467,6 @@ c----------------------------------------------------------------------
       integer length,com
       character chars*1, card*400
       common/ cst51 /length,com,chars(400),card
-
-      character commnt*400
-      common/ cst99 /commnt
 c----------------------------------------------------------------------
       eof = .false.
 
@@ -5095,9 +5119,6 @@ c----------------------------------------------------------------------
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5  /p,t,xco2,u1,u2,tr,pr,r,ps
 
-      character commnt*400
-      common/ cst99 /commnt
-
       character*2 strgs*3, mstrg, dstrg, tstrg*3, wstrg*3, e16st*3
       common/ cst56 /strgs(32),mstrg(6),dstrg(m8),tstrg(m7),wstrg(m16),
      *               e16st(13)
@@ -5122,7 +5143,7 @@ c                                 input and may have read a comment, if so echo:
             i = nblen(commnt)
             if (ibeg+i.gt.lchar) i = lchar - ibeg
             read (commnt,'(400a)') chars(ibeg:ibeg+i-1)
-            ibeg = ibeg + i
+            ibeg = ibeg + i -1
          end if
 
       end if
@@ -6166,12 +6187,19 @@ c                                 frendly or actcor is reading
 c                                 the header, no transformations
       if (option.eq.1.or.option.eq.4) itrans = 0
 c                                 test for old (pre 4/2010) data file format:
-      read (n2,*,iostat=ier) i
-      if (ier.eq.0) call error (8,r,i,dname)
+c      read (n2,*,iostat=ier) i
+c      if (ier.eq.0) call error (8,r,i,dname)
 
       rewind n2
-c                                 database name
+c                                 database name or version flag
       call getkey (n2,ier,key,values,strg)
+
+      if (key.eq.'720') then 
+         newdat = .true.
+         call getkey (n2,ier,key,values,strg)
+      else 
+         newdat = .false.
+      end if
 
       dname = strg
 c                                 extrinsic variable names & reference values
@@ -7173,9 +7201,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer i, ibeg, iend, ier, iscan, iscnlt, itag
+      integer i, ibeg, iend, ier, iscan, iscnlt, itag, jend
 
-      double precision coeffs(3)
+      double precision coeffs(*)
 
       external iscan, iscnlt
 
@@ -7183,17 +7211,20 @@ c----------------------------------------------------------------------
       character chars*1, card*400
       common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
+c                                 7.2.0: replace com with local variable
+      jend = com
+
       do i = 2, 3
          coeffs(i) = 0d0
       end do 
 c                                 scan for an equals sign from ibeg
-      iend = iscan (ibeg,com,'=') + 1
-      if (iend.lt.com) ibeg = iend
+      iend = iscan (ibeg,jend,'=') + 1
+      if (iend.lt.jend) ibeg = iend
 c                                 get the first number
-      ibeg = iscnlt (ibeg,com,' ') 
+      ibeg = iscnlt (ibeg,jend,' ') 
 
-      call readfr (coeffs(1),ibeg,iend,com,ier)
-      if (ier.ne.0.or.iend+1.ge.com) return
+      call readfr (coeffs(1),ibeg,iend,jend,ier)
+      if (ier.ne.0.or.iend+1.ge.jend) return
 
       ibeg = iend + 2
       itag = ibeg
@@ -7201,7 +7232,7 @@ c                                 try reading as though no tags
 c                                 are present (pre-6.7.3)
       do i = 2, 3
 
-         call readfr (coeffs(i),ibeg,iend,com,ier)
+         call readfr (coeffs(i),ibeg,iend,jend,ier)
          if (ier.ne.0) exit
 
       end do 
@@ -7214,7 +7245,7 @@ c                                 are present (pre-6.7.3)
 c                                 if an error, numbs/tags must be present
 c                                 locate the number
       ibeg = itag
-      iend = iscan (ibeg,com,' ') 
+      iend = iscan (ibeg,jend,' ') 
 c                                 locate the first character of the tag
       itag = iend + 1
 
@@ -7228,12 +7259,12 @@ c                                 must be c2, but check for invalid tag
          return
       end if 
 c                                 read the number
-      call readfr (coeffs(i),ibeg,iend,com,ier)
+      call readfr (coeffs(i),ibeg,iend,jend,ier)
 c                                 the next number, if present begins at
-      ibeg = iscan (itag,com,' ') + 1
-      iend = iscan (ibeg,com,' ')
+      ibeg = iscan (itag,jend,' ') + 1
+      iend = iscan (ibeg,jend,' ')
 
-      if (ier.ne.0.or.iend.ge.com) return 
+      if (ier.ne.0.or.iend.ge.jend) return 
 c                                 swap indexes
       if (i.eq.2) then 
           i = 3
@@ -7241,7 +7272,7 @@ c                                 swap indexes
           i = 2
       end if 
 c                                 read the second tag
-      call readfr (coeffs(i),ibeg,iend,com,ier)
+      call readfr (coeffs(i),ibeg,iend,jend,ier)
 
       end 
 
@@ -12569,17 +12600,17 @@ c                                 partially disordered:
          q2 = 0d0
 
       end if
-c                                 This is the hp98 version, differs
-c                                 from what's in the TC code such that
-c                                 dGPX - dGTC = (tc0-tc)*q2^3/3.
 c                                 See landau_d60.mws
 c                                                JADC Jan 26, 2012.
 c      dg = therlm(2,1,ld) *
 c     *  (therlm(7,1,ld) + t*(q2 - therlm(8,1,ld)) + tc*(q2**3/3d0 - q2))
-c        + vdp...
+c        + intvdp
 c                                 TC version, according to hans vrijmoed
 c                                 e-mail 9/10/12 this is correct, should
 c                                 check again....
+
+c                                 I did check, the expressions are equivalent.
+c                                 JADC Feb 5, 2026.
       dg = therlm(2,1,ld) *
      *   (therlm(7,1,ld) + t*(q2 - therlm(8,1,ld))
      *                   - tc*q2 + tc0*q2**3/3d0)

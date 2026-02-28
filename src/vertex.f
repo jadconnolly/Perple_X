@@ -2514,7 +2514,7 @@ c----------------------------------------------------------------------
 
       integer i, ist, iend
 
-      integer length,com
+      integer length, com
       character chars*1, card*400
       common/ cst51 /length,com,chars(400),card
 

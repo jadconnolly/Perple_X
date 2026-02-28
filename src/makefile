@@ -115,6 +115,9 @@ werami: werami.o $(LIBRARY)
 pssect: psect.o cont_lib.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) psect.o cont_lib.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
+#rewrite: rewrite_2010.o $(LIBRARY)
+#	$(COMP77) $(FFLAGS) $(FLINK_PRE) rewrite_2010.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
+
 pstable: pstable.o $(LIBRARY_PS)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY_PS) -o $@$(EXT) $(FLINK_POST)
 
@@ -197,6 +200,8 @@ pt2curv.o: pt2curv.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c pt2curv.f
 resub.o: resub.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c resub.f
+#rewrite_2010.o: rewrite_2010.f perplex_parameters.h
+#	$(COMP77) $(FFLAGS) -c rewrite_2010.f
 rlib.o: rlib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c rlib.f
 STX_2_ver.o: STX_2_ver.f perplex_parameters.h

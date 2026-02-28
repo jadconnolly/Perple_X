@@ -1000,16 +1000,16 @@ c                              lmda transitions:
          if (jlam.eq.5) then
 c                                 holland and powell, bragg-williams model:
 c                                 enthalpy change of disordering
-            therlm(1,1,lamin) = tm(1,1) - pr*tm(2,1)
+            therlm(1,1,lamin) = tm(1,1) - pr * tm(2,1)
 c                                 volume change of disordering
             therlm(2,1,lamin) = tm(2,1)
-c                                 excess enthalpy
-            therlm(3,1,lamin) = tm(3,1)
+c                                 excess enthalpy, ref p correction added 2/26
+            therlm(3,1,lamin) = tm(3,1) - pr * tm(4,1)
 c                                 excess volume
-            therlm(4,1,lamin) = tm(4,1)
+            therlm(4,1,lamin) = tm(4,1) 
 c                                 n
             therlm(5,1,lamin) = tm(5,1)
-c                                 fac - unused?
+c                                 fac - configurational entropy fudge factor
             therlm(6,1,lamin) = tm(6,1)
 c                                 n+1
             therlm(7,1,lamin) = tm(5,1) + 1d0
@@ -1874,7 +1874,7 @@ c                                 find the name
 
       call errpau
 
-1000  format ('**error ver200** READN bad data, currently ',
+1000  format (/,'**error ver200** READN bad data, currently ',
      *        'reading solution model: ',a,' data was:',/,400a,/,
      *        'last name read was: ',a,/)
 
@@ -2143,7 +2143,7 @@ c                                 assign data
 
       call errpau
 
-1000  format ('**error ver200** READX bad data, currently ',
+1000  format (/,'**error ver200** READX bad data, currently ',
      *        'reading solution model: ',a,' data was:',/,400a)
 1010  format ('last name read was: ',a,/,
      *        'usually this error is due to a mispelled ',
@@ -2154,14 +2154,15 @@ c                                 assign data
       subroutine readop (idim,kstot,tname)
 c----------------------------------------------------------------------
 c readop - tail of solution model to find optional dqf,
-c          van laar size parameters, flagged endmembers, or 
-c          reach_increment
+c          van laar size parameters, flagged endmembers, 
+c          reach_increment, special_operations
 
 c readop - reads data until it finds an     "end_of_model" record
 
 c          van laar data is identified by a "begin_van_la" record
 c          dqf data is identified by a      "begin_dqf_co" record
 c          endmember flags by a             "begin_flagge" record
+c          special operations               "begin_specia" record
 c          or the reach factor is           "reach_increm" record
 
 
@@ -2187,6 +2188,7 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
 
       idqf = 0
+      isop = 0
       loctol = -1d0
       laar = .false.
       stck = .true.
@@ -2210,10 +2212,15 @@ c                              lacks end_of_model keyword
 
             call errpau
 
+         else if (key.eq.'begin_special_operatio') then
+
+            call readso (idim,tname)
+
          else if (key.eq.'begin_van_laar_sizes') then
 c                              read van laar data:
             laar = .true.
             call readvl (idim,kstot,tname)
+
 
          else if (key.eq.'begin_dqf_corrections') then
 c                              read dqf data:
@@ -2391,19 +2398,24 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer ibeg, ier, iscan, imax, match, idim, jend, i
+      integer ibeg, ier, iscan, imax, match, idim, jend, i, nblen, j, 
+     *        iend
 
-      external iscan, match
+      logical qdef, ok
 
       character name*8, eod*3, tname*10
 
       double precision nums(m3)
 
+      external iscan, match, nblen
+
+      character mname*8
+      common/ cst18a /mname(m4)
+
       integer length,com
       character chars*1, card*400
       common/ cst51 /length,com,chars(400),card
 c----------------------------------------------------------------------
-
       eod = ' '
 
       do while (eod.ne.'end')
@@ -2425,30 +2437,195 @@ c                                 data found
 
          indq(idqf) = match (idim,ier,name)
          if (ier.ne.0) goto 90
+c                                 replicate check
+         if (idqf.gt.1) then 
+
+            do i = 1, idqf - 1
+
+               if (indq(i).eq.indq(idqf)) call errdbg ('a dqf for '//
+     *           'endmember '//name//' is specified more than once'//
+     *           'in solution model '//tname)
+
+            end do
+
+         end if
+c                                check for _q make
+         i = nblen(name)
+
+         if (name(i-1:i).eq.'_q') then
+            qdef = .true.
+         else
+            qdef = .false.
+         end if
 
          ibeg = imax + 2
 
          call redlpt (nums,ibeg,jend,ier)
          if (ier.ne.0) goto 90
 
+         if (qdef) nums(1) = nums(1) - 1d6
+
          do i = 1, m3
             dqf(i,idqf) = nums(i)
+         end do
+
+      end do
+c                                  check that every internally made
+c                                  endmember has a make definition.
+      do i = 1, idim
+         
+         iend = nblen(mname(i))
+
+         if (iend.le.2) cycle
+         
+         if (mname(i)(iend:iend).eq.'q'.and.
+     *       mname(i)(iend-1:iend-1).eq.'_') then
+
+            ok = .false.
+
+            do j = 1, idqf
+
+               if (mname(indq(j)).eq.mname(i)) then
+
+                  ok = .true.
+                  exit
+
+               end if
+
+            end do 
+
+            if (.not.ok) then 
+
+               call errdbg ('endmember '//mname(i)(1:nblen(mname(i)))//
+     *              ' of '//tname(1:nblen(tname))//' requires an int'//
+     *              'ernal DQF but none is specified.') 
+
+            end if 
+
+         end if
+
+      end do 
+
+      return
+
+90    write (*,1000) tname,chars(1:com)
+      write (*,1001)
+
+c     write (*,1001) dqf(i,idqf)
+c1001  format ('last number (or real equivalent) was: ',g12.6,/,
+
+      call errpau
+
+1000  format (/,'**error ver200** READDQ bad data, currently ',
+     *        'reading solution model: ',a,' data was:',/,400a)
+1001  format ('usually this error is caused by a mispelled ',
+     *        'endmember name.',/)
+
+      end
+
+
+      subroutine readso (idim,tname)
+c----------------------------------------------------------------------
+c readso - read special instructions for the modification of solution
+c endmember assumes data on one line of less than 240 characters, the 
+c expected format
+
+c        sop(name) key
+
+c        output:
+
+c          isop          - the number of endmembers with dqf corrections
+c          insop(isop)   - pointer to corrected endmember in the solution model
+c          soptyp(isop)  - instruction code
+
+c end_of_data is either a "|" or the end of the record.
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer ibeg, ier, iscan, iscnlt, imax, match, idim, jend, i, 
+     *        nblen, iend
+
+      character name*8, eod*3, tname*10
+
+      double precision nums(m3)
+
+      external iscan, match, nblen, iscnlt
+
+      integer length,com
+      character chars*1, card*400
+      common/ cst51 /length,com,chars(400),card
+c----------------------------------------------------------------------
+      eod = ' '
+
+      do while (eod.ne.'end')
+
+         call readcd (n9,ier,.true.)
+         if (ier.ne.0) goto 90
+
+         iend = com
+
+         write (eod,'(3a)') chars(1:3)
+c                                 find brackets
+         ibeg = iscan (1,iend,'(') + 1
+         imax = iscan (1,iend,')') - 1
+
+         if (ibeg.gt.com.or.imax.gt.com) cycle
+c                                 data found
+         call readnm (ibeg,jend,imax,ier,name)
+         if (ier.ne.0) goto 90
+
+         isop = isop + 1
+
+         insop(isop) = match (idim,ier,name)
+         if (ier.ne.0) goto 90
+c                                 scan for a character, currently the only option
+         ibeg = iscnlt(imax+2,iend,'Z')
+
+         if (ibeg.gt.com) goto 90
+
+         sopchr(isop) = chars(ibeg)
+
+         if (chars(ibeg).eq.'d'.or.chars(ibeg).eq.'i') then 
+
+            soptyp(isop) = 1
+
+         else if  (chars(ibeg).eq.'o'.or.chars(ibeg).eq.'n') then 
+
+            soptyp(isop) = 2
+
+         else if  (ibeg.gt.com.or.chars(ibeg).eq.'e') then 
+
+            soptyp(isop) = 3
+
+         else 
+
+            goto 90
+
+         end if
+c                                 get the dqs
+         call redlpt (nums,ibeg+1,iend,ier)
+
+         if (ier.gt.0.or.ibeg.ge.com) goto 90
+
+         do i = 1, m3
+            sopq(isop,i) = nums(i)
          end do
 
       end do
 
       return
 
-90    write (*,1000) tname,chars(1:com),dqf(i,idqf)
+90    write (*,1000) tname,chars(1:com)
       write (*,1001)
 
       call errpau
 
-1000  format ('**error ver200** READDQ bad data, currently',
-     *        'reading solution model: ',a,' data was:',/,400a,/,
-     *        'last number (or real equivalent) was: ',g12.6,/)
-1001  format (/,'usually this error is caused by a mispelled ',
-     *          'endmember name.',/)
+1000  format (/,'**error ver200** READSO bad data, currently ',
+     *        'reading solution model: ',a,' data was:',/,400a)
+1001  format ('This error is usually caused by an invalid endmember na',
+     *        'me, special operation, or dqf expression.',/)
 
       end
 
@@ -3829,7 +4006,7 @@ c                                 scan for blanks:
 
       end
 
-      subroutine sattst (ifer,lmake,good)
+      subroutine sattst (ifer,lmake,good,nosav)
 c----------------------------------------------------------------------
 c sorts phases into the appropriate saturated phase list called by
 c input2. returns good if data is valid
@@ -3838,9 +4015,9 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer j,ifer,idc
+      integer i, j,ifer,idc
 
-      logical good, lmake
+      logical good, lmake, skip, nosav
 
       character name*8
       common/ csta6 /name
@@ -3858,16 +4035,48 @@ c----------------------------------------------------------------------
 c-----------------------------------------------------------------------
 
       good = .false.
+      skip = .false.
+      nosav = .false.
 
       if (ifct.gt.0) then
 c                               check for fluid species data
          do j = 1, ispec
 
-            if (name.ne.cmpnt(idspe(j))) cycle
-            ifer = ifer + 1
-            good = .true.
-            call loadit (j,.false.,.true.)
-            return
+            if (comp(idspe(j)).ne.0d0) then
+c                               potential composant of the saturated phase
+               do i = 1, icmpn
+                  if (i.ne.idspe(j).and.comp(i).ne.0d0) then
+                     skip = .true.
+                     exit
+                  end if
+               end do
+c                               the make has a component other than the
+c                               the saturated phase component
+               if (skip) cycle
+
+            else 
+
+               cycle
+
+            end if
+c                               if here it's got the composition
+            if (name.eq.cmpnt(idspe(j))) then
+c                               and it's the composant:
+               ifer = ifer + 1
+               call loadit (j,.false.,.true.)
+               good = .true.
+
+               return
+
+            else if (lmake) then
+c                               it's not the composant, but it could be an
+c                               endmember, so don't flag it yet.
+               good = .true.
+               nosav = .true.
+
+               return
+
+            end if
 
          end do
 
@@ -4192,12 +4401,12 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical skip, bad
+      logical bad
 
       integer jsp,jtic,morder,jend,
-     *        i,j,ikill,jkill,kill,kdep,kdqf,ktic,jold,
+     *        i,j,ikill,jkill,kill,kdep,ktic,jold,
      *        i2ni(m4),kwas(m4),k,l,itic,ijkill(m4),
-     *        j2oj(msp),j2nj(msp),i2oi(m4),maxord
+     *        j2oj(msp),j2nj(msp),i2oi(m4)
 c                                 local input variables
       integer iddeps,norder,nr
       double precision depnu,denth
@@ -4217,11 +4426,6 @@ c                                 local input variables
 
       integer iorig,jnsp,iy2p
       common / cst159 /iorig(m4),jnsp(m4),iy2p(m4)
-
-      integer mdep,idep,jdep,ndph
-      double precision nu,y2p
-      common/ cst146 /nu(m15,j4),y2p(m4,m15),mdep,jdep(m15),
-     *                idep(m15,j4),ndph(m15)
 c----------------------------------------------------------------------
 
       jend = isimp(1)
@@ -4386,98 +4590,8 @@ c                                reset total and present counters
       istot = ktic
 
       jstot = istot - jtic
-c                                --------------------------------------
-c                                excess terms:
-      itic = 0
-      maxord = 0
 
-      do i = 1, iterm
-c                                check for forbidden terms (i.e., terms
-c                                with a missing endmember
-         skip = .false.
-c                                 macroscopic formulation
-         do j = 1, kill
-c                                 check if subscript points to a killed
-c                                 endmember
-            do k = 1, rkord(i)
-
-               if (isub(i,k).eq.ijkill(j)) then
-                  skip = .true.
-                  exit
-               end if
-
-            end do
-
-            if (skip) exit
-
-         end do
-
-         if (skip) cycle
-c                               the term is acceptable
-         itic = itic + 1
-
-         rkord(itic) = rkord(i)
-
-         isub(itic,1:rkord(i)) = i2ni(isub(i,1:rkord(i)))
-
-         if (xtyp.eq.0) then
-c                                save the coefficient
-            do j = 1, m3
-               wg(itic,j) = wg(i,j)
-            end do
-
-         else
-c                                 redlich kistler
-            do j = 1, rkord(itic)
-               do k = 1, m16
-                  wk(k,j,itic) = wk(k,j,i)
-               end do
-            end do
-
-         end if
-
-      end do
-c                                reset counter
-      iterm = itic
-c                                --------------------------------------
-c                                van laar volume functions
-      if (laar) then
-         do i = 1, istot + morder
-            do j = 1, m3
-               vlaar(j,i) = vlaar(j,i2oi(i))
-            end do
-         end do
-      end if
-c                                 --------------------------------------
-c                                 dqf corrections, this is sloppy since
-c                                 uses istot instead of kstot
-      if (idqf.gt.0) then
-
-         kdqf = 0
-c                                 check if a retained species has a dqf
-c                                 correction
-         do j = 1, idqf
-c                                 the itoi index must be in the inner loop
-c                                 in case the values of indq are not sequential
-            do i = 1, istot
-               if (indq(j).eq.i2oi(i)) then
-c                                 found a dqf'd endmember
-                  kdqf = kdqf + 1
-                  indq(kdqf) = i
-                  do k = 1, m3
-                     dqf(k,kdqf) = dqf(k,j)
-                  end do
-                  exit
-               end if
-            end do
-
-            if (kdqf.eq.idqf) exit
-
-         end do
-
-         idqf = kdqf
-
-      end if
+      call rehack  (ijkill,i2ni,i2oi,morder,kill)
 c                                 --------------------------------------
 c                                 configurational entropy model
 
@@ -4580,21 +4694,6 @@ c                                 species.
             end do
 
          end if
-
-      end if
-c                                 --------------------------------------
-c                                 dependent endmember properties, the
-      if (depmod) then
-c                                 dependent endmembers have been reordered
-c                                 in redep, but are still expressed in
-c                                 terms of the old indices, so reset the
-c                                 indices:
-         do i = 1, mdep
-            jdep(i) = i2ni(jdep(i))
-            do j = 1, ndph(i)
-               idep(i,j) = i2ni(idep(i,j))
-            end do
-         end do
 
       end if
 
@@ -7368,6 +7467,20 @@ c                                 shift pointer from y array to p array
 
       end do
 c                                 -------------------------------------
+c                                 special operations
+      do i = 1, isop
+
+c                                 a dqf to an ordered species
+c                                 or a dependent endmember
+         if (kdsol(insop(i)).lt.0)
+     *                       call error (227,r,indq(i),fname(im))
+
+         call dospop (i,kdsol(insop(i)))
+
+         mname(iorig(insop(i))) = names(kdsol(insop(i)))
+
+      end do
+c                                 -------------------------------------
 c                                 if msite(h0) ne 0 get "normalization" constants (endmember
 c                                 configurational entropies) for entropy model:
       if (msite(im).ne.0) call snorm0 (im,tname)
@@ -8340,7 +8453,7 @@ c                                 endmember corrections
 
       end
 
-      subroutine speci0 (g,h,w,n,fac,c0,f)
+      subroutine speci0 (g, s, y, h, w, n, fac, c0, f)
 c----------------------------------------------------------------------
 c subroutine to solve speciation of a 0-d solution with 1 ordering parameter
 c by halving. assumes an ordered species in which A is on 1 site and B is on
@@ -8350,6 +8463,8 @@ c n+1 sites.
 c    h   - is the enthalpy of complete disordering
 c    w   - is the interaction energy
 c    fac - is an empirical correction to the entropy, supposedly accounting for SRO.
+c    c0  - n + 1
+c    f   - n/(n+1)
 c    g   - is the change in G for the stable speciation relative to the ordered state.
 c    y   - is the fraction of the ordered species
 
@@ -8359,16 +8474,30 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      double precision g,h,w,sign,dy,odg,ndg,n,f,y,dgdy,rt,c0,c1,c2,fac
+      double precision g, h, w, sign, dy, odg, ndg, n, f, y, rt,
+     *                 c0, c1, c2, fac, fac1, facn, s, dgdy, ymin
+
+      external dgdy
 
       double precision r,tr,pr,ps,p,t,xco2,u1,u2
       common/ cst5   /p,t,xco2,u1,u2,tr,pr,r,ps
 c----------------------------------------------------------------------
 c                                 check ordered state
       y = 1d0 - nopt(50)
-      rt = r*t*fac
 
-      odg = dgdy(h,w,n,f,y,rt)
+      if (fac.gt.0) then
+         fac1 = fac
+         facn = fac
+      else
+         fac1 = 1d0
+         facn = -fac
+      end if
+
+      ymin = -1d0/n
+
+      rt = r*t
+
+      odg = dgdy(h,w,n,f,fac1,facn,y,rt)
 c                                 if dgdy < 0 must be fully ordered
 c                                 (not really, non-zero w could make
 c                                 a zero at intermediate y).
@@ -8377,15 +8506,15 @@ c                                 fully ordered (y=1)
          y = 1d0
 
       else
-c                                 initialize at halfway point
+c                                 initialize at halfway point, actually (1 - ymin)/2
          dy = -0.5d0
 c                                 iteration loop:
          do
 
             y = y + dy
-            if (y.le.0d0) y = nopt(50)
+            if (y.le.ymin) y = ymin + nopt(50)
 
-            ndg = dgdy(h,w,n,f,y,rt)
+            ndg = dgdy(h,w,n,f,fac1,facn,y,rt)
 
             sign = odg*ndg
 
@@ -8398,9 +8527,10 @@ c                                 crossed the zero, flip the search
 c                                 refined to tolerance
                exit
 
-            else if (y.le.nopt(50)) then
+            else if (y.le.ymin) then
 c                                 fully disordered, y=0, c1 = c2
-               y = 0d0
+c                                 corrected 7.2.0 to y = -1/n
+               y = ymin
                exit
 
             end if
@@ -8412,30 +8542,33 @@ c                                 fully disordered, y=0, c1 = c2
       c1 = (n+y)/c0
 
       if (c1.lt.nopt(56).and.c1.gt.nopt(50)) then
-         g = rt*n*(c1*dlog(c1)+(1d0-c1)*dlog(1d0-c1))
+         s = facn*n*(c1*dlog(c1)+(1d0-c1)*dlog(1d0-c1))
       else
-         g = 0d0
+         s = 0d0
       end if
 
       c2 = (1d0-y)*n/c0
 
       if (c2.lt.nopt(56).and.c2.gt.nopt(50))
-     *   g = g + rt*(c2*dlog(c2) + (1d0-c2)*dlog(1d0-c2))
+     *   s = s + fac1*(c2*dlog(c2) + (1d0-c2)*dlog(1d0-c2))
 
-      g = g + (1d0-y)*( w*y + h)
+      s = -s*r
+
+      g = (1d0-y)*( w*y + h) - s*t
 
       end
 
-      double precision function dgdy (h,w,n,f,y,rt)
+      double precision function dgdy (h,w,n,f,fac1,facn,y,rt)
 c----------------------------------------------------------------------
 c function to compute dg/dy for subroutine speci0
 c----------------------------------------------------------------------
       implicit none
 
-      double precision h,w,n,f,y,rt
+      double precision h,w,n,f,y,rt,fac1,facn
 
       dgdy = (1d0-2d0*y)*w - h
-     *       - rt*f*dlog(n*(1d0-y)**2/(n+y)/(1d0+n*y))
+     *       - rt*f* (dlog((1d0 - y)*n/(n*y + 1d0)) * fac1 +
+     *                dlog((1d0 - y)/(n + y)) * facn)
 
       end
 
@@ -13853,7 +13986,7 @@ c                                 transitions
 
       end
 
-      subroutine lambw (dg,ld)
+      subroutine lambw (dg, ds, y, ld)
 c---------------------------------------------------------------------
 c calculate the energy of an order-disorder transition using the
 c Bragg-Williams model (Holland and Powell, '96), 0-d speciation.
@@ -13866,7 +13999,7 @@ c---------------------------------------------------------------------
 
       integer ld
 
-      double precision dg,h,w
+      double precision dg,ds, h, w, y
 
       double precision p,t,xco2,u1,u2,tr,pr,r,ps
       common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
@@ -13876,8 +14009,8 @@ c                                 enthalpy of complete disordering
 c                                 interaction energy
       w = therlm(3,1,ld) + therlm(4,1,ld)*p
 
-      call speci0 (dg,h,w,therlm(5,1,ld),therlm(6,1,ld),
-     *                    therlm(7,1,ld),therlm(8,1,ld))
+      call speci0 (dg, ds, y, h, w, therlm(5,1,ld), therlm(6,1,ld),
+     *                              therlm(7,1,ld), therlm(8,1,ld))
 
       end
 
@@ -17172,7 +17305,7 @@ c                                 eliminate flagging for liqdus calculations
 
       call errpau
 
-1000  format ('**error ver200** READEF bad data, currently ',
+1000  format (/,'**error ver200** READEF bad data, currently ',
      *        'reading solution model: ',a,' data was:',/,400a,/)
 1001  format (/,'usually this error is caused by a mispelled ',
      *          'endmember name.',/)
@@ -17503,10 +17636,10 @@ c---------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical skip, bad
+      logical bad
 
       integer jsp,jtic,morder,pkill,ii,ivct,
-     *        i,j,ikill,jkill,kill,kdep,kdqf,ktic,jold,
+     *        i,j,ikill,jkill,kill,kdep,ktic,jold,
      *        i2ni(m4),kwas(m4),k,l,itic,ijkill(m4),
      *        j2oj(msp),j2nj(msp),i2oi(m4)
 c                                 local input variables
@@ -17528,11 +17661,6 @@ c                                 local input variables
 
       integer iorig,jnsp,iy2p
       common / cst159 /iorig(m4),jnsp(m4),iy2p(m4)
-
-      integer mdep,idep,jdep,ndph
-      double precision nu,y2p
-      common/ cst146 /nu(m15,j4),y2p(m4,m15),mdep,jdep(m15),
-     *                idep(m15,j4),ndph(m15)
 c----------------------------------------------------------------------
 
       do i = 1, isimp(pkill)
@@ -17702,95 +17830,8 @@ c                                 polytopes where nothing happened
          end if
 
       end do
-c                                --------------------------------------
-c                                excess terms:
-      itic = 0
 
-      do i = 1, iterm
-c                                check for forbidden terms (i.e., terms
-c                                with a missing endmember
-         skip = .false.
-c                                 macroscopic formulation
-         do j = 1, kill
-c                                 check if subscript points to a killed
-c                                 endmember
-            do k = 1, rkord(i)
-               if (isub(i,k).eq.ijkill(j)) then
-                  skip = .true.
-                  exit
-               end if
-            end do
-
-            if (skip) exit
-
-         end do
-
-         if (skip) cycle
-c                               the term is acceptable
-         itic = itic + 1
-
-         rkord(itic) = rkord(i)
-
-         isub(itic,1:rkord(i)) = i2ni(isub(i,1:rkord(i)))
-
-         if (xtyp.eq.0) then
-c                                save the coefficient
-            do j = 1, m3
-               wg(itic,j) = wg(i,j)
-            end do
-
-         else
-c                                 redlich kistler
-            do j = 1, rkord(itic)
-               do k = 1, m16
-                  wk(k,j,itic) = wk(k,j,i)
-               end do
-            end do
-
-         end if
-
-      end do
-c                                reset counter
-      iterm = itic
-c                                --------------------------------------
-c                                van laar volume functions
-      if (laar) then
-         do i = 1, istot + morder
-            do j = 1, m3
-               vlaar(j,i) = vlaar(j,i2oi(i))
-            end do
-         end do
-      end if
-c                                 --------------------------------------
-c                                 dqf corrections, this is sloppy since
-c                                 uses istot instead of kstot
-      if (idqf.gt.0) then
-
-         kdqf = 0
-c                                 check if a retained species has a dqf
-c                                 correction
-         do j = 1, idqf
-c                                 the itoi index must be in the inner loop
-c                                 in case the values of indq are not sequential
-            do i = 1, istot
-               if (indq(j).eq.i2oi(i)) then
-c                                 found a dqf'd endmember
-                  kdqf = kdqf + 1
-                  indq(kdqf) = i
-                  do k = 1, m3
-                     dqf(k,kdqf) = dqf(k,j)
-                  end do
-                  exit
-               end if
-            end do
-
-            if (kdqf.eq.idqf) exit
-
-         end do
-
-         idqf = kdqf
-
-      end if
+      call rehack  (ijkill,i2ni,i2oi,morder,kill)
 c                                 --------------------------------------
 c                                 configurational entropy model
 
@@ -17885,21 +17926,6 @@ c                                 species.
             end do
 
          end if
-
-      end if
-c                                 --------------------------------------
-c                                 dependent endmember properties, the
-      if (depmod) then
-c                                 dependent endmembers have been reordered
-c                                 in redep, but are still expressed in
-c                                 terms of the old indices, so reset the
-c                                 indices:
-         do i = 1, mdep
-            jdep(i) = i2ni(jdep(i))
-            do j = 1, ndph(i)
-               idep(i,j) = i2ni(idep(i,j))
-            end do
-         end do
 
       end if
 
@@ -18686,7 +18712,7 @@ c----------------------------------------------------------------------
       integer i, j, k, l, im, ict, ifer,inames, jphct, imak(k16), iox, 
      *        nblen
 
-      logical eof, good, first, tpro(k5)
+      logical eof, good, first, tpro(k5), nosav
 
       external nblen
 
@@ -18965,7 +18991,7 @@ c                                 entities:
  
          call chkphi (0,name,good)
 
-         if (good) call sattst (ifer,.false.,good)
+         if (good) call sattst (ifer,.false.,good,nosav)
 
       end do 
 c                                 loop to load made saturated entities
@@ -18985,11 +19011,11 @@ c
 c                                 set eos flag
          ieos = meos(i)
 
-         call sattst (ifer,.true.,good)
+         call sattst (ifer,.true.,good,nosav)
 
          if (.not.good) call error (57,comp(1),iphct,name)
 
-         if (good) then 
+         if (good.and..not.nosav) then 
             make(iphct) = i
 c                                 pointer used for iemod.
             imak(i) = iphct
@@ -19036,7 +19062,7 @@ c                                 of saturated phase or mobile components:
       if (ifct+jmct.gt.0) then 
 
          call eohead (n2)
-
+c                                 real entities:
          do 
 
             call getphi (name,.false.,eof)
@@ -19046,7 +19072,7 @@ c                                 of saturated phase or mobile components:
             call chkphi (4,name,good)
 
             if (.not.good) cycle 
-c                                 reject phases already in the list
+c                                 reject phases already in the list, necessary?
             do i = 1, kphct
                if (names(i).eq.name) then
                   good = .false.
@@ -19054,13 +19080,47 @@ c                                 reject phases already in the list
                end if 
             end do 
 
-            if (.not.good) cycle             
+            if (.not.good) cycle
 c                                 matched a name
             iphct = iphct + 1
 c                                 store thermodynamic parameters:
             call loadit (iphct,.false.,.true.)
 
          end do
+c                                 made entities:
+
+         do i = 1, nmak
+
+            do j = 1, icmpn
+               comp(j) = mcomp(i,j)
+            end do 
+
+            name = mknam(i,mknum(i)+1)
+c                                 redundant check:
+            call chkphi (4,name,good)
+c                               
+            if (.not.good) cycle
+c                                 check against names, why?
+            do k = 1, kphct
+               if (names(k).eq.name) then
+                  good = .false.
+                  exit
+               end if 
+            end do 
+
+            if (.not.good) cycle
+c                                 set eos flag
+            ieos = meos(i)
+
+            iphct = iphct + 1
+c                                 store thermodynamic parameters:
+            call loadit (iphct,.true.,.true.)
+
+            make(iphct) = i
+c                                 pointer used for iemod.
+            imak(i) = iphct
+
+      end do 
 
       end if 
 c                                 -------------------------------------
@@ -22140,7 +22200,7 @@ c----------------------------------------------------------------------
       integer id
 
       double precision gval, dg, vdp, gmags, lamla2, stxhil, xp, xt, 
-     *                 dg1, dg2
+     *                 dg1, dg2, ds, y
 
       external gmags, lamla2, stxhil
 
@@ -22196,7 +22256,7 @@ c                                 in hp11 (ds6)
 
          else if (ltyp(id).eq.5) then
 c                                 holland and powell bragg-williams model
-            call lambw (dg,lmda(id))
+            call lambw (dg, ds, y, lmda(id))
             gval = gval + dg
 
          else if (ltyp(id).eq.7) then
@@ -22246,6 +22306,126 @@ c                                 limits q <= qmax.
             call errdbg ('no such transition model')
 
          end if
+
+      end
+
+      subroutine dospop (i,id)
+c----------------------------------------------------------------------
+c modifiy the true (i.e., not dfd'd) properties of endmember id of a 
+c solution as specified by the special operations section of its 
+c entry in the solution model file. Currently the only operation is
+c adjusting an O/D endmember to represent its disordered state.
+
+c soptyp - 1 - disorder
+c soptyp - 2 - order (not implemented)
+c soptyp - 3 - eq
+
+c i   - the operation index
+c id  - endmember index in the thermodynamic data array
+c ids - the solution model index
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer i, j, id,  nblen, jd
+
+      double precision y, dg, ds, oldt
+
+      external nblen
+
+      character tname*10, text*8
+      logical refine, lresub
+      common/ cxt26 /refine,lresub,tname
+
+      integer ltyp,lct,lmda,idis
+      common/ cst204 /ltyp(k10),lct(k10),lmda(k10),idis(k10)
+
+      double precision p,t,xco2,u1,u2,tr,pr,r,ps
+      common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
+c----------------------------------------------------------------------
+c                                 a make?
+      text = names(id)
+
+      if (make(id).ne.0) call errdbg ('endmember '//
+     *                text(1:nblen(text))//' of solution '//
+     *                tname(1:nblen(tname))//' is a made entity. '//
+     *                'Special operations are not permitted on '//
+     *                'made entities')
+c                                 EoS legit?
+      if (eos(id).ne.2.and.eos(id).ne.8) call errdbg (
+     *                'the operation on endmember '//
+     *                 text(1:nblen(text))//' of solution '//
+     *                 tname(1:nblen(tname))//' is only permitted '//
+     *                'for EoS = 2 or 8')
+c                                 O/D model exists?
+      if (ltyp(id).eq.0) call errdbg ('the operation on endmember '//
+     *   text(1:nblen(text))//' of solution '//tname(1:nblen(tname))//
+     *   ' is invalid or has already been invoked by a different '//
+     *   'solution model.')
+c                                 O/D model of correct type?
+      if (ltyp(id).ne.4.and.ltyp(id).ne.5) call errdbg (
+     *                'the operation on endmember '//
+     *                text(1:nblen(text))//' of solution '//
+     *                tname(1:nblen(tname))//' is only permitted '//
+     *                'for transition type = 4 or 5')
+
+      jd = lmda(id)
+c                                 apparently thermocalc is not correcting
+c                                 the base g function internally for endmembers with p-t dependent 
+c                                 O/D, it simply creates the base function by shutting off the transition
+c                                 and then adds an external correction
+      if (soptyp(i).eq.1) then
+
+        if (ltyp(id).eq.4) then
+c                                 HP landau (no correction for ds5/ds6, if one is necessary).
+c                                 modify the dqf to make it relative to the disordered base function
+           sopq(i,1) = sopq(i,1) + therlm(2,1,jd) * therlm(1,1,jd) * 
+     *               ( therlm(8,1,jd) - therlm(8,1,jd)**3/3d0)
+           sopq(i,2) = sopq(i,2) - therlm(2,1,jd) * therlm(8,1,jd)
+           sopq(i,3) = therlm(3,1,jd) * therlm(2,1,jd) * therlm(8,1,jd)
+
+         else if (ltyp(id).eq.5) then
+c                                 HP Bragg, HP use makes relative to the ordered base
+            oldt = t
+            t = tr
+c                                 get the equilibrium disordered component
+            call lambw (dg, ds, y, lmda(id))
+c                                 subtract off the disordered components from the 
+c                                 equilibrium base function to create the ordered base
+            sopq(i,1) = sopq(i,1) - (dg + t*ds)
+            sopq(i,2) = sopq(i,2) - (-ds)
+            sopq(i,3) = sopq(i,3) - (1d0 - y) * therlm(2,1,jd)
+
+            t = oldt
+
+         else
+
+            call errdbg ('DOSPOP: transition type not implemented.')
+
+         end if
+
+      else if (soptyp(i).eq.2) then 
+
+         call errdbg ('Order special operation not implemented.')
+
+      end if
+
+      do j = 1, m3
+         thermo(j,id) = thermo(j,id) + sopq(i,j)
+      end do
+
+      if (soptyp(i).ne.3) then
+c                                 shut off the transition
+         ltyp(id) = 0
+         names(id) = sopchr(i)//names(id)(1:7)
+
+      else if (soptyp(i).eq.3) then 
+c                                 keep the transition, change the name
+c                                 assuming this a spinel.
+         names(id) = 'i'//names(id)(1:7)
+
+      end if
 
       end
 
@@ -22409,5 +22589,176 @@ c                                the normalization here
       end do
 
       rplica = .false.
+
+      end
+
+      subroutine rehack (ijkill,i2ni,i2oi,morder,kill)
+c---------------------------------------------------------------------
+c rehack is called by kill02 and killsp to do reformulation tasks 
+c common to both routines
+c---------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      logical skip
+
+      integer kdqf, kill,i,j,i2ni(*),k,itic,ijkill(*),
+     *        i2oi(*), morder
+
+      integer iend,isub,insp,iterm,iord,istot,jstot,kstot,rkord
+      double precision wg,wk
+      common/ cst108 /wg(m1,m3),wk(m16,m17,m18),iend(m4),
+     *      isub(m1,m2),insp(m4),
+     *      rkord(m1),iterm,iord,istot,jstot,kstot
+
+      integer mdep,idep,jdep,ndph
+      double precision nu,y2p
+      common/ cst146 /nu(m15,j4),y2p(m4,m15),mdep,jdep(m15),
+     *                idep(m15,j4),ndph(m15)
+c----------------------------------------------------------------------
+c                                excess terms:
+      itic = 0
+
+      do i = 1, iterm
+c                                check for forbidden terms (i.e., terms
+c                                with a missing endmember
+         skip = .false.
+c                                 macroscopic formulation
+         do j = 1, kill
+c                                 check if subscript points to a killed
+c                                 endmember
+            do k = 1, rkord(i)
+
+               if (isub(i,k).eq.ijkill(j)) then
+                  skip = .true.
+                  exit
+               end if
+
+            end do
+
+            if (skip) exit
+
+         end do
+
+         if (skip) cycle
+c                               the term is acceptable
+         itic = itic + 1
+
+         rkord(itic) = rkord(i)
+
+         isub(itic,1:rkord(i)) = i2ni(isub(i,1:rkord(i)))
+
+         if (xtyp.eq.0) then
+c                                save the coefficient
+            do j = 1, m3
+               wg(itic,j) = wg(i,j)
+            end do
+
+         else
+c                                 redlich kistler
+            do j = 1, rkord(itic)
+               do k = 1, m16
+                  wk(k,j,itic) = wk(k,j,i)
+               end do
+            end do
+
+         end if
+
+      end do
+c                                reset counter
+      iterm = itic
+c                                --------------------------------------
+c                                van laar volume functions
+      if (laar) then
+
+         do i = 1, istot + morder
+            do j = 1, m3
+               vlaar(j,i) = vlaar(j,i2oi(i))
+            end do
+         end do
+
+      end if
+c                                 --------------------------------------
+c                                 dqf corrections, this is sloppy since
+c                                 uses istot instead of kstot
+      if (idqf.gt.0) then
+
+         kdqf = 0
+c                                 check if a retained species has a dqf
+c                                 correction
+         do j = 1, idqf
+c                                 the itoi index must be in the inner loop
+c                                 in case the values of indq are not sequential
+            do i = 1, istot
+               if (indq(j).eq.i2oi(i)) then
+c                                 found a dqf'd endmember
+                  kdqf = kdqf + 1
+                  indq(kdqf) = i
+                  do k = 1, m3
+                     dqf(k,kdqf) = dqf(k,j)
+                  end do
+                  exit
+               end if
+            end do
+
+            if (kdqf.eq.idqf) exit
+
+         end do
+
+         idqf = kdqf
+
+      end if
+c                                 --------------------------------------
+c                                 special operations, as for dqfs
+      if (isop.gt.0) then
+
+         kdqf = 0
+c                                 check if a retained species has a dqf
+c                                 correction
+         do j = 1, isop
+c                                 the itoi index must be in the inner loop
+c                                 in case the values of indq are not sequential
+            do i = 1, istot
+
+               if (insop(j).eq.i2oi(i)) then
+c                                 found a dqf'd endmember
+                  kdqf = kdqf + 1
+                  insop(kdqf) = i
+                  sopchr(kdqf) = sopchr(j)
+
+                  do k = 1, m3
+                     sopq(kdqf,k) = sopq(j,k)
+                  end do
+
+                  exit
+
+               end if
+
+            end do
+
+            if (kdqf.eq.isop) exit
+
+         end do
+
+         isop = kdqf
+
+      end if
+
+c                                 --------------------------------------
+c                                 dependent endmember properties, the
+      if (depmod) then
+c                                 dependent endmembers have been reordered
+c                                 in redep, but are still expressed in
+c                                 terms of the old indices, so reset the
+c                                 indices:
+         do i = 1, mdep
+            jdep(i) = i2ni(jdep(i))
+            do j = 1, ndph(i)
+               idep(i,j) = i2ni(idep(i,j))
+            end do
+         end do
+
+      end if
 
       end
