@@ -1114,9 +1114,11 @@ c psrect - subroutine to output a rectangle, with integer fill
       y(2) = y2
       y(3) = y2
       y(4) = y1
- 
+c                                 7.1.15 george set this to:
       call pspygn (x,y,4,rline,width,ifill,0,1)
- 
+c                                 previously it was:
+c     call pspygn (x,y,4,rline,width,ifill,0,0)
+
       end
 c----------------------------------------------------------------
       subroutine psfrec (x1,x2,y1,y2,rline,width,ifl,ifg,ibg)

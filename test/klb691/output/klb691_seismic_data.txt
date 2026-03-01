@@ -106,7 +106,6 @@ Endmembers and stoichiometric compounds:
         cor           implicit    Poisson                  
         mcor          implicit    Poisson                  
         hem           implicit    Poisson                  
-        hem_nol       implicit    Poisson                  
         esk           implicit    Poisson                  
         sp            implicit    Poisson                  
         herc          implicit    Poisson                  
@@ -130,53 +129,46 @@ Endmembers and stoichiometric compounds:
         anL           implicit    fluid                    
         abL           implicit    fluid                    
         neL           implicit    fluid                    
-        acm_dqf       implicit    Poisson      made entity*
-        kho           implicit    Poisson      made entity*
-        dhem          implicit    Poisson      made entity*
+        siL_q         implicit    fluid        made entity*
+        foL_q         implicit    fluid        made entity*
+        faL_q         implicit    fluid        made entity*
+        fo1L_q        implicit    fluid        made entity*
+        fa1L_q        implicit    fluid        made entity*
+        qL_q          implicit    fluid        made entity*
+        q2L_q         implicit    fluid        made entity*
+        q3L_q         implicit    fluid        made entity*
+        hmL_q         implicit    fluid        made entity*
+        jdL_q         implicit    fluid        made entity*
+        ekL_q         implicit    fluid        made entity*
+        neL_q         implicit    fluid        made entity*
+        diL_q         implicit    fluid        made entity*
+        woL_q         implicit    fluid        made entity*
+        silL_q        implicit    fluid        made entity*
+        ctL_q         implicit    fluid        made entity*
+        odi_q         implicit    Poisson      made entity*
+        ojd_q         implicit    Poisson      made entity*
+        macm_q        implicit    Poisson      made entity*
+        cren_q        implicit    Poisson      made entity*
+        cren1_q       implicit    Poisson      made entity*
         mots          implicit    Poisson      made entity*
-        kho1          implicit    Poisson      made entity*
-        sil8L         implicit    fluid        made entity*
-        fo8L          implicit    fluid        made entity*
-        fa8L          implicit    fluid        made entity*
-        q8L           implicit    fluid        made entity*
         mots1         implicit    Poisson      made entity*
-        ospr          implicit    Poisson      made entity*
-        cfs           implicit    Poisson      made entity*
-        crdi          implicit    Poisson      made entity*
-        cess          implicit    Poisson      made entity*
-        cenjh         implicit    Poisson      made entity*
-        cren          implicit    Poisson      made entity*
         oen           implicit    Poisson      made entity*
-        odi           implicit    Poisson      made entity*
-        qjL           implicit    fluid        made entity*
-        dijL          implicit    fluid        made entity*
-        jdjL          implicit    fluid        made entity*
-        ctjL          implicit    fluid        made entity*
-        fojL          implicit    fluid        made entity*
-        fajL          implicit    fluid        made entity*
-        hmjL          implicit    fluid        made entity*
-        ekjL          implicit    fluid        made entity*
-        foTL          implicit    fluid        made entity*
-        faTL          implicit    fluid        made entity*
-        cfsg          implicit    Poisson      made entity*
-        nacfb         implicit    Poisson      made entity*
-        mfpv          implicit    Poisson      made entity*
-        mcpv          implicit    Poisson      made entity*
-        mnpv          implicit    Poisson      made entity*
-        cmpv          implicit    Poisson      made entity*
-        cfpv          implicit    Poisson      made entity*
-        capv          implicit    Poisson      made entity*
-        cnpv          implicit    Poisson      made entity*
-        fcor          implicit    Poisson      made entity*
+        cen_q         implicit    Poisson      made entity*
+        cfs_q         implicit    Poisson      made entity*
+        cess_q        implicit    Poisson      made entity*
+        crdi_q        implicit    Poisson      made entity*
+        kho_q         implicit    Poisson      made entity*
+        nacfb_q       implicit    Poisson      made entity*
+        mfpv_q        implicit    Poisson      made entity*
+        mcpv_q        implicit    Poisson      made entity*
+        mnpv_q        implicit    Poisson      made entity*
+        cmpv_q        implicit    Poisson      made entity*
+        cfpv_q        implicit    Poisson      made entity*
+        capv_q        implicit    Poisson      made entity*
+        cnpv_q        implicit    Poisson      made entity*
+        fcor_q        implicit    Poisson      made entity*
         hmgts         implicit    Poisson      made entity*
-        cessh         implicit    Poisson      made entity*
-        crdih         implicit    Poisson      made entity*
-        foHL          implicit    fluid        made entity*
-        faHL          implicit    fluid        made entity*
-        qHL           implicit    fluid        made entity*
-        jdL           implicit    fluid        made entity*
-        hmL           implicit    fluid        made entity*
-        ekL           implicit    fluid        made entity*
+        ospr          implicit    Poisson      made entity*
 
 *explicit moduli of made endmembers are computed as a linear combination of 
 the real endmembers specified in the corresponding make definition.

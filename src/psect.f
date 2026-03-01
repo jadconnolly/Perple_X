@@ -417,6 +417,11 @@ c                                  failed minimization
                else if (plopt(1).or.ivar.le.7) then 
 c                                   scale fills according to max variance
                   rfill = 1d0 - dfloat(ivar - minvar + 1)/dfill
+c                                   something george changed around 11/12/2025
+c                                   made rfill = 0 plot as either no fill or white
+c                                   this patch will screw up false color contouring
+c                                   but one is using that anyway. 7.2.0 JADC.
+                  if (rfill.le.0d0) rfill = 0.01
                   call psrecr (x1,x2,y1,y2,rline,cwidth,rfill)
 
                else 
@@ -973,6 +978,7 @@ c                                 white (no fill)
             else if (ivar.le.6) then 
 c                                 for di-septa-variant use gray-scale
 c              rfill = 1d0 - dfloat (ivar) * 0.2d0
+c                                 george's 11/12/2025 version
                rfill = 1d0 - dfloat (ivar-1) * 0.16667d0
                call psrecr (x1,x2,y1,y2,0d0,0d0,rfill)
 
