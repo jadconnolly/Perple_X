@@ -9,4 +9,4 @@ Executables for **Windows**, **Linux**, and **macOS** are available on the [rele
  
 Executables for all modern operating systems are also available via the **Julia** package manager. They can be used directly within Julia or, after extraction, as command-line programs. See the [Julia installation instructions](https://github.com/jadconnolly/Perple_X/blob/main/markdown/julia.md). [StatGeochem](https://github.com/brenhinkeller/StatGeochem.jl) provides a basic Julia interface to Perple_X.
 
-[^1]: Perple_X is primarily Fortran 77, but does use some Fortran 90 features.
+[^1]: Perple_X makes limited use of Fortran 90 features.
