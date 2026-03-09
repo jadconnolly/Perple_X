@@ -255,10 +255,8 @@ MgCl2(aq)                  MgCl2
 MgCl+(aq)                  MgCl                                                                                                             
 FeCl(aq)                   FeCl2                                                                                                            
 Aqueous silica             aqSi            SiO2                                                                                             
-                                                                                                                                            
-                                                                                                                                            
-                                                                                                                                            
-                                                                                                                                            
+ 
+ 
 begin_makes
                                  | the make definitions segment of the thermodynamic
                                  | data file is preceded by the "begin_makes" keyword,
@@ -466,6 +464,12 @@ mrb_q   = 1 gl - 2 jd +2 acm
     DQF(J/mol) = 0
 mpa_q   = 1 parg - 1 tr +1 anth
     DQF(J/mol) = 0
+fanth_q = 1 fanth
+    DQF(J/mol) = 0d0
+gl_q = 1 gl
+    DQF(J/mol) = 0d0
+ged_q = 1 ged
+    DQF(J/mol) = 0d0
                                  |--------------------------------------------------------
                                  | generic makes for garnet
 kho_q    = 1 py - 1 gr + 1 andr
@@ -575,8 +579,8 @@ Cliq = 1 Cliq1 1 Cliq2
        DQF(J/mol) = 0
 
 end_makes
-                                                                                                                                            
-                                                                                                                                            
+ 
+
 the following "end" card marks the end of the header section of the data file                                                               
                                                                                                                                             
 end                                                                                                                                         

@@ -3583,9 +3583,9 @@ begin_model
                                                      _____________
 
                           Dependent:   fkho_i        Fe      Fe3+
-                          Dependent:   kho_q           Mg      Fe3+
+                                       kho_q         Mg      Fe3+
                           Dependent:   fmn_i         Mn      Fe3+
-                                       andr_i        Ca      Fe3+
+                          Dependent:   andr_i        Ca      Fe3+
 
                                        spss          Mn      Al
                                        alm           Fe      Al
@@ -3647,7 +3647,7 @@ begin_van_laar_sizes
 alpha(py)       1
 alpha(alm)      1
 alpha(gr)       2.7
-alpha(kho_q )     1
+alpha(kho_q)    1
 alpha(spss)     1
 end_van_laar_sizes
 
@@ -11126,7 +11126,7 @@ begin_model
                                gl            Vac       Mg      Al     Na      Si_Si     
                                cumm          Vac       Mg      Mg     Mg      Si_Si      
                                grun          Vac       Fe      Fe     Fe      Si_Si      
-                               mrb           Vac       Mg      Fe3+   Na      Si_Si      
+                               mrb_q         Vac       Mg      Fe3+   Na      Si_Si      
 
                                cammo1        Vac       Mg      Fe     Fe      Si_Si      ordered
                                cammo2        Vac       Fe      Mg     Fe      Si_Si      ordered
@@ -11169,7 +11169,7 @@ ACMT-Amph by difference            | X([A][M][M,T,MT][M,C]), K-Na-Mg-Fe-Al-Ti-Fe
                                    | => endmember 12 is [ ][Mg][Al ][Na]
                                    | => endmember 22 is [ ][Fe][Al ][Na]
 
-mrb        frb_d                   | Fe3-glaucophane, aka riebeckite
+mrb_q      frb_d                   | Fe3-glaucophane, aka riebeckite
 gl         fgl_d                   | Al-glaucophane
 
                                    | First (1d) simplex
@@ -11235,23 +11235,23 @@ fts_d    = 1 ts_q - 1 tr            + 1 cammo2
 mts_d    = 1 ts_q - 1 tr            + 1 cumm
 
 fgl_d    = 1 gl   + 1 grun    - 1 cammo1
-frb_d    = 1 mrb      + 1 grun    - 1 cammo1
+frb_d    = 1 mrb_q      + 1 grun    - 1 cammo1
 
-mcgrk_d  = 1 mrb      + 1 ts_q  - 1 gl
-mgrk_d   = 1 mrb      + 1 ts_q  - 1 gl     - 1 tr         + 1 cumm
-fgrk_d   = 1 mrb      + 1 ts_q  - 1 gl     - 1 tr         + 1 cammo2
-fcgrk_d  = 1 mrb      + 1 ts_q  - 1 gl     - 1 cammo1     + 1 grun
+mcgrk_d  = 1 mrb_q      + 1 ts_q  - 1 gl
+mgrk_d   = 1 mrb_q      + 1 ts_q  - 1 gl     - 1 tr         + 1 cumm
+fgrk_d   = 1 mrb_q      + 1 ts_q  - 1 gl     - 1 tr         + 1 cammo2
+fcgrk_d  = 1 mrb_q      + 1 ts_q  - 1 gl     - 1 cammo1     + 1 grun
 end_dependent_endmembers
 
 begin_excess_function
-w(mrb tr)          52e3
-w(mrb ts_q)      20e3
-w(mrb parg)        40e3
+w(mrb_q tr)          52e3
+w(mrb_q ts_q)      20e3
+w(mrb_q parg)        40e3
 
-w(mrb cumm)        80e3
-w(mrb grun)        91e3
-w(mrb cammo1)      80e3
-w(mrb cammo2)      90e3
+w(mrb_q cumm)        80e3
+w(mrb_q grun)        91e3
+w(mrb_q cammo1)      80e3
+w(mrb_q cammo2)      90e3
 
 w(cammo2 tr)          63e3
 w(cammo2 ts_q)     72.5e3
@@ -11294,31 +11294,31 @@ end_excess_function
 A                                   | site name
 2 1 1                               | number of species, effective multiplicity, true multiplicity
 z(Na,A)   =    1 parg
-z(Vac,A)  =    1 cumm + 1 grun + 1 tr + 1 ts_q + 1 gl + 1 cammo1 + 1 cammo2 + 1 mrb
+z(Vac,A)  =    1 cumm + 1 grun + 1 tr + 1 ts_q + 1 gl + 1 cammo1 + 1 cammo2 + 1 mrb_q
 
 M1                                  | site name
 2 3 3                               | number of species, effective multiplicity, true multiplicity
 z(Fe,M1)   = 1 grun + 1 cammo2
-z(Mg,M1)   = 1 cumm + 1 ts_q + 1 parg + 1 mrb + 1 gl + 1 cammo1 + 1 tr
+z(Mg,M1)   = 1 cumm + 1 ts_q + 1 parg + 1 mrb_q + 1 gl + 1 cammo1 + 1 tr
 
 M2                                  | site name
 4 2 2                               | number of species, effective multiplicity, true multiplicity
 z(Fe,M2)   = 1 grun + 1 cammo1
-z(Fe3,M2)  = 1 mrb
+z(Fe3,M2)  = 1 mrb_q
 z(Al,M2)   = 1 ts_q     + 1/2 parg + 1 gl
 z(Mg,M2)   = 1/2 parg + 1 tr         + 1 cumm + 1 cammo2
 
 M4                                  | site name
 4 2 2                               | number of species, effective multiplicity, true multiplicity
 z(Mg,M4)   = 1 cumm
-z(Na,M4)   = 1 gl + 1 mrb
+z(Na,M4)   = 1 gl + 1 mrb_q
 z(Fe,M4)   = 1 grun + 1 cammo1 + 1 cammo2
 z(Ca,M4)   = 1 ts_q + 1 parg + 1 tr
 
 T1                                  | site name
 2 1 4                               | number of species, effective multiplicity, true multiplicity
 z(Al,T1)   = 1/2 ts_q  + 1/2 parg
-z(Si,T1)   = 1/2 ts_q + 1/2 parg + 1 gl + 1 mrb + 1 tr + 1 grun + 1 cammo1 + 1 cammo2 + 1 cumm
+z(Si,T1)   = 1/2 ts_q + 1/2 parg + 1 gl + 1 mrb_q + 1 tr + 1 grun + 1 cammo1 + 1 cammo2 + 1 cumm
 
 [Si4O22(OH)2]                       | formula suffix, enter "none" for no suffix.
 
@@ -11332,7 +11332,7 @@ alpha(cumm)     1
 alpha(grun)     1
 alpha(cammo1)   1
 alpha(cammo2)   1
-alpha(mrb)      0.8
+alpha(mrb_q)    0.8
 end_van_laar_sizes
 
 begin_dqf_corrections
@@ -11342,11 +11342,11 @@ DQF(ts_q) =  10000   | ds5/ds6
 DQF(gl)     = -3000    | ds6
 DQF(parg)   = -10000   | ds6
 DQF(grun)   = -3000    | ds6
+DQF(mrb_q)  = 0        | ds6
 
-| DQF(mrb)  = 0        | ds6
 | DQF(cumm) = 0        | ds6
 
-| DQF(mrb)  =  8000   | ds5
+| DQF(mrb_q)  =  8000   | ds5
 | DQF(gl)   =  3000   | ds5
 | DQF(parg) = 15000   | ds5
 | DQF(grun) = -5000   | ds5
@@ -11429,12 +11429,12 @@ begin_model
                                             _________________________________________
 
                                tr            Vac       Mg      Mg     Ca      Si_Si       
-                               ts_q        Vac       Mg      Al     Ca      Al_Si       
-                               parg      Na        Mg      Mg_Al  Ca      Al_Si     
-                               gl        Vac       Mg      Al     Na      Si_Si     
+                               ts_q          Vac       Mg      Al     Ca      Al_Si       
+                               parg          Na        Mg      Mg_Al  Ca      Al_Si     
+                               gl            Vac       Mg      Al     Na      Si_Si     
                                cumm          Vac       Mg      Mg     Mg      Si_Si      
-                               grun      Vac       Fe      Fe     Fe      Si_Si      
-                               mrb           Vac       Mg      Fe3+   Na      Si_Si      
+                               grun          Vac       Fe      Fe     Fe      Si_Si      
+                               mrb_q          Vac       Mg      Fe3+   Na      Si_Si      
 
                                cammo1        Vac       Mg      Fe     Fe      Si_Si      ordered
                                cammo2        Vac       Fe      Mg     Fe      Si_Si      ordered
@@ -11468,14 +11468,14 @@ Trem-Amph  by difference           | X([ ][M][M][MC])
 3                                  | number of simplices
 2 2 3                              | number of vertices on each non-zero-d simplex
 
-mrb        frb_d                   | [ ][M][Fe][N]      Fe3-glaucophane, aka riebeckite
-gl     fgl_d                   | [ ][M][Al][N]      Al-glaucophane
+mrb_q        frb_d                 | [ ][M][Fe][N]      Fe3-glaucophane, aka riebeckite
+gl     fgl_d                       | [ ][M][Al][N]      Al-glaucophane
 
 mgrk_d     fgrk_d                  | [ ][M][Fe][M]      Fe3-Ts
 mts_d      fts_d                   | [ ][M][Al][M]      Al-Ts
 
 mcgrk_d    fcgrk_d                 | [ ][M][Fe][C]      M-Ca-Fe3+_tschermaks (Na-free riebeckite)
-ts_q     fcts_d                  | [ ][M][Al][C]      Al-cTs
+ts_q     fcts_d                    | [ ][M][Al][C]      Al-cTs
 
                                    | First simplex
 X_Mg1     0    1  .1  0            | X(1,1) = bulk Mg/M
@@ -11497,7 +11497,7 @@ z_Ca      by difference
                                    | Simplex 3 {M,C} on M4
 
 mparg_d    fparg_d                 | [N][M][MAl][M]     Na-Al-M parg
-parg   fcparg_d                | [N][M][MAl][C]     Na-Al-Ca parg
+parg   fcparg_d                    | [N][M][MAl][C]     Na-Al-Ca parg
 
 ompg_d     ofpg_d                  | [N][M][MFe][M]     Na-Fe3+-M parg*
 ocmpg_d    ocfpg_d                 | [N][M][MFe][C]     Na-Fe3-Ca parg*
@@ -11572,19 +11572,19 @@ fts_d    = 1 ts_q - 1 tr            + 1 cammo2
 mts_d    = 1 ts_q - 1 tr            + 1 cumm    
 
 fgl_d    = 1 gl   + 1 grun    - 1 cammo1
-frb_d    = 1 mrb      + 1 grun    - 1 cammo1
+frb_d    = 1 mrb_q      + 1 grun    - 1 cammo1
 
-mcgrk_d  = 1 mrb      + 1 ts_q  - 1 gl
-mgrk_d   = 1 mrb      + 1 ts_q  - 1 gl     - 1 tr         + 1 cumm    
-fgrk_d   = 1 mrb      + 1 ts_q  - 1 gl     - 1 tr         + 1 cammo2
-fcgrk_d  = 1 mrb      + 1 ts_q  - 1 gl     - 1 cammo1     + 1 grun
+mcgrk_d  = 1 mrb_q      + 1 ts_q  - 1 gl
+mgrk_d   = 1 mrb_q      + 1 ts_q  - 1 gl     - 1 tr         + 1 cumm    
+fgrk_d   = 1 mrb_q      + 1 ts_q  - 1 gl     - 1 tr         + 1 cammo2
+fcgrk_d  = 1 mrb_q      + 1 ts_q  - 1 gl     - 1 cammo1     + 1 grun
 
                                    | M or Ca on M4, Fe3 on M2
 
-ocmpg_d   = 1 parg  + 1/2 mrb  - 1/2 gl
-ocfpg_d   = 1 parg  + 3/2 grun - 1 cammo1 - 1/2 cammo2  + 1/2 mrb   - 1/2 gl
-ompg_d    = 1 parg  - 1 tr     + 1 cumm     + 1/2 mrb  - 1/2 gl
-ofpg_d    = 1 parg  + 1/2 grun + 1/2 cammo2 - 1 tr + 1/2 mrb  - 1/2 gl
+ocmpg_d   = 1 parg  + 1/2 mrb_q  - 1/2 gl
+ocfpg_d   = 1 parg  + 3/2 grun - 1 cammo1 - 1/2 cammo2  + 1/2 mrb_q   - 1/2 gl
+ompg_d    = 1 parg  - 1 tr     + 1 cumm     + 1/2 mrb_q  - 1/2 gl
+ofpg_d    = 1 parg  + 1/2 grun + 1/2 cammo2 - 1 tr + 1/2 mrb_q  - 1/2 gl
 
                                    | piglitic endmembers
 nfan_d    = 1 parg  + 3/2 grun - 1 cammo1 - 1/2 cammo2 + 1 gl - 1 ts_q
@@ -11594,25 +11594,25 @@ nfafn_d   = 1 parg  + 1/2 grun + 1/2 cammo2 - 1 tr + 1/2 gl    - 1/2 cammo1
 nmamn_d   = 1 parg  - 1 tr     + 1/2 cumm     + 1/2 gl
 nfacn_d   = 1 parg  + 3/2 grun - 1 cammo1 - 1/2 cammo2 + 1/2 gl - 1/2 ts_q
 
-nmfn_d    = 1 parg  + 1/2 mrb  + 1/2 gl - 1 ts_q
-nffn_d    = 1 parg  + 3/2 grun - 1 cammo1 - 1/2 cammo2  + 1/2 mrb   + 1/2 gl - 1 ts_q
-nmfmn_d   = 1 parg  - 1 tr     + 1/2 cumm     + 1/2 mrb
+nmfn_d    = 1 parg  + 1/2 mrb_q  + 1/2 gl - 1 ts_q
+nffn_d    = 1 parg  + 3/2 grun - 1 cammo1 - 1/2 cammo2  + 1/2 mrb_q   + 1/2 gl - 1 ts_q
+nmfmn_d   = 1 parg  - 1 tr     + 1/2 cumm     + 1/2 mrb_q
 
-nfffn_d   = 1 parg  + 1/2 grun + 1/2 cammo2 - 1 tr + 1/2 mrb  - 1/2 cammo1
-nmfcn_d   = 1 parg  + 3/2 grun - 1 cammo1 - 1/2 cammo2  + 1/2 mrb   - 1/2 ts_q
-nffcn_d   = 1 parg  + 3/2 grun - 1 cammo1 - 1/2 cammo2  + 1/2 mrb   - 1/2 ts_q
+nfffn_d   = 1 parg  + 1/2 grun + 1/2 cammo2 - 1 tr + 1/2 mrb_q  - 1/2 cammo1
+nmfcn_d   = 1 parg  + 3/2 grun - 1 cammo1 - 1/2 cammo2  + 1/2 mrb_q   - 1/2 ts_q
+nffcn_d   = 1 parg  + 3/2 grun - 1 cammo1 - 1/2 cammo2  + 1/2 mrb_q   - 1/2 ts_q
 
 end_dependent_endmembers
 
 begin_excess_function
-w(mrb tr)          52e3
-w(mrb ts_q)      20e3
-w(mrb parg)        40e3
+w(mrb_q tr)          52e3
+w(mrb_q ts_q)      20e3
+w(mrb_q parg)        40e3
 
-w(mrb cumm    )        80e3
-w(mrb grun)        91e3
-w(mrb cammo1)      80e3
-w(mrb cammo2)      90e3
+w(mrb_q cumm    )        80e3
+w(mrb_q grun)        91e3
+w(mrb_q cammo1)      80e3
+w(mrb_q cammo2)      90e3
 
 w(cammo2 tr)          63e3
 w(cammo2 ts_q)     72.5e3
@@ -11655,31 +11655,31 @@ end_excess_function
 A                                   | site name
 2 1 1                               | number of species, effective multiplicity, true multiplicity
 z(Na,A)   =    1 parg
-z(Vac,A)  =    1 cumm     + 1 grun + 1 tr + 1 ts_q + 1 gl + 1 cammo1 + 1 cammo2 + 1 mrb
+z(Vac,A)  =    1 cumm     + 1 grun + 1 tr + 1 ts_q + 1 gl + 1 cammo1 + 1 cammo2 + 1 mrb_q
 
 M1                                  | site name
 2 3 3                               | number of species, effective multiplicity, true multiplicity
 z(Fe,M1)   = 1 grun + 1 cammo2
-z(Mg,M1)   = 1 cumm     + 1 ts_q + 1 parg + 1 mrb + 1 gl + 1 cammo1 + 1 tr
+z(Mg,M1)   = 1 cumm     + 1 ts_q + 1 parg + 1 mrb_q + 1 gl + 1 cammo1 + 1 tr
 
 M2                                  | site name
 4 2 2                               | number of species, effective multiplicity, true multiplicity
 z(Fe,M2)   = 1 grun + 1 cammo1
-z(Fe3,M2)  = 1 mrb
+z(Fe3,M2)  = 1 mrb_q
 z(Al,M2)   = 1 ts_q     + 1/2 parg + 1 gl
 z(Mg,M2)   = 1/2 parg + 1 tr         + 1 cumm     + 1 cammo2
 
 M4                                  | site name
 4 2 2                               | number of species, effective multiplicity, true multiplicity
 z(Mg,M4)   = 1 cumm    
-z(Na,M4)   = 1 gl + 1 mrb
+z(Na,M4)   = 1 gl + 1 mrb_q
 z(Fe,M4)   = 1 grun + 1 cammo1 + 1 cammo2
 z(Ca,M4)   = 1 ts_q + 1 parg + 1 tr
 
 T1                                  | site name
 2 1 4                               | number of species, effective multiplicity, true multiplicity
 z(Al,T1)   = 1/2 ts_q  + 1/2 parg
-z(Si,T1)   = 1/2 ts_q + 1/2 parg + 1 gl + 1 mrb + 1 tr + 1 grun + 1 cammo1 + 1 cammo2 + 1 cumm    
+z(Si,T1)   = 1/2 ts_q + 1/2 parg + 1 gl + 1 mrb_q + 1 tr + 1 grun + 1 cammo1 + 1 cammo2 + 1 cumm    
 
 [Si4O22(OH)2]                       | formula suffix, enter "none" for no suffix.
 
@@ -11693,7 +11693,7 @@ alpha(cumm)     1
 alpha(grun)     1
 alpha(cammo1)   1
 alpha(cammo2)   1
-alpha(mrb)      0.8
+alpha(mrb_q)    0.8
 end_van_laar_sizes
 
 begin_dqf_corrections
@@ -11703,11 +11703,11 @@ DQF(ts_q) =  10000   | ds5/ds6
 DQF(gl)     = -3000    | ds6
 DQF(parg)   = -10000   | ds6
 DQF(grun)   = -3000    | ds6
+DQF(mrb_q)  = 0        | ds6
 
-| DQF(mrb)  = 0        | ds6
 | DQF(cumm) = 0        | ds6
 
-| DQF(mrb)  =  8000   | ds5
+| DQF(mrb_q) =  8000 | ds5
 | DQF(gl)   =  3000   | ds5
 | DQF(parg) = 15000   | ds5
 | DQF(grun) = -5000   | ds5
@@ -11794,11 +11794,11 @@ begin_model
 
                                tr            Vac       Mg      Mg     Ca      Si_Si                 
                                ged           Vac       Mg      Al     Mg      Al_Si                  
-                               mpa_q           Na        Mg      Mg_Al  Mg      Al_Si                 
+                               mpa_q         Na        Mg      Mg_Al  Mg      Al_Si                 
                                gl            Vac       Mg      Al     Na      Si_Si                   
                                anth          Vac       Mg      Mg     Mg      Si_Si                 
                                fanth         Vac       Fe      Fe     Fe      Si_Si                  
-                               mrb           Vac       Mg      Fe3+   Na      Si_Si                 
+                               mrb_q         Vac       Mg      Fe3+   Na      Si_Si                 
 
                                ammo1         Vac       Mg      Fe     Fe      Si_Si      ordered
                                ammo2         Vac       Fe      Mg     Fe      Si_Si      ordered
@@ -11812,7 +11812,7 @@ begin_model
                         (CaNa-1,M4)  = tr + (ged - anth) - gl
                         (CaMg-1,M4)  = tr - anth
                         (MgNa-1,M4)  = ged - gl
-                        (Fe3Al-1,M2) = mrb - gl
+                        (Fe3Al-1,M2) = mrb_q - gl
                         FeMg-1(M4) = (-fanth - anth + ammo1 + ammo2)
                       ---------------------------------------------------------
 oAmph(DP)
@@ -11863,10 +11863,10 @@ X_gl    by difference
                                    | endmembers on the vertices, index on the first simplex
                                    | changes fastest, last slowest                 
 cmged_d       cfged_d
-ged_q           fged_d               | M-Ca-Al_tschermaks
+ged_q         fged_d               | M-Ca-Al_tschermaks
 
 cmpa_d        cfpa_d         
-mpa_q           fpa_d                | M-Ca-Na-Al_parg
+mpa_q         fpa_d                | M-Ca-Na-Al_parg
 
 mcgrk_d       fcgrk_d       
 mgrk_d        fgrk_d               | M-Ca-Fe3+_tschermaks (Na-free riebeckite)

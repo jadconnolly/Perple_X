@@ -73,7 +73,6 @@ N2       28.0130    191.6100
 Au       196.967    47.405
 As       74.9216    35.146
 end_components
-
  
  
 begin_makes
@@ -283,6 +282,12 @@ mrb_q   = 1 gl - 2 jd +2 acm
     DQF(J/mol) = 0
 mpa_q   = 1 parg - 1 tr +1 anth
     DQF(J/mol) = 0
+fanth_q = 1 fanth
+    DQF(J/mol) = 0d0
+gl_q = 1 gl
+    DQF(J/mol) = 0d0
+ged_q = 1 ged
+    DQF(J/mol) = 0d0
                                  |--------------------------------------------------------
                                  | generic makes for garnet
 kho_q    = 1 py - 1 gr + 1 andr
@@ -393,6 +398,7 @@ Cliq = 1 Cliq1 1 Cliq2
 
 end_makes
  
+
 Notation (incomplete and NOT alphabetical!)
  
 Entity                     Symbol          Formula

@@ -73,7 +73,7 @@ begin_special_components
 H2O  
 CO2  
 end_special_components
-
+ 
  
 begin_makes
                                  | the make definitions segment of the thermodynamic
@@ -282,6 +282,12 @@ mrb_q   = 1 gl - 2 jd +2 acm
     DQF(J/mol) = 0
 mpa_q   = 1 parg - 1 tr +1 anth
     DQF(J/mol) = 0
+fanth_q = 1 fanth
+    DQF(J/mol) = 0d0
+gl_q = 1 gl
+    DQF(J/mol) = 0d0
+ged_q = 1 ged
+    DQF(J/mol) = 0d0
                                  |--------------------------------------------------------
                                  | generic makes for garnet
 kho_q    = 1 py - 1 gr + 1 andr
@@ -392,6 +398,7 @@ Cliq = 1 Cliq1 1 Cliq2
 
 end_makes
  
+
 Notation (incomplete and NOT alphabetical!)
  
 Entity                     Symbol          Formula
