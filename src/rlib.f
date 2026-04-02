@@ -4893,6 +4893,9 @@ c---------------------------------------------------------------------
       character specie*4
       integer isp, ins
       common/ cxt33 /isp,ins(nsp),specie(nsp)
+
+      integer jfct,jmct,jprct,jmuct
+      common/ cst307 /jfct,jmct,jprct,jmuct
 c----------------------------------------------------------------------
       jstot = 0
       ineg = 0
@@ -5075,12 +5078,23 @@ c                                 with a composant of the GFSM.
                call errpau
 
             else if (kdsol(i).le.kphct) then
+c                                 7.2.2 change to allow species being used
+c                                 in mobile component calculations
+               ok = .false.
+
+               do j = 1, jmct
+                  if (kdsol(i).eq.j) ok = .true.
+               end do
+
+               if (.not.ok) then 
 c                                 user has specified a saturated component
 c                                 with a composant of the GFSM.
-               write (*,1030) tname(1:nblen(tname)),
-     *                        names(kdsol(i))(1:nblen(names(kdsol(i)))),
+                  write (*,1030) tname(1:nblen(tname)),
+     *                     names(kdsol(i))(1:nblen(names(kdsol(i)))),
      *                        n1name(1:nblen(n1name))
-               call errpau
+                  call errpau
+
+               end if 
 
             end if
 
@@ -5091,36 +5105,46 @@ c                                 with a composant of the GFSM.
       call redep (0)
 c                                done if nothing is missing:
       if (jstot.eq.istot) then
-         if (jstot.eq.1.and..not.lopt(32)) call warn (99,wg(1,1),1,
+
+         if (jstot.eq.1.and..not.lopt(32)) then
+            call warn (99,wg(1,1),1,
      *                tname//'will be rejected because '//
      *                'aq_lagged_speciation = F')
+            im = im - 1
+         end if
+
          return
-      end if 
-c                                missing endmember warnings:
-      if (jstot.lt.2) then
 
-         im = im - 1
-         if (first) call warn (25,wg(1,1),jstot,tname)
-
-      else
+      end if
+c                                make a list of the missing endmembers:
+      if (first) then
 
          imiss = 0
 
          do i = 1, istot
-            if (kdsol(i).eq.0) then
-               imiss = imiss + 1
-               missin(imiss) = mname(i)
-            end if
-         end do
 
-         if (first) write (*,1000) tname(1:nblen(tname)),
+            if (kdsol(i).ne.0) cycle
+            imiss = imiss + 1
+            missin(imiss) = mname(i)
+
+         end do
+c                                missing endmember warnings:
+         write (*,1000) tname(1:nblen(tname)),
      *                    (missin(i), i = 1, imiss)
+          if (jstot.lt.2) then
+c                                reject the solution:
+            im = im - 1
+            write (*,*)
+            call warn (25,wg(1,1),jstot,tname)
+            write (*,'(/,t35,a,/,a)') '--------------------'
+
+         end if
 
       end if
 
-1000  format ('**warning ver114** the following endmembers',
-     *          ' are missing for ',a,':',/,6(2x,a))
-1010  format ('**warning ver115** endmember ',a,' is flagged in sol',
+1000  format (/,'**warning ver114** the following endmembers',
+     *          ' are missing for ',a,':',//,5(2x,a))
+1010  format (/,'**warning ver115** endmember ',a,' is flagged in sol',
      *       'ution model ',a,/,'flagging is disabled for solidus/liq',
      *       'uidus calculations.',/,a,' will be treated as a normal e',
      *       'ndmember of ',a)
@@ -9827,7 +9851,8 @@ c                                 check version compatability
       if (.not.chksol(new)) call error (3,zt,im,new)
 
       if (iam.lt.3.or.iam.eq.15)
-     *           write (*,'(80(''-''),/,a,/)') 'Solution model summary:'
+     *           write (*,'(80(''-''),/,a,//,t35,20(''-''))')
+     *                 'Solution model summary:'
 
       do while (im.lt.isoct)
 c                                 -------------------------------------
@@ -9875,9 +9900,6 @@ c                                 that the name is duplicated in the solution mo
             end do
 
          end if
-
-         
-
 c                                 this warning is redundant 7.1.8+
          if (jsmod.eq.39.and.ifct.gt.0) then
 c                                 check that a GFSM model is not being 
@@ -9931,17 +9953,25 @@ c                                 subdiv discretizes the composition of the
 c                                 solution and stores the data (soload)
                call subdiv (im,gcind)
 
-               if (iphct-ophct.gt.0) then
-c                                 write pseudocompound count
-                  write (*,1100) iphct-ophct, tname
+               jend(im,2) = iphct - ophct
+
+               if (jend(im,2).gt.0) then
+c                                 output solution model option summary and psuedocompound
+c                                 count:
+
+                  write (*,1070) tname, modres, .not.stck, loctol.gt.0, 
+     *                           badx, .not.norf, unbd, 
+     *                           jend(im,2), tname
+
 c                                 indicate site_check_override and refine endmembers
-                  if (bdx(im)) write (*,1080) tname
-                  if (.not.nrf(im).and..not.lopt(39)) 
-     *               write (*,1090) tname
+c                  write (*,'(/)')
+c                  if (bdx(im)) write (*,1080) tname
+c                  if (.not.nrf(im).and..not.lopt(39)) 
+c     *               write (*,1090) tname
+c                                 write pseudocompound count
+c                  write (*,1100) iphct-ophct, tname
 
                end if
-
-               jend(im,2) = iphct - ophct
 
             end if
 
@@ -9988,23 +10018,34 @@ c                                  total pseudocompound count:
          if (.not.refine.or.iam.eq.15) write (*,1110) iphct - ipoint
 c                                  list of found solutions
          if (im.gt.0) then
-            write (*,'(/,a,/)') 'Summary of included solution models:'
-            write (*,'(8(a,1x))') (sname(i),i= 1, im)
+
+            write (*,'(/,t35,a,/,a,/)') '--------------------',
+     *                          'Summary of included solution models:'
+            write (*,'(5(2x,a))') (sname(i),i= 1, im)
+
          else
-            write (*,'(/,a,/)') 'No solution models included!'
+
+            write (*,'(/,t35,a,/,a,/)') '--------------------',
+     *                                  'No solution models included!'
+
          end if
 
          if (irjct.gt.0) then
-            write (*,'(/,a,/)') 'Summary of rejected solution models '//
-     *                             '(see warnings above for reasons):'
-         
-            write (*,'(8(a,1x))') (rjct(i),i= 1, irjct)
+
+            write (*,'(/,t35,a,/,a,/)') '--------------------',
+     *                       'Summary of rejected solution models '//
+     *                       '(see warnings above for reasons):'
+            write (*,'(5(2x,a))') (rjct(i),i= 1, irjct)
+
          end if
 
          if (infnd.gt.0) then
-            write (*,'(/,a,/)') 
+
+            write (*,'(/,t35,a,/,a,/)') '--------------------',
      *             'Requested solution models that were not found:'
-            write (*,'(8(a,1x))') (nfnd(i),i= 1, infnd)
+            write (*,'(5(2x,a))') (nfnd(i),i= 1, infnd)
+            write (*,*)
+
          end if
 c                               flush for paralyzer's piped output
          flush (6)
@@ -10060,9 +10101,14 @@ c                              close solution model file
 1040  format (/,'no models will be considered.',/)
 1060  format (/,'Solution: ',a,/,12x,'Endmember fractions:',
      *        /,12x,20(a,1x))
-1080  format (9x,'reject_bad_compositions is on for ',a)
-1090  format (9x,'refine_endmembers is on for ',a)
-1100  format (i8,' pseudocompounds generated for: ',a)
+1070  format (/,9x,'local options [default] for: ',a,//,
+     *        12x,'use model specified resolution [F]: ',l1,/,
+     *        12x,'site check override [F]: ',l1,/,
+     *        12x,'use model specified solvus_tolerance [F]: ',l1,/,
+     *        12x,'reject bad equipartition compositions [F]: ',l1,/,
+     *        12x,'refine endmember compositions [F]: ',l1,/,
+     *        12x,'allow extra-simplicial compositions [F]: ',l1,//,
+     *        3x,i8,' pseudocompounds generated for: ',a,//,t35,20('-'))
 1110  format (/,'Total number of pseudocompounds:',i8)
 1120  format (/,'1 - Although the bulk composition of pseudocompounds'
      *        ,' for this solution is fixed,',/,' the proportions of'
@@ -10338,16 +10384,29 @@ c                                 bulk composition stuff
          end if
 
       end do
-c                                 check if the phase consists
-c                                 entirely of saturated components:
+
       if (ctot(iphct).lt.nopt(50)) then
+c                                 the phase does not contain any 
+c                                 thermodynamic components.
 
-         if (im.ne.oim) call error (30,scp(1),l,tname)
+c                                 check if the phase contains
+c                                 saturated components,
+c                                 don't allow because the saturated
+c                                 component compositions won't be 
+c                                 refined and becuase if the solution
+c                                 exists in the thermodynamic space
+c                                 it will degnerate to the saturated
+c                                 composition space
+         do j = icp + 1, icp + isat
 
-         bad = .true.
-         oim = im
+            if (scp(j).ne.0d0) call error (30,scp(1),l,tname)
 
-         return
+         end do
+c                                 a null phase can get through this
+c                                 trap and in 7.2.2 this was allowed and, 
+c                                 to avoid divide by zero during normalization
+c                                 set ctot = 1
+         ctot(iphct) = 1d0
 
       end if
 c                                 load the static composition matrix
@@ -17234,8 +17293,8 @@ c                                 initialize endmember flags
       do i = 1, istot
          iend(i) = 0
       end do 
-c                              look for van laar and/or dqf parameters
-c                              endmember flags or the end_of_model tag
+c                                 look for van laar and/or dqf parameters
+c                                 endmember flags or the end_of_model tag
       call readop (idim,istot-mdep,tname)
 c                                 save original indices, need this for
 c                                 melt models etc that have species specific
@@ -17372,11 +17431,12 @@ c                                 (or species index) of the k'th endmember
             do k = pvptr(ii,1), pvptr(ii,2)
 
                if (kdsol(k).ne.0) then 
-c                                 7.1.13, i can think of no reason
-c                                 for decrementing kosp
-c                 do j = 1, isimp(ii)
-c                    kosp(j,jmsol(k,j)) = kosp(j,jmsol(k,j)) - 1
-c                 end do
+c                                 7.1.13, i could think of no reason
+c                                 for decrementing kosp. in 7.2.2 i discovered
+c                                 there is a reason and restored this loop:
+                  do j = 1, isimp(ii)
+                     kosp(j,jmsol(k,j)) = kosp(j,jmsol(k,j)) - 1
+                  end do
 
                else 
 
@@ -17489,7 +17549,12 @@ c                                 redundant polytopes and/or simplices:
       if (istot.lt.2) then
 c                                 failed, rejected too many endmembers
          im = im - 1
-         if (first) call warn (25,wg(1,1),jstot,tname)
+
+         if (first) then 
+            call warn (25,wg(1,1),jstot,tname)
+            write (*,'(/,t35,20(''-''))')
+         end if
+
          jstot = 0
 
       else 
@@ -17553,7 +17618,14 @@ c                                 shift all polytopes down
          if (jpoly.eq.0) then 
 
             im = im - 1
-            if (first) call warn (25,wg(1,1),jstot,tname)
+
+            if (first) then
+
+               call warn (25,wg(1,1),jstot,tname)
+               write (*,'(/,t35,20(''-''))')
+
+            end if
+
             jstot = 0
             return 
 
@@ -18598,6 +18670,9 @@ c-----------------------------------------------------------------------
       integer nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
       common/ cst337 /nq,nn,ns,ns1,sn1,nqs,nqs1,sn,qn,nq1,nsa
 
+      integer jfct,jmct,jprct,jmuct
+      common/ cst307 /jfct,jmct,jprct,jmuct
+
       integer kd, na1, na2, na3, nat
       double precision x3, caq
       common/ cxt16 /x3(k5,h4,mst,msp),caq(k5,l10),na1,na2,na3,nat,kd
@@ -18690,6 +18765,22 @@ c                                 thermodynamic components.
          scptot = scptot + scp(i)
 
       end do
+c                                7.2.2, attempt to salvage null phase case:
+
+c                                7.1.20 added a dirty solution by rejecting phases with no 
+c                                thermodyamic components. 7.2.2 is even dirtier by 
+c                                resetting rsum and hoping for the best:
+      if (scptot.eq.0d0) then
+
+         if (jmct.eq.0) write (*,1000) 
+
+         scptot = 1d0
+
+1000  format (/,'**warning ver208** scptot = 0 in getscp with no mobil',
+     *          'e components, please report this warning.')
+
+      end if
+
 
 c     if (scptot.eq.0d0) call error (30,scptot,ids,'GETSCP')
 
@@ -20588,7 +20679,7 @@ c                                 excess function derivatives
       end do
 
 1000  format (/,'**warning ver212** No MINFRC derivatives for: ',a,/,
-     *          'Reason: ',a,/)
+     *          t20,'Reason: ',a,/)
 
       end
 
@@ -21838,7 +21929,7 @@ c                                 use intermediate results
                end do
 
                call rdnumb (nopt(1),0d0,i,i,.false.)
-               write (*,'(/)')
+               write (*,*)
 
                ind1 = jnd(i,1)
                ind2 = jnd(i,2)

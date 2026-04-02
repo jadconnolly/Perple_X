@@ -4543,7 +4543,7 @@ W(phl ann)   12d3
 W(phl obi)    4d3
 W(phl east)  10d3
 W(phl tbi_q)   30d3
-W(phl fbi_q)    8d3
+W(phl fbi_q)    8d3         | W24 14000
 W(phl mnbi)   9d3
 W(ann obi)    8d3
 W(ann east)   5e3           | changed from 15d3 by Holland et al 2018 TC file. Debaditya Bandyopadhyay 5/1/19.
@@ -4622,10 +4622,10 @@ begin_model
                                                      ____________________________
 
                           Dependent:    ffbi          Fe3+    Fe     AlAl   OH
-                                        fbi1_q           Fe3+    Mg     AlAl   OH
+                                        fbi1_q        Fe3+    Mg     AlAl   OH
 
                           Dependent:    ftbi          Ti      Fe     AlSi   O
-                                        tbi_q           Ti      Mg     AlSi   O
+                                        tbi_q         Ti      Mg     AlSi   O
 
                           Dependent:    Sdph          Al      Fe     AlAl   OH
                                         East          Al      Mg     AlAl   OH
@@ -4685,27 +4685,27 @@ end_dependent_endmembers
 
 begin_excess_function
 
-w(phl ann)      +12000
-w(phl obi)      +4000
-w(phl east)      +10000
+w(phl ann)        +12000
+w(phl obi)         +4000
+w(phl east)       +10000
 w(phl tbi_q)      +30000
-w(phl fbi1_q)      +14000
-w(ann obi)     +8000
-w(ann tbi_q)     +32000
-w(ann fbi1_q)     +4000
-w(obi east)     +7000
+w(phl fbi1_q)     +14000
+w(ann obi)         +8000
+w(ann tbi_q)      +32000
+w(ann fbi1_q)      +4000
+w(obi east)        +7000
 w(obi tbi_q)      +24000
 w(obi fbi1_q)      +7000
-w(east tbi_q)      +40000
-w(east fbi1_q)      +1000
-w(tbi_q fbi1_q)      +40000
+w(east tbi_q)     +40000
+w(east fbi1_q)     +1000
+w(tbi_q fbi1_q)   +40000
 
-W(phl mnbi)      9d3
-W(ann mnbi)     63d2
-W(obi mnbi)    8.1d3
-W(east mnbi)    13d3
-W(tbi_q mnbi)     30d3
-W(fbi1_q mnbi)    116d2
+W(phl mnbi)       9d3
+W(ann mnbi)      63d2
+W(obi mnbi)     8.1d3
+W(east mnbi)     13d3
+W(tbi_q mnbi)    30d3
+W(fbi1_q mnbi)  116d2
 
 end_excess_function
 
@@ -11729,7 +11729,7 @@ begin_model
                       ORTHOAMPHIBOLE: Diener et al, JMG 2011 25:631-656, modified from Diener et al, JMG 2008
 
                       NOTE!! to use this model with ds5 data sets comment the ds6 DQF corrections listed
-                      at the end of the model and uncomment the corresponding ds6 DQF corrections.
+                      at the end of the model and uncomment the corresponding ds5 DQF corrections.
 
                       ---------------------------------------------------------
                       Reformulated as a 2-polytope 688 format model. JADC, 11/19
@@ -11823,34 +11823,9 @@ full_name    orthoamphibole
 
 2                                  | number of polytopes
                                    | polytope names and composite composition space subdivision schemes 
-GlRb-Amph 0   .2   .1  0           | X([ ][M][Fe3,Al][N]), Mg-Fe-Al-Fe3+ "glaucophane"
-ACMT-Amph by difference            | X([A][M][M,T,MT][M,C]), K-Na-Mg-Fe-Al-Ti-Fe3+ "pargasite"
+ACMT-Amph 0    1   .1  0           | X([A][M][M,T,MT][M,C]), K-Na-Mg-Fe-Al-Ti-Fe3+ "pargasite"
+GlRb-Amph by difference            | X([ ][M][Fe3,Al][N]), Mg-Fe-Al-Fe3+ "glaucophane"
 
-                                   | -------------------------------------------
-                                   | Polytope 1 [ ][M][T  ][N] (Glaucophane)
-2                                  | number of simplices
-2 2                                | number of vertices on each simplex
- 
-                                   | Simplex 1 is M
-                                   | Simplex 2 is T
-
-                                   | endmembers on the vertices, index on the first simplex
-                                   | changes fastest, last slowest
-                                   
-                                   | => endmember 11 is [ ][Mg][Fe3][Na]
-                                   | => endmember 21 is [ ][Fe][Fe3][Na]
-                                   | => endmember 12 is [ ][Mg][Al ][Na]
-                                   | => endmember 22 is [ ][Fe][Al ][Na]
-
-mrb_q        frb_d                   | Fe3-glaucophane, aka riebeckite
-gl_q         fgl_d                   | Al-glaucophane
-
-                                   | First (1d) simplex
-X_Mg1   0    1  .1  0              | X(1,1) = bulk Mg/M
-X_Fe1   by difference
-                                   | Second (3d) simplex
-X_rb    0    1  .1  0              | X(2,1) = Fe3/T' on M2, T' = Al + Fe3+
-X_gl    by difference
                                    | -------------------------------------------
                                    | Polytope 2 [A][M][M,T,MT][M,C]  
 3                                  | number of simplices, then for each simplex
@@ -11872,7 +11847,7 @@ mcgrk_d       fcgrk_d
 mgrk_d        fgrk_d               | M-Ca-Fe3+_tschermaks (Na-free riebeckite)
 
 tr            ftr_d
-anth          fanth_q                | M-Ca divalent amphibole
+anth          fanth                | M-Ca divalent amphibole
 
                                    | First (1d) simplex
 X_Mg     0    1   .1  0            | X(1,1) = bulk Mg/M
@@ -11886,41 +11861,67 @@ X_NaPg   0    1   .1  0            | X(3,2) = X(Na-Al-Parg)
 X_FeTs   0    1   .1  0            | X(3,9) = X(Fe3-Ts)
 X_MCamph by difference
 
+                                   | -------------------------------------------
+                                   | Polytope 1 [ ][M][T  ][N] (Glaucophane)
+2                                  | number of simplices
+2 2                                | number of vertices on each simplex
+ 
+                                   | Simplex 1 is M
+                                   | Simplex 2 is T
+
+                                   | endmembers on the vertices, index on the first simplex
+                                   | changes fastest, last slowest
+                                   
+                                   | => endmember 11 is [ ][Mg][Fe3][Na]
+                                   | => endmember 21 is [ ][Fe][Fe3][Na]
+                                   | => endmember 12 is [ ][Mg][Al ][Na]
+                                   | => endmember 22 is [ ][Fe][Al ][Na]
+
+mrb_q        frb_d                 | Fe3-glaucophane, aka riebeckite
+gl_q         fgl_d                 | Al-glaucophane
+
+                                   | First (1d) simplex
+X_Mg1   0    1  .1  0              | X(1,1) = bulk Mg/M
+X_Fe1   by difference
+                                   | Second (3d) simplex
+X_rb    0    1  .1  0              | X(2,1) = Fe3/T' on M2, T' = Al + Fe3+
+X_gl    by difference
+                                   | -------------------------------------------
 begin_ordered_endmembers
-ammo1 = 3/7 anth + 4/7 fanth_q      delta_g_of_ordering  = -9.5d3
-ammo2 = 2/7 anth + 5/7 fanth_q      delta_g_of_ordering  = -11.7d3 | these enthalpies differ from the published values
+ammo1 = 3/7 anth + 4/7 fanth      delta_g_of_ordering  = -9.5d3
+ammo2 = 2/7 anth + 5/7 fanth      delta_g_of_ordering  = -11.7d3 | these enthalpies differ from the published values
                                                                  | becuase Thermocalc reactions are specified in terms of the
                                                                  | endmember without "DQF" corrections, while in Perple_X
                                                                  | endmember include any DQF corrections.
 end_ordered_endmembers 
-
+                                   | -------------------------------------------
 begin_dependent_endmembers
-ftr_d   = 1 tr + 2 fanth_q    - 1 ammo1 - 1 ammo2
+ftr_d   = 1 tr + 2 fanth    - 1 ammo1 - 1 ammo2
 
-fpa_d   = 1 mpa_q  + 1/2 fanth_q    + 1/2 ammo2 - 1   anth
-cfpa_d  = 1 mpa_q  + 1 tr         + 3/2 fanth_q    -   1 ammo1 - 1/2 ammo2 - 1 anth
+fpa_d   = 1 mpa_q  + 1/2 fanth    + 1/2 ammo2 - 1   anth
+cfpa_d  = 1 mpa_q  + 1 tr         + 3/2 fanth    -   1 ammo1 - 1/2 ammo2 - 1 anth
 cmpa_d  = 1 mpa_q  + 1 tr         - 1 anth
 
 cmged_d = 1 ged_q      - 1 anth + 1 tr
-cfged_d = 1 ged_q      - 1 anth + 1 tr + 1 fanth_q    - 1 ammo1
+cfged_d = 1 ged_q      - 1 anth + 1 tr + 1 fanth    - 1 ammo1
 
 mgrk_d  = 1 mrb_q       + 1 ged_q      - 1 gl_q     
 mcgrk_d = 1 mrb_q       + 1 ged_q      - 1 anth     - 1 gl_q        + 1 tr
-fcgrk_d = 1 mrb_q       + 1 ged_q      - 1 gl_q       + 1 fanth_q     - 1 ammo1
+fcgrk_d = 1 mrb_q       + 1 ged_q      - 1 gl_q       + 1 fanth     - 1 ammo1
 fgrk_d  = 1 mrb_q       + 1 ged_q      - 1 gl_q       - 1 anth      + 1 ammo2
 
 fged_d  = 1 ged_q      - 1 anth + 1 ammo2
 
-fgl_d   = 1 gl_q      +  1 fanth_q    - 1 ammo1
-frb_d   = 1 mrb_q      + 1 fanth_q    - 1 ammo1
+fgl_d   = 1 gl_q      +  1 fanth    - 1 ammo1
+frb_d   = 1 mrb_q      + 1 fanth    - 1 ammo1
 end_dependent_endmembers
-
+                                   | -------------------------------------------
 begin_excess_function
 W(anth ged_q     )      25d3
 W(anth mpa_q )          25d3
 W(anth gl_q     )       65d3
 W(anth tr)            45d3
-W(anth fanth_q   )      33d3
+W(anth fanth   )      33d3
 W(anth mrb_q     )      52d3
 W(anth ammo1)         18d3
 W(anth ammo2)         23d3
@@ -11928,53 +11929,53 @@ W(anth ammo2)         23d3
 W(ged_q      mpa_q )          -40d3
 W(ged_q      gl_q     )        25d3
 W(ged_q      tr)             70d3
-W(ged_q      fanth_q   )     38.5d3
+W(ged_q      fanth   )     38.5d3
 W(ged_q      mrb_q     )       20d3
 W(ged_q      ammo1)          29d3
 W(ged_q      ammo2)        34.6d3
 
 W(mpa_q  gl_q     )       50d3
 W(mpa_q  tr)            90d3
-W(mpa_q  fanth_q   )      45d3
+W(mpa_q  fanth   )      45d3
 W(mpa_q  mrb_q     )      40d3
 W(mpa_q  ammo1)       33.2d3
 W(mpa_q  ammo2)         36d3
 
 W(gl_q      tr)            65d3
-W(gl_q      fanth_q   )    81.2d3
+W(gl_q      fanth   )    81.2d3
 W(gl_q      ammo1)       65.5d3
 W(gl_q      ammo2)       78.4d3
 
-W(tr fanth_q   )        75d3
+W(tr fanth   )        75d3
 W(tr mrb_q     )       52d3
 W(tr ammo1)          57d3
 W(tr ammo2)          63d3
 
-W(fanth_q    mrb_q     )     65d3
-W(fanth_q    ammo1)        12d3
-W(fanth_q    ammo2)         8d3
+W(fanth    mrb_q     )     65d3
+W(fanth    ammo1)        12d3
+W(fanth    ammo2)         8d3
 
 W(mrb_q      ammo1)        52d3
 W(mrb_q      ammo2)        63d3
 
 W(ammo1 ammo2)            20d3
 end_excess_function
-
-5                                   | number of sites in configurational entropy model (A, M1, M2, M4, T1)
+                                   | -------------------------------------------
+5                                  | number of sites in configurational entropy model (A, M1, M2, M4, T1)
 
 A                                   | site name
 2 1 1                               | number of species, effective multiplicity, true multiplicity
 z(Na,A)   =    1 mpa_q
-z(Vac,A)  =    1 anth     + 1 fanth_q    + 1 tr + 1 ged_q     + 1 gl_q      + 1 ammo1 + 1 ammo2 + 1 mrb_q       
+z(Vac,A)  =    1 anth     + 1 fanth    + 1 tr + 1 ged_q     + 1 gl_q      + 1 ammo1 + 1 ammo2 + 1 mrb_q       
 
 M1                                  | site name
 2 3 3                               | number of species, effective multiplicity, true multiplicity
-z(Fe,M1)   = 1 fanth_q    + 1 ammo2
+z(Fe,M1)   = 1 fanth    + 1 ammo2
 z(Mg,M1)   = 1 anth     + 1 ged_q     + 1 mpa_q + 1 mrb_q      + 1 gl_q      + 1 ammo1 + 1 tr
 
 M2                                  | site name
 4 2 2                               | number of species, effective multiplicity, true multiplicity
-z(Fe,M2)   = 1 fanth_q    + 1 ammo1
+z(Fe,M2)   = 1 fanth    + 1 ammo1
 z(Fe3,M2)  = 1 mrb_q     
 z(Al,M2)   = 1 ged_q       + 1/2 mpa_q + 1 gl_q     
 z(Mg,M2)   = 1/2 mpa_q     + 1 tr    + 1 anth + 1 ammo2
@@ -11984,30 +11985,30 @@ M4                                  | site name
 z(Ca,M4)   = 1 tr
 z(Mg,M4)   = 1 anth     + 1 ged_q      + 1 mpa_q
 z(Na,M4)   = 1 gl_q       + 1 mrb_q     
-z(Fe,M4)   = 1 fanth_q    + 1 ammo1    + 1 ammo2
+z(Fe,M4)   = 1 fanth    + 1 ammo1    + 1 ammo2
 
 T1                                  | site name
 2 1 4                               | number of species, effective multiplicity, true multiplicity
 z(Al,T1)   = 1/2 ged_q      + 1/2 mpa_q
-z(Si,T1)   = 1/2 ged_q      + 1/2 mpa_q + 1 anth + 1 gl_q      + 1 mrb_q      + 1 tr + 1 fanth_q    + 1 ammo1 + 1 ammo2
+z(Si,T1)   = 1/2 ged_q      + 1/2 mpa_q + 1 anth + 1 gl_q      + 1 mrb_q      + 1 tr + 1 fanth    + 1 ammo1 + 1 ammo2
 
 [Si4O22(OH)2]                       | formula suffix, enter "none" for no suffix.
-
+                                   | -------------------------------------------
 begin_van_laar_sizes
 alpha(tr)         1
 alpha(ged_q)      1.5
-alpha(mpa_q)        1.7
+alpha(mpa_q)      1.7
 alpha(gl_q)       0.8
 alpha(anth)       1
-alpha(fanth_q)    1
+alpha(fanth)      1
 alpha(ammo1)      1
 alpha(ammo2)      1
 alpha(mrb_q)      0.8
 end_van_laar_sizes
-
+                                   | -------------------------------------------
 begin_dqf_corrections
 
-dqf(fanth_q)   7000       | ds6/ds5
+dqf(fanth)     7000       | ds6/ds5
 dqf(mrb_q)     33000      | ds6/ds5 = omrb
 dqf(gl_q)      15000      | ds6/ds5
 
@@ -12018,10 +12019,10 @@ dqf(mpa_q)     25000      | ds6
 | dqf(mpa_q)   27000      | ds5
 
 end_dqf_corrections
-                                    | solution model specific computational options:
+                                   | -------------------------------------------
 begin_flagged_endmembers
-                                    | endmembers listed in this section are not associated with the
-                                    | solution on output and are identified by endmember name.
+                                   | endmembers listed in this section are not associated with the
+                                   | solution on output and are identified by endmember name.
 end_flagged_endmembers
 
 end_of_model
@@ -13462,6 +13463,8 @@ begin_model
 
                       JADC, Jan 2026
 
+                      rewrote as 688 format model (required for multiple OD). JADC, 7.2.2
+
                                                       A                B
                                                      _____________________
 
@@ -13472,54 +13475,64 @@ begin_model
                             Species:  2 ilm          TiFe              TiFe
                                       3 hem           Fe3+              Fe3+
                                       4 ogk           Mg                Ti
-                                      5 geik           MgTi              MgTi
+                                      5 geik         MgTi              MgTi
 
-                    --------------------------------------------------------
+                    -----------------------------------------------------------
 
 Ilm(W24)
 abbreviation Ilm
 full_name    ilmenite
 
-6                          | model type
-3                          | endmembers
+688                                | model type: 688 format standard model
+ 
+1                                  | number of polytopes
+1                                  | number of simplices
+3                                  | number of vertices on each simplex
+                                   | endmembers on the vertices
 ilm
 hem
 geik
+                                   |-------------------------------------------
+0     1  .1 0                      | subdivision range, X(geik)
+0     1  .1 0                      | subdivision range, X(hem)
 
-2                            | 2 ordered species:
-                             | 0 - dqf(ilm)
-oilm = 1 ilm   delta_g_of_ordering  = -7050 + 11.526 * T_K - 0.13 * P_bar
-                             | 0 - dqf(geik)
+                                   |-------------------------------------------
+begin_ordered_endmembers
+                                   | 0 - dqf(ilm)
+oilm = 1 ilm     delta_g_of_ordering  = -7050 + 11.526 * T_K - 0.13 * P_bar
+                                   | 0 - dqf(geik)
 ogk  = 1 geik    delta_g_of_ordering  =  -8310 + 11.526 * T_K
+end_ordered_endmembers 
 
-0 0 0 0 0                   | endmember flags
-
-0     1  .1 0              | subdivision range, X(geik)
-0     1  .1 0              | subdivision range, X(hem)
-
+                                   |-------------------------------------------
 begin_excess_function
-w(oilm ilm)    +7050   +0.13 * P_bar
+w(oilm ilm)      +7050   +0.13 * P_bar
 w(oilm hem)     +14300
-w(oilm ogk)     -7600
-w(oilm geik)     +600
-w(ilm hem)     +7250   -0.13 * P_bar
-w(ilm ogk)     -5500
-w(ilm geik)     -2200
+w(oilm ogk)      -7600
+w(oilm geik)      +600
+w(ilm hem)       +7250   -0.13 * P_bar
+w(ilm ogk)       -5500
+w(ilm geik)      -2200
 w(hem ogk)      +12500
 w(hem geik)      +2700
 w(ogk geik)      +8300
 end_excess_function
 
-2                          | 2 site model
+2                                  | 2 site model
 
-4 1                        | A - Fe2+ Fe3+ Mg Ti
-z(A,Mg)   = 1 geik
-z(A,fe3+) = 1 hem
-z(A,ti)   = 1/2 ilm
+A                                  | site name
+4 0.5 1                            | number of species, effective multiplicity, true multiplicity
+z(Mg,A)   = 1 ogk   + 1/2 geik
+z(Fe3+,A) = 1 hem
+z(Fe2+,A) = 1 oilm  + 1/2 ilm
+z(Ti,A)   = 1/2 ilm + 1/2 geik
 
-3 1                        | B - Fe3+ Ti4+ Fe2+
-z(b,fe3+) = 1 hem
-z(b,fe2+) = 1/2 ilm
+B                                  | site name
+4 0.5 1                            | number of species, effective multiplicity, true multiplicity
+z(Mg,B)   = 1/2 geik
+z(Fe3+,B) = 1 hem
+z(Fe2+,B) = 1/2 ilm
+z(Ti,B)   = 1/2 ilm + 1/2 geik + 1 oilm + 1 ogk
 
 refine_endmembers
 
@@ -13529,7 +13542,7 @@ spop(ilm)  disorder         dqf(J/mol) = 7050 - 11.526 * T_K + 0.13 * P_bar
 spop(geik) disorder         dqf(J/mol) = 8310 - 11.526 * T_K
 end_special_operations
 
-|solvus_tolerance  0.2
+solvus_tolerance  0.2
 
 end_of_model
                       --------------------------------------------------------
@@ -18085,7 +18098,7 @@ begin_model
                       mgca-1(M2) = en - odi_q
                       feca-1(M2) = fm - odi_q
                       --------------------------------------------------------
-Opx(W25)
+Opx(W24)
 abbreviation Opx
 full_name    orthopyroxene
 
@@ -18093,7 +18106,7 @@ full_name    orthopyroxene
 
 2                                 | number of polytopes
                                   | polytope names and subdivision schemes for the composite composition space
-[T'][A,C]  0    1   .1  0        | subdivision range for X(1) = X([T][A,C])
+[T'][A,C]  0    1   .1  0         | subdivision range for X(1) = X([T][A,C])
 TM+MC      by difference
 
                                   | -------------------------------------------
@@ -18355,7 +18368,7 @@ begin_model
                       feca-1(M2) = cfm - di 
                       ---------------------------------------------------------   
 
-Cpx(W25)
+Cpx(W24)
 abbreviation Cpx
 full_name    clinopyroxene
 

@@ -378,13 +378,29 @@ c-----------------------------------------------------------------------
       double precision g2, cp2, c2tot
       common/ cxt12 /g2(k21),cp2(k5,k21),c2tot(k21),jphct
 
+      integer jfct,jmct,jprct,jmuct
+      common/ cst307 /jfct,jmct,jprct,jmuct
+
       double precision units, r13, r23, r43, r59, zero, one, r1
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c-----------------------------------------------------------------------
-c                                in calculations with mobile components
-c                                reject phases with no thermodyamic components:
+c                                in calculations with mobile components, it's 
+c                                possible to refine a composition into the 
+c                                mobile component space (rsum.eq.0), this creates all 
+c                                sorts of messiness because of mass balance checks.
+
+c                                7.1.20 added a dirty solution by rejecting phases with no 
+c                                thermodyamic components. 7.2.2 is even dirtier by 
+c                                resetting rsum and hoping for the best:
       if (rsum.eq.0d0) then
-         return
+
+         if (jmct.eq.0) write (*,1000) 
+
+         rsum = 1d0
+
+1000  format (/,'**warning ver208** rsum = 0 in savrpc with no mobile ',
+     *          'components, please report this warning.')
+
       end if
 
       ntot = nstot(rids)

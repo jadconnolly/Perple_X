@@ -1137,7 +1137,7 @@ c                                 get grid level
 
       if (klev.eq.1.or..not.lopt(56)) then 
 
-         write (*,'(/)')
+         write (*,*)
 
       else
 

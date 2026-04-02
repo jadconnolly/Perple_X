@@ -34,9 +34,9 @@ c----------------------------------------------------------------------
       implicit none
 
       integer n
-
+c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.2.1 March 9, 2026.',
+     *     'Perple_X release 7.2.2 April 2, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -53,8 +53,11 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      character*3 new
+      integer iam
+      common/ cst4 /iam
 
+      character*3 new
+c----------------------------------------------------------------------
       if (new.eq.'682'.or.new.eq.'683'.or.new.eq.'688'.or.
      *    new.eq.'685'.or.new.eq.'687') then
 
@@ -69,13 +72,18 @@ c----------------------------------------------------------------------
          chksol = .true.
 c                                  check data/solution model
 c                                  file compatability 720+
-         if (.not.newdat.and.new.eq.'720') then
-            write (*,1000) 
-            call wrnstp
-         else if (newdat.and.new.ne.'720') then 
-            write (*,1010) 
-            call wrnstp
-         end if 
+c                                  if MEEMUM/CONVEX/VERTEX/MC_fit
+         if (iam.eq.1.or.iam.eq.2.or.iam.eq.15) then
+
+            if (.not.newdat.and.new.eq.'720') then
+               write (*,1000) 
+               call wrnstp
+            else if (newdat.and.new.ne.'720') then 
+               write (*,1010) 
+               call wrnstp
+            end if
+
+         end if
 
       else 
 
@@ -8786,7 +8794,7 @@ c                                 variable.
          write (*,1000) vname(iv(i)),v(iv(i))
       end do
 
-      write (*,'(/)')
+      write (*,*)
 
 1000  format (5x, a,' = ',g14.7)
 
@@ -9233,7 +9241,7 @@ c                                 that depend on refinement
 
          isoct = ibad2 
 
-         write (*,'(/)')
+         write (*,*)
 
       end if
 
