@@ -4717,15 +4717,15 @@ c                                  enthalpic uncertainty
                      read (values,*,iostat=ier) thermo(1,k10)
                      if (ier.ne.0) call error (23,tot,ier,strg)
                      hsc(k10) = .true.
-c                                 7.2.3 allow frendly to do conversion
-c                    if (hscon.and.iam.ne.5) then 
-c                                 convert HSC G0 to SUP G0
-c                       do j = 1, icomp
-c                          thermo(1,k10) = thermo(1,k10) 
-c    *                                   + tr*comp(ic(j))*sel(j)
-c                      end do
 
-                     if (hscon) then 
+                     if (hscon.and.iam.ne.5) then 
+c                                 convert HSC G0 to SUP G0
+                        do j = 1, icomp
+                           thermo(1,k10) = thermo(1,k10) 
+     *                                   + tr*comp(ic(j))*sel(j)
+                        end do
+
+                     else if (hscon) then 
 
                         do j = 1, icmpn
                            thermo(1,k10) = thermo(1,k10) 
