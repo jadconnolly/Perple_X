@@ -84,7 +84,7 @@ endif
 FLINK_PRE  += $(LDFLAGS_RUNTIME_PRE)
 FLINK_POST += $(LDFLAGS_RUNTIME_POST)
 
-MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami MC_fit
+MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami mc_fit
 all: $(MYOBJ)
 
 LIBRARY = pscom.o pslib.o rlib.o tlib.o flib.o olib.o resub.o minime_blas.o blas2lib.o
@@ -97,7 +97,7 @@ clean:
 ###################### TARGETS FOR 692+ PROGRAMS ######################### 
 #
 #
-MC_fit: MC_fit.o $(LIBRARY)
+mc_fit: mc_fit.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 convex: convex.o $(LIBRARY)
@@ -142,10 +142,10 @@ fluids: fluids.o $(LIBRARY)
 ctransf: ctransf.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
-DEW_2_ver: DEW_2_ver.o $(LIBRARY)
+dew_2_ver: dew_2_ver.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
-STX_2_ver: STX_2_ver.o $(LIBRARY)
+stx_2_ver: stx_2_ver.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 frendly: frendly.o $(LIBRARY)
@@ -168,16 +168,16 @@ cont_lib.o: cont_lib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c cont_lib.f
 ctransf.o: ctransf.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c ctransf.f
-DEW_2_ver.o: DEW_2_ver.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c DEW_2_ver.f
+dew_2_ver.o: dew_2_ver.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c dew_2_ver.f
 flib.o: flib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c flib.f
 fluids.o: fluids.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c fluids.f
 frendly.o: frendly.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c frendly.f
-MC_fit.o: MC_fit.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c MC_fit.f
+mc_fit.o: mc_fit.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c mc_fit.f
 meemum.o: meemum.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c meemum.f
 minime_blas.o: minime_blas.f perplex_parameters.h
@@ -204,8 +204,8 @@ resub.o: resub.f perplex_parameters.h
 #	$(COMP77) $(FFLAGS) -c rewrite_2010.f
 rlib.o: rlib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c rlib.f
-STX_2_ver.o: STX_2_ver.f perplex_parameters.h
-	$(COMP77) $(FFLAGS) -c STX_2_ver.f
+stx_2_ver.o: stx_2_ver.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c stx_2_ver.f
 tlib.o: tlib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c tlib.f
 vertex.o: vertex.f perplex_parameters.h

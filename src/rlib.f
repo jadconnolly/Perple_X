@@ -2381,7 +2381,7 @@ c                                 data found
 
       subroutine readdq (idim,tname)
 c----------------------------------------------------------------------
-c readvl - read dqf corrections for solution models endmembers, assumes
+c readdq - read dqf corrections for solution models endmembers, assumes
 c data on one line of less than 240 characters, the expected format
 
 c        dqf(name) number number number
@@ -2411,6 +2411,9 @@ c----------------------------------------------------------------------
 
       character mname*8
       common/ cst18a /mname(m4)
+
+      integer iam
+      common/ cst4 /iam
 
       integer length,com
       character chars*1, card*400
@@ -2462,8 +2465,8 @@ c                                check for _q make
 
          call redlpt (nums,ibeg,jend,ier)
          if (ier.ne.0) goto 90
-
-         if (qdef) nums(1) = nums(1) - 1d6
+c                                 7.2.3 shut off _q make for frendly
+         if (qdef.and.iam.ne.5) nums(1) = nums(1) - 1d6
 
          do i = 1, m3
             dqf(i,idqf) = nums(i)
@@ -18776,13 +18779,12 @@ c                                resetting rsum and hoping for the best:
 
          scptot = 1d0
 
-1000  format (/,'**warning ver208** scptot = 0 in getscp with no mobil',
-     *          'e components, please report this warning.')
+c        call error (30,scptot,ids,'GETSCP')
 
       end if
 
-
-c     if (scptot.eq.0d0) call error (30,scptot,ids,'GETSCP')
+1000  format (/,'**warning ver208** scptot = 0 in getscp with no mobil',
+     *          'e components, please report this warning.')
 
       end
 

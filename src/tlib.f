@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.2.2 April 2, 2026.',
+     *     'Perple_X release 7.2.3 May 7, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -3909,6 +3909,9 @@ c----------------------------------------------------------------------
       integer ixct,ifact
       common/ cst37 /ixct,ifact
 
+      integer iam
+      common/ cst4 /iam
+
       integer length,com
       character chars*1, card*400
       common/ cst51 /length,com,chars(400),card
@@ -3977,8 +3980,8 @@ c                                 read the DQF coefficients
          ibeg = 1
          call redlpt (nums,ibeg,iend,ier) 
          if (ier.ne.0) goto 90
-
-         if (qdef) nums(1) = nums(1) + 1d6
+c                                  7.2.3 undo q make for frendly 
+         if (qdef.and.iam.ne.5) nums(1) = nums(1) + 1d6
 
          do i = 1, m3 
             mdqf(nmak,i) = nums(i)
@@ -4714,15 +4717,15 @@ c                                  enthalpic uncertainty
                      read (values,*,iostat=ier) thermo(1,k10)
                      if (ier.ne.0) call error (23,tot,ier,strg)
                      hsc(k10) = .true.
-
-                     if (hscon.and.iam.ne.5) then 
+c                                 7.2.3 allow frendly to do conversion
+c                    if (hscon.and.iam.ne.5) then 
 c                                 convert HSC G0 to SUP G0
-                        do j = 1, icomp
-                           thermo(1,k10) = thermo(1,k10) 
-     *                                   + tr*comp(ic(j))*sel(j)
-                        end do
+c                       do j = 1, icomp
+c                          thermo(1,k10) = thermo(1,k10) 
+c    *                                   + tr*comp(ic(j))*sel(j)
+c                      end do
 
-                     else if (hscon) then 
+                     if (hscon) then 
 
                         do j = 1, icmpn
                            thermo(1,k10) = thermo(1,k10) 
