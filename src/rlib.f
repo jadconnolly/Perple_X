@@ -5120,27 +5120,27 @@ c                                done if nothing is missing:
 
       end if
 c                                make a list of the missing endmembers:
-      if (first) then
+      imiss = 0
 
-         imiss = 0
+      do i = 1, istot
 
-         do i = 1, istot
+         if (kdsol(i).ne.0) cycle
+         imiss = imiss + 1
+         missin(imiss) = mname(i)
 
-            if (kdsol(i).ne.0) cycle
-            imiss = imiss + 1
-            missin(imiss) = mname(i)
-
-         end do
+      end do
 c                                missing endmember warnings:
-         write (*,1000) tname(1:nblen(tname)),
-     *                    (missin(i), i = 1, imiss)
-          if (jstot.lt.2) then
+      if (first) write (*,1000) tname(1:nblen(tname)),
+     *                          (missin(i), i = 1, imiss)
+
+      if (jstot.lt.2) then
 c                                reject the solution:
-            im = im - 1
+         im = im - 1
+
+         if (first) then
             write (*,*)
             call warn (25,wg(1,1),jstot,tname)
             write (*,'(/,t35,a,/,a)') '--------------------'
-
          end if
 
       end if
@@ -9875,6 +9875,7 @@ c                                  normal solution.
                if (found) then
                   irjct = irjct + 1
                   rjct(irjct) = tname
+                  if (iam.eq.7) im = im - 1
                end if 
                cycle
             end if
@@ -9886,6 +9887,7 @@ c                                 no missing endmembers:
             if (istot.lt.2) then
                irjct = irjct + 1
                rjct(irjct) = tname
+               if (iam.eq.7) im = im - 1
                cycle
             end if
 
@@ -18679,6 +18681,9 @@ c-----------------------------------------------------------------------
       integer kd, na1, na2, na3, nat
       double precision x3, caq
       common/ cxt16 /x3(k5,h4,mst,msp),caq(k5,l10),na1,na2,na3,nat,kd
+
+      integer iwrn
+      data iwrn /0/
 c-----------------------------------------------------------------------
 
       scp(1:icomp) = 0d0
@@ -18775,7 +18780,11 @@ c                                thermodyamic components. 7.2.2 is even dirtier 
 c                                resetting rsum and hoping for the best:
       if (scptot.eq.0d0) then
 
-         if (jmct.eq.0) write (*,1000) 
+         iwrn = iwrn + 1
+         if (iwrn.le.iopt(1)) then
+            if (jmct.eq.0) write (*,1000) 
+            if (iwrn.eq.iopt(1)) call warn (49,xx,208,'GETSCP')
+         end if
 
          scptot = 1d0
 

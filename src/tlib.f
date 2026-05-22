@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.2.3 May 9, 2026.',
+     *     'Perple_X release 7.2.4 May 22, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -3996,7 +3996,8 @@ c                                 echo data for ctransf/actcor
 c                                 reject excluded makes
          do i = 1, ixct
             if (tname.eq.exname(i)) then 
-               nreact = nreact - 1
+c                                 7.2.4: changed to decrement nmak (not nreact) 
+               nmak = nmak - 1
                exit 
             end if
          end do 

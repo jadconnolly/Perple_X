@@ -387,19 +387,24 @@ c-----------------------------------------------------------------------
 c                                in calculations with mobile components, it's 
 c                                possible to refine a composition into the 
 c                                mobile component space (rsum.eq.0), this creates all 
-c                                sorts of messiness because of mass balance checks.
+c                                sorts of messiness because of mass balance checks, this
+c                                can also happen with saturated components.
 
 c                                7.1.20 added a dirty solution by rejecting phases with no 
 c                                thermodyamic components. 7.2.2 is even dirtier by 
 c                                resetting rsum and hoping for the best:
+c                                7.2.4 added saturated components to the list, technically
+c                                it's bad if a soluton has an endmember in the saturated
+c                                component space and this should be caught on input so 
+c                                i
       if (rsum.eq.0d0) then
 
-         if (jmct.eq.0) write (*,1000) 
+         if (jmct.eq.0.and.isat.eq.0) write (*,1000)
 
          rsum = 1d0
 
 1000  format (/,'**warning ver208** rsum = 0 in savrpc with no mobile ',
-     *          'components, please report this warning.')
+     *          'or staurated, please report this warning.')
 
       end if
 
