@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.2.4 May 22, 2026.',
+     *     'Perple_X release 7.2.5 June 1, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -14232,26 +14232,34 @@ c nblen - function to return nonblank length of a string
 
 
       logical function getnbs(str,i,nbs)
-c--------------------------------------------------------------- 
+c---------------------------------------------------------------
 c     getnbs -- Get ith nonblank string from string str, return it in nbs.
 c               If found, return true.  If not there, return false.
 
+      implicit none
       character str*(*), nbs*(*)
-      integer i, j, ix, icnt, ibeg, is
+      integer i, j, ix, icnt, icnb, ibeg, is
 
       ix = 1
       do is=1,i
-c        Find next nonblank.
+c        Find next nonblank; tabs count as blanks.
          do j=ix,len(str)
-            if (str(j:j) .ne. ' ') go to 20
+            if (str(j:j).ne.' ' .and. str(j:j).ne.char(9)) go to 20
          end do
          getnbs = .false.
          return
 
 20       continue
          ibeg = j
-         icnt = index(str(ibeg:),' ')
-         if (icnt .eq. 0) icnt = len(str)-ibeg+1
+         icnt = index(str(ibeg:),char(9))
+         icnb = index(str(ibeg:),' ')
+         if (icnt+icnb .eq. 0) then
+            icnt = len(str)-ibeg+1
+         else if (icnt.eq.0 .and. icnb.ne.0) then
+            icnt = icnb
+         else if (icnb.ne.0 .and. icnt.ne.0) then
+            icnt = min(icnt,icnb)
+         end if
          ix = ibeg + icnt
       end do
       nbs = str(ibeg:ibeg+icnt-1)

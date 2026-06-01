@@ -111,7 +111,7 @@ c                             read and modify individual entries
 1030  format ('Prompt for phases (y/n)?')
 1040  format ('Include (y/n): ',a)
 1050  format ('No such phase as: ',a)
-1300  format (/,'NO is the default answer to all prompts',/)           
+1300  format (//,'NO is the default answer to all prompts')
 
 999   end 
 

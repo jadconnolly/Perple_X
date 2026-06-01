@@ -2130,7 +2130,7 @@ c                                 parse box alignment, adj=x,y
                   end if
                else if (key.eq.'box') then
 c                                 parse box position, box=x,y
-                  read(extra,*,iostat=ier) box
+                  read(extra,*,iostat=ier) box(iv1),box(iv2)
                   if (ier.ne.0) then
                      write(*,*) '**Bad box value, ignoring'
                      box(1:2) = 0d0

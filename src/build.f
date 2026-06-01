@@ -880,8 +880,7 @@ c                                 diagrams:
 4020  format (5(g14.6,1x),a)
 6020  format (/,'Specify values for:',/,(10x,5(a,2x)))
 6010  format ('For calculation ',i2,', enter zeros to finish.')
-7020  format (//,'NO is the default (blank) answer to all Y/N prompts',
-     *        /)
+7020  format (//,'NO is the default (blank) answer to all Y/N prompts')
 7040  format (/,'The solution model file contains no relevant models.',/
      *       )
 7050  format ('Try again (Y/N)?')

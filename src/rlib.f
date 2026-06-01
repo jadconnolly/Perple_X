@@ -6644,7 +6644,7 @@ c                                 evaluate S
 
       subroutine setdqf (id)
 c---------------------------------------------------------------------
-c setdqf - evaluates dqf coefficients at p and t
+c setdqf - evaluates internal dqf increments at p and t
 c---------------------------------------------------------------------
       implicit none
 
@@ -9872,12 +9872,14 @@ c                                  lagged aqueous speciaton with a pure water so
          else
 c                                  normal solution.
             if (jstot.lt.2) then
+
                if (found) then
                   irjct = irjct + 1
                   rjct(irjct) = tname
-                  if (iam.eq.7) im = im - 1
                end if 
+
                cycle
+
             end if
 c                                 -------------------------------------
 c                                 reformulate the model so that it has
@@ -9887,7 +9889,6 @@ c                                 no missing endmembers:
             if (istot.lt.2) then
                irjct = irjct + 1
                rjct(irjct) = tname
-               if (iam.eq.7) im = im - 1
                cycle
             end if
 
@@ -13759,7 +13760,6 @@ c                                 the static ctot value.
             end do
 
          else if (mcflag(i)) then
-
 c                                 initialize margules, enthalpy of
 c                                 ordering, internal dqfs (last for minfxc)
             call ingsol (i)
@@ -18681,9 +18681,6 @@ c-----------------------------------------------------------------------
       integer kd, na1, na2, na3, nat
       double precision x3, caq
       common/ cxt16 /x3(k5,h4,mst,msp),caq(k5,l10),na1,na2,na3,nat,kd
-
-      integer iwrn
-      data iwrn /0/
 c-----------------------------------------------------------------------
 
       scp(1:icomp) = 0d0
@@ -18780,20 +18777,14 @@ c                                thermodyamic components. 7.2.2 is even dirtier 
 c                                resetting rsum and hoping for the best:
       if (scptot.eq.0d0) then
 
-         iwrn = iwrn + 1
-         if (iwrn.le.iopt(1)) then
-            if (jmct.eq.0) write (*,1000) 
-            if (iwrn.eq.iopt(1)) call warn (49,xx,208,'GETSCP')
-         end if
+         if (jmct.eq.0.and.isat.eq.0) write (*,1000)
 
          scptot = 1d0
 
-c        call error (30,scptot,ids,'GETSCP')
-
       end if
 
-1000  format (/,'**warning ver208** scptot = 0 in getscp with no mobil',
-     *          'e components, please report this warning.')
+1000  format (/,'**warning ver208** scptot = 0 in getscp with no mobi',
+     *          'le or saturated, please report this warning.')
 
       end
 

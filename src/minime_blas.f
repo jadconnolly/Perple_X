@@ -396,22 +396,21 @@ c                                resetting rsum and hoping for the best:
 c                                7.2.4 added saturated components to the list, technically
 c                                it's bad if a soluton has an endmember in the saturated
 c                                component space and this should be caught on input so 
-c                                i
+c                                i ... what?
       if (rsum.eq.0d0) then
-
+c                                this case should not be possible, i.e., gsol1 is always
+c                                called before savrpc and gsol1 calls getscp and resets
+c                                scptot (rsum) = 0 to 1. 
          if (jmct.eq.0.and.isat.eq.0) write (*,1000)
 
          rsum = 1d0
-
-1000  format (/,'**warning ver208** rsum = 0 in savrpc with no mobile ',
-     *          'or staurated, please report this warning.')
 
       end if
 
       ntot = nstot(rids)
       ltot = lstot(rids)
       ttot = tstot(rids)
-
+c                                uncomment for bug checks:
 c     call chkpa (rids)
 
       idif = 0
@@ -512,6 +511,10 @@ c                                 save the endmember fractions
 c                                 and normalized bulk fractions if o/d
       if (lorder(rids)) 
      *   zco(icoz(jphct)+ntot+1:icoz(jphct)+ttot) = pp(1:ltot)
+
+
+1000  format (/,'**warning ver208** rsum = 0 in savrpc with no mobile ',
+     *          'or saturated, please report this warning.')
 
       end 
 
