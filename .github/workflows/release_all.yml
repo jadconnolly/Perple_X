@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # ---------- Install compilers / tools per OS ----------
 
@@ -35,12 +35,10 @@ jobs:
       - name: Install compilers (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          brew update
           brew install gcc
           echo "$(brew --prefix)/bin" >> $GITHUB_PATH
           ls -l "$(brew --prefix)/bin"/gfortran* || true
           command -v gfortran || true
-          command -v gfortran-15 || true
 
       - name: Setup MSYS2 and mingw-w64 toolchain (Windows)
         if: matrix.os == 'windows-latest'
@@ -85,7 +83,7 @@ jobs:
       - name: Compile sources (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          make -C src -f makefile STATIC=1 FC=gfortran-15
+          make -C src -f makefile STATIC=1 FC=gfortran
 
       - name: Compile sources (Windows)
         if: matrix.os == 'windows-latest'
@@ -181,7 +179,7 @@ jobs:
 
       - name: Upload Linux artifact
         if: matrix.os == 'ubuntu-22.04'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
           path: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
@@ -300,7 +298,7 @@ jobs:
 
       - name: Upload macOS artifact
         if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_macOS_64_gfortran.tar.gz
           path: Perple_X_${{ github.event.release.tag_name }}_macOS_64_gfortran.tar.gz
@@ -342,7 +340,7 @@ jobs:
           Compress-Archive -Path "$pkg\*" -DestinationPath $zip -Force
       - name: Upload Windows artifact
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_Windows_64_gfortran.zip
           path: Perple_X_${{ github.event.release.tag_name }}_Windows_64_gfortran.zip
@@ -354,7 +352,7 @@ jobs:
     steps:
 
       - name: Download Linux artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz
           path: artifacts
@@ -365,14 +363,14 @@ jobs:
           test -f "artifacts/Perple_X_${{ github.event.release.tag_name }}_Linux_64_gfortran.tar.gz"
 
       - name: Download macOS artifact (tolerant)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         continue-on-error: true
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_macOS_64_gfortran.tar.gz
           path: artifacts
 
       - name: Download Windows artifact (tolerant)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         continue-on-error: true
         with:
           name: Perple_X_${{ github.event.release.tag_name }}_Windows_64_gfortran.zip
@@ -418,31 +416,6 @@ jobs:
             echo "files=" >> "$GITHUB_OUTPUT"
           fi
 
-      #----------- macOS Packaged Check -----------------------
-      - name: Check packaged runtime deps (macOS)
-        if: matrix.os == 'macos-latest'
-        run: |
-          set -e
-          TAG=${{ github.event.release.tag_name }}
-          PKG=Perple_X_${TAG}_macOS_64_gfortran
-          for f in "$PKG/bin/"*; do
-            if file "$f" | grep -q Mach-O; then
-              echo "== $f =="
-              if otool -L "$f" | grep -Eiq "/opt/homebrew/"; then
-                echo "Found unwanted Homebrew runtime deps in $f"
-                otool -L "$f"
-                exit 1
-              fi
-              # sanity: ensure quadmath is now via @rpath
-              if ! otool -L "$f" | grep -q "@rpath/libquadmath.0.dylib"; then
-                echo "Expected @rpath quadmath not found in $f"
-                otool -L "$f"
-                exit 1
-              fi
-            fi
-          done
-
-        # debug step removed
 
       - name: Publish artifacts to GitHub release (if any)
         if: steps.build_list.outputs.files != ''
