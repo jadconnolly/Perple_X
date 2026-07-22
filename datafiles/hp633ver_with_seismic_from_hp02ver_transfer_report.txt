@@ -1,0 +1,165 @@
+Seismic parameter transfer report
+Source: datafiles\hp02ver.dat
+Target: datafiles\hp633ver.dat
+Output: datafiles\hp633ver_with_seismic_from_hp02ver.dat
+
+Matched entries updated: 161
+Name matches without source seismic params: 1
+Source entries with seismic params: 197
+Source-only (no target match): 36
+Target-only (no source seismic match): 115
+
+Source entries with no target match (with m0..m5 values):
+  CACO3L: m0=327000, m1=.8829, m2=-143.88
+  FECO3L: m0=680000, m1=.8829, m2=-143.88
+  MGCO3L: m0=680000, m1=.8829, m2=-143.88
+  Si(s): m0=.1E-15
+  SiC: m0=.1E-15
+  acti: m0=617000, m1=1.19757, m2=-96
+  coGL: m0=.1E-15
+  faGL: m0=.1E-15
+  ffpu: m0=454000, m1=.97133, m2=-68
+  foGL: m0=.1E-15
+  fosm: m0=1070000, m1=1.6, m2=-120
+  fpum: m0=454000, m1=.97133, m2=-68
+  h2oGL: m0=.1E-15
+  hemGL: m0=.1E-15
+  k2o: m0=.1E-15
+  kal3o: m0=.1E-15
+  kalGL: m0=.1E-15
+  kalo2: m0=.1E-15
+  kals: m0=301000, m1=4.26, m2=-70
+  kcym: m0=301000, m1=4.26, m2=-70
+  mic: m0=301000, m1=4.26, m2=-70
+  mnsp: m0=353000, m1=1.21, m2=-54
+  mrie: m0=617000, m1=1.19757, m2=-96
+  mstl: m0=353000, m1=1.21, m2=-54
+  na2o: m0=.1E-15
+  nasGL: m0=.1E-15
+  osm1: m0=1070000, m1=1.6, m2=-120
+  osm2: m0=1070000, m1=1.6, m2=-120
+  pump: m0=454000, m1=.97133, m2=-68
+  qGL: m0=.1E-15
+  spr7: m0=810000, m1=1.82, m2=-140
+  stlp: m0=353000, m1=1.21, m2=-54
+  sud_dqf: m0=405000, m1=1.20881, m2=-54
+  tiGL: m0=.1E-15
+  woGL: m0=.1E-15
+  |Fe-BCC: m0=454000, m1=.97133, m2=-68
+
+Target entries with no source seismic match:
+  Azr
+  Bn
+  Cc
+  Ccp
+  Cu
+  Cv
+  H2S
+  HCl
+  HF
+  Mal
+  N2
+  NH3
+  S
+  S2
+  SO2
+  amul
+  any
+  apv
+  bdyC
+  bdyL
+  bdyT
+  bix
+  cacf
+  caes
+  canal
+  cen
+  cg
+  cgh
+  chdr
+  chdrt
+  chu
+  corL
+  cpv
+  cstn
+  cup
+  esk
+  eskL
+  fak
+  fchdr
+  fchu
+  fper
+  fpm
+  fpre
+  fpv
+  fran
+  frw
+  fscf
+  fsnal
+  fstp
+  fwd
+  glt
+  hemL
+  hen
+  hfs
+  hol
+  jgd
+  kcm
+  kjd
+  kls
+  knor
+  kos
+  lcL
+  limL
+  liz
+  lot
+  macf
+  maj
+  mak
+  manal
+  mcor
+  mil
+  minm
+  minn
+  mpm
+  mpv
+  mrw
+  mscf
+  msnal
+  mstp
+  mwd
+  nacf
+  nagt
+  nanal
+  neL
+  npv
+  nyb
+  osfa
+  osma
+  osmm
+  perL
+  phD
+  phE
+  picr
+  pmt
+  ppv
+  pren
+  pyr
+  qnd
+  ruL
+  sdl
+  shB
+  ski
+  smul
+  spr5
+  tcn
+  ten
+  tro
+  trot
+  trov
+  uv
+  wa
+  wal
+  woL
+  wu
+  zrt

@@ -2256,7 +2256,7 @@ end_flagged_endmembers
 end_of_model
                            --------------------------------------------------------
 begin_model
-                      Aqueous low density silicate fluid/melt - Holland, Green, & Powell; J Pet, 2018, 59:881�900.
+                      Aqueous low density silicate fluid/melt - Holland, Green, & Powell; J Pet, 2018, 59:881 900.
 
                       Intended to account for the solubility of silicates in water
                       at P > 1 GPa. Use with caution.
@@ -4605,7 +4605,7 @@ end_of_model
 begin_model
                       Biotite - Bi(G25) - after White et al., JMG 32:261-286, 2014.
 
-                      Revised by Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                      Revised by Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
 
                       Revised by Green et al, J Pet, 2025
 
@@ -4895,7 +4895,7 @@ end_dqf_corrections
 end_of_model
                       --------------------------------------------------------
 begin_model
-                            Sapphirine, O/D non-ideal, Wheller & Powell (JMG, 32, 287�299, 2014)
+                            Sapphirine, O/D non-ideal, Wheller & Powell (JMG, 32, 287 299, 2014)
 
                        ----------------------------------------------------------
 
@@ -15675,7 +15675,7 @@ site_check_override
 end_of_model
                       --------------------------------------------------------
 begin_model
-                             Olivine - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                             Olivine - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
                              Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                              JADC, April 2019.
@@ -15742,7 +15742,7 @@ z(M2,ca) = 1 mont
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Orthopyroxene - Opx(HGP) - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                      Orthopyroxene - Opx(HGP) - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
                       -------------------------------------------------------- 
                       W(en odi) and the odi DQF revised to destabilize Ca-rich
@@ -16024,7 +16024,7 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       DO NOT USE THIS MODEL WITH ds6.22-.
@@ -16176,7 +16176,7 @@ refine_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       JADC, April 2019
@@ -16833,7 +16833,7 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                      Spinel - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       as revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
@@ -16988,7 +16988,7 @@ end_van_laar_sizes
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
@@ -17094,7 +17094,7 @@ end_dqf_corrections
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Orthopyroxene - Opx(TH) - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                      Orthopyroxene - Opx(TH) - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
@@ -17367,7 +17367,7 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Clinopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                      Clinopyroxene - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
@@ -17679,7 +17679,7 @@ begin_model
 
                         * Thermocalc input:
 
-                            % ternary feldspar, �4TR� model, with plagioclase-friendly 
+                            % ternary feldspar,  4TR  model, with plagioclase-friendly 
                             %         parameterisation.
                             %
                             % Holland, TJB, Green, ECR & Powell, R (2021). A thermodynamic model
@@ -18005,7 +18005,7 @@ z(ce) = 1 cemnz
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Orthopyroxene - Opx(W24) - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                      Orthopyroxene - Opx(W24) - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
                       Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
@@ -18274,7 +18274,7 @@ end_flagged_endmembers
 end_of_model
                       --------------------------------------------------------
 begin_model
-                      Clinopyroxene - Cpx(W24) - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881�900.
+                      Clinopyroxene - Cpx(W24) - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881 900.
                       Intended for low Ca-px at pressure to 7 GPa, 923 K < T < peridotite liquidus
 
                       Revised by Tomlinson and Holland; Journal of Petrology, 2021, 10.1093/petrology/egab012
@@ -18572,5 +18572,220 @@ dqf(kjd_q)    =  10.82d3  +  0.60 * P_bar         | kjW
 end_dqf_corrections
  
 end_of_model
-
                       --------------------------------------------------------
+begin_model
+                      | Ti-Fe-Mg-F Clinohumite, with non-ideal F-OH interaction after Duffy & Greenwood, Am Min 64:1156-1174, 1979. 
+                      | Ad-hoc Ti and Fe, assumes, somewhat improbably, that Fe and Mg are disordered across
+                      | MO and MB and that Ti is disordered on MB. this model is an implicit o/d model because
+                      | the tichu_q endmember is specified as an independent endmember. JADC/PB, 5/20.
+
+                      | exclude HP endmembers: chum and chdr
+
+                      | Published as Herviou et al. (2026), doi.org/10.1093/petrology/egag045
+
+                                      Site:           MB      MO       OH
+                                                     ____________________________ 
+                                      Mutliplicity    1       8        2
+
+                                    endmember        ____________________________   type
+                                    _________                                       _________
+
+                                        chu         Mg      Mg       OH            independent
+                                        fchu        Mg      Mg       F             independent
+                                        tchu_q      Mg      TiMg     OOH           independent
+                                        ftchu_q     Mg      TiMg     OF            dependent
+                                        ichu_q      Fe      Fe       OH            independent
+                                        fichu_q     Fe      Fe       F             dependent
+                                        tichu_q     Fe      TiFe     OOH           independent
+                                        ftichu_q    Fe      TiFe     OF            dependent
+
+                        This model requires data (or a make definition) for tichdr_q, my first guess would
+                        be to use whatever you use for tchdr_q + 4*(fa-fo) + (fta-ta). with any luck that 
+                        will result in "realisitic" Fe-content.
+
+TiCh(JB)
+abbreviation TiChu
+full_name    clinohumite
+
+688                                | model type: 688 format standard model
+ 
+1                                  | number of polytopes
+3                                  | number of simplices
+2 2 2                              | number of vertices on each simplex
+chu      fchu
+tchu_q   ftchu_d
+ichu_q   fichu_d
+tichu_q  ftichu_d
+
+x_F  0. 1   .1   0
+x_H  by difference
+
+x_Ti 0. 1   .1   0
+x_M  by difference
+
+x_Fe 0. 1   .1   0                      | X(Fe), imod = 0 -> cartesian subdivision
+x_Mg by difference
+
+begin_dependent_endmembers
+ftchu_d   = 1 tchu_q + 1/2 fchu - 1/2 chu
+fichu_d   = 1 ichu_q + 1 fchu - 1 chu
+ftichu_d  = 1 tichu_q + 1/2 fchu - 1/2 chu
+end_dependent_endmembers
+
+begin_excess_function
+
+W(ichu_q  ichu_q  fchu)  -21572
+W(chu  tichu_q fchu)     -21572
+W(tichu_q tichu_q fchu)   -5393
+W(ichu_q  fchu fchu)     -59120
+W(fchu fchu tichu_q)     -29560
+
+W(fchu chu ichu_q)      -43144.2
+W(fchu ichu_q tchu_q)   -21572.1
+W(fchu ichu_q tichu_q)  -21572.1
+W(fchu tchu_q tichu_q)  -10786.05
+
+W(chu  chu  fchu)     -21572
+W(chu  tchu_q fchu)   -21572
+W(tchu_q tchu_q fchu)  -5393
+W(chu  fchu fchu)     -59120
+W(fchu fchu tchu_q)   -29560
+end_excess_function
+
+3                                   | number of sites in configurational entropy model
+
+MO                                  | site name
+2 8 8                               | number of species, effective multiplicity, true multiplicity
+z(Mg,M)  = 1 fchu + 1 chu + 1 tchu_q
+z(Fe,M)  = 1 ichu_q + 1 tichu_q
+
+MB                                  | site name
+3 1 1                               | number of species, effective multiplicity, true multiplicity
+z(Ti,M)  = 1/2 tchu_q + 1/2 tichu_q
+z(Mg,M)  = 1 fchu + 1 chu + 1/2 tchu_q
+z(Fe,M)  = 1 ichu_q + 1/2 tichu_q
+
+OH                                  | site name
+3 2 2                               | number of species, effective multiplicity, true multiplicity
+z(OH,OH) = 1 chu + 1/2 tchu_q + 1 ichu_q + 1/2 tichu_q 
+z(F,OH)  = 1 fchu
+z(O,OH)  = 1/2 tchu_q + 1/2 tichu_q
+
+[Si4O16]                            | formula suffix, enter "none" for no suffix.
+
+begin_dqf_corrections
+DQF(ichu_q) = 0
+DQF(tichu_q) = 0
+DQF(tchu_q) = - 33581 + 32 * T_K    | DQF(tchu_q) = 33581 -32*T_K | as for Ch-H2O-p4-2: - 33581
+                                    | why + 32 in the final version? JADC 5/26
+end_dqf_corrections
+
+end_of_model
+                         --------------------------------------------------------------
+begin_model
+                      | Ti-Fe-Mg-F Chondrodite, with non-ideal F-OH interaction after Duffy & Greenwood, Am Min 64:1156-1174, 1979. 
+                      | Ad-hoc Ti and Fe, assumes, somewhat improbably, that Fe and Mg are disordered across
+                      | MO and MB and that Ti is disordered on MB. this model is an implicit o/d model because
+                      | the tichdr_q endmember is specified as an independent endmember. JADC/PB, 5/20.
+
+                      | exclude HP endmembers: chum and chdr
+
+                      | Published as Herviou et al. (2026), doi.org/10.1093/petrology/egag045
+
+                                      Site:           MB      MO       OH
+                                                     ____________________________ 
+                                      Mutliplicity    1       8        2
+
+                                    endmember        ____________________________   type
+                                    _________                                       _________
+
+                                        chdrt        Mg      Mg       OH            independent
+                                        fchdr        Mg      Mg       F             independent
+                                        tchdr_q      Mg      TiMg     OOH           independent
+                                        ftchdr_d     Mg      TiMg     OF            dependent
+                                        ichdr_q      Fe      Fe       OH            independent
+                                        fichdr_d     Fe      Fe       F             dependent
+                                        tichdr_q     Fe      TiFe     OOH           independent
+                                        ftichdrd     Fe      TiFe     OF            dependent
+
+                        This model requires data (or a make definition) for tichdr_q, my first guess would
+                        be to use whatever you use for tchdr_q + 4*(fa-fo) + (fta-ta). with any luck that 
+                        will result in "realisitic" Fe-content.
+
+TiChdr(JB)
+abbreviation TiChr
+full_name    chondrodite
+
+688                                | model type: 688 format standard model
+ 
+1                                  | number of polytopes
+3                                  | number of simplices
+2 2 2                              | number of vertices on each simplex
+chdrt     fchdr
+tchdr_q   ftchdr_d
+ichdr_q   fichdr_d
+tichdr_q  ftichdrd
+
+x_F  0. 1   .1   0
+x_H  by difference
+
+x_Ti 0. 1   .1   0
+x_M  by difference
+
+x_Fe 0. 1   .1   0                      | X(Fe), imod = 0 -> cartesian subdivision
+x_Mg by difference
+
+begin_dependent_endmembers
+ftchdr_d   = 1 tchdr_q + 1/2 fchdr - 1/2 chdrt
+fichdr_d   = 1 ichdr_q + 1 fchdr - 1 chdrt
+ftichdrd   = 1 tichdr_q + 1/2 fchdr - 1/2 chdrt
+end_dependent_endmembers
+
+begin_excess_function
+
+W(ichdr_q  ichdr_q  fchdr)   -21572
+W(chdrt  tichdr_q fchdr)     -21572
+W(tichdr_q tichdr_q fchdr)   -5393
+W(ichdr_q  fchdr fchdr)      -59120
+W(fchdr fchdr tichdr_q)      -29560
+
+W(fchdr chdrt ichdr_q)      -43144.2
+W(fchdr ichdr_q tchdr_q)    -21572.1
+W(fchdr ichdr_q tichdr_q)   -21572.1
+W(fchdr tchdr_q tichdr_q)   -10786.05
+
+W(chdrt  chdrt  fchdr)     -21572
+W(chdrt  tchdr_q fchdr)    -21572
+W(tchdr_q tchdr_q fchdr)    -5393
+W(chdrt  fchdr fchdr)      -59120
+W(fchdr fchdr tchdr_q)     -29560
+end_excess_function
+
+3                                   | number of sites in configurational entropy model
+
+MO                                  | site name
+2 8 8                               | number of species, effective multiplicity, true multiplicity
+z(Mg,M)  = 1 fchdr + 1 chdrt + 1 tchdr_q
+z(Fe,M)  = 1 ichdr_q + 1 tichdr_q
+
+MB                                  | site name
+3 1 1                               | number of species, effective multiplicity, true multiplicity
+z(Ti,M)  = 1/2 tchdr_q + 1/2 tichdr_q
+z(Mg,M)  = 1 fchdr + 1 chdrt + 1/2 tchdr_q
+z(Fe,M)  = 1 ichdr_q + 1/2 tichdr_q
+
+OH                                  | site name
+3 2 2                               | number of species, effective multiplicity, true multiplicity
+z(OH,OH) = 1 chdrt + 1/2 tchdr_q + 1 ichdr_q + 1/2 tichdr_q 
+z(F,OH)  = 1 fchdr
+z(O,OH)  = 1/2 tchdr_q + 1/2 tichdr_q
+
+[Si4O16]                            | formula suffix, enter "none" for no suffix.
+
+begin_dqf_corrections
+DQF(ichdr_q) = 0
+DQF(tichdr_q) = 0
+DQF(tchdr_q) = 0 - 5.76 * T_K
+end_dqf_corrections
+
+end_of_model

@@ -1,0 +1,81 @@
+Seismic parameter transfer report
+Source: datafiles\hpha622ver.dat
+Target: datafiles\hp633ver.dat
+Output: datafiles\hp633ver_with_seismic_from_hpha622ver.dat
+
+Matched entries updated: 191
+Name matches without source seismic params: 20
+Source entries with seismic params: 192
+Source-only (no target match): 1
+Target-only (no source seismic match): 66
+
+Source entries with no target match (with m0..m5 values):
+  |tan: m0=338000, m1=0.7231, m2=-32.2414
+
+Target entries with no source seismic match:
+  Azr
+  Bn
+  C2H6
+  Cc
+  Ccp
+  Cv
+  HCl
+  Mal
+  N2
+  NH3
+  S
+  amul
+  any
+  apv
+  bdyC
+  bdyL
+  bdyT
+  bix
+  caes
+  cen
+  cg
+  cgh
+  chdr
+  clin
+  cpv
+  cstn
+  fper
+  fpre
+  fpv
+  fran
+  frw
+  fwd
+  glt
+  hol
+  kcm
+  kjd
+  kos
+  liz
+  mil
+  minm
+  minn
+  mpv
+  mrw
+  mwd
+  npv
+  nyb
+  osfa
+  osma
+  osmm
+  phD
+  phE
+  pmt
+  ppv
+  pren
+  qnd
+  ruL
+  sdl
+  shB
+  ski
+  smul
+  tcn
+  vsv
+  wa
+  wal
+  wu
+  zrt

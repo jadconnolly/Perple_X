@@ -1,0 +1,11 @@
+DEW13HP02ver_elements.dat
+DEW13HP622ver_elements.dat
+dew17hp622ver_elements.dat
+DEW17HP62ver_elements.dat
+DEW19HP622ver_elements.dat
+DEW19HP62ver_elements.dat
+DEW19HP633ver_elements.dat
+DEW24HP622ver_elements.dat
+DEW24HP62ver_elements.dat
+DEW24HP633ver_elements.dat
+metal_mix.dat

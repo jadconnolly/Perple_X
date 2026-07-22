@@ -3034,3 +3034,41 @@ dH = 0
 transition = 1  type = 2  t1 = 652  t3 = 9.883  t4 = 34.60001  t5 = .2849999E-1  
 end
 
+
+chdrt     EoS = 8 | Duffy & Greenwood (1979) caloric EoS, b's from chdr HP
+MgO(5)SiO2(2)H2O(1)
+GH = -5221752.773  S0 = 248.36  V0 = 11.17  
+c1 = 102.247  c2 = 11.319e-3  c3 = -31.488e5  
+b1 = .182E-4  b5 = 528.5176  b6 = 1161000  b7 = -.41E-5  b8 = 4.8  
+end
+
+
+fchdr      EoS = 8 | Duffy & Greenwood (1979) caloric EoS, b's from chdr HP
+MgO(5)SiO2(2)F2(1)
+GH = -5280943.234 S0 = 247.39  V0 = 10.82  
+c1 = 92.641  c2 = 12.749e-3  c3 = -25.719e5  
+b1 = .182E-4  b5 = 528.5176  b6 = 1161000  b7 = -.41E-5  b8 = 4.8  
+end
+
+
+chu      EoS = 8 |  Duffy & Greenwood (1979) caloric EoS, b's from chum HP
+MgO(9)SiO2(4)H2O(1)
+GH = -9755511.326  S0 = 437.3117  V0 = 20.0106
+c1 = 178.377  c2 = 21.137e-3  c3 = -55.246e5 
+b1 = .32E-4  b5 = 537.4843  b6 = 1199000  b7 = -.38E-5  b8 = 4.58 
+end
+
+
+fchu      EoS = 8 |  Duffy & Greenwood (1979) caloric EoS, b's as for chum HP
+MgO(9)SiO2(4)F2(1) |MgO(8)SiO2(4)MgF2(1) |   
+GH = -9815199.279 S0 = 436.7259  V0 = 19.7219 
+c1 = 168.771 c2 = 22.561e-3 c3 = -49.657e5 
+b1 = .32E-4  b5 = 537.4843  b6 = 1199000  b7 = -.38E-5  b8 = 4.58  
+end
+
+
+HF       EoS = 117 | Chase (1998)
+H2O(0.5)F2(0.5)O2(-0.25)
+GH = -244379.24 S0 = 173.67
+c1 = 30.11 c2 = -3.246e-3 c3 = -0.024e-6 c4 = 2.868e-6 c8 = 0.457e9
+end

@@ -45,7 +45,6 @@ aq_fractionation_simpl    default | [F] T => allow fractionation of simple back-
 aq_output                 default | [T] T => output back-calculated solute chemistry when electrolyte data is available
 aq_oxide_components       default | [F] T => accomodate oxide components in aqueous speciation calculations
 aq_species                default | [20] maximum number of solute species output (ranked by concentration) for back-calculated results
-aq_lagged_iterations      default | [0] number of internal iterations for lagged speciation.
 aq_lagged_speciation      default | [F] T => do lagged solute chemistry when electrolyte data is available
 aq_solute_composition     default | [m] y => mole fractions, m => molality
 aq_solvent_composition    default | [y] y => mole fractions, m => molality

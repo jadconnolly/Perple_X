@@ -63,7 +63,7 @@ misfit_mode                   default | [Chi] LSQ or wChi => objective function 
 no_missing_phases             default | [T] T => do not accept models that fail to predict all observed phases (nomiss)
 prior_probability_PT_only     default | [T] T => for Bayes scoring, base prior probabilities only on inital pressure-temperature range; F => use all parameters
 range_to_sigma                default | [4.0] => for Bayes scoring, parameter_range/standard_deviation (ra2zs)
-uncertainty_multiplier        default | [2.0] => for fit criterion, observational data must fit within uncertainty * uncertainty_multiplier (un2ft)
+sigma_multiplier              default | [2.0] => for fit criterion, observational data must fit within uncertainty * uncertainty_multiplier (un2ft)
 w_composition                 default | [1d0] for Chi and LSQ, [1d-4] for wChi => weighting factor for the composition term of the objective function (wcomp)
 w_extra                       default | [1d4] => weighting factor for the extraneous phase term of the objective function (wextra)
 w_missing                     default | [1d3] => weighting factor for the missing phase term of the objective function (wmiss)
