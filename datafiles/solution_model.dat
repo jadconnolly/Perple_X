@@ -1944,25 +1944,25 @@ hed_d     =  1 di    + 1 cfs_q  - 1 cfm
 end_dependent_endmembers
 
 begin_excess_function
-W(di cfs_q)     25.8d3   | changed from W(di cfs_q) = 25.8d3 - 0.03 * p by DB to match the ECRG 10/20 revision.
+W(di cfs_q)     25.8d3  | changed from W(di cfs_q) = 25.8d3 - 0.03 * p by DB to match the ECRG 10/20 revision.
 
 W(di cats)       13d3 - 0.06 * p
-W(di crdi_q)       8d3
-W(di cess_q)       8d3
-W(di mcbuf_q)       8d3   | added by DB to match the ECRG 10/20 revision.
+W(di crdi_q)      8d3
+W(di cess_q)      8d3
+W(di mcbuf_q)     8d3   | added by DB to match the ECRG 10/20 revision.
 W(di jd)         26d3
 W(di cen_q)    29.8d3   | changed from W(di cen_q) 29.8d3 - 0.03 * p by DB to match the ECRG 10/20 revision.
 W(di cfm)      20.6d3   | changed from W(di cfm) 20.6d3 - 0.03 * p by DB to match the ECRG 10/20 revision.
-W(di kjd_q)       26d3
+W(di kjd_q)      26d3
 
 W(cfs_q cats)     25d3 -  .1 * p
-W(cfs_q crdi_q)  38.3d3
-W(cfs_q cess_q)  43.3d3
+W(cfs_q crdi_q) 38.3d3
+W(cfs_q cess_q) 43.3d3
 W(cfs_q jd)       24d3
-W(cfs_q mcbuf_q)    24d3    | added by DB to match the ECRG 10/20 revision.
+W(cfs_q mcbuf_q)  24d3    | added by DB to match the ECRG 10/20 revision.
 W(cfs_q cen_q)   2.3d3
 W(cfs_q cfm)     3.5d3
-W(cfs_q kjd_q)     24d3
+W(cfs_q kjd_q)    24d3
 
 W(cats crdi_q)     2d3
 W(cats cess_q)     2d3
@@ -1988,7 +1988,7 @@ W(cess_q kjd_q)     3d3
 W(mcbuf_q jd)      16d3    | added by DB to match the ECRG 10/20 revision.
 W(mcbuf_q cen_q)   24d3    | added by DB to match the ECRG 10/20 revision.
 W(mcbuf_q cfm)     22d3    | added by DB to match the ECRG 10/20 revision.
-W(mcbuf_q kjd_q)    16d3    | added by DB to match the ECRG 10/20 revision.
+W(mcbuf_q kjd_q)    16d3   | added by DB to match the ECRG 10/20 revision.
 
 W(jd cen_q)      40d3
 W(jd cfm)        40d3
@@ -2231,7 +2231,7 @@ z(Si,T2)   = 1/2 cats + 1 fmc  + 1 cfs_q + 1 acm  + 1 jd + 1 cen_q + 1 di
 begin_van_laar_sizes
 alpha(di)          1.2
 alpha(cen_q)       1
-alpha(cfs_q)        1
+alpha(cfs_q)       1
 alpha(jd)          1.2
 alpha(acm)         1.2
 alpha(ocats)       1.9
@@ -2244,7 +2244,7 @@ dqf(cen_q) = 3500 - 2 * T + 0.048 * P | cenjh
 dqf(cfs_q) = 2100 - 2 * T + 0.045 * P | cfs_q
 dqf(jd)   =  2000
 dqf(acm)  = -5000
-dqf(cats) =  3800  - 2.8816 * T  + 0.01  * P
+dqf(cats) =  3800 - 2.8816 * T  + 0.01  * P
 end_dqf_corrections
 
                                     | solution model specific computational options:
@@ -2310,17 +2310,17 @@ H2O
 0     1  0.1  0                     | range and resolution of X(CO2)
 
 begin_excess_function
-W(qL_q  H2O)   59d3     0  -0.82
+W(qL_q   H2O)   59d3     0  -0.82
 W(silL_q H2O)   57.6d3   0  -0.80
 W(woL_q  H2O)   72.2d3   0  -0.67
-W(foL_q H2O)   71.7d3   0  -1.10
-W(faL_q H2O)   71.7d3   0  -1.10
-W(jdL_q H2O)   57d3     0  -0.79
-W(hmL_q H2O)   73d3     0  -0.66
-W(ekL_q H2O)   73d3     0  -0.66
-W(tiL_q H2O)   75d3     0  -0.67
+W(foL_q  H2O)   71.7d3   0  -1.10
+W(faL_q  H2O)   71.7d3   0  -1.10
+W(jdL_q  H2O)   57d3     0  -0.79
+W(hmL_q  H2O)   73d3     0  -0.66
+W(ekL_q  H2O)   73d3     0  -0.66
+W(tiL_q  H2O)   75d3     0  -0.67
 W(kjL_q  H2O)   44.9d3   0  -1.19
-W(CO2  H2O)   1d4                   | closes regular solution solvus at ~602 K for x*ln(x) model [which this isn't]
+W(CO2    H2O)   1d4                   | closes regular solution solvus at ~602 K for x*ln(x) model [which this isn't]
 end_excess_function
 
 2                                   | 2 sites
@@ -2346,12 +2346,12 @@ dqf(foL_q)  = 8.59d3     - 0.136*Pbar
 dqf(faL_q)  = 13.56d3    - 0.052*Pbar
 dqf(qL_q)   = 2.1d3      - 0.051*Pbar
 dqf(hmL_q)  = 4.05d3     - 0.077*Pbar
-dqf(kjL_q) =  12.88d3   - 0.227*Pbar
-dqf(jdL_q) =  12.32d3   - 0.099*Pbar
-dqf(ekL_q) =  24.75d3   + 0.245*Pbar
-dqf(tiL_q) =  5.6d3     - 0.489*Pbar
-dqf(silL_q) =  6.72d3  -0.313*Pbar
-dqf(woL_q)  =  0.22d3  -0.12 *Pbar
+dqf(kjL_q)  =  12.88d3   - 0.227*Pbar
+dqf(jdL_q)  =  12.32d3   - 0.099*Pbar
+dqf(ekL_q)  =  24.75d3   + 0.245*Pbar
+dqf(tiL_q)  =  5.6d3     - 0.489*Pbar
+dqf(silL_q) =  6.72d3    - 0.313*Pbar
+dqf(woL_q)  =  0.22d3    - 0.12 *Pbar
 end_dqf_corrections
 
 end_of_model
@@ -2582,7 +2582,6 @@ CO2
 end_flagged_endmembers
 
 end_of_model
-
                            --------------------------------------------------------
 begin_model
                       Tonalitic melt, Green et al., JMG, 2016.
@@ -4674,7 +4673,15 @@ X_MBio by difference
 begin_ordered_endmembers
                                    |      dqf(obi) = -6d3
                                    | -1/3 dqf(ann) = 3d3    => -7d3
-obi = 2/3 phl + 1/3 ann   delta_g_of_ordering  = -7d3
+| obi = 2/3 phl + 1/3 ann   delta_g_of_ordering  = -7d3
+
+obi = 2/3 phl + 1/3 ann   delta_g_of_ordering  = -5d3 | DB 5/26
+                                   |obi = 1/3 ann + 2/3 phl - 6  (od)
+                                   |annm = ann - 3  (mod)  
+                                   |H(obi) = -6d3 - (2/3*DQF(phl) +1/3* DQF(ann))
+                                   |H(obi) = -6d3 - 1/3*(-3d3) 
+
+
 end_ordered_endmembers
 
 begin_dependent_endmembers
@@ -16083,7 +16090,7 @@ full_name    spinel
                             | endmembers on the prism vertices
 picr   fpcr
 qnd    fqnd
-imgmt    mt
+imgmt  mt
 sp     herc
 
 X_Fe2+  0  1   .1  0        | subdivision scheme for Fe2/(Fe2+Mg)
@@ -16872,21 +16879,21 @@ begin_model
                                       Multiplicity    1     2  -> fake T-site multiplicity of 1
                                                      _________
 
-                                        isp        Al    MgAl
-                                        imgmt        Fe3   MgFe3   dependent
-                                        picr         Mg    Cr
-                                        qndTH        Mg    MgTi    dependent
+                                         isp          Al    MgAl
+                                         imgmt        Fe3   MgFe3   dependent
+                                         picr         Mg    Cr
+                                         qndTH        Mg    MgTi    dependent
 
-                                        iherc        Al    FeAl
-                                        imt          Fe3   FeFe3
-                                        fpcr         Fe    2Cr     dependent
-                                        usp          Fe    FeTi
+                                         iherc        Al    FeAl
+                                         imt          Fe3   FeFe3
+                                         fpcr         Fe    2Cr     dependent
+                                         usp          Fe    FeTi
 
                                 Ordered species      _________
 
-                                        nsp          Mg     Al
-                                        nherc        Fe     Al
-                                        nmt          Fe     Fe3+
+                                         nsp          Mg     Al
+                                         nherc        Fe     Al
+                                         nmt          Fe     Fe3+
 
 Sp(TH)
 abbreviation Sp
@@ -16901,8 +16908,8 @@ full_name    spinel
                             | endmembers on the prism vertices
 picr    fpcr
 qndTH   usp
-imgmt   imt  
-isp   iherc  
+imgmt   mt  
+sp      herc  
 
 X_Fe2+  0  1   .1  0        | subdivision scheme for Fe2/(Fe2+Mg)
 X_Mg    by difference
@@ -16913,45 +16920,45 @@ Z_Fe3+  0  1   .1  0        | subdivision scheme for X(Fe3+)
 Z_MAl   by difference
 
 begin_ordered_endmembers
-nmt   =    1 imt             delta_g_of_ordering   = -0.3d3   + 5.76303 * T   |changed from 5.76303 * T by DB to match the ECRG 10/20 revision.
-nsp   =    1 isp           delta_g_of_ordering   = -23.5d3  + 5.76303 * T
-nherc =    1 iherc           delta_g_of_ordering   = -23.6d3  + 5.76303 * T
+nmt   =    1 mt             delta_g_of_ordering   = -0.3d3   + 5.76303 * T   | changed from 5.76303 * T by DB to match the ECRG 10/20 revision.
+nsp   =    1 sp             delta_g_of_ordering   = -23.5d3  + 5.76303 * T   | sic, TC typo? JADC 8/26.
+nherc =    1 herc           delta_g_of_ordering   = -23.6d3  + 5.76303 * T
 end_ordered_endmembers 
 
 begin_dependent_endmembers
-imgmt =  1 isp - 1 iherc    + 1 imt  
+imgmt =  1 sp  - 1 herc   + 1 mt  
 fpcr  = -1 nsp + 1 nherc  + 1 picr
-qndTH  = 1 nsp + 1 isp    - 1 nherc - 1 iherc   + 1 usp
+qndTH  = 1 nsp + 1 sp     - 1 nherc - 1 herc   + 1 usp
 end_dependent_endmembers
 
 begin_excess_function
-W(nsp   isp)          -6.7d3
+W(nsp   sp)          -6.7d3
 W(nsp   nherc)           3.6d3
-W(nsp   iherc)          -9.8d3
+W(nsp   herc)          -9.8d3
 W(nsp   nmt)            43.2d3
-W(nsp   imt)            49.5d3
+W(nsp   mt)            49.5d3
 W(nsp   picr)          -38.4d3 - 0.08*Pbar
 W(nsp   usp)              40d3
-W(isp   nherc)         2.7d3
-W(isp   iherc)        -3.5d3
-W(isp   nmt)          36.8d3
-W(isp   imt)          20.7d3
-W(isp   picr)        -21.6d3 - 0.08*Pbar
-W(isp   usp)          38.2d3
-W(nherc iherc)          -6.0d3
+W(sp    nherc)         2.7d3
+W(sp    herc)        -3.5d3
+W(sp    nmt)          36.8d3
+W(sp    mt)          20.7d3
+W(sp    picr)        -21.6d3 - 0.08*Pbar
+W(sp    usp)          38.2d3
+W(nherc herc)          -6.0d3
 W(nherc nmt)            17.5d3
-W(nherc imt)            51.6d3
+W(nherc mt)            51.6d3
 W(nherc picr)          -53.8d3
 W(nherc usp)            25.7d3
-W(iherc   nmt)          -4.1d3
-W(iherc   imt)            10d3
-W(iherc   picr)        -38.8d3
-W(iherc   usp)            21d3
-W(nmt   imt)            18.1d3
+W(herc  nmt)          -4.1d3
+W(herc  mt)            10d3
+W(herc  picr)        -38.8d3
+W(herc  usp)            21d3
+W(nmt   mt)            18.1d3
 W(nmt   picr)           12.1d3
 W(nmt   usp)             5.2d3
-W(imt     picr)         -8.7d3
-W(imt     usp)          21.5d3
+W(mt    picr)         -8.7d3
+W(mt    usp)          21.5d3
 W(picr  usp)              15d3
 end_excess_function
 
@@ -16959,31 +16966,39 @@ end_excess_function
 M
 4  1  1                              | 4 species on M, mult. = 1
 z(Fe,M)   = 1 nherc + 1 nmt + 1 usp
-z(Fe3,M)  = 1 imt  
-z(Al,M)   = 1 isp + 1 iherc  
+z(Fe3,M)  = 1 mt  
+z(Al,M)   = 1 sp    + 1 herc  
 z(Mg,M)   = 1 nsp   + 1 picr
 
 T
 6  1  2                              | 6 species on T, effective mult. = 1, true mult = 2
-z(Mg,T)   = 1/2 isp
-z(Fe,T)   = 1/2 iherc   + 1/2 imt   + 1/2 usp
+z(Mg,T)   = 1/2 sp
+z(Fe,T)   = 1/2 herc   + 1/2 mt   + 1/2 usp
 z(Ti,T)   = 1/2 usp
-z(Fe3,T)  = 1 nmt + 1/2 imt  
+z(Fe3,T)  = 1 nmt      + 1/2 mt  
 z(Cr,T)   = 1 picr
-z(Al,T)   = 1 nsp + 1/2 isp + 1 nherc + 1/2 iherc  
+z(Al,T)   = 1 nsp      + 1/2 sp + 1 nherc + 1/2 herc  
 
 [O4]                                 | formula suffix, enter "none" for no suffix.
 
 begin_van_laar_sizes
 alpha(nsp)      = 1
-alpha(isp)    = 1
+alpha(sp)       = 1
 alpha(nherc)    = 1
-alpha(iherc)    = 1
+alpha(herc)     = 1
 alpha(nmt)      = 1
-alpha(imt)      = 1
+alpha(mt)       = 1
 alpha(picr)     = 1
 alpha(usp)      = 0.9
 end_van_laar_sizes
+
+begin_special_operations
+                           | make definitions added by Debaditya Bandyopadhyay, 8/26.
+
+spop(sp)   inverse         dqf(J/mol) = 23500 - 5.763 * T_K  | sic, TC typo? JADC 8/26.
+spop(herc) inverse         dqf(J/mol) = 23600 - 5.763 * T_K
+spop(mt)   eq              dqf(J/mol) =   300
+end_special_operations
 
 end_of_model
                       --------------------------------------------------------
@@ -17088,7 +17103,10 @@ end_van_laar_sizes
 
 begin_dqf_corrections
                                                   | what about knor?? JADC, 2/2026
-dqf(tig_q)  -31850 + 15.5 * T + 0.05 * P          | tigTH
+|dqf(tig_q)  -31850 + 15.5 * T + 0.05 * P         | tigTH, typo??
+
+| DB correction:
+dqf(tig_q)  53.5d3 - 17.3 * T + 0.05 * P          |found in the TH21 file, DB 6/2026
 end_dqf_corrections
 
 end_of_model
@@ -17704,7 +17722,7 @@ begin_model
                                 an   0.550    0  0
                                 san  1.000    0  0
                       ---------------------------------------------------------
-Fsp(HGP)                          | solution name.
+Fsp(HGP)                           | solution name.
 abbreviation Fsp
 full_name    ternary-feldspar
 
@@ -18423,11 +18441,18 @@ X_MMPx  0   1  .1  0              | X(2,5) - M-M
 X_MCPx  by difference             | X(2,6) - M-Ca
 
 begin_ordered_endmembers
-cfm   = 1/2 cen_q + 1/2 cfs_q  delta_g_of_ordering   =  -5100
+|cfm   = 1/2 cen_q + 1/2 cfs_q  delta_g_of_ordering   =  -5100
+|                                                             | DQF(cfm) - (DQF(cen_q) + DQF(cfs_q))/2
+|                                                             | cfm   -1.6     -0.002       0.0465   
+|                                                             | cen    3.5     -0.002       0.048 
+|                                                             | cfs    3.5     -0.002       0.045  
+
+cfm   = 1/2 cen_q + 1/2 cfs_q  delta_g_of_ordering   =  -4400 |corrected from -5100, DB 5/26
                                                              | DQF(cfm) - (DQF(cen_q) + DQF(cfs_q))/2
-                                                             | cfm   -1.6     -0.002       0.0465   
-                                                             | cen    3.5     -0.002       0.048 
-                                                             | cfs    3.5     -0.002       0.045  
+                                                             | cfm   -1.6     -0.002       0.0465  
+                                                             | cen    3.5     -0.002       0.048
+                                                             | cfs    2.1     -0.002       0.045 
+
 end_ordered_endmembers 
 
 begin_dependent_endmembers
@@ -18563,12 +18588,15 @@ end_flagged_endmembers
 
 
 begin_dqf_corrections
-dqf(cen_q)    =  3500 - 2 * T + 0.048 * P         | cenjh
-dqf(cfs_q)    =  2100 - 2 * T + 0.045 * P         | cfsg
-dqf(cess_q)   =  -3460                            | cesW
-dqf(mcbuf_q)  =  -20.89d3   -1.2 * T  + 0.248 * P | cbuW
-dqf(crdi_q)   = -4850                             | crdW
-dqf(kjd_q)    =  10.82d3  +  0.60 * P_bar         | kjW
+dqf(cen_q)    =  3500 - 2 * T + 0.048 * P         
+dqf(cfs_q)    =  2100 - 2 * T + 0.045 * P         
+dqf(cess_q)   =  -3460                            
+dqf(mcbuf_q)  =  -20.89d3   -1.2 * T  + 0.248 * P 
+
+| dqf(crdi_q)   = -4850                
+
+dqf(crdi_q)   = 4850                        | corrected from -4850, DB 5/26
+dqf(kjd_q)    =  10.82d3  +  0.60 * P_bar 
 end_dqf_corrections
  
 end_of_model
@@ -18786,6 +18814,508 @@ begin_dqf_corrections
 DQF(ichdr_q) = 0
 DQF(tichdr_q) = 0
 DQF(tchdr_q) = 0 - 5.76 * T_K
+end_dqf_corrections
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                             non-ideal CORDIERITE model, HGP version of White et al., JMG 32:261-286, 2014
+                             with Mn added
+
+                             Revised by Green et al, J Pet, 2025. 
+                             These revisions are all minor modification in the excess terms from Crd(HGP).
+                      
+                             DB 5/26
+                             --------------------------------------------------------
+
+                                                      M       H
+                                                     ________________
+
+                                      Mutliplicity    2       1
+                                                     ________________
+
+                                      1 mncrd         Mn      Vac
+                            Species:  2 fcrd          Fe      Vac
+                                      3 crd           Mg      Vac
+                                      4 hmncrd        Mn      H2O    dependent
+                                      5 hfcrd         Fe      H2O    dependent
+                                      6 hcrd          Mg      H2O
+                                                      _______________
+
+                            Dependent: hfcrd = hcrd + (fcrd - crd)
+
+                            Modified model entered by Tim Johnson, Apr 7 2014.
+
+                            w(fcrd hcrd) changed from w(crd hcrd), May 16, 2014. Felix Gervais.
+
+                            w(mncrd ...)'s and mncrd DQF added. Felix Gervais, Jan 28, 2015.
+
+Crd(G25)
+abbreviation Crd
+full_name    cordierite
+
+7                                 model type: reciprocal
+2                                 2 reciprocal sites
+3  2                              3 species on site 1, 2 on site 2
+mncrd    fcrd     crd
+hmncrd_i hfcrd_i  hcrd
+
+2                                 2 dependent endmembers
+
+hfcrd_i = 1 hcrd +  1 fcrd - 1 crd
+hmncrd_i = 1 hcrd + 1 mncrd - 1 crd
+
+1 0 0 1 0 0                | endmember flags
+
+                           | Note restricted range on X(Mn)
+
+0  .2 .1  0                | range and resolution for X(Mn) on M site, imod = 1 -> asymmetric transform subdivision
+0  1  .1  0                | range and resolution for X(Fe) on M site, imod = 0 -> cartesian subdivision
+
+0  1   .1 0                | range and resolution for 1-X(H2O) on H site, imod = 0 -> cartesian subdivision
+
+begin_excess_function
+W(crd fcrd)        2.5d3     |modified in G25 as W(crd,fcrd) = 2.5
+W(fcrd hcrd)       2d3       |added in G25 as W(crd,fcrd) = 2.5
+W(crd mncrd)       6d3
+W(fcrd mncrd)      4d3
+W(hcrd mncrd)      6d3
+end_excess_function
+
+2                                       2 site entropy model.
+
+3 2.                                    3 species on M, 2 sites per formula unit.
+z(m,mg) = 1 crd + 1 hcrd
+z(m,fe) = 1 fcrd
+
+2 1                                     2 species on H, 1 sites per formula unit.
+z(H,H2O) = 1 hcrd
+
+begin_dqf_corrections
+dqf(mncrd)   -4210
+end_dqf_corrections
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                      Generic Melt - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881-900.
+                      Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus. JADC 12/18
+                      Corrected Green et al. JPet (2025)
+
+                      The Green et al. modification of the original model has less physically plausible site 
+                      configurational entropies than the original 2018 model.
+
+                      Modified after Heinrich & Connolly, GEOLOGY, 50:1101-1105. To account for molecular CO2
+                      solubility based on the Morizet et al. (2010) synthesis for basaltic liquid. Use with caution. JADC 9/22.
+
+
+                      This model requires the following make definitions in the
+                      thermodynamic data file make_definitions section:
+
+                      foL_q = 2 foL
+                      faL_q = 2 faL
+                      qL_q = 4 qL
+                      jdL_q = 1 abL - 1 qL
+                      hmL_q = 1/2 hemL
+                      ekL_q = 1/2 eskL
+                      tiL_q = 1 ruL
+                      kjL = 1 kspL - 1 qL
+                      woL_q = 1 woL
+                      wL_q  = 1 h2oL
+
+                      dqf(CO2)   = 54355.   |based on Morizet 2010 for basalt data & rhyolite curve in  Fig. 11, JADC-CAH apr22
+
+
+melt(G25H)
+abbreviation Melt
+full_name    liquid
+
+688                                | model type: 688 format standard model
+
+1                                  | number of polytopes
+1                                  | number of simplices
+12                                 | number of vertices (endmembers) on each simplex
+
+foL_q      faL_q
+jdL_q      silL_q     kjL_q
+woL_q      ekL_q      hmL_q
+tiL_q      qL_q       CO2 
+wL_q
+
+0     1   .1  0                    | range and resolution of X(fo)
+0     1   .1  0                    | range and resolution of X(fa)
+0     1   .1  0                    | range and resolution of X(jd)
+0     1   .1  0                    | range and resolution of X(sil)
+0     1   .1  0                    | range and resolution of X(kj)
+0     1   .1  0                    | range and resolution of X(wo)
+0     1   .1  0                    | range and resolution of X(ek)
+0     1   .1  0                    | range and resolution of X(hm)
+0     1   .1  0                    | range and resolution of X(ti)
+0     1   .1  0                    | range and resolution of X(q)
+0     1   .1  0                    | range and resolution of X(CO2)
+
+begin_ordered_endmembers
+                                    | H(ctL) = -106160  55 * T_K   0.052 * P_bar 
+                                    |          - dqf(woL_q) - dqf(silL_q) + dqf(qL_q)/4
+ctL = 1 woL_q + 1 silL_q - 1/4 qL_q   Delta(enthalpy) = -113487.5 + 55 * T_K + 0.50825 * P_bar
+
+end_ordered_endmembers
+
+begin_excess_function
+
+w(qL_q silL_q)      +9200   -0.08 * P_bar
+w(qL_q woL_q)       -10300
+w(qL_q foL_q)       -47600  -4.31 * P_bar
+w(qL_q faL_q)       -13100  -0.53 * P_bar
+w(qL_q jdL_q)       -15500  -0.11 * P_bar
+w(qL_q hmL_q)       +20000
+w(qL_q tiL_q)       +24100
+w(qL_q kjL_q)       -20100  -0.05 * P_bar
+w(qL_q ctL)         -14200  +0.03 * P_bar
+w(qL_q wL_q)        +18700  -0.71 * P_bar
+
+w(silL_q woL_q)     -28500  +0.83 * P_bar
+w(silL_q foL_q)     +1200   +0.10 * P_bar
+w(silL_q faL_q)     +2500
+w(silL_q jdL_q)     +18800  +0.04 * P_bar
+w(silL_q hmL_q)     -5000
+w(silL_q tiL_q)     +16200  -0.04 * P_bar
+w(silL_q kjL_q)     +6900   +0.10 * P_bar
+w(silL_q ctL)       +3700
+w(silL_q wL_q)      +24300  -0.94 * P_bar
+
+w(woL_q foL_q)      +25900  +0.07 * P_bar
+w(woL_q faL_q)      +13900
+w(woL_q jdL_q)      +100    -0.03 * P_bar
+w(woL_q tiL_q)      +17900
+w(woL_q kjL_q)      -500    +0.10 * P_bar
+w(woL_q ctL)        +9600   -0.04 * P_bar
+w(woL_q wL_q)       +53200  -1.10 * P_bar
+
+w(foL_q faL_q)      +17900  +0.03 * P_bar
+w(foL_q jdL_q)      +100    +0.07 * P_bar
+w(foL_q tiL_q)      +9000
+w(foL_q kjL_q)      +3800   +0.07 * P_bar
+w(foL_q ctL)        -7600
+w(foL_q wL_q)       +21000  -1.67 * P_bar
+
+w(faL_q jdL_q)      +8300   -0.04 * P_bar
+w(faL_q hmL_q)      -30000
+w(faL_q tiL_q)      -4100
+w(faL_q kjL_q)      +9400   +0.10 * P_bar
+w(faL_q ctL)        -6100
+w(faL_q wL_q)       +20900  -1.60 * P_bar
+
+w(jdL_q hmL_q)      +9800   +0.01 * P_bar
+w(jdL_q tiL_q)      +15400  +0.14 * P_bar
+w(jdL_q kjL_q)      -4700   +0.10 * P_bar
+w(jdL_q ctL)        +6800
+w(jdL_q wL_q)       -10100  -0.06 * P_bar
+
+w(hmL_q kjL_q)      +8900   +0.10 * P_bar
+w(hmL_q wL_q)       +57400  -0.66 * P_bar
+
+w(ekL_q wL_q)       +60000  -0.66 * P_bar
+
+w(tiL_q kjL_q)      +9600   +0.04 * P_bar
+w(tiL_q wL_q)       +50000  -0.20 * P_bar
+
+w(kjL_q ctL)        -5400
+w(kjL_q wL_q)       +2000   +0.06 * P_bar
+
+w(ctL wL_q)         +8900   -0.03 * P_bar
+
+end_excess_function
+
+3
+
+OH
+2 2 1                         | water-vacancy site, multiplicity 2
+z(H)   = 1 wL_q
+z(Vac) = 1 qL_q + 1 silL_q + 1 woL_q + 1 foL_q + 1 faL_q + 1 jdL_q + 1 hmL_q + 1 ekL_q + 1 tiL_q + 1 kjL_q + 1 ctL + 1 CO2
+
+M
+4 0 0                         | Temkin M-site
+n(Mg) = 4 foL_q
+n(Fe) = 4 faL_q
+n(Ca) = 1 woL_q
+n(Al) = 1 silL_q
+
+F
+11 0 0                        | Temkin F-site, decomposing "AlSi2" into k/na-jd here 
+                              | eliminates the necessity of the A-site
+n(jd)   = 1 jdL_q
+n(kj)   = 1 kjL_q
+n(alsi) = 1 silL_q
+n(si0)  = 1 woL_q
+n(si2)  = 1 faL_q + 1 foL_q
+n(si4)  = 1 qL_q
+n(ek)   = 1 ekL_q
+n(ti)   = 1 tiL_q
+n(ct)   = 1 ctL
+n(hm)   = 1 hmL_q
+n(CO2)  = 1 CO2
+
+none                              | formula suffix, enter "none" for no suffix. 
+
+begin_van_laar_sizes
+alpha(qL_q)    = 1
+alpha(silL_q)  = 1.2
+alpha(woL_q)   = 1.4
+alpha(foL_q)   = 2.4
+alpha(faL_q)   = 1
+alpha(jdL_q)   = 1.2
+alpha(hmL_q)   = 1
+alpha(ekL_q)   = 1
+alpha(tiL_q)   = 1
+alpha(kjL_q)   = 1
+alpha(ctL)     = 1
+alpha(CO2)     = 1
+alpha(wL_q)    = 0.65
+end_van_laar_sizes
+
+begin_dqf_corrections
+DQF(foL_q)  =  7740    -0.156 * P_bar
+DQF(faL_q)  = 13850    -0.054 * P_bar
+DQF(qL_q)   =  1570    -0.031 * P_bar
+DQF(kjL_q)  = 11690    -0.202 * P_bar   
+DQF(hmL_q)  =  2930    -0.041 * P_bar 
+DQF(jdL_q)  = 11310    -0.092 * P_bar  
+DQF(ekL_q)  = 25020     0.244 * P_bar  
+DQF(tiL_q)  = -6240    -0.235 * P_bar
+dqf(silL_q) =  7070    -0.334 * P_bar
+dqf(woL_q)  =   650    -0.130 * P_bar
+dqf(wL_q)   =  3590    -4.1 * T_K   + 0.00065 * P_bar
+dqf(CO2)    = 54355    |based on Morizet 2010 for basalt data & rhyolite curve in  Fig. 11 ****ADDITION JADC-CAH apr22
+|dqf(CO2)   = 46994    |based on Morizet 2010 for the andesite curve in their Fig. 11      ****ADDITION JADC-CAH apr22
+end_dqf_corrections
+
+
+begin_flagged_endmembers
+                                    | endmembers listed in this section are not associated with the
+                                    | solution on output and are identified by endmember name. This
+                                    | may be useful for testing purposes for systems in which the 
+                                    | the endmember compositions are not expected to be stable, i.e., 
+                                    | the stability of pure wL_q would alert the user to unexpected 
+                                    | behaviour. if/when endmember compositions of the solution are 
+                                    | expected, those endmembers should be removed from the list of
+                                    | flagged endmembers. 
+foL_q     
+faL_q
+jdL_q      
+silL_q     
+kjL_q
+woL_q      
+ekL_q      
+hmL_q
+tiL_q      
+qL_q      
+wL_q
+CO2
+end_flagged_endmembers
+
+end_of_model
+                           --------------------------------------------------------
+begin_model
+                      Aqueous low density silicate fluid/melt - Holland, Green, & Powell; J Pet, 2018, 59:881 900.
+                      Modified negligibly by Green et al. JPet (2025)
+
+                      Intended to account for the solubility of silicates in water
+                      at P > 1 GPa. Use with caution.
+
+                      JADC 4/19
+
+                      Modified to account for molecular CO2 by a CORK-like H2O-CO2 interaction term. 
+                      This is not consistent with the a(H2O) ~ X^2 form of this model, not much else
+                      is either (i.e., it's a poor model for water-rich fluids). JADC, 9/5/2025
+
+Aqfl(G25K)
+abbreviation F
+full_name    fluid
+
+2                                   | model type: simplicial composition space
+
+12                                  | number of endmembers
+
+foL_q     faL_q
+jdL_q     silL_q    kjL_q
+woL_q     ekL_q     hmL_q
+tiL_q     qL_q      CO2
+H2O
+
+1 1 1 1 1 1 1 1 1 1 1 1             | endmember flags
+
+                                    | non-linear subdivision is likely to be
+                                    | preferable to cartesian for this model
+
+                                    | see commentary in the header of this file for explanation of
+                                    | endmember flags and subdivision schemes
+
+0     1  0.1  0                     | range and resolution of X(fo)
+0     1  0.1  0                     | range and resolution of X(fa)
+0     1  0.1  0                     | range and resolution of X(jd)
+0     1  0.1  0                     | range and resolution of X(sil)
+0     1  0.1  0                     | range and resolution of X(kj)
+0     1  0.1  0                     | range and resolution of X(wo)
+0     1  0.1  0                     | range and resolution of X(ek)
+0     1  0.1  0                     | range and resolution of X(hm)
+0     1  0.1  0                     | range and resolution of X(ti)
+0     1  0.1  0                     | range and resolution of X(q)
+0     1  0.1  0                     | range and resolution of X(CO2)
+
+begin_excess_function
+w(qL_q   H2O)      +71500  -0.89 * P_bar
+w(silL_q H2O)      +55400  -0.91 * P_bar
+w(woL_q  H2O)      +83700  -0.61 * P_bar
+w(foL_q  H2O)      +82900  -1.26 * P_bar
+w(faL_q  H2O)      +77700  -1.41 * P_bar
+w(jdL_q  H2O)      +46100  -0.83 * P_bar
+w(hmL_q  H2O)      +73000  -0.66 * P_bar
+w(ekL_q  H2O)      +73000  -0.66 * P_bar
+w(tiL_q  H2O)      +75900  -0.66 * P_bar
+w(kjL_q  H2O)      +49600  -1.31 * P_bar
+W(CO2    H2O)      +10000                  | closes regular solution solvus at ~602 K for x*ln(x) model [which this isn't]
+end_excess_function
+
+2                                   | 2 sites
+
+12 1                                | molecular site
+z(fo)     = 1 foL_q
+z(fa)     = 1 faL_q
+z(jd)     = 1 jdL_q
+z(silL_q) = 1 silL_q
+z(kj)     = 1 kjL_q
+z(wo)     = 1 woL_q
+z(ek)     = 1 ekL_q
+z(hm)     = 1 hmL_q
+z(ti)     = 1 tiL_q
+z(q)      = 1 qL_q
+z(CO2)    = 1 CO2
+
+2 1                                 | water-vacancy site
+z(H) = 1 H2O
+
+begin_dqf_corrections
+dqf(foL_q)     =   7560     -0.125 * P_bar
+dqf(faL_q)     =   15540    -0.103 * P_bar
+dqf(qL_q)      =   2650     -0.071 * P_bar
+dqf(hmL_q)     =   4050     -0.077 * P_bar
+dqf(kjL_q)     =   12210    -0.345 * P_bar
+dqf(jdL_q)     =   10590    -0.385 * P_bar
+dqf(ekL_q)     =   24750     0.245 * P_bar
+dqf(tiL_q)     =   5690     -0.484 * P_bar
+dqf(silL_q)    =   6290     -0.386 * P_bar
+dqf(woL_q)     =   -200     -0.161 * P_bar
+end_dqf_corrections
+
+end_of_model
+                      --------------------------------------------------------
+begin_model
+                      Garnet - Holland, Green, and Powell; Journal of Petrology, 2018, Vol. 59, 881-900.
+                      Intended for pressure to 7 GPa, 923 K < T < peridotite liquidus
+
+                      Revised by Weller et al, J Pet, 2024
+
+                      These revisions are all minor modification in the excess terms from Gt(HGP).
+                      
+                      DB 5/26
+                      
+                      --------------------------------------------------------
+
+                                                      X       Y
+                                                     _____________
+
+                                      Mutliplicity    3       2
+                                                     _____________
+
+                          Dependent:   fkho_d        Fe      Fe3+
+                          Dependent:   kho_d         Mg      Fe3+
+                                       andr          Ca      Fe3+
+
+                          Dependent:   fkno_d        Fe      Cr
+                                       knor          Mg      Cr
+                          Dependent:   ckno_d        Ca      Cr
+
+                          Dependent:   ftig_d        Fe      Al(MgTi)_0.5
+                                       tig_q         Mg      Al(MgTi)_0.5
+                          Dependent:   ctig_d        Ca      Al(MgTi)_0.5
+
+                                       alm           Fe      Al
+                                       py            Mg      Al
+                                       gr            Ca      Al
+
+Gt(W24)
+abbreviation Gt
+full_name    garnet
+
+7
+2
+3 4
+ftig_d  tig_q    ctig_d
+fkno_d  knor   ckno_d
+fkho_d  kho_d  andr
+alm     py     gr
+
+6
+fkno_d = 1 alm + 1 knor - 1 py
+ckno_d = 1 gr  + 1 knor - 1 py
+fkho_d = 1 alm + 1 andr - 1 gr
+kho_d  = 1 py  + 1 andr - 1 gr
+ftig_d = 1 alm + 1 tig_q  - 1 py
+ctig_d = 1 gr  + 1 tig_q  - 1 py
+
+                            | see commentary in the header of this file for explanation of
+                            | endmember flags and subdivision schemes.
+
+0 0 0 0 0 0 0 0 0 0 0 0     | endmember flags
+
+0   1   .1   0              | subdivision scheme for Fe on A
+0   1   .1   0              | subdivision scheme for Mg on A
+
+0   1   .1   0              | subdivision scheme for Al(MgTi)_0.5   on B
+0   1   .1   0              | subdivision scheme for Cr     on B
+0   1   .1   0              | subdivision scheme for Fe3+   on B
+
+begin_excess_function
+W(py   alm)      4d3              +  .1 * P
+W(py   gr)       45.4d3 - 10 * T  + 0.04 * P
+W(py   andr)     107d3  - 10 * T  - 0.036 * P
+W(py   knor)     2d3
+W(py   tig_q)    1d3                           |modified in W24 as W(py,tig) = 1, absent in HGP18 & TH21
+W(alm  gr)       17d3   - 10 * T  +  .1 * P
+W(alm  andr)     65d3   - 10 * T  + 0.039 * P
+W(alm  knor)     8.2d3            + 0.01 * P   |modified in W24 as W(alm,knor) = 8.2 + 0.01 P, same as TH21
+W(gr   andr)     2d3
+W(gr   knor)     5d3    - 10 * T  + 0.180 * P  |modified in W24 as W(gr,knor) = 5 - 0.01 T + 0.18 P, same as TH21
+W(gr   tig_q)    -3d3                          |modified in W24 as W(gr,tig) = -3, absent in HGP18 & TH21
+W(andr knor)     63d3   - 10 * T  + 0.10 * P
+W(andr tig_q)    -1d3                          |modified in W24 as W(andr,tig) = -1, absent in HGP18 & TH21
+end_excess_function
+
+2
+3 3.
+z(m1,fe) = 1 alm
+z(m1,mg) = 1 py + 1 knor + 1 tig_q
+
+5 2.
+z(m2,cr)  = 1 knor
+z(m2,fe3) = 1 andr
+z(m2,ti)  = 1/4 tig_q
+z(m2,mg)  = 1/4 tig_q
+
+
+begin_van_laar_sizes
+alpha(py)        1
+alpha(alm)       1
+alpha(gr)        2.5
+alpha(andr)      2.5
+alpha(knor)      1
+alpha(tig_q)       1
+end_van_laar_sizes
+
+begin_dqf_corrections
+|dqf(knor)   = 18200                                | no dqf for knor in W24, like TH21
+dqf(tig_q)  =  42.3d3  - 17.3 * T                   | tig W24, in HGP18 it was tig = py + 1/2 per + 1/2 ru - 1/2 cor + 46.7 - 0.0173 T  (make)
 end_dqf_corrections
 
 end_of_model

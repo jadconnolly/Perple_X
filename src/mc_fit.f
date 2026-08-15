@@ -4,7 +4,7 @@ c Copyright (c) 1987-2023 by James A. D. Connolly, Institute for Mineralogy
 c & Petrography, Swiss Federal Insitute of Technology, CH-8092 Zurich,
 c SWITZERLAND. All rights reserved. 
 
-      program MC_fit
+      program mc_fit
 c----------------------------------------------------------------------
       implicit none
 
@@ -24,7 +24,7 @@ c----------------------------------------------------------------------
       double precision v,tr,pr,r,ps
       common/ cst5  /v(l2),tr,pr,r,ps
 c----------------------------------------------------------------------- 
-c                                 MC_fit uses the MEEMUM iam flag value
+c                                 mc_fit uses the MEEMUM iam flag value
       iam = 2
 c                                 until it get's it's own iam flag use
 c                                 mcfit to control i/o etc.
@@ -96,9 +96,9 @@ c                                 -------------------------------------
 c                                 uncertainty analysis error sources, sets jnvrnd :
 c                                 invunc = 1 = > perturb all data
 c                                 invunc = 2 = > perturb analytical data only
-c                                 invunc = 3 = > perturn thermodynamic data only
+c                                 invunc = 3 = > perturb thermodynamic data only
 c
-c                                 works in concert with invrnd set in subroutine bstmod
+c                                 works in concert with invprt set in subroutine invers
 c                                 invprt = F = > not uncertainty analysis(no pertrubations)
 c                                 invprt = T = > uncertainty analysis
       if (.not.uncrty.and.(invunc.eq.1.or.invunc.eq.3)) then
@@ -151,7 +151,7 @@ c                                 george's conditions:
 1000  format (/,'**warning ver503** the following entities have no ',
      *          'associated thermodynamic uncertainty:',/)
 1010  format (8(a,1x))
-1020  format (/,'**warning ver503** the MC_fit uncertainties option is',
+1020  format (/,'**warning ver503** the mc_fit uncertainties option is',
      *       ' set to evaluate thermodynamic',/,'uncertainties, but ', 
      *       a,' does not include thermodynamic uncertainties.',/)
 
@@ -163,10 +163,14 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
+      logical readyn
+
       integer i, j, k, lu, np1, bfit
 
       double precision bstx(l12), x(200,l12), sx(l12), ss(l12), 
      *                 bstobj, bstcov(l12**2), oldobj
+
+      external readyn
 c----------------------------------------------------------------------- 
 c                                 output summary files:
 c                                 ---------------------
@@ -212,6 +216,14 @@ c                                 arguments: init, x
      *                //' model you want uncertainties for:'
 
          read (*,*) (x(1,j),j=1,nparm+1)
+c                                 set the fit-all-data flag
+         write (*,1100)
+        
+         if (readyn()) then 
+            bfit = 1
+         else 
+            bfit = 0
+         end if
 
       end if
 c                                 write table header to perturbed pts
@@ -235,8 +247,14 @@ c                                 trick to save parm ranges in pts file format
       end do
 
       oldobj = bstobj
-
+c                                 uncert turns uncertainty analysis on in general
       uncert = .true.
+c                                 invprt turns thermodynamic uncertainty on specifically
+      if (invunc.eq.1.or.invunc.eq.3) then 
+         invprt = .true.
+      else 
+         invprt = .false.
+      end if
 
       mpert = 1
 
@@ -381,15 +399,15 @@ c    *                         //'alues: ',(ss(k)/(m-1d0), k = 1, nparm)
       stop
 
 1000  format (/,a,i4,a,/)
-1010  format (40(1pg13.6,1x))
-1020  format (1x,i2,2x,i1,2x,40(1pg13.6,1x))
-1025  format (t40,20(3x,a8,3x))
-1030  format (a,t40,20(1pg13.6,1x))
+1010  format (*(1pg13.6,1x))
+1020  format (1x,i2,2x,i1,2x,*(1pg13.6,1x))
+1025  format (t40,*(3x,a8,3x))
+1030  format (a,t40,*(1pg13.6,1x))
 1040  format (2(80('-'),/),'Starting uncertainty evaluation loop ',
      *       'iteration ',i3,' of ',i4,' requested.',/)
 1050  format (/,80('-'),/,
      *       'The results have been written to *.out and *.pts files. ',
-     *       'The *.pts files can be',/,'processed with MC_fit_plot, ',
+     *       'The *.pts files can be',/,'processed with mc_fit_plot, ',
      *       'Perple_X_plot or PSPTS, the *.out file summarizes the',/,
      *       'central model and perturbation analyses in legible ',
      *       'format.',/)
@@ -407,7 +425,11 @@ c    *                         //'alues: ',(ss(k)/(m-1d0), k = 1, nparm)
      *       2x,'2 - doubling MTRY (*.imc file)')
 1070  format (2x,'3 - changing no_miss to miss_ok (*.imc file)')
 1080  format (/,'After ',i4,' successful perturbations:',/)
-1090  format ('sym fit',40(3x,a8,3x))
+1090  format ('sym fit',*(3x,a8,3x))
+1100  format (/,'Does this model fit all measured analytical data ',
+     *          '(Y/N)?',
+     *        /,'This is only important if you intend to use the fit-',
+     *        'all-data filter in mc_fit_plot')
 
       end 
 
@@ -450,6 +472,10 @@ c-----------------------------------------------------------------------
 
       double precision vmax,vmin,dv
       common/ cst9  /vmax(l2),vmin(l2),dv(l2)
+
+      integer kkp,np,ncpd,ntot
+      double precision cp3,amt
+      common/ cxt15 /cp3(k0,k19),amt(k19),kkp(k19),np,ncpd,ntot
 c----------------------------------------------------------------------- 
 c                                 flag to make mcobj print extended
 c                                 ouput for invptx
@@ -470,7 +496,15 @@ c                                 all sources or just analytic
 c                                 make the thermodynamic data 
 c                                 perturbations
             do i = 1, imkend
-
+c                                 i = 1:ipoint -> includes make entities,
+c                                 but the increments specified here will
+c                                 not be used because gcpd returns directly
+c                                 for made endities; however, the makes 
+c                                 invoke real data in range i = 1:mkend
+c                                 if these are in the list 1:ipoint they are
+c                                 made equivalent to the earlier increment.
+c                                 this has the consequence that made entities
+c                                 are not perturbed indendently.
                if (mkptr(i).eq.0) then
 c                                 real data or a make entity that
 c                                 has been excluded:
@@ -724,10 +758,16 @@ c              .or. mustft.and..not.fitdat) then
                   if (objf.gt.mxobjf) then 
                      write (lu,1091)
                   else if (missng) then
-                     write (lu,1090)
+                     write (strg1,'(*(a,1x))') (pname(j)
+     *                                          (1:nblen(pname(j))),
+     *                                          j = 1, ntot)
+                     call deblnk (strg1)
+                     write (lu,1090) strg1(1:nblen(strg1))
                   else 
                      write (lu,1092)
                   end if
+
+                  write (lu,1093)
 
                   if (lu.eq.n6) exit
                   lu = n6
@@ -871,8 +911,8 @@ c                                 write details of scoring to *.out console and 
 1010  format (i3,1x,2a,g12.6,:,3h * ,g8.3)
 1020  format (80('-'),/,'Search FAILED, ifault = ',i3,', icount = ',
      *       i4,', igood = ',i4,', mtry = ',i7,/,80('-'))
-1025  format (1x,i2,2x,i1,2x,40(1pg13.6,1x))
-1030  format ('sym fit',40(3x,a8,3x))
+1025  format (1x,i2,2x,i1,2x,*(1pg13.6,1x))
+1030  format ('sym fit',*(3x,a8,3x))
 1060  format (/,'No good solutions found for your unperturbed observat',
      *          'ional data execution will',/,'be terminated. Possible',
      *          ' remedies:',//,
@@ -881,12 +921,13 @@ c                                 write details of scoring to *.out console and 
 1080  format (i4,' tries have converged so far.')
 1085  format (i4,' successful perturbations so far.')
 1090  format ('one or more observed phases are not predicted. To use ',
-     *        'such results set the ',/,'MC_fit no_missing_phases opti',
-     *        'on to F.',/,80('-'))
-1091  format ('the misfit function exceeds the MC_fit misfit_filter_va',
-     *        'lue option value.',/,80('-'))
+     *        'such results set the ',/,'mc_fit no_missing_phases opti',
+     *        'on to F. The predicted assemblage was:',/,1x,a)
+1091  format ('the misfit function exceeds the mc_fit misfit_filter_va',
+     *        'lue option value.')
 1092  format ('the model does not predict all analytical data within ',
-     *        'its uncertainty',/,80('-'))
+     *        'its uncertainty')
+1093  format (80('-'))
 1100  format (/,'**warning ver505** quadratic surface fitting failed. ',
      *        'The Nelder Mead Covariance',/,'and correlation matrices',
      *        ' will not be available for this result. Increasing',/,
@@ -1052,7 +1093,7 @@ c                                 end of unmeasured component loop
 c                                 make a list of the measured thermodynamic components:
       meas = 0
 
-      do i = 1, icp
+      do i = 1, jbulk
 
          bad = .false.
 
@@ -1399,7 +1440,7 @@ c                                 read the coefficient range and grid numbers
 
                end do
 c                                 flag to make gall recalculate
-c                                 staticredt compounds
+c                                 static compounds
                mcflag(id) = .true.
 
                if (done) exit
@@ -4043,8 +4084,8 @@ c-----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      logical ok, imout(k5), imin(k5), used(k5), jmiss(k5), tfit,
-     *        ftbst, outnph(k5), jused(k5), skip, fit
+      logical ok, imout(k5), imin(k5), used(k5), jmiss(k5), 
+     *        ftbst, outnph(k5), jused(k5), skip, fit, tfit
 
       character bdname(k5)*14
 
@@ -4717,24 +4758,24 @@ c                                 end double unit print loop
 1010  format (/,'**mole fractions')
 1011  format (/,'*mole fractions relative to measured components, compl'
      *         ,'ete compositions below')  
-1020  format (t16,'vol %',t26,20(a,5x))
-1021  format (/,a,t16,'vol %',t26,20(a,5x))
-1025  format (2x,a,t24,1pg12.6e1,3x,a)
-1030  format (2x,a,t14,f7.3,3x,20(f8.6,2x))
+1020  format (t16,'vol %',t26,*(a,5x))
+1021  format (/,a,t16,'vol %',t26,*(a,5x))
+1025  format (2x,a,t24,1pg13.6e2,2x,a)
+1030  format (2x,a,t14,f7.3,3x,*(f8.6,2x))
 1031  format (2x,a,t14,1pg8.1e1)
-1035  format (2x,a,t24,20(f8.6,2x))
-1036  format (2x,a,t24,20(1pg8.1e1,2x))
-1037  format (2x,a,t14,1pg8.1e1,2x,20(1pg8.1e1,2x))
+1035  format (2x,a,t24,*(f8.6,2x))
+1036  format (2x,a,t23,*(1pg9.1e2,1x))
+1037  format (2x,a,t14,1pg8.1e1,1x,*(1pg9.1e2,1x))
 1040  format (/,'The following predicted phases** are not observed:',/)
-1045  format (2x,a,13x,20(f7.3,1x))
-1050  format (a,t14,f7.3,1x,20(2x,f8.6))
+1045  format (2x,a,13x,*(f7.3,1x))
+1050  format (a,t14,f7.3,1x,*(2x,f8.6))
 1060  format (/,'The following observed phases are not predicted:',//,
      *           10(2x,a))
 1080  format (/,'Complete compositions** and chemical potent'
-     *         ,'ials (J/mol)',//,t13,20(3x,a,2x))
-1081  format (a,t12,20(2x,f8.6))
-1082  format (t13,20(3x,a,2x))
-1083  format (a,t13,20(1x,f9.0))
+     *         ,'ials (J/mol)',//,t13,*(3x,a,2x))
+1081  format (a,t12,*(2x,f8.6))
+1082  format (t13,*(3x,a,2x))
+1083  format (a,t13,*(1x,f9.0))
 
 
 *1080  format (/,5x,'       Effective Bulk*      ',
@@ -4760,9 +4801,9 @@ c                                 end double unit print loop
      *          'h respect to the effective bulk composition.')
 1180  format (/,'Misfit covariance and correlation matrices* and ',
      *          'standard deviations:',/,
-     *        10x,20(3x,a8,3x))
-1190  format (2x,a8,20(1x,1pg13.6))
-1200  format (/,2x,'std_dev ',20(1x,1pg13.6))
+     *        10x,*(3x,a8,3x))
+1190  format (2x,a8,*(1x,1pg13.6))
+1200  format (/,2x,'std_dev ',*(1x,1pg13.6))
 1210  format (/,
      *        '*Covariance elements are on and below the left diagonal',
      *        ', corellation elements are',/,'above the diagonal, on-d',
@@ -4904,10 +4945,10 @@ c                                 loop to write to console, and *.out
 c                                 reset x, just in case
       xinv(1:n) = ox(1:n)
 
-1000  format (a,1x,20(1pg13.6,1x),a)
-1010  format (20x,20(4x,a8,2x))
-1020  format ('Initial coordinates: ',20(1pg13.6,1x))
-1030  format ('Final coordinates:   ',20(1pg13.6,1x))
+1000  format (a,1x,*(1pg13.6,1x),a)
+1010  format (20x,*(4x,a8,2x))
+1020  format ('Initial coordinates: ',*(1pg13.6,1x))
+1030  format ('Final coordinates:   ',*(1pg13.6,1x))
 1050  format (/,'Number of function evaluations: ',i5,', igood = ',i3,/)
 1090  format ('Try ',i5,', successes so far = ',i5)
 1100  format ('Misfit function evaluations this try => ',i5)
@@ -4924,7 +4965,7 @@ c                                 reset x, just in case
 
       subroutine mcopts
 c----------------------------------------------------------------------
-c set default parameters for MC_fit and read option file
+c set default parameters for mc_fit and read option file
 c----------------------------------------------------------------------
       implicit none
 
@@ -4995,8 +5036,8 @@ c                                 T - output optimization counter
 c                                 F - quiet
       vital = .true.
 c                                 seed:
-c                                 T - seed random number generator => succesive runs of MC_fit will generate different results
-c                                 F - don't seed random number generator => succesive runs of MC_fit will yield the same result
+c                                 T - seed random number generator => succesive runs of mc_fit will generate different results
+c                                 F - don't seed random number generator => succesive runs of mc_fit will yield the same result
       seed = .false.
 c                                 must_fit_all_data:
 c                                 T - reject models that do not fit all analytical data within uncertainty*uncertainty_multiplier
@@ -5104,7 +5145,7 @@ c                                 fractional step size
 c                                 how often to check for convergence
       conchk = 10
 c                                 print control: 0 => normal, < 0 => silent, > 0 => verbose
-      jprint = 0
+      jprint = -1
 c                                 quadratic surface fitting to improve location of the minimum, 
 c                                 0 => don't fit, 1 => fit
       iquad = 0
@@ -5112,10 +5153,10 @@ c                                 0 => don't fit, 1 => fit
 c                                 max # of objective evaluations per try, recommended nparm*1024
       kcount = 1000
 c----------------------------------------------------------------------
-c                                 read MC_fit option file name from *.imc file (on n8)
+c                                 read mc_fit option file name from *.imc file (on n8)
       call redfnm (n8,ier,fnm)
 
-      if (ier.ne.0) call errdbg ('expecting the MC_fit option file na'//
+      if (ier.ne.0) call errdbg ('expecting the mc_fit option file na'//
      *              'me or ''none'', found: '//fnm)
 
       if (fnm.eq.'none') then
@@ -5128,7 +5169,7 @@ c                                 read MC_fit option file name from *.imc file (
          open (n9, file = fnm, iostat = ier, status = 'old')
 
          if (ier.ne.0) then 
-            call errdbg ('could not find the specified MC_'//
+            call errdbg ('could not find the specified mc_'//
      *                   'fit option file: '//fnm)
          else 
             if (mcfrst) write (*,1050) fnm(1:nblen(fnm))
@@ -5197,8 +5238,9 @@ c                                 if here we have a keyword and value
             read (strg,*) ra2zs
             rnum = .true.
 
-         else if (key.eq.'uncertainty_multiplier') then
-
+         else if (key.eq.'uncertainty_multiplier'
+     *        .or.key.eq.'sigma_multiplier') then
+c                                 uncertainty_multiplier deprecated in 7.2.6
             read (strg,*) un2ft
             rnum = .true.
 
@@ -5427,7 +5469,7 @@ c           lwcomp = .true.
 
          else if (key.ne.'|') then
 
-            call error (72,nopt(1),iopt(1),key//' is not a valid MC_fit'
+            call error (72,nopt(1),iopt(1),key//' is not a valid mc_fit'
      *                 //' option file keyword and must be deleted '
      *                 //'or corrected.')
 
@@ -5470,18 +5512,18 @@ c                                 explicitly set.
       end if
 
 1000  format ('Context specific options are echoed in: ',a)
-1010  format (/,'**warning** ',a,' does not specify an MC_fit option',/,
-     *       ' all options will be set'/,'to default, refer to MC_fit_',
+1010  format (/,'**warning** ',a,' does not specify an mc_fit option',/,
+     *       ' all options will be set'/,'to default, refer to mc_fit_',
      *       'option.dat for default option values',/)
-1020  format ('MC_fit option: ',a,' has been set to ',a)
-1030  format ('MC_fit option: ',a,' has been set to ',i6)
-1040  format ('MC_fit option: ',a,' has been set to ',g12.6)
-1050  format (/,'Reading MC_fit options from: ',a,/)
+1020  format ('mc_fit option: ',a,' has been set to ',a)
+1030  format ('mc_fit option: ',a,' has been set to ',i6)
+1040  format ('mc_fit option: ',a,' has been set to ',g12.6)
+1050  format (/,'Reading mc_fit options from: ',a,/)
 1060  format (/,'*Quadratic fitting is costly. Do not use it ',
      *      '(i.e., set Nelder-Mead_covariance',/,' to F) unless you',
      *      ' want the Nelder-Mead parameter correlation matrix and/or',
      *      /,' Nelder-Mead uncertainty estimates.',/,80('-'))
-1070  format ('MC_fit option: ',a,' has been automatically reset to ',a)
+1070  format ('mc_fit option: ',a,' has been automatically reset to ',a)
 
       end 
 
@@ -5496,7 +5538,7 @@ c----------------------------------------------------------------------
       write (*,1000) strg, key
 
 1000  format (/,'**error ver324** Invalid value: ',a,
-     *        /,'for MC_fit option: ',a,/)
+     *        /,'for mc_fit option: ',a,/)
 
       call errpau
 
