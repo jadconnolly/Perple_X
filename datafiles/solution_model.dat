@@ -13506,9 +13506,9 @@ geik
                                    |-------------------------------------------
 begin_ordered_endmembers
                                    | 0 - dqf(ilm)
-oilm = 1 ilm     delta_g_of_ordering  = -7050 + 11.526 * T_K - 0.13 * P_bar
+oilm = 1 ilm     delta_g_of_ordering  = -7050 + 5.763 * T_K - 0.13 * P_bar | "corrected" from smax to smax/2, JADC 8/18/26
                                    | 0 - dqf(geik)
-ogk  = 1 geik    delta_g_of_ordering  =  -8310 + 11.526 * T_K
+ogk  = 1 geik    delta_g_of_ordering  = -8310 + 5.763 * T_K                | "corrected" from smax to smax/2, JADC 8/18/26
 end_ordered_endmembers 
 
                                    |-------------------------------------------
@@ -13545,8 +13545,8 @@ refine_endmembers
 
 begin_special_operations
                            | these DQFs create the disordered endmember from the ordered base function
-spop(ilm)  disorder         dqf(J/mol) = 7050 - 11.526 * T_K + 0.13 * P_bar
-spop(geik) disorder         dqf(J/mol) = 8310 - 11.526 * T_K
+spop(ilm)  disorder         dqf(J/mol) = 7050 - 5.763 * T_K + 0.13 * P_bar | "corrected" from smax to smax/2, JADC 8/18/26
+spop(geik) disorder         dqf(J/mol) = 8310 - 5.763 * T_K                | "corrected" from smax to smax/2, JADC 8/18/26
 end_special_operations
 
 solvus_tolerance  0.2
@@ -13568,7 +13568,6 @@ begin_model
                                                      ___________________
                            Prism I    5 maj           Mg           MgSi   independent
                                       7 cmmaj_d       Ca           MgSi   dependent
-
                                       6 fmaj_d        Fe           FeSi   dependent
                                      11 cfmaj_d       Ca           FeSi   dependent
                                                      ___________________
@@ -13672,6 +13671,7 @@ z(Al) = 1 gr + 1 alm + 1 py + 1/2 nagt
 end_of_model
                       --------------------------------------------------------
 begin_model
+
         Ferropericlase, Holland et al., 2013; dx.doi.org/10.1093/petrology/egt035
         [Bob Myhill, 2018/02/13]
 
@@ -13718,10 +13718,10 @@ begin_model
                                                      ________________
 
                                       1 mpv           Mg           Si
-                            Species:  2 mfpv_q          Fe2+         Si
-                                      3 mcpv_q          Ca           Si
+                            Species:  2 mfpv_q        Fe2+         Si
+                                      3 mcpv_q        Ca           Si
                                       4 apv           Al           Al
-                                      5 mnpv_q          Na1/2Al1/2   Si
+                                      5 mnpv_q        Na1/2Al1/2   Si
 
 Mpv(H)
 abbreviation Mpv
@@ -13741,14 +13741,14 @@ mpv mfpv_q mcpv_q apv mnpv_q
 begin_excess_function
 w(mpv mfpv_q)    12d3
 w(mpv mcpv_q)    15d3
-W(mpv apv)     20d3
+W(mpv apv)       20d3
 W(mpv mnpv_q)    22d3
 w(mfpv_q mcpv_q) 10.5d3
 W(mfpv_q apv)    14d3
 W(mfpv_q mnpv_q) 15.4d3
-W(mcpv_q apv)     5d3
-W(mcpv_q mnpv_q)  7.5d3
-W(apv mnpv_q)   2.5d3
+W(mcpv_q apv)    5d3
+W(mcpv_q mnpv_q) 7.5d3
+W(apv mnpv_q)    2.5d3
 end_excess_function
 
 2                                     2 site entropy model
@@ -16056,7 +16056,7 @@ begin_model
                          the sp-herc-picr-fpcr quadrilateral. To prevent this specify
                          TiO2 or O2 as components present with zero amount. JADC, 12/20
 
-                                                      M     T
+                                                      T     M
                                                      _________
                                       Multiplicity    1     2  -> fake T-site multiplicity of 1
                                                      _________
@@ -16069,7 +16069,7 @@ begin_model
                                         iherc        Al    FeAl
                                         imt          Fe3   FeFe3
                                         fpcr         Fe    2Cr     dependent
-                                        fqnd         Fe    FeTi    dependent
+                                        fqnd         Fe    FeTi    dependent (aka usp)
 
                                 Ordered species      _________
 
@@ -16102,8 +16102,9 @@ Z_Fe3+  0  1   .1  0        | subdivision scheme for X(Fe3+)
 Z_MAl   by difference
 
 begin_ordered_endmembers
-                         |        dqf(nmt) - dqf(imt) =
-nmt   =    1 mt           delta_g_of_ordering   = -0.3d3   + 5.76303 * T   |changed from 5.76303 * T by DB to match the ECRG 10/20 revision.
+                         | unlike standard dqfs spop dqfs are applied directly to endmembers, therefore the ORDERED make is just the inverse of the THERMOCALC make
+                         |        0 - dqf(imt)
+nmt   =    1 mt           delta_g_of_ordering   =      0   + 5.76303 * T
                          |        0 - dqf(isp) =
 nsp   =    1 sp           delta_g_of_ordering   = -23.6d3  + 5.76303 * T
                          |        0 - dqf(iherc) =
@@ -16111,9 +16112,10 @@ nherc =    1 herc         delta_g_of_ordering   = -23.6d3  + 5.76303 * T
 end_ordered_endmembers 
 
 begin_dependent_endmembers
-imgmt =  1 sp  - 1 herc  + 1 mt
+                         | mt, herc, and sp are spopped to imt, iherc, isp (see spops below)
+imgmt =  1 sp  - 1 herc   + 1 mt
 fpcr  = -1 nsp + 1 nherc  + 1 picr
-fqnd  = -1 nsp - 1 sp    + 1 nherc + 1 herc + 1 qnd
+fqnd  = -1 nsp - 1 sp     + 1 nherc + 1 herc + 1 qnd
 end_dependent_endmembers
 
 begin_excess_function
@@ -16147,22 +16149,22 @@ W(mt    qnd)          24.3d3
 W(picr  qnd)            60d3
 end_excess_function
 
-2                                    | 2 site entropy model (M , T)
-M
-4  1  1                              | 4 species on M, mult. = 1
-z(Fe,M)   = 1 nherc + 1 nmt
-z(Fe3,M)  = 1 mt
-z(Al,M)   = 1 sp + 1 herc
-z(Mg,M)   = 1 nsp   + 1 picr + 1 qnd
-
+2                                    | 2 site entropy model (M , T), corrected site designations JADC 8/23/26
 T
-6  1  2                              | 6 species on T, effective mult. = 1, true mult = 2
-z(Mg,T)   = 1/2 sp + 1/2 qnd
-z(Fe,T)   = 1/2 herc + 1/2 mt
-z(Ti,T)   = 1/2 qnd
-z(Fe3,T)  = 1 nmt + 1/2 mt
-z(Cr,T)   = 1 picr
-z(Al,T)   = 1 nsp + 1/2 sp + 1 nherc + 1/2 herc
+4  1  1                              | 4 species on T, mult. = 1
+z(Fe,T)   = 1 nherc + 1 nmt
+z(Fe3,T)  = 1 mt
+z(Al,T)   = 1 sp + 1 herc
+z(Mg,T)   = 1 nsp   + 1 picr + 1 qnd
+
+M
+6  1  2                              | 6 species on M, effective mult. = 1, true mult = 2
+z(Mg,M)   = 1/2 sp + 1/2 qnd
+z(Fe,M)   = 1/2 herc + 1/2 mt
+z(Ti,M)   = 1/2 qnd
+z(Fe3,M)  = 1 nmt + 1/2 mt
+z(Cr,M)   = 1 picr
+z(Al,M)   = 1 nsp + 1/2 sp + 1 nherc + 1/2 herc
 
 [O4]                                 | formula suffix, enter "none" for no suffix.
 
@@ -16171,8 +16173,8 @@ dqf(qnd)  = -30000
 end_dqf_corrections
 
 begin_special_operations
-spop(sp)   inverse         dqf(J/mol) = 23600 - 5.763 * T_K 
-spop(herc) inverse         dqf(J/mol) = 23600 - 5.763 * T_K
+spop(sp)   inverse         dqf(J/mol) = 23600 - 5.76303 * T_K 
+spop(herc) inverse         dqf(J/mol) = 23600 - 5.76303 * T_K
 spop(mt)   eq              dqf(J/mol) =   300
 end_special_operations
 
@@ -16851,42 +16853,24 @@ begin_model
 
                       NOTE: to use this model:
 
-                      1) the endmembers nsp, nherc must be created in the
-                         thermodynamic data file from sp and herc by stripping
-                         off the bragg o/d model. the picr endmember here is assumed
-                         to be ordered as is the case in ds6.33, but was NOT the case
-                         in earlier versions of ds6, therefore if this model is to be
-                         used with earlier versions of ds6, the o/d model must also
-                         be stripped from picr.
-
-                      2) the following endmembers must be specified with make
-                         definitions in the thermodynamic data file
-
-                         isp   = 1 nsp
-                                DQF(J/mol) = 23.6d3  - 5.76303 * T
-                         iherc = 1 nherc
-                                DQF(J/mol) = 23.6d3  - 5.76303 * T |HGP values
-                         imt   = 1 mt
-                                DQF(J/mol) = 300                   |HGP values
-
-                      3) if both TiO2 nor O2 are absent from Sp(HGP), Perple_X 
+                      3) if both TiO2 and O2 are absent from Sp(HGP), Perple_X 
                          reformulate this model as the sp-picr binary, rather than
                          the sp-herc-picr-fpcr quadrilateral. To prevent this specify
                          TiO2 or O2 as components present with zero amount. JADC, 12/20
 
-                                                      M     T
+                                                      T     M
                                                      _________
-                                      Multiplicity    1     2  -> fake T-site multiplicity of 1
+                                      Multiplicity    1     2  -> fake M-site multiplicity of 1
                                                      _________
 
                                          isp          Al    MgAl
                                          imgmt        Fe3   MgFe3   dependent
-                                         picr         Mg    Cr
+                                         picr         Mg    CrCr
                                          qndTH        Mg    MgTi    dependent
 
                                          iherc        Al    FeAl
                                          imt          Fe3   FeFe3
-                                         fpcr         Fe    2Cr     dependent
+                                         fpcr         Fe    CrCr     dependent
                                          usp          Fe    FeTi
 
                                 Ordered species      _________
@@ -16920,13 +16904,17 @@ Z_Fe3+  0  1   .1  0        | subdivision scheme for X(Fe3+)
 Z_MAl   by difference
 
 begin_ordered_endmembers
-nmt   =    1 mt             delta_g_of_ordering   = -0.3d3   + 5.76303 * T   | changed from 5.76303 * T by DB to match the ECRG 10/20 revision.
+                                                                             | unlike standard dqfs spop dqfs are applied directly to endmembers, therefore the ORDERED make is just the inverse of the THERMOCALC make
+                                                                             | = 0 - dqf(imt)
+nmt   =    1 mt             delta_g_of_ordering   =       0  + 5.76303 * T
+                                                                             | = 0 - dqf(isp)
 nsp   =    1 sp             delta_g_of_ordering   = -23.5d3  + 5.76303 * T   | sic, TC typo? JADC 8/26.
+                                                                             | = 0 - dfq(iherc)
 nherc =    1 herc           delta_g_of_ordering   = -23.6d3  + 5.76303 * T
 end_ordered_endmembers 
 
 begin_dependent_endmembers
-imgmt =  1 sp  - 1 herc   + 1 mt  
+imgmt =  1 sp  - 1 herc   + 1 mt    | sp, herc, and mt are spopped inverse endmembers! JADC 8/22/26
 fpcr  = -1 nsp + 1 nherc  + 1 picr
 qndTH  = 1 nsp + 1 sp     - 1 nherc - 1 herc   + 1 usp
 end_dependent_endmembers
@@ -16962,22 +16950,22 @@ W(mt    usp)          21.5d3
 W(picr  usp)              15d3
 end_excess_function
 
-2                                    | 2 site entropy model (M , T)
-M
-4  1  1                              | 4 species on M, mult. = 1
-z(Fe,M)   = 1 nherc + 1 nmt + 1 usp
-z(Fe3,M)  = 1 mt  
-z(Al,M)   = 1 sp    + 1 herc  
-z(Mg,M)   = 1 nsp   + 1 picr
-
+2                                    | 2 site entropy model (M , T), corrected site designations JADC 8/23/26
 T
-6  1  2                              | 6 species on T, effective mult. = 1, true mult = 2
-z(Mg,T)   = 1/2 sp
-z(Fe,T)   = 1/2 herc   + 1/2 mt   + 1/2 usp
-z(Ti,T)   = 1/2 usp
-z(Fe3,T)  = 1 nmt      + 1/2 mt  
-z(Cr,T)   = 1 picr
-z(Al,T)   = 1 nsp      + 1/2 sp + 1 nherc + 1/2 herc  
+4  1  1                              | 4 species on T, mult. = 1
+z(Fe,T)   = 1 nherc + 1 nmt + 1 usp
+z(Fe3,T)  = 1 mt  
+z(Al,T)   = 1 sp    + 1 herc  
+z(Mg,T)   = 1 nsp   + 1 picr
+
+M
+6  1  2                              | 6 species on M, effective mult. = 1, true mult = 2
+z(Mg,M)   = 1/2 sp
+z(Fe,M)   = 1/2 herc   + 1/2 mt   + 1/2 usp
+z(Ti,M)   = 1/2 usp
+z(Fe3,M)  = 1 nmt      + 1/2 mt  
+z(Cr,M)   = 1 picr
+z(Al,M)   = 1 nsp      + 1/2 sp + 1 nherc + 1/2 herc  
 
 [O4]                                 | formula suffix, enter "none" for no suffix.
 
@@ -16995,8 +16983,8 @@ end_van_laar_sizes
 begin_special_operations
                            | make definitions added by Debaditya Bandyopadhyay, 8/26.
 
-spop(sp)   inverse         dqf(J/mol) = 23500 - 5.763 * T_K  | sic, TC typo? JADC 8/26.
-spop(herc) inverse         dqf(J/mol) = 23600 - 5.763 * T_K
+spop(sp)   inverse         dqf(J/mol) = 23500 - 5.76303 * T_K  | sic, TC typo? JADC 8/26.
+spop(herc) inverse         dqf(J/mol) = 23600 - 5.76303 * T_K
 spop(mt)   eq              dqf(J/mol) =   300
 end_special_operations
 
