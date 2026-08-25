@@ -8618,7 +8618,7 @@ c----------------------------------------------------------------------
       logical error, done, maxok, minok, usemax, oscil 
 
       double precision g, pmax, pmin, dp, gord, dy(m14), gold, xdp,
-     *                    gmax, gmin, wt, pnew
+     *                    gmax, gmin, wt, pnew, g0ord, dpmax
 
       external gord
 
@@ -8643,6 +8643,8 @@ c----------------------------------------------------------------------
       data iwarn/0/
 c----------------------------------------------------------------------
       oscil = .false.
+c                                 save the disordered g set in specis
+      g0ord = g
 c                                 number of reactants to form ordered species k
       nr = nrct(k,id)
 
@@ -8680,7 +8682,9 @@ c                                 at pmax
          maxok = .true.
       else
          maxok = .false.
-      end if 
+      end if
+
+      dpmax = dp
 c                                 at pmin
       call pincs (pmin - p0a(jd),dy,ind,jd,nr)
       call gderi1 (k,id,dp,gmin)
@@ -8689,6 +8693,22 @@ c                                 at pmin
          minok = .true.
       else 
          minok = .false.
+      end if
+
+      if (.not.refine.and.
+     *    dabs(dpmax).lt.nopt(40).and.dabs(dp).lt.nopt(40)) then
+c                                 it is likely O/D is stoichimetrically frustrated for
+c                                 a static cpd, use the disordered speciation, speci2
+c                                 switches to minfxc which is probably the better 
+c                                 solution.
+         g = g0ord
+
+         do i = 1, tstot(id)
+            pa(i) = p0a(i)
+         end do
+
+         return
+
       end if
 c                                 decide where to start:
       usemax = .false.
@@ -8838,7 +8858,7 @@ c----------------------------------------------------------------------
 
       integer i, k, id, lord, itic, iwarn
 
-      double precision g,dp(j3),tdp,gold,xtdp,scp(k5),scptot
+      double precision g, dp(j3), tdp, gold, xtdp, scp(k5), scptot
 
       logical pin
       common/ cyt2 /pin(j3)
@@ -8996,7 +9016,7 @@ c                                 acceptable
 c                                 in principle should revert to gold
                else
 c                                  switch to minfx
-                  call spewrn (id,102,itic,iwarn,.true.,'SPECI1')
+                  call spewrn (id,102,itic,iwarn,.true.,'SPECI2')
 
                   minfx = .true.
 
@@ -16206,11 +16226,11 @@ c                                 oscillating
                if (dabs(xtdp).lt.nopt(40).or.
      *             dabs((gold-g)/(1d0+dabs(g))).lt.nopt(40)) then
 c                                 acceptable 
-                  call spewrn (id,101,itic,iwarn,.false.,'SPECI2')
+                  call spewrn (id,101,itic,iwarn,.false.,'GPMELT')
 c                                 in principle should revert to gold
                else
 c                                  switch to minfx
-                  call spewrn (id,102,itic,iwarn,.true.,'SPECI1')
+                  call spewrn (id,102,itic,iwarn,.true.,'GPMELT')
 
                   minfx = .true.
 
