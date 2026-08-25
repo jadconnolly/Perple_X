@@ -13417,7 +13417,15 @@ hem
 ilm
 
 1                            | 1 ordered species:
-oilm = 1 ilm   delta_g_of_ordering  = -15600.3 + 11.526*T | dqf(oilm) - dqf(ilm)
+oilm = 1 ilm   delta_g_of_ordering  = -13607.5 + 9.426*T_K    | dqf(oilm)
+|--------
+| Prior to 7.2.0:
+| oilm = 1 ilm   delta_g_of_ordering  = -15600.3 + 11.526*T_K | dqf(oilm) - dqf(ilm)
+                             | in 7.2.0 the use of spop make definition applies the dilm DQF 
+                             | directly to ilm base function, therefore the delta g of ordering
+                             | is identical to the THERMOCALC oilm DQF -13607.5 + 9.426*T_K
+| 7.2.0+ This modification was not made until 7.2.9
+|---------
 
 0 0 0  0                   | endmember flags
 
@@ -19207,6 +19215,8 @@ begin_model
                       These revisions are all minor modification in the excess terms from Gt(HGP).
                       
                       DB 5/26
+
+                      reformulated as 688 model. Kai Wang, 9/8/26
                       
                       --------------------------------------------------------
 
