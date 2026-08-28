@@ -36,7 +36,7 @@ c----------------------------------------------------------------------
       integer n
 c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.2.9 Aug 25, 2026.',
+     *     'Perple_X release 7.2.10 Aug 25, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -6157,7 +6157,7 @@ c----------------------------------------------------------------------
  
       character tag*4, string*140, key*22, values*80, strg*80
 
-      integer option, i, j, ier, iscan, nblen
+      integer option, i, j, ier, iscan, nblen, ikey
 
       double precision sum, ssum
 
@@ -6206,7 +6206,8 @@ c      if (ier.eq.0) call error (8,r,i,dname)
 c                                 database name or version flag
       call getkey (n2,ier,key,values,strg)
 
-      if (key.eq.'720') then 
+      if (key.eq.'720') then
+         read (key,'(i3)') ikey
          newdat = .true.
          call getkey (n2,ier,key,values,strg)
       else 
@@ -6447,6 +6448,9 @@ c                                 is done in gettrns for ioption 3/5.
 
       if (option.gt.3) then 
 c                                 echo formatted header data for ctransf/actcor:
+         if (newdat) write (n8,'(i3,a)') ikey,
+     *                                     ' DO NOT DELETE THIS LINE'
+
          write (n8,1000) 
          write (n8,'(a,a,/)') dname,' |<= data base title'
 
