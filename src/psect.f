@@ -512,13 +512,13 @@ c                                  mark group edges.
          ii = 1
 
          do i = 2,nax(1)
-            if (iax(i,1)-iax(i-1,1) .gt. 1) ii = ii + 1
+            if (iax(i,1)-iax(i-1,1) .gt. jinc) ii = ii + 1
          end do
 
          jj = 1
 
          do i = 2,nax(2)
-            if (iax(i,2)-iax(i-1,2) .gt. 1) jj = jj + 1
+            if (iax(i,2)-iax(i-1,2) .gt. jinc) jj = jj + 1
          end do
 
          if (ii*jj .le. 1) then
@@ -545,13 +545,13 @@ c                                 test that it's ok
 
          if (ii*jj.gt.1) then
 c                                 there are discontiguous stability assemblages.
+            kpoint = max(ii,jj)
             if (rlabel.lt.1d0) then 
 c                                 ---------begin georges block-----------
 c                                  scan the range of the bounding polygon of the
 c                                  two (or more) fields to find a node
 c                                  with the assemblage
 
-               write (*,1010) max(ii,jj),text(1:nblen(text))
 c                                  process dimension with largest number
 c                                  of regions
                if (ii.ge.jj) then
@@ -638,10 +638,11 @@ c                                  extent for label.
                end do
 
                if (iend-ibeg.lt.2.or.jend-jbeg.lt.2) then 
-c                 write (*,*) 'skipping label for dot field: ',
-c    *                        text(1:nblen(text))
+                  write (*,*) 'skipping label for dot/streak field: ',
+     *                        text(1:nblen(text))
                   cycle
                end if
+               write (*,1010) kpoint,text(1:nblen(text))
 c                                 george had ii = max(1,nint(x/i)) for 
 c                                 grid spacing 1, changed 10/13/2018
 c                                 for grid spacing jinc. JADC
@@ -755,13 +756,13 @@ c                                 with the assemblage
 c                                 no grid point found for the 
 c                                 assemblage, perhaps the resetting of
 c                                 igrd to zero allows this?
-            write (*,*) 'uh-oh on assemblage', ipoly
+            write (*,*) 'uh-oh on assemblage',text(1:iend),ipoly
             cycle
 
 c        end if 
 c                                 call label routine:
 50       call psbtxt (kpoint, text, iend)
-         call psflbl (x,y,lex(k),iend,text)
+         call psflbl (x,y,kpoint,iend,text)
 
       end do 
 

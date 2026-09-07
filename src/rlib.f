@@ -7341,6 +7341,10 @@ c                                 redlich-kister
                end do
             end do
 
+c                                 jsub set here for redlich-kister only
+            jsub(1,i,im) = iy2p(isub(i,1))
+            jsub(2,i,im) = iy2p(isub(i,2))
+
          end if
 
          do j = 1, rkord(i)
@@ -7348,7 +7352,9 @@ c                                 isub points to the position in the list
 c                                 of endmembers potentially including dependent
 c                                 species. use iy2p to convert to independent
 c                                 endmember pointers.
-            jsub(j,i,im) = iy2p(isub(i,j))
+
+c                                 jsub set here for van laar only
+            if (xtyp.eq.0) jsub(j,i,im) = iy2p(isub(i,j))
 
             if (kdsol(isub(i,j)).eq.-2) then
 

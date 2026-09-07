@@ -38,7 +38,8 @@ picture_transformation 0.18 0.18 130 220 0
                                 | obsolete in PerplexPDF.
                                 | x,y-scale, x,y-translation, rotation
 
-plot_aspect_ratio        1.     | x_axis_length/y_axis_length 
+plot_aspect_ratio        1.     | x_axis_length/y_axis_length
+plot_extra_data          F      | see github.com/jadconnolly/Perple_X/blob/main/markdown/pssect_extra_data.md
 plot_output_type        PDF     | graphics output type: PS/PDF/SVG
 splines                  T      | use B-splines to smooth curves (psvdraw only; not pssect)
 tenth_ticks              F      | draw tenth-interval ticks on axes 

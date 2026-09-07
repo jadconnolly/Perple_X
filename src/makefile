@@ -39,7 +39,7 @@ ifeq ($(STATIC),1)
   # Make the whole link prefer static libs (this is the key difference on Windows)
     LDFLAGS_RUNTIME_PRE  += -static -static-libgfortran -static-libgcc -Wl,--as-needed
 
-  # IMPORTANT: do NOT end in -Bdynamic, or gfortran’s appended libs become DLL deps
+  # IMPORTANT: do NOT end in -Bdynamic, or gfortranï¿½s appended libs become DLL deps
     LDFLAGS_RUNTIME_POST += -Wl,-Bstatic -lquadmath -lwinpthread
   # (optional belt+suspenders) LDFLAGS_RUNTIME_POST += -Wl,-Bstatic
 
@@ -51,7 +51,7 @@ ifeq ($(STATIC),1)
     # (Your CI allows libc/libm/ld-linux.)
     LDFLAGS_RUNTIME_PRE  += -nodefaultlibs
 
-    # Optional; harmless on Linux, and can prevent “sticky” injected libs:
+    # Optional; harmless on Linux, and can prevent ï¿½stickyï¿½ injected libs:
     LDFLAGS_RUNTIME_PRE  += -Wl,--as-needed
 
     # Absolute paths to the static archives we want
@@ -68,7 +68,7 @@ ifeq ($(STATIC),1)
                               $(LIBGCC_EH_A) \
                             -Wl,--end-group
 
-    # System libs (dynamic) – allowed by your CI check
+    # System libs (dynamic) ï¿½ allowed by your CI check
     LDFLAGS_RUNTIME_POST += -lm -lc
   endif
 
@@ -93,11 +93,32 @@ LIBRARY_PS = cont_lib.o pscom.o pslib.o flib.o tlib.o
 
 clean: 
 	rm -f *.o $(MYOBJ)
+	test -f /tmp/testclean && sh /tmp/testclean
+
+# Add other dependencies as necessary for further tests
+tests: vertex pssect
+	$(MAKE) tests-basic
+	$(MAKE) tests-harder
+
+tests-basic: vertex pssect
+	@for d in ../tests/basic/* ; do \
+	   echo Test $$d ; \
+	   (cd $$d ; . run) \
+	done
+
+tests-harder: vertex pssect
+	@for d in ../tests/harder/* ; do \
+	   echo Test $$d ; \
+	   (cd $$d ; . run) \
+	done
 
 ###################### TARGETS FOR 692+ PROGRAMS ######################### 
 #
 #
 mc_fit: mc_fit.o $(LIBRARY)
+	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
+
+unsplt: unsplt.o $(LIBRARY)
 	$(COMP77) $(FFLAGS) $(FLINK_PRE) $@.o $(LIBRARY) -o $@$(EXT) $(FLINK_POST)
 
 convex: convex.o $(LIBRARY)
@@ -208,6 +229,8 @@ stx_2_ver.o: stx_2_ver.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c stx_2_ver.f
 tlib.o: tlib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c tlib.f
+unsplt.o: unsplt.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c unsplt.f
 vertex.o: vertex.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c vertex.f
 werami.o: werami.f perplex_parameters.h

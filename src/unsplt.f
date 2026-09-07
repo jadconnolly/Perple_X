@@ -26,12 +26,6 @@ c----------------------------------------------------------------------
       double precision gbg(k5,k2), gmus(k5,k2), gxcoor(k18),
      *                 xt(k5,mst*msp), bt(k5)
 
-      logical oned
-      common/ cst82 /oned
-
-      integer igrd
-      common/ cst311 /igrd(l7,l7)
-
       integer jlow,jlev,loopx,loopy,jinc1
       common/ cst312 /jlow,jlev,loopx,loopy,jinc1
 
@@ -41,36 +35,18 @@ c----------------------------------------------------------------------
       integer ivar,ind
       common/ cst83 /ivar,ind
 
-      logical gflu,aflu,fluid,shear,lflu,volume,rxn
-      common/ cxt20 /gflu,aflu,fluid(k5),shear,lflu,volume,rxn
-
       integer iam
       common/ cst4 /iam
 
       logical fileio, flsh, anneal, short
       integer ncol, nrow
       common/ cst226 /ncol,nrow,fileio,flsh,anneal,short
-
-      character*100 prject,tfname
-      common/ cst228 /prject,tfname
 c                                 solution model names
       character fname*10, aname*6, lname*22
       common/ csta7 /fname(h9),aname(h9),lname(h9)
 
       integer jx, jy, lev, xn, yn
       common/ cst58 /jx, jy, lev, xn, yn
-
-      integer iap,ibulk
-      common/ cst74 /iap(k2),ibulk
-
-      double precision bg
-      common/ cxt19 /bg(k5,k2)
-
-      integer icog,jcog
-      common/ cxt17 /icog(k2),jcog(k2)
-
-      double precision amu
-      common/ cst48 /amu(k8,k2)
 c----------------------------------------------------------------------- 
 c                                 iam is a flag indicating the Perple_X program
       iam = 13

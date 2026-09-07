@@ -97,14 +97,16 @@ c                                 print standard potentials
       write (lu,1000)
 
       if (iam.eq.2) then
-
+c                                 MEEMUM
          write (lu,1120) (vname(jv(i)),v(jv(i)), i = 1, ipot)
 
          do i = 2, icont
             write (lu,1121) i-1, cx(i-1)
          end do
 
-      else 
+      else
+c                                 WERAMI, icopt = 2 -> liquidus
+         if (icopt.eq.2) var(3) = v(iv(1))
          write (lu,1120) (vnm(i), var(i), i = 1, jvar)
       end if 
 
@@ -851,9 +853,12 @@ c                                 x-coordinates for the assemblage solutions
       double precision x3, caq
       common/ cxt16 /x3(k5,h4,mst,msp),caq(k5,l10),na1,na2,na3,nat,ld
 
-      double precision p,t,xco2,u1,u2,tr,pr,r,ps
-      common/ cst5 /p,t,xco2,u1,u2,tr,pr,r,ps
-c                                 
+      double precision v,tr,pr,r,ps
+      common/ cst5  /v(l2),tr,pr,r,ps
+
+      integer ipot,jv,iv
+      common / cst24 /ipot,jv(l2),iv(l2)
+
       integer ifp
       logical fp
       common/ cxt32 /ifp(k10), fp(h9)
@@ -895,9 +900,9 @@ c                                 for final adaptive solution
       common/ cst59 /units, r13, r23, r43, r59, zero, one, r1
 c----------------------------------------------------------------------
 c                                 logarithmic_p option
-10    if (lopt(14)) p = 1d1**p 
+10    if (lopt(14)) v(1) = 1d1**v(1)
 c                                 logarithmic_x option
-      if (lopt(37)) xco2 = 1d1**xco2
+      if (lopt(37)) v(3) = 1d1**v(3)
 
       nodata = .false. 
 
@@ -943,6 +948,20 @@ c                                 get the dependent potentials
                exit
             end if
          end do
+
+         if (icopt.eq.2) then 
+c                                 "liquidus" calculation set the 
+c                                 dependent potential
+            cst  = 0d0
+
+            do i = 1, ijpt
+               cst = cst + wt(i) * tliq(igrd(itri(i),jtri(i)))
+            end do
+
+            v(iv(1)) = cst
+
+         end if
+
 
       end if 
 c                                 initialize system props/flags
@@ -1078,9 +1097,9 @@ c                                 get and sum phase properties
 c                                 compute aggregate properties:
       call gtsysp (sick,ssick,bulkg,bsick)
 
-99    if (lopt(14)) p = dlog10(p)
+99    if (lopt(14)) v(1) = dlog10(v(1))
 
-      if (lopt(37)) xco2 = dlog10(xco2)
+      if (lopt(37)) v(3) = dlog10(v(3))
 
       end
 
