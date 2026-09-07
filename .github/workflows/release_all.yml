@@ -419,7 +419,7 @@ jobs:
 
       - name: Publish artifacts to GitHub release (if any)
         if: steps.build_list.outputs.files != ''
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
