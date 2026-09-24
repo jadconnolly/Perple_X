@@ -254,7 +254,7 @@ sub -1 0{/i exch def y i 3 2 roll put x i 3 2 roll put}for}def
    grestore end
 } dup 0 8 dict put def
 /QBox{0 begin gsave % text-arr rx ry LCR;rx,ry-rel. off. x,y
-   /dp 1 def     % offset of text rel. to box; avoid overlap
+   /dp 1 def /dy dp 1.25 mul def %text offset rel. to box
    /lcr exch def
    /ry exch def
    /rx exch def
@@ -270,7 +270,7 @@ sub -1 0{/i exch def y i 3 2 roll put x i 3 2 roll put}for}def
    rx 0 le ry 0 eq and {(-0)} if %horizontal
    /pp exch def                  %e.g., /pp (++) def
    cleartomark                   %clear any duplicates
-   0.2 lx mul /dx exch def       %x offset
+   0.2 lx mul 10 min /dx exch def%x offset
    /qb {                         %define the path to make box
       newpath
       0 0 moveto
@@ -321,7 +321,7 @@ sub -1 0{/i exch def y i 3 2 roll put x i 3 2 roll put}for}def
    bgred bggreen bgblue setrgbcolor qb exec fill
    fgred fggreen fgblue setrgbcolor qb exec stroke
    % building rx ry translate txt XX XX 0 lcr OText
-   rx dp add ry translate txt
+   rx dp add ry dy sub translate txt
       pp (++) eq {0 0} if
       pp (-+) eq {1 0} if
       pp (--) eq {1 1} if
@@ -917,7 +917,7 @@ none SetB
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-    197    2486     197    2644     276    2644     276    2486
+    197    2486     197    2723     276    2723     276    2486
     4 Poly
 End
 
@@ -934,7 +934,24 @@ none SetB
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-    197    2644     197    2881     276    2881     276    2644
+    197    2723     197    2802     276    2802     276    2723
+    4 Poly
+End
+
+
+Begin %I Poly
+%I b n
+none SetB
+%I cfg Black
+0 0 0 SetCFg
+%I cbg White
+1 1 1 SetCBg
+%I p
+0.5000 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I     4
+    197    2802     197    2881     276    2881     276    2802
     4 Poly
 End
 
@@ -1070,24 +1087,7 @@ none SetB
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-    276    2486     276    2644     355    2644     355    2486
-    4 Poly
-End
-
-
-Begin %I Poly
-%I b n
-none SetB
-%I cfg Black
-0 0 0 SetCFg
-%I cbg White
-1 1 1 SetCBg
-%I p
-0.5000 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I     4
-    276    2644     276    2802     355    2802     355    2644
+    276    2486     276    2723     355    2723     355    2486
     4 Poly
 End
 
@@ -1104,7 +1104,7 @@ none SetB
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-    276    2802     276    3000     355    3000     355    2802
+    276    2723     276    3000     355    3000     355    2723
     4 Poly
 End
 
@@ -1406,11 +1406,28 @@ none SetB
 %I cbg White
 1 1 1 SetCBg
 %I p
+0.6667 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I     4
+    434    2881     434    2960     513    2960     513    2881
+    4 Poly
+End
+
+
+Begin %I Poly
+%I b n
+none SetB
+%I cfg Black
+0 0 0 SetCFg
+%I cbg White
+1 1 1 SetCBg
+%I p
 0.5000 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-    434    2881     434    3000     513    3000     513    2881
+    434    2960     434    3000     513    3000     513    2960
     4 Poly
 End
 
@@ -1542,7 +1559,7 @@ none SetB
 %I cbg White
 1 1 1 SetCBg
 %I p
-0.3333 SetP
+0.5000 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
@@ -1580,7 +1597,24 @@ none SetB
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-    513    2881     513    3000     592    3000     592    2881
+    513    2881     513    2960     592    2960     592    2881
+    4 Poly
+End
+
+
+Begin %I Poly
+%I b n
+none SetB
+%I cfg Black
+0 0 0 SetCFg
+%I cbg White
+1 1 1 SetCBg
+%I p
+0.5000 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I     4
+    513    2960     513    3000     592    3000     592    2960
     4 Poly
 End
 
@@ -1712,28 +1746,11 @@ none SetB
 %I cbg White
 1 1 1 SetCBg
 %I p
-0.5000 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I     4
-    592    2802     592    2881     671    2881     671    2802
-    4 Poly
-End
-
-
-Begin %I Poly
-%I b n
-none SetB
-%I cfg Black
-0 0 0 SetCFg
-%I cbg White
-1 1 1 SetCBg
-%I p
 0.3333 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-    592    2881     592    2960     671    2960     671    2881
+    592    2802     592    2960     671    2960     671    2802
     4 Poly
 End
 
@@ -2039,24 +2056,7 @@ none SetB
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-    749    2565     749    2723     828    2723     828    2565
-    4 Poly
-End
-
-
-Begin %I Poly
-%I b n
-none SetB
-%I cfg Black
-0 0 0 SetCFg
-%I cbg White
-1 1 1 SetCBg
-%I p
-0.6667 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I     4
-    749    2723     749    2802     828    2802     828    2723
+    749    2565     749    2802     828    2802     828    2565
     4 Poly
 End
 
@@ -2209,7 +2209,7 @@ none SetB
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-    828    2565     828    2723     907    2723     907    2565
+    828    2565     828    2644     907    2644     907    2565
     4 Poly
 End
 
@@ -2226,7 +2226,7 @@ none SetB
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-    828    2723     828    2802     907    2802     907    2723
+    828    2644     828    2802     907    2802     907    2644
     4 Poly
 End
 
@@ -4738,28 +4738,11 @@ none SetB
 %I cbg White
 1 1 1 SetCBg
 %I p
-0.3333 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I     4
-   2171       0    2171      39    2249      39    2249       0
-    4 Poly
-End
-
-
-Begin %I Poly
-%I b n
-none SetB
-%I cfg Black
-0 0 0 SetCFg
-%I cbg White
-1 1 1 SetCBg
-%I p
 0.1667 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I     4
-   2171      39    2171     276    2249     276    2249      39
+   2171       0    2171     276    2249     276    2249       0
     4 Poly
 End
 
@@ -7326,21 +7309,6 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   619.2      5.3487E+04   619.2      5.4934E+04
-   197   2644    197   2723  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   619.2      5.4934E+04   619.2      5.6382E+04
    197   2723    197   2802  Line
 End
@@ -7716,53 +7684,8 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   619.2      5.3487E+04   637.6      5.3487E+04
-   197   2644    276   2644  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   619.2      5.3487E+04   619.2      5.4934E+04
-   197   2644    197   2723  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   637.6      5.3487E+04   637.6      5.4934E+04
-   276   2644    276   2723  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   619.2      5.3487E+04   637.6      5.3487E+04
-   197   2644    276   2644  Line
+%I   619.2      5.4934E+04   637.6      5.4934E+04
+   197   2723    276   2723  Line
 End
 
 Begin %I Line
@@ -7791,8 +7714,23 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   637.6      5.4934E+04   637.6      5.6382E+04
-   276   2723    276   2802  Line
+%I   619.2      5.6382E+04   637.6      5.6382E+04
+   197   2802    276   2802  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   619.2      5.4934E+04   637.6      5.4934E+04
+   197   2723    276   2723  Line
 End
 
 Begin %I Line
@@ -7823,6 +7761,36 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   619.2      5.7829E+04   637.6      5.7829E+04
    197   2881    276   2881  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   637.6      5.6382E+04   637.6      5.7829E+04
+   276   2802    276   2881  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   619.2      5.6382E+04   637.6      5.6382E+04
+   197   2802    276   2802  Line
 End
 
 Begin %I Line
@@ -8136,83 +8104,8 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   637.6      5.3487E+04   656.0      5.3487E+04
-   276   2644    355   2644  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   637.6      5.3487E+04   637.6      5.4934E+04
-   276   2644    276   2723  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   656.0      5.3487E+04   656.0      5.4934E+04
-   355   2644    355   2723  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   637.6      5.3487E+04   656.0      5.3487E+04
-   276   2644    355   2644  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   637.6      5.4934E+04   637.6      5.6382E+04
-   276   2723    276   2802  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   637.6      5.6382E+04   656.0      5.6382E+04
-   276   2802    355   2802  Line
+%I   637.6      5.4934E+04   656.0      5.4934E+04
+   276   2723    355   2723  Line
 End
 
 Begin %I Line
@@ -8241,8 +8134,8 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   656.0      5.6382E+04   656.0      5.7829E+04
-   355   2802    355   2881  Line
+%I   637.6      5.4934E+04   656.0      5.4934E+04
+   276   2723    355   2723  Line
 End
 
 Begin %I Line
@@ -8256,8 +8149,23 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   637.6      5.6382E+04   656.0      5.6382E+04
-   276   2802    355   2802  Line
+%I   637.6      5.6382E+04   637.6      5.7829E+04
+   276   2802    276   2881  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   656.0      5.6382E+04   656.0      5.7829E+04
+   355   2802    355   2881  Line
 End
 
 Begin %I Line
@@ -8526,21 +8434,6 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   656.0      5.3487E+04   656.0      5.4934E+04
-   355   2644    355   2723  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   656.0      5.4934E+04   674.5      5.4934E+04
    355   2723    434   2723  Line
 End
@@ -8663,6 +8556,21 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   656.0      5.9276E+04   674.5      5.9276E+04
    355   2960    434   2960  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   674.5      5.7829E+04   674.5      5.9276E+04
+   434   2881    434   2960  Line
 End
 
 Begin %I Line
@@ -9066,6 +8974,51 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   674.5      5.7829E+04   674.5      5.9276E+04
+   434   2881    434   2960  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   674.5      5.9276E+04   692.9      5.9276E+04
+   434   2960    513   2960  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   692.9      5.7829E+04   692.9      5.9276E+04
+   513   2881    513   2960  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   674.5      5.7829E+04   692.9      5.7829E+04
    434   2881    513   2881  Line
 End
@@ -9083,6 +9036,21 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   674.5      5.9276E+04   674.5      6.0000E+04
    434   2960    434   3000  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   674.5      5.9276E+04   692.9      5.9276E+04
+   434   2960    513   2960  Line
 End
 
 Begin %I Line
@@ -9411,6 +9379,21 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   711.3      5.4934E+04   711.3      5.6382E+04
+   592   2723    592   2802  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   692.9      5.4934E+04   711.3      5.4934E+04
    513   2723    592   2723  Line
 End
@@ -9456,8 +9439,8 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   711.3      5.6382E+04   711.3      5.7829E+04
-   592   2802    592   2881  Line
+%I   692.9      5.6382E+04   711.3      5.6382E+04
+   513   2802    592   2802  Line
 End
 
 Begin %I Line
@@ -9471,8 +9454,23 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   692.9      5.6382E+04   711.3      5.6382E+04
-   513   2802    592   2802  Line
+%I   692.9      5.7829E+04   692.9      5.9276E+04
+   513   2881    513   2960  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   692.9      5.9276E+04   711.3      5.9276E+04
+   513   2960    592   2960  Line
 End
 
 Begin %I Line
@@ -9518,6 +9516,21 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   711.3      5.9276E+04   711.3      6.0000E+04
    592   2960    592   3000  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   692.9      5.9276E+04   711.3      5.9276E+04
+   513   2960    592   2960  Line
 End
 
 Begin %I Line
@@ -9786,6 +9799,21 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   711.3      5.4934E+04   711.3      5.6382E+04
+   592   2723    592   2802  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   711.3      5.6382E+04   729.7      5.6382E+04
    592   2802    671   2802  Line
 End
@@ -9801,23 +9829,8 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   711.3      5.6382E+04   711.3      5.7829E+04
-   592   2802    592   2881  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   711.3      5.7829E+04   729.7      5.7829E+04
-   592   2881    671   2881  Line
+%I   729.7      5.6382E+04   729.7      5.7829E+04
+   671   2802    671   2881  Line
 End
 
 Begin %I Line
@@ -9863,21 +9876,6 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   711.3      5.9276E+04   729.7      5.9276E+04
    592   2960    671   2960  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   711.3      5.7829E+04   729.7      5.7829E+04
-   592   2881    671   2881  Line
 End
 
 Begin %I Line
@@ -10176,8 +10174,8 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   748.1      5.4934E+04   748.1      5.6382E+04
-   749   2723    749   2802  Line
+%I   729.7      5.6382E+04   729.7      5.7829E+04
+   671   2802    671   2881  Line
 End
 
 Begin %I Line
@@ -10193,6 +10191,21 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   729.7      5.7829E+04   748.1      5.7829E+04
    671   2881    749   2881  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   748.1      5.6382E+04   748.1      5.7829E+04
+   749   2802    749   2881  Line
 End
 
 Begin %I Line
@@ -10551,51 +10564,6 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   748.1      5.4934E+04   766.6      5.4934E+04
-   749   2723    828   2723  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   766.6      5.3487E+04   766.6      5.4934E+04
-   828   2644    828   2723  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   748.1      5.4934E+04   748.1      5.6382E+04
-   749   2723    749   2802  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   748.1      5.6382E+04   766.6      5.6382E+04
    749   2802    828   2802  Line
 End
@@ -10611,23 +10579,8 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   766.6      5.4934E+04   766.6      5.6382E+04
-   828   2723    828   2802  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   748.1      5.4934E+04   766.6      5.4934E+04
-   749   2723    828   2723  Line
+%I   748.1      5.6382E+04   748.1      5.7829E+04
+   749   2802    749   2881  Line
 End
 
 Begin %I Line
@@ -10971,6 +10924,21 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   766.6      5.3487E+04   785.0      5.3487E+04
+   828   2644    907   2644  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   766.6      5.2039E+04   785.0      5.2039E+04
    828   2565    907   2565  Line
 End
@@ -10986,8 +10954,8 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   766.6      5.3487E+04   766.6      5.4934E+04
-   828   2644    828   2723  Line
+%I   785.0      5.3487E+04   785.0      5.4934E+04
+   907   2644    907   2723  Line
 End
 
 Begin %I Line
@@ -11001,23 +10969,8 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   766.6      5.4934E+04   785.0      5.4934E+04
-   828   2723    907   2723  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   766.6      5.4934E+04   766.6      5.6382E+04
-   828   2723    828   2802  Line
+%I   766.6      5.3487E+04   785.0      5.3487E+04
+   828   2644    907   2644  Line
 End
 
 Begin %I Line
@@ -11048,21 +11001,6 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   785.0      5.4934E+04   785.0      5.6382E+04
    907   2723    907   2802  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   766.6      5.4934E+04   785.0      5.4934E+04
-   828   2723    907   2723  Line
 End
 
 Begin %I Line
@@ -11123,21 +11061,6 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   766.6      5.9276E+04   766.6      6.0000E+04
    828   2960    828   3000  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   785.0      5.9276E+04   785.0      6.0000E+04
-   907   2960    907   3000  Line
 End
 
 Begin %I Line
@@ -11511,6 +11434,21 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   785.0      5.3487E+04   785.0      5.4934E+04
+   907   2644    907   2723  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   785.0      5.4934E+04   785.0      5.6382E+04
    907   2723    907   2802  Line
 End
@@ -11588,21 +11526,6 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   785.0      5.7829E+04   803.4      5.7829E+04
    907   2881    986   2881  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   785.0      5.9276E+04   785.0      6.0000E+04
-   907   2960    907   3000  Line
 End
 
 Begin %I Line
@@ -20198,6 +20121,21 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   1061.       5724.       1080.       5724.    
   2092     39   2171     39  Line
+End
+
+Begin %I Line
+%I b 65535
+ 1.00 0 0 [] 0                   SetB
+%I cfg black
+0.0 0.0 0.0 SetCFg
+%I cbg black
+0.0 0.0 0.0  SetCBg
+%I p
+0 SetP
+%I t
+[0.180      0.00      0.00     0.180      160.      220.     ] concat
+%I   1080.       5000.       1080.       5724.    
+  2171      0   2171     39  Line
 End
 
 Begin %I Line
@@ -20601,38 +20539,8 @@ Begin %I Line
 0 SetP
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   1080.       5724.       1098.       5724.    
-  2171     39   2249     39  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   1098.       5000.       1098.       5724.    
-  2249      0   2249     39  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   1080.       5724.       1098.       5724.    
-  2171     39   2249     39  Line
+%I   1080.       5000.       1080.       5724.    
+  2171      0   2171     39  Line
 End
 
 Begin %I Line
@@ -21008,21 +20916,6 @@ Begin %I Line
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I   1080.      3.6118E+04   1098.      3.6118E+04
   2171   1697   2249   1697  Line
-End
-
-Begin %I Line
-%I b 65535
- 1.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg black
-0.0 0.0 0.0  SetCBg
-%I p
-0 SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I   1098.       5000.       1098.       5724.    
-  2250      0   2250     39  Line
 End
 
 Begin %I Line
@@ -23723,7 +23616,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-      0     157       8       8  Elli
+    332     185       8       8  Elli
 End
 
 Begin %I Text
@@ -23732,36 +23625,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      163.      252.     ] concat
-%I
-[
-(Atg\(PN\) cAmph\(G\) Chl\(W\) O\(HGP\) oCcM\(EF\) Po\(HP\) Sp\(HGP\) ta gph)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-    315     157       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      220.      252.     ] concat
+[0.720      0.00      0.00     0.720      225.      257.     ] concat
 %I
 [
 (Atg\(PN\) cAmph\(G\) Chl\(W\) O\(HGP\) oCcM\(EF\) Po\(HP\) Sp\(HGP\) ta)
@@ -23781,7 +23645,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-    473     315       8       8  Elli
+    483     335       8       8  Elli
 End
 
 Begin %I Text
@@ -23790,7 +23654,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      249.      280.     ] concat
+[0.720      0.00      0.00     0.720      252.      284.     ] concat
 %I
 [
 (Atg\(PN\) cAmph\(G\) Chl\(W\) O\(HGP\) oCcM\(EF\) Po\(HP\) Sp\(HGP\) ta pyr)
@@ -23810,7 +23674,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-    157     868       8       8  Elli
+    683    1598       8       8  Elli
 End
 
 Begin %I Text
@@ -23819,36 +23683,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      192.      380.     ] concat
-%I
-[
-(Atg\(PN\) Cpx\(HGP\) Chl\(W\) O\(HGP\) oCcM\(EF\) Sp\(HGP\) ta pyr)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-    710    1578       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      291.      508.     ] concat
+[0.720      0.00      0.00     0.720      288.      511.     ] concat
 %I
 [
 (Atg\(PN\) Cpx\(HGP\) Chl\(W\) O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) pyr)
@@ -23868,7 +23703,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-     78    1973       8       8  Elli
+     48    1994       8       8  Elli
 End
 
 Begin %I Text
@@ -23877,7 +23712,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      178.      579.     ] concat
+[0.720      0.00      0.00     0.720      174.      582.     ] concat
 %I
 [
 (Atg\(PN\) Cpx\(HGP\) Chl\(W\) O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) pyr diam)
@@ -23897,7 +23732,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-    315    2526       8       8  Elli
+    226    2679       8       8  Elli
 End
 
 Begin %I Text
@@ -23906,7 +23741,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      220.      678.     ] concat
+[0.720      0.00      0.00     0.720      206.      706.     ] concat
 %I
 [
 (Atg\(PN\) Cpx\(HGP\) Chl\(W\) COH-Fluid oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) phA)
@@ -23926,7 +23761,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-    789     473       8       8  Elli
+    751     504       8       8  Elli
 End
 
 Begin %I Text
@@ -23935,7 +23770,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      306.      309.     ] concat
+[0.720      0.00      0.00     0.720      301.      314.     ] concat
 %I
 [
 (Atg\(PN\) cAmph\(G\) Chl\(W\) O\(HGP\) oCcM\(EF\) Sp\(HGP\) ta pyr)
@@ -23955,7 +23790,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-    473    2921       8       8  Elli
+   1139     735       8       8  Elli
 End
 
 Begin %I Text
@@ -23964,152 +23799,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      249.      749.     ] concat
-%I
-[
-(Atg\(PN\) Cpx\(HGP\) Chl\(W\) COH-Fluid oCcM\(EF\) Opx\(HGP\) phA hem)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-    315    2842       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      220.      735.     ] concat
-%I
-[
-(Atg\(PN\) Cpx\(HGP\) Chl\(W\) COH-Fluid oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) phA hem)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-    473    2763       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      249.      721.     ] concat
-%I
-[
-(Atg\(PN\) Cpx\(HGP\) Chl\(W\) COH-Fluid oCcM\(EF\) Opx\(HGP\) phA)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-    710    2684       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      291.      707.     ] concat
-%I
-[
-(Cpx\(HGP\) Chl\(W\) COH-Fluid oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) phA)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-    789    2842       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      306.      735.     ] concat
-%I
-[
-(Cpx\(HGP\) Chl\(W\) COH-Fluid oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) phA hem)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1105     710       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      362.      351.     ] concat
+[0.720      0.00      0.00     0.720      370.      356.     ] concat
 %I
 [
 (Atg\(PN\) cAmph\(G\) Chl\(W\) O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) pyr)
@@ -24129,7 +23819,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-    710    2921       8       8  Elli
+   1412    1864       8       8  Elli
 End
 
 Begin %I Text
@@ -24138,65 +23828,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      291.      749.     ] concat
-%I
-[
-(Cpx\(HGP\) Chl\(W\) COH-Fluid oCcM\(EF\) Opx\(HGP\) phA hem)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-    947    2763       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      334.      721.     ] concat
-%I
-[
-(Cpx\(HGP\) Chl\(W\) COH-Fluid O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) phA)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1421    1894       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      419.      564.     ] concat
+[0.720      0.00      0.00     0.720      420.      559.     ] concat
 %I
 [
 (Cpx\(HGP\) Chl\(W\) COH-Fluid O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) pyr)
@@ -24216,7 +23848,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-   1421    2368       8       8  Elli
+   1422    2350       8       8  Elli
 End
 
 Begin %I Text
@@ -24225,7 +23857,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      419.      650.     ] concat
+[0.720      0.00      0.00     0.720      421.      646.     ] concat
 %I
 [
 (Cpx\(HGP\) Chl\(W\) COH-Fluid O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\))
@@ -24245,7 +23877,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-   1342     157       8       8  Elli
+   1578    1203       8       8  Elli
 End
 
 Begin %I Text
@@ -24254,210 +23886,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      405.      252.     ] concat
-%I
-[
-(cAmph\(G\) Chl\(W\) COH-Fluid O\(HGP\) Sp\(HGP\) ta pyr any)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1499    2921       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      433.      749.     ] concat
-%I
-[
-(COH-Fluid Gt\(HGP\) Gt\(HGP\) O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) hem)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1499      78       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      433.      238.     ] concat
-%I
-[
-(cAmph\(G\) cAmph\(G\) Chl\(W\) COH-Fluid O\(HGP\) Sp\(HGP\) any)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1421     473       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      419.      309.     ] concat
-%I
-[
-(cAmph\(G\) Chl\(W\) COH-Fluid O\(HGP\) oCcM\(EF\) Sp\(HGP\) ta pyr any)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1499     631       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      433.      337.     ] concat
-%I
-[
-(cAmph\(G\) Chl\(W\) COH-Fluid O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) pyr any)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1421     789       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      419.      366.     ] concat
-%I
-[
-(Atg\(PN\) cAmph\(G\) Chl\(W\) COH-Fluid O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) pyr any)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1421    1026       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      419.      408.     ] concat
-%I
-[
-(Atg\(PN\) Cpx\(HGP\) Chl\(W\) COH-Fluid O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) pyr any)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1578    1184       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      448.      437.     ] concat
+[0.720      0.00      0.00     0.720      449.      440.     ] concat
 %I
 [
 (Cpx\(HGP\) Chl\(W\) COH-Fluid O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) pyr any)
@@ -24477,7 +23906,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-   1499    2605       8       8  Elli
+   1753     265       8       8  Elli
 End
 
 Begin %I Text
@@ -24486,36 +23915,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      433.      692.     ] concat
-%I
-[
-(Chl\(W\) COH-Fluid Gt\(HGP\) O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\))
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1736     236       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      476.      266.     ] concat
+[0.720      0.00      0.00     0.720      481.      271.     ] concat
 %I
 [
 (cAmph\(G\) Chl\(W\) COH-Fluid O\(HGP\) Opx\(HGP\) Sp\(HGP\) any)
@@ -24535,7 +23935,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-   1499     552       8       8  Elli
+   2169    2530       8       8  Elli
 End
 
 Begin %I Text
@@ -24544,36 +23944,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      433.      323.     ] concat
-%I
-[
-(cAmph\(G\) Chl\(W\) COH-Fluid O\(HGP\) Opx\(HGP\) Sp\(HGP\) pyr any)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   2131    2526       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      547.      678.     ] concat
+[0.720      0.00      0.00     0.720      556.      679.     ] concat
 %I
 [
 (COH-Fluid Gt\(HGP\) O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\))
@@ -24593,7 +23964,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-   2052     710       8       8  Elli
+   2029     726       8       8  Elli
 End
 
 Begin %I Text
@@ -24602,7 +23973,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      533.      351.     ] concat
+[0.720      0.00      0.00     0.720      530.      354.     ] concat
 %I
 [
 (Cpx\(HGP\) Chl\(W\) COH-Fluid O\(HGP\) Opx\(HGP\) Sp\(HGP\) any)
@@ -24622,7 +23993,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-   1815    1421       8       8  Elli
+   1850    1409       8       8  Elli
 End
 
 Begin %I Text
@@ -24631,7 +24002,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      490.      479.     ] concat
+[0.720      0.00      0.00     0.720      498.      477.     ] concat
 %I
 [
 (Cpx\(HGP\) Chl\(W\) COH-Fluid O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) any)
@@ -24651,7 +24022,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-   2131       0       8       8  Elli
+   2616     317       8       8  Elli
 End
 
 Begin %I Text
@@ -24660,65 +24031,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      547.      223.     ] concat
-%I
-[
-(Cpx\(HGP\) COH-Fluid O\(HGP\) Opx\(HGP\) Sp\(HGP\) an any)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   2052    1736       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      533.      536.     ] concat
-%I
-[
-(Cpx\(HGP\) COH-Fluid Gt\(HGP\) O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\))
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   2605     315       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      632.      280.     ] concat
+[0.720      0.00      0.00     0.720      636.      280.     ] concat
 %I
 [
 (Cpx\(HGP\) COH-Fluid O\(HGP\) Opx\(HGP\) Sp\(HGP\) any)
@@ -24738,7 +24051,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-   2605    1026       8       8  Elli
+   2569    1047       8       8  Elli
 End
 
 Begin %I Text
@@ -24747,7 +24060,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      632.      408.     ] concat
+[0.720      0.00      0.00     0.720      628.      412.     ] concat
 %I
 [
 (Cpx\(HGP\) COH-Fluid Gt\(HGP\) O\(HGP\) Opx\(HGP\) Sp\(HGP\) any)
@@ -24767,7 +24080,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-   2684    1421       8       8  Elli
+   2684    1383       8       8  Elli
 End
 
 Begin %I Text
@@ -24776,7 +24089,7 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      647.      479.     ] concat
+[0.720      0.00      0.00     0.720      648.      472.     ] concat
 %I
 [
 (Cpx\(HGP\) COH-Fluid Gt\(HGP\) O\(HGP\) Opx\(HGP\) Sp\(HGP\))
@@ -24796,7 +24109,7 @@ Begin %I Elli
 %I t
 [0.180      0.00      0.00     0.180      160.      220.     ] concat
 %I
-   2763    2052       8       8  Elli
+   2767    2055       8       8  Elli
 End
 
 Begin %I Text
@@ -24805,97 +24118,10 @@ Begin %I Text
 %I f *-helvetica-medium-r-*-140-*
 /Helvetica                                14 SetF
 %I t
-[0.720      0.00      0.00     0.720      661.      593.     ] concat
+[0.720      0.00      0.00     0.720      663.      593.     ] concat
 %I
 [
 (COH-Fluid Gt\(HGP\) O\(HGP\) Opx\(HGP\) Sp\(HGP\))
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   2921       0       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      689.      223.     ] concat
-%I
-[
-(COH-Fluid O\(HGP\) Opx\(HGP\) Opx\(HGP\) Sp\(HGP\) any)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-     78    3000       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      178.      763.     ] concat
-%I
-[
-(Atg\(PN\) Cpx\(HGP\) Chl\(W\) COH-Fluid oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) phA diam)
-] Text
-End
-
-
-Begin %I Elli
-%I b 65535
- 0.00 0 0 [] 0                   SetB
-%I cfg black
-0.0 0.0 0.0 SetCFg
-%I cbg white
-1.0 1.0 1.0  SetCBg
-%I p
-                          none SetP
-%I t
-[0.180      0.00      0.00     0.180      160.      220.     ] concat
-%I
-   1184    2921       8       8  Elli
-End
-
-Begin %I Text
-%I cfg Black
-0 0 0 SetCFg
-%I f *-helvetica-medium-r-*-140-*
-/Helvetica                                14 SetF
-%I t
-[0.720      0.00      0.00     0.720      377.      749.     ] concat
-%I
-[
-(Chl\(W\) COH-Fluid Gt\(HGP\) O\(HGP\) oCcM\(EF\) Opx\(HGP\) Sp\(HGP\) phA hem)
 ] Text
 End
 
