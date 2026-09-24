@@ -1682,7 +1682,7 @@ c                                 next experiment
 
       subroutine gtassmb (comp,ecomp,randm,tag,bad)
 c-----------------------------------------------------------------------
-c read phase data between between begin_\\tag/end_\\tag keywords. 
+c read phase data between between begin_//tag/end_//tag keywords. 
 
 c      data includes:
 

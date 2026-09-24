@@ -6714,7 +6714,7 @@ c                                 local alpha
       common/ cyt0  /alpha(m4),dt(j3)
 c----------------------------------------------------------------------
       if (extyp(id).eq.1) then
-c                                 redlich kistler is a special case
+c                                 redlich kister is a special case
 c                                     wk(1) = w0 cst
 c                                     wk(2) = wT coefficient on T
 c                                     wk(3) = wP0 some term in brosh's murnaghan-like excess term
@@ -6818,7 +6818,7 @@ c----------------------------------------------------------------------
       gex = 0d0
 
       if (extyp(ids).eq.1) then
-c                                 redlich kistler; expand polynomial
+c                                 redlich kister; expand polynomial
          do i = 1, jterm(ids)
 
             lex(1:rko(i,ids),i) = 0d0
@@ -22775,7 +22775,7 @@ c                                save the coefficient
             end do
 
          else
-c                                 redlich kistler
+c                                 redlich kister
             do j = 1, rkord(itic)
                do k = 1, m16
                   wk(k,j,itic) = wk(k,j,i)

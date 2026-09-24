@@ -265,23 +265,39 @@ c----------------------------------------------------------------------
 c psgrid - subprogram to output bulk composition data.
 
 c modified to place labels at field barycenters. G Helffrich, 
-c Bristol, March 24, 2006. 
+c Bristol, March 24, 2006; reworked Sep. 5, 2026
 c----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
 
+c                                 minimum group size (cells) to warrant a label
+      integer grpmin
+      parameter (grpmin = 15)
+
       character text*(lchar)
 
       logical bad, readyn
 
-      integer k, iran(2,k3), jran(2,k3), i, hfill, nblen, maxvar, j, 
-     *        ipoly, idr(k5), iop5, iop6, jop0, nctr(k3), minvar,
-     *        iop7, imatch, iend, ivar, kpoint, jj, ii, lex(k3), ntot,
-     *        iax(l7,2), nax(2), ibeg, jbeg, jend, kk, ictr
+      integer m, k, i, hfill, maxvar, j, 
+     *        ipoly, idr(k5), iop5, iop6, jop0, minvar, id, 
+     *        iop7, imatch, iend, ivar, kpoint, jj, ii, ntot,
+     *        iax(l7,2), nax(2), ibeg, jbeg, jend, kk, ictr, grp, in,
+     *        ix, iy, iix, jix, jcoor, isol, ngrp, l, dii, djj
 
-      double precision rline, x, y, x1, y1, x2, y2, x10, cctr(2,k3), 
-     *                 y10, rfill, dy, dx, bctr(2,k3), cwidth, dfill
+      double precision rline, x, y, x1, y1, x2, y2, x10,
+     *                 y10, rfill, dy, dx, cwidth, dfill,
+     *                 cst, cstx, csty, xc, yc, vlo, vhi, xdc, ydc
+      double precision lloc(2,k3)
+
+      integer l7s, l7g
+      parameter (l7s=l7*(l7+1)/2, l7g=l7 / 5)
+      integer nass, gixi(8), gixj(8), lex(k3), lblix(k3)
+      integer, allocatable :: iassi(:), iassj(:), iassp(:), iasss(:),
+     *        iassk(:,:)
+
+      integer iassf, nblen
+      external iassf, nblen
 
       external readyn
 
@@ -300,7 +316,22 @@ c----------------------------------------------------------------------
       integer jvar
       double precision var,dvr,vmn,vmx
       common/ cxt18 /var(l3),dvr(l3),vmn(l3),vmx(l3),jvar
+
+      double precision lxtol, lytol
+      parameter (lxtol = 0.02d0, lytol = 0.05d0)
+
+      data (gixi(i),gixj(i),i=1,8)/
+c         1     2     3      4    5     6    7    8
+     *  -1,-1, 0,-1, 1,-1, -1,0, 1,0, -1,1, 0,1, 1,1
+c        x  y  x  y  x  y   x y  x y   x y  x y  x y
+     */
 c----------------------------------------------------------------------
+
+c                                 allocate grouping algorithm arrays
+c                                 they get deallocated on subroutine return
+      allocate (iassi(l7s), iassj(l7s), iassp(l7s), iasss(l7s))
+      allocate (iassk(loopx, loopy))
+
       hfill = 0
 c                                 set up variance based fills:
       maxvar = icp + isat + 2 - piopt(1)
@@ -330,13 +361,6 @@ c                                 true phase assemblage counter
 
       do i = 1, k3
          lex(i) = 0
-         iran(1,i) = l7
-         iran(2,i) = 0 
-         jran(1,i) = l7
-         jran(2,i) = 0 
-         nctr(i) = 0
-         bctr(1,i) = 0d0
-         bctr(2,i) = 0d0
       end do 
 
       dx = dvr(1)*jinc
@@ -369,15 +393,6 @@ c                                 this node won't be drawn
             end if 
 c                                 flag the assemblage
             lex(ipoly) = ipoly
-c                                 get range of centroids
-            if (j.gt.jran(2,ipoly)) jran(2,ipoly) = j 
-            if (j.lt.jran(1,ipoly)) jran(1,ipoly) = j
-            if (i.gt.iran(2,ipoly)) iran(2,ipoly) = i 
-            if (i.lt.iran(1,ipoly)) iran(1,ipoly) = i
-c                                 calculate barycenter
-            nctr(ipoly) = nctr(ipoly) + 1
-            bctr(1,ipoly) = bctr(1,ipoly) + i
-            bctr(2,ipoly) = bctr(2,ipoly) + j
  
             rline = 0d0
             cwidth = 0d0 
@@ -467,326 +482,290 @@ c                                 true phase assemblages.
 
       end do
 
-      if (label) then 
-c                                 last label centroids:
+      if (.not.label) go to 999
+c                                 assemblage labeling starts here.  use the
+c                                 group/merge algorithm to find all points in
+c                                 a distinct assemblage field, then find the
+c                                 barycenter of the field and label it there.
+
+c                                 set & scale font; all labels horizontal
+      call pssctr (ifont, ascale, ascale, 0d0)
+c                                 character width, height in x,y-grid units
+      xdc = dcx*ascale/1.75d0
+      ydc = dcy*ascale/1.75d0
+
       do k = 1, iasct
-c                                 the assemblage doesn't occur if lex(k) = 0
-c                                 but this should be possible
+
+c                                 optimized away?  if not, make the name
          if (lex(k).eq.0) cycle
-
          call psbtxt (lex(k), text, iend)
-         if (nctr(k).lt.2) then 
-c           write (*,*) 'skipping label for dot field: ',
-c    *                  text(1:nblen(text))
-            cycle
-         end if
+         iend = nblen(text)
 
-c                                 check whether the assemblage is stable in
-c                                 one or more than one disjoint fields before
-c                                 calculating the barycenter.  the effect of a
-c                                 small, separated field might not shift the
-c                                 barycenter of a larger field enough to shift
-c                                 it out of the field extent.
-         nax(1) = 0
-         nax(2) = 0
-
-         ipoly = lex(k)
-
-         do ii = iran(1,k),iran(2,k),jinc
-            do jj = jran(1,k),jran(2,k),jinc
-               if (iap(igrd(ii,jj)).eq.ipoly) then
-c                                  add i,j indices to list used
-                  call iasadd(ii,nax(1),iax(1,1))
-                  call iasadd(jj,nax(2),iax(1,2))
+c                                 start off by finding each grid point with
+c                                 the target assemblage
+         ngrp = 0
+         iassk(1:loopx,1:loopy) = 0
+         do i = 1, loopx, jinc
+            do j = 1, loopy, jinc
+               id = igrd(i,j)
+               if (id .le. 0) cycle
+               id = iap(id)
+               if (id .eq. 0 .or. id .ne. k) cycle
+               if (ngrp.ge.l7s) then
+                  write(*,*) '**Large field for ',text(1:iend),
+     *               '; label placement suboptimal.'
+                  go to 50
                end if
+               ngrp = ngrp + 1
+               iassi(ngrp) = i
+               iassj(ngrp) = j
+               iassp(ngrp) = ngrp
+               iasss(ngrp) = 1
+               iassk(i,j) = ngrp
             end do
          end do
-c                                  if nothing matched, we're hosed
-         if (nax(1).eq.0 .and. nax(2).eq.0) then
-            write (*,*) 'uh-oh on assemblage',text(1:nblen(text))
-            cycle 
-         end if
-c                                  determine number of contiguous ranges
-c                                  of i- and j-indices.  the breaks will
-c                                  mark group edges.
-         ii = 1
+c                                 iasss: # in group, used to decide how
+c                                 to merge.  want wide trees, not tall ones to
+c                                 speed walk back to root, so when merged, the
+c                                 longer branch gets linked to the shorter one.
 
-         do i = 2,nax(1)
-            if (iax(i,1)-iax(i-1,1) .gt. jinc) ii = ii + 1
+c                                 iassk: group id.  every cell is its own group
+c                                 to start; neighboring cells get joined to
+c                                 the same group.  finally, disjoint fields will
+c                                 be different groups.
+
+50       continue
+c                                 no members is possible if all refined away
+         if (ngrp .eq.0) cycle
+
+c                                 associate neighbors of same assemblage
+         do m = 1, ngrp
+            i = iassi(m)
+            j = iassj(m)
+            id = iap(igrd(i,j))
+            do l = 1, 8
+               iix = i + gixi(l)*jinc
+               jix = j + gixj(l)*jinc
+               if (iix.lt.1 .or. iix.gt.loopx) cycle
+               if (jix.lt.1 .or. jix.gt.loopy) cycle
+               in = igrd(iix,jix)
+               if (in .le. 0) cycle
+               if (id .ne. iap(in)) cycle
+               in = iassk(iix,jix)
+c                                 in will be zero if neighbor had different
+c                                 solid assemblage
+               if (in.eq.0) cycle
+               ix = iassf(m ,ngrp,iassp)
+               iy = iassf(in,ngrp,iassp)
+c                                 skip if already in same group
+               if (ix .eq. iy) cycle
+c                                 merge the neighbors into same group, enlarge
+               if (iasss(ix).lt.iasss(iy)) then
+                  in = ix
+                  ix = iy
+                  iy = in
+               end if
+               iassp(iy) = ix
+               iasss(ix) = iasss(ix) + iasss(iy)
+            end do
          end do
 
-         jj = 1
-
-         do i = 2,nax(2)
-            if (iax(i,2)-iax(i-1,2) .gt. jinc) jj = jj + 1
+c                                 now all fields grouped.  find each one,
+c                                 which is identified by its root, which
+c                                 points to itself.  all the other members
+c                                 in the group point back to the root.
+c                                 iassf function result ignored, but the call
+c                                 makes sure that each cell points directly back
+c                                 to its root.
+c                                 iasss is not needed any more, so is repurposed
+c                                 to be which cell is a group head. l is
+c                                 the number of groups.
+         l = 0
+         do m = 1, ngrp
+            ictr = iassf(m,ngrp,iassp)
+            if (iassp(m) .eq. m) then
+               l = l + 1
+               iasss(l) = m
+            end if
          end do
 
-         if (ii*jj .le. 1) then
-c                                 there is only one contiguous group of points.
-c                                 compute barycenter, added by 
-c                                 G Helffrich, Mar 24, 2009. 
-            i = max(1,nint(bctr(1,k)/nctr(k)))
-            j = max(1,nint(bctr(2,k)/nctr(k)))
-c                                 test that it's ok
-            if (igrd(i,j).eq.0) then 
-               ipoly = 0 
-            else
-               ipoly = iap(igrd(i,j))
-            end if 
-
-            if (ipoly.eq.lex(k)) then
-
-               x = xmin + (i-1)/jinc*dx
-               y = ymin + (j-1)/jinc*dy
-               call psflbl (x,y,lex(k),nblen(text),text)
-               cycle
-            end if
-         end if
-
-         if (ii*jj.gt.1) then
-c                                 there are discontiguous stability assemblages.
-            kpoint = max(ii,jj)
-            if (rlabel.lt.1d0) then 
-c                                 ---------begin georges block-----------
-c                                  scan the range of the bounding polygon of the
-c                                  two (or more) fields to find a node
-c                                  with the assemblage
-
-c                                  process dimension with largest number
-c                                  of regions
-               if (ii.ge.jj) then
-                  j = 1
-                  iend = ii
-               else
-                  j = 2
-                  iend = jj
+c                                 now visit all members of the group and
+c                                 compute the barycenter.
+         grp = 0
+         do i = 1, l
+            cstx = dfloat(loopx-1)
+            csty = dfloat(loopy-1)
+            isol = iasss(i)
+            x = 0d0
+            y = 0d0
+            ii = 0
+            jj = 0
+            in = 0
+            do j=1,ngrp
+               if (iassp(j).eq.isol) then
+                  xc = (iassi(j)-1)/cstx
+                  yc = (iassj(j)-1)/csty
+c                                 debug code to plot nodes for assemblage
+c                 if (off) then
+c                    call pselip (
+c    *               xmin+xc*(xmax-xmin),ymin+yc*(ymax-ymin),
+c    *               0.25d0*dcx, 0.25d0*dcy,
+c    *               1d0,0d0,0
+c    *            )
+c                 end if
+                  x = x + xc
+                  y = y + yc
+                  ii = ii + iassi(j)-1
+                  jj = jj + iassj(j)-1
+                  in = in + 1
                end if
+            end do
 
-            else
-c                                  must be a really oddly-shaped region
-c                                  choose longest extent for subdivision
-               ii = iax(nax(1),1) - iax(1,1)
-               jj = iax(nax(2),2) - iax(1,2)
+c                                 skip small groups, probably numerical noise
+            if (in.le.grpmin) cycle
 
-               if (ii .gt. jj) then
-                  j = 1
-               else
-                  j = 2
-               end if
+            grp = grp + 1
+            x = x/in
+            y = y/in
+            ii = 1 + int(nint(float(ii)/in)/jinc)*jinc
+            jj = 1 + int(nint(float(jj)/in)/jinc)*jinc
 
-               iend = 1
-
-            end if
-
-            ictr = 0 
-
-            do kk=1,iend
-c                                  in group kk, find limiting extent of
-c                                  dimension
-               jj = 1
-               jbeg = iax(1,j)
-               jend = iax(nax(j),j)
-               do i=2,nax(j)
-                  if (iax(i,j)-iax(i-1,j) .gt. 1) then
-                     jj = jj + 1
-                     if (jj.eq.kk) then
-                        jbeg = iax(i,j)
-                        cycle
-                     end if
-                     if (jj.gt.kk) then
-                        jend = iax(i-1,j)
-                        exit
+c                                 if label lands in wrong field, find closest
+c                                 point in group to barycenter
+            jcoor = iap(igrd(ii,jj))
+            if (jcoor .ne. k) then
+c              write (*,'(a,1p,2(1x,g10.3),0p,1x,3a)')
+c    *            '**oops - barycenter at ',
+c    *            xmin+(ii-1)/cstx*(xmax-xmin),
+c    *            ymin+(jj-1)/csty*(ymax-ymin),
+c    *            ' for ',text(1:iend),' missed.'
+c              call psdsym (
+c    *            xmin+(ii-1)/cstx*(xmax-xmin),
+c    *            ymin+(jj-1)/csty*(ymax-ymin),
+c    *            4, 0.25d0, 1.5d0, 1d0, 0, 0)
+               in = 1
+               cst = dfloat(iassi(1)-ii)**2 + dfloat(iassj(1)-jj)**2
+               do j = 1, ngrp
+                  if (iassp(j).eq.isol) then
+                     vlo = 
+     *                  dfloat(ii-iassi(j))**2 + dfloat(jj-iassj(j))**2
+                     if (vlo.lt.cst) then
+                        in = j
+                        cst = vlo
                      end if
                   end if
                end do
-c                                  find barycenter of elements within
-c                                  extent for label.
-               x = 0d0
-               y = 0d0
-               i = 0
-
-               if (iend .eq. 1) then
-                  ibeg = iax(1,1)
-                  iend = iax(nax(1),1)
-                  jbeg = iax(1,2)
-                  jend = iax(nax(2),2)
-                  if (j.eq.1) then
-                     iend = iax(max(1,nax(1)/2),1)
-                  else
-                     jend = iax(max(1,nax(2)/2),2)
-                  end if
-               else if (j.eq.2) then
-                  ibeg = iran(1,k)
-                  iend = iran(2,k)
-               else
-                  ibeg = jbeg
-                  iend = jend
-                  jbeg = jran(1,k)
-                  jend = jran(2,k)
-               end if
-
-               do ii=ibeg,iend,jinc
-                  do jj=jbeg,jend,jinc
-
-                     if (iap(igrd(ii,jj)).eq.ipoly) then
-                        i = i + 1
-                        x = x + dfloat((ii-1)/jinc)
-                        y = y + dfloat((jj-1)/jinc)
-                     end if
-
-                  end do
+c                                  this is vector offset from the out-of-group
+c                                  barycenter.  traverse the group along its
+c                                  direction to find the extent of the group to
+c                                  put the label in middle, not at the edge.
+               dii = iassi(in)-ii
+               djj = iassj(in)-jj
+               x = (iassi(in)-1)/cstx
+               y = (iassj(in)-1)/csty
+               in = 1
+               do j = 1, 1000
+                  ix = ii+j*jinc*dii
+                  iy = jj+j*jinc*djj
+                  if (iap(igrd(ix,iy)).ne.k) exit
+                  in = in + 1
+                  x = x + (ix-1)/cstx
+                  y = y + (iy-1)/csty
                end do
-
-               if (iend-ibeg.lt.2.or.jend-jbeg.lt.2) then 
-                  write (*,*) 'skipping label for dot/streak field: ',
-     *                        text(1:nblen(text))
-                  cycle
-               end if
-               write (*,1010) kpoint,text(1:nblen(text))
-c                                 george had ii = max(1,nint(x/i)) for 
-c                                 grid spacing 1, changed 10/13/2018
-c                                 for grid spacing jinc. JADC
-               ii = 1 + nint(x/i)*jinc
-               jj = 1 + nint(y/i)*jinc
-
-               if (igrd(ii,jj).eq.0) then
-                  write (*,*) 'for ',
-     *               text(1:nblen(text)),', can this be?',ii,jj,
-     *               xmin + dfloat((ii-1)/jinc)*dx,
-     *               ymin + dfloat((jj-1)/jinc)*dy 
-                  cycle
-               end if
-c                                  in the money this time -- agrees?
-               kpoint = iap(igrd(ii,jj))
-
-               if (kpoint.ne.lex(k)) then 
-c                  write (*,*) '**oops - barycenter at ',x,y,
-c     *              ' for ',text(1:nblen(text)),' region ',kk,' missed'
-               else 
-                  ictr = ictr + 1
-                  cctr(1,ictr)  = xmin + dfloat((ii-1)/jinc)*dx
-                  cctr(2,ictr)  = ymin + dfloat((jj-1)/jinc)*dy
-                  if (ictr.gt.k3) exit
-               end if 
-
-            end do
-c                                  now check that the barycenters are 
-c                                  far enough apart:
-            do ii = 1, ictr
-         
-               x = cctr(1,ii)
-               y = cctr(2,ii)
-               bad = .false.
-
-               do jj = ii+1, ictr
-
-                  if ( dsqrt( ((x-cctr(1,jj))/xlen)**2 
-     *                       +((y-cctr(2,jj))/ylen)**2).lt.rlabel) then
-
-                     bad = .true.
-                     exit
-                  end if 
-               end do 
-
-               if (bad) cycle
-
-               call psflbl (x,y,lex(k),nblen(text),text)
-
-            end do
-
-            cycle
-c                                 ---------end george's block------------
+               x = x/in
+               y = y/in
             end if
+            x = xmin + x*(xmax-xmin)
+            y = ymin + y*(ymax-ymin)
+            call pselip (x,y, 0.25d0*dcx, 0.25d0*dcy, 1d0,0d0,0)
+            x = x+2d0*xdc
+            y = y+.7d0*dcy*ascale
+            lloc(1,grp) = x
+            lloc(2,grp) = y
+         end do
 
-            ipoly = lex(k)
-c                                 scan the range to find a node 
-c                                 with the assemblage
-            if (jran(2,k).gt.2) then
-c                                 first try to find one at an i-value 
-c                                 at half the j-range
-               jj = 1 + ((jran(2,k)-1)/jinc/2)*jinc
-               do ii = iran(1,k), iran(2,k), jinc
-
-                  if (igrd(ii,jj).eq.0) cycle
-
-                  if (iap(igrd(ii,jj)).eq.ipoly) then
-                     kpoint = iap(igrd(ii,jj))
-                     x = xmin + (ii-1)/jinc*dx
-                     y = ymin + (jj-1)/jinc*dy
-                     goto 50
-                  end if 
-               end do 
-            end if 
-
-            if (iran(2,k).gt.2) then 
-c                                 next try to find one at an j-value 
-c                                 at half the i-range
-               ii = 1 + ((iran(2,k)-1)/jinc/2)*jinc
-
-               do jj = jran(1,k), jran(2,k), jinc
-
-                  if (igrd(ii,jj).eq.0) cycle
-
-                  if (iap(igrd(ii,jj)).eq.ipoly) then
-                     kpoint = iap(igrd(ii,jj))
-                     x = xmin + (ii-1)/jinc*dx
-                     y = ymin + (jj-1)/jinc*dy
-                     goto 50
-                  end if 
-               end do 
-            end if 
-c                                 last try, scan the range to find a node 
-c                                 with the assemblage
-            do ii = iran(1,k), iran(2,k), jinc
-
-               do jj = jran(1,k), jran(2,k), jinc
-
-                  if (igrd(ii,jj).eq.0) cycle
-
-                  if (iap(igrd(ii,jj)).eq.ipoly) then
-                     kpoint = iap(igrd(ii,jj))
-                     x = xmin + (ii-1)/jinc*dx
-                     y = ymin + (jj-1)/jinc*dy
-                     goto 50
+c                                 done positioning them; if there are overlaps,
+c                                 put one label closest to the centroid of their
+c                                 positions
+         cst = lxtol + xdc*iend
+         lblix(1:grp) = 0
+         do i = 1, grp
+            x = lloc(1,i)
+            y = lloc(2,i)
+c                                 count number of overlaps
+            in = 0
+            do ii = 1, grp
+               if (dabs(lloc(1,ii) - x)/xdc.lt.iend .and.
+     *             dabs(lloc(2,ii) - y)/ydc.lt.1d0) then
+                  lblix(ii) = i
+                  in = in + 1
+               end if
+            end do
+c                                 ugh, find closest to centroid
+c                                 disable overlap checking - does not handle
+c                                 enough typical cases to be useful
+            if (in .gt. 1 .and. .false.) then
+c              print*,in,'labels overlap, find centroid',x,y
+               x = lloc(1,i)
+               y = lloc(2,i)
+               do ii = 1, grp
+                  if (lblix(ii).eq.i .and. ii.ne.i) then
+                     x = x + lloc(1,ii)
+                     y = y + lloc(2,ii)
                   end if
-
                end do
+               x = x/in
+               y = y/in
+               lblix(i) = i
+c                                 now have centroid, find closest
+               vlo = 2d0
+               do ii = 1, grp
+                  if (lblix(ii).eq.i) then
+                     vhi = (lloc(1,ii)-x)**2 + (lloc(2,ii)-y)**2
+                     if (vhi .lt. vlo) then
+                        vlo = vhi
+                        in = ii
+                     end if
+                  end if
+               end do
+c                                 bingo; now make those points have same label
+c              x = lloc(1,in)
+c              y = lloc(2,in)
+               do ii = 1, grp
+                  if (lblix(ii).eq.i) then
+                     lloc(1,ii) = x
+                     lloc(2,ii) = y
+                  end if
+               end do
+            end if
+            call pstext (x,y,text,iend)
+         end do
 
-            end do 
-c                                 no grid point found for the 
-c                                 assemblage, perhaps the resetting of
-c                                 igrd to zero allows this?
-            write (*,*) 'uh-oh on assemblage',text(1:iend),ipoly
-            cycle
+         if (grp.gt.1) write(*,1010) grp,text(1:iend)
+      end do
 
-c        end if 
-c                                 call label routine:
-50       call psbtxt (kpoint, text, iend)
-         call psflbl (x,y,kpoint,iend,text)
-
-      end do 
-
-      end if 
 c                                 draw axes
+999   continue
       call psaxes (jop0)
  
-      if (iop5.eq.1) write (*,*) ict(1),
-     *               ' fields have the assemblage: ',
-     *               (xnams(k,1),' ',k = 1, ixct(1))
+c                                 these seem disused; ict(.), ixct(x) never set
+c     if (iop5.eq.1) write (*,*) ict(1),
+c    *               ' fields have the assemblage: ',
+c    *               (xnams(k,1),' ',k = 1, ixct(1))
 
-      if (iop6.eq.1) write (*,*) ict(2),
-     *               ' fields do not have any of the phases: ',
-     *               (xnams(k,2),' ',k = 1, ixct(2))
+c     if (iop6.eq.1) write (*,*) ict(2),
+c    *               ' fields do not have any of the phases: ',
+c    *               (xnams(k,2),' ',k = 1, ixct(2))
 
-      if (iop7.eq.1) write (*,*) ict(3),
-     *               ' fields do have one of the phases: ',
-     *               (xnams(k,3),' ',k = 1, ixct(3))
+c     if (iop7.eq.1) write (*,*) ict(3),
+c    *               ' fields do have one of the phases: ',
+c    *               (xnams(k,3),' ',k = 1, ixct(3))
 
 1000  format (/,'**warning ver099** the section contains phase fields',
      *          ' of variance > 6',/,'these will be drawn with pattern',
      *          ' fills that may look strange.',/,'Suppress phase ',
      *          'field fills for fields with variance > 6 (y/n)? ')
-1010  format ('There are ',i3,' fields for: ',a)
+1010  format ('There are ',i3,' fields for ',a)
 
       end
 
@@ -826,66 +805,6 @@ c                                 text field label
          call pstext (x+dx1,y+dy1,text,iend)
 
       end if
-
-      end
-
-
-      subroutine iasadd(m,n,tab)
-c----------------------------------------------------------------------
-c george's function for psgrid
-c iasadd - routine to add m to an ordered table of n elements in tab.
-      implicit none
-
-      integer i,j,jlo,jhi,k,m,n,tab(*)
-
-      if (n.le.0) then
-c                                  nothing in table is a special case
-         tab(1) = m
-         n = 1
-         return
-      end if
-
-      if (n .eq. 1) then
-c                                  one item in table is too
-         if (m .eq. tab(1)) return
-         if (m .gt. tab(1)) then
-            tab(2) = m
-         else
-            tab(2) = tab(1)
-            tab(1) = m
-         end if
-
-      else
-c                                  do binary search for insertion point
-         j = n/2
-         jlo = 1
-         jhi = n
-
-         do
-c                                  quit if in table already
-            if (m .eq. tab(j)) return
-            if (m .gt. tab(j)) then
-c                                  lower half
-               jlo = j+1
-            else
-c                                  upper half
-             jhi = j-1
-            end if
-c                                  next check point -- insert if absent
-            k = (jlo+jhi)/2
-            if (j .eq. k .or. k .eq. 0) then
-c                                  move entries in table down, insert new
-             do i=n,k+1,-1
-                tab(i+1) = tab(i)
-             end do
-             tab(k+1) = m
-             exit
-          end if
-          j = k
-         end do
-      end if
-c                                  one more added
-      n = n + 1
 
       end
 
@@ -1417,11 +1336,15 @@ c                                 get contour levels:
       if (george) then
 c                                 use george's contour choices
 c                                 tcont/pcont set via contour_t_interval
-c                                 contour_p_interval in perplex_plot_options
+c                                 contour_p_interval in perplex_plot_options,
+c                                 zcont is a bailout. this should be modified 
+c                                 to used variable indices rather than vnm. JADC 9/26
          if (0.ne.index(vnm(3),'T')) then
             cont = tcont
-         else
+         else if (0.ne.index(vnm(3),'P')) then
             cont = pcont
+         else
+            cont = zcont
          end if
 
          vlo = int((lvmin+0.5d0*cont)/cont)*cont

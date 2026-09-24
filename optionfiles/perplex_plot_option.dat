@@ -44,3 +44,14 @@ plot_output_type        PDF     | graphics output type: PS/PDF/SVG
 splines                  T      | use B-splines to smooth curves (psvdraw only; not pssect)
 tenth_ticks              F      | draw tenth-interval ticks on axes 
 text_scale              1.0     | default scaling for text
+
+                                | ----------------------------------------------------------
+                                | options pertinent only to liquidus/solidus diagrams
+
+contour_t_interval       50     | 50 K contour interval
+contour_p_interval     1000     | 1000 bar contour interval
+
+                                | options only legible in 7.2.12+:
+
+|contour_z_interval       1      | contour interval for any other variable
+|solution_compositions    T      | plot solution compositions for liquidus/solidus diagrams

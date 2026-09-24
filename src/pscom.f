@@ -1645,10 +1645,14 @@ c                                 plot_aspect_ratio - (x_axis_length/y-axis_leng
 c                                 replicate_label - minimum separation before writing
 c                                 a replicate label
       rlabel = 0.025d0
+c                                 z contour interval (unknown variable choice)
+      zcont = 1d0
 c                                 t contour interval
       tcont = 50d0
 c                                 p contour interval
       pcont = 1000d0
+c                                 solution compositions for liq/sol diagrams
+      scomp = .true.
 c                                 -------------------------------------
 c                                 look for file
       opname = 'perplex_plot_option.dat'
@@ -1755,6 +1759,12 @@ c                                 temperature contour interval
          else if (key.eq.'contour_p_interval') then
 c                                 pressure contour interval
             read (strg,*) pcont
+         else if (key.eq.'contour_z_interval') then
+c                                 pressure contour interval
+            read (strg,*) zcont
+         else if (key.eq.'solution_compositions') then
+c                                 plot solid solution compositions on liq/sol diagrams
+            read (strg,*) scomp
          else if (key.ne.'|') then 
 
             write (*,1110) key
@@ -1772,7 +1782,8 @@ c                                 --------------------------------------
 c                                 output 
       write (*,1000) 
 
-      write (*,1010) nscale, bbox, tcont, pcont, fill, label, plopt(3),
+      write (*,1010) nscale, bbox, tcont, pcont, zcont, fill, label, 
+     *               plopt(3),
      *               rlabel, ascale, font, lgrid, half, width, dsx, 
      *               dsy, dtx, dty, drot, xfac, spline, tenth, 
      *               cscale, plopt(4)
@@ -1790,6 +1801,7 @@ c                                 -------------------------------------
      *        28x,i4,6x,'[800] y-length (pts)',/,
      *        4x,'contour_t_interval     ',f7.2,4x,'>0 [50.0]',/,
      *        4x,'contour_p_interval     ',f7.2,4x,'>0 [1000.0]',/,
+     *        4x,'contour_z_interval     ',f7.2,4x,'>0 [1.0]',/,
      *        4x,'field_fill             ',l1,10x,'[T] F',/,
      *        4x,'field_label            ',l1,10x,'[T] F',/,
      *        4x,'numeric_field_label    ',l1,10x,'[F] T, if T ',

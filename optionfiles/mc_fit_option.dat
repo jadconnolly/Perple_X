@@ -1,10 +1,10 @@
 |----------------------------------------------------------------------
 
-        | Run-time MC_fit 7.1.15 options:
+        | Run-time mc_fit 7.2.12 options:
 
-        | For complete documentation refer to: perplex.ethz.ch/MC_fit_documentation/options.html
+        | For complete documentation refer to: perplex.ethz.ch/mc_fit_documentation/mc_fit_options.html
 
-        | MC_fit reads options from both perplex_option.dat and MC_fit_option.dat
+        | mc_fit reads options from both perplex_option.dat and mc_fit_option.dat
 
         |-------------------------------------------------------------
         | NOTE: to avoid accidental option settings, create personalized and/or
@@ -87,7 +87,7 @@ model_output                  default | [all] improved or best => which sucessfu
 MINIM_algorithm               default | [T] T => use MINIM (Nelder-Mead) algorithm to find best fit model; F => use grid search (~mcgrid)
 must_fit_all_data             default | [F] T => results only accepted if all analytical data if fit within uncertainty*uncertainty_multiplier (mustft)
 Nelder-Mead_covariance        default | [F] T => include Nelder-Meade covariance matrix in model output (nmcov)
-number_of_perturbation_tries  default | [100] => number of tries for each perturbation if ~best_central_model (ptry)
+number_of_perturbation_tries  default | [1] => number of tries for each perturbation if ~best_central_model (ptry)
 OBJF_filter_value             default | [1d99] => maximum acceptable OBJF value for a sucessful result (mxobjf)
 quadratic_fitting             default | [F] T => use quadratic surface fitting to improve location of the minimum
 seed                          default | [F] F => don't seed random number generator (seed)

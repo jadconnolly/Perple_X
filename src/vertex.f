@@ -114,9 +114,10 @@ c                                 output ranges etc compositions if p2yx inversi
       if (lopt(11)) call outlim
 c                                 output autorefine arf file and load
 c                                 rpcs into static array (routine reload)
-      call outarf
+      if (isoct.ne.0) call outarf
 
-      if (iopt(6).ne.2) then
+      if (iopt(6).ne.2.or.isoct.eq.0) then
+c                                 no solutions or
 c                                 quitting after exploratory stage:
 c                                 close n4/n5, delete interim results,
 c                                 first is a dummy.
@@ -2096,7 +2097,8 @@ c                             now switch new and old hot list
 
 1040  format (2(i4,1x),a,a)
 1050  format (/,3(a,1x),'refinement ',
-     *        'to +/-',f6.2,1x,a,1x,'tolerance.',/)
+     *        'to +/-',f6.2,1x,a,1x,'tolerance '//
+     *        '(liquidus_resolution option.',/)
 1060  format (/,i6,' grid cells of ',i6,
      *             ' failed liquidus/solidus search.',/)
 1065  format (/,i6,' grid cells to be refined at grid level ',i1)

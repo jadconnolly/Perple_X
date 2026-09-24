@@ -161,8 +161,8 @@ c----------------------------------------------------------------------
 !                                m13 - maximum number of user defined compositional variables in werami
 !                                m14 - maximum number of independent endmembers
 !                                m15 - maximum number of dependent endmembers
-!                                m16 - max number of parameters in a redkich-kistler L
-!                                m17 - max order of redlich-kistler expansion
+!                                m16 - max number of parameters in a redkich-kister L
+!                                m17 - max order of redlich-kister expansion
 !                                m18 - max number of pairwise terms in a redlich-kistler expansion
 !                                m19 - max number of independent endmember fractions m14 - 1
 !                                m20 - max number of site fractions, m10*(m11-1)
@@ -463,13 +463,13 @@ c                                 plot_option_file options
       integer piopt
       common/ cst213 /piopt(5),plopt(5)
 c                                 plot program internal options
-      logical spline, half, tenth, lgrid, fill, label
+      logical spline, half, tenth, lgrid, fill, label, scomp
       integer ifont, bbox
       double precision xfac, cscale, nscale, ascale, rlabel, width, 
-     *                 tcont, pcont
+     *                 tcont, pcont,zcont
       common/ ops /xfac,cscale,nscale,ascale,rlabel,width,tcont,pcont,
-     *             bbox(4),
-     *             ifont,spline,half,tenth,lgrid,fill,label
+     *             zcont,bbox(4),
+     *             ifont,spline,half,tenth,lgrid,fill,label,scomp
 c                                 solptr(i) points to the position of 
 c                                 solution model i in the input list
       integer solptr
