@@ -75,7 +75,7 @@ c                                 simply as a f(P,T)
          write (*,1070) (vname(jv(i)), i = 1, ipot)
          read (*,*,iostat=ier) (v(jv(i)), i = 1, ipot)
          if (ier.ne.0) cycle
-         if (v(1).lt.0d0) exit 
+         if (v(1).eq.0d0) exit 
           
          if (bulk) then 
 c                                 load the composition into b, the component names are  
@@ -136,6 +136,6 @@ c                                 and, if requested, the print file (n3)
 1010  format (/,'Enter value of bulk compositional variable X(C',i1,'):'
      *       )
 1060  format (/,'Enter ',a,' amounts of the components:')
-1070  format (/,'Enter (T < 0 to quit) ',7(a,1x))
+1070  format (/,'Enter (T = 0 to quit) ',7(a,1x))
 
       end
