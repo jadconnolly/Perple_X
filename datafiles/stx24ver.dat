@@ -1,3 +1,4 @@
+720 DO NOT DELETE THIS LINE
 
  | comments are indicated by the | character.
  | check for warnings at the end of the header section.
@@ -7,11 +8,6 @@ Stixrude and Lithgow-Bertelloni, JGI, 2024 |<= data base title
 |         JADC, Sept 11, 2024.
 
 |         Notes:
-
-|          0) In SLB 24, smag and mag are degenerate Fe3O4 compounds. For the Fe-O system in Perple_X this 
-|             degeneracy causes Wuestite, which contains the mag endmember, to be stable near the magnetite
-|             composition. This feature is cosmetic and has been eliminated in this implementation by destabilizing
-|             the mag endmember by 100 J/mole (see mag entry below).
 
 |          1) The Landau 1 bar transition T for Stishovite to, presumably, CaCl2 structure SiO2 is given as -4350 K, in  
 |             HeFESTO the negative transition T appears to be a flag that prevents evaluation of the transition effect. 
@@ -48,7 +44,7 @@ Stixrude and Lithgow-Bertelloni, JGI, 2024 |<= data base title
 
 
 begin_standard_variables |<= name (<9 characters), reference value, tolerance
-P(bar)      1    1
+P(bar)      0    1
 T(K)      300    1
 Y(CO2)      0    1d-7
 mu(C1)      0    1d-3
@@ -70,7 +66,7 @@ end_components
 
 end
 
-O2       EoS = 1 | H=  0.
+O2       EoS = 10 | hopo.
 O(2)
 S0 = 205.3614
 c1 = 48.3 c2 = -.691E-3 c3 = 499200 c5 = -420.7  
@@ -91,6 +87,15 @@ G0 = -2419124.39 S0 = -10 V0 = -6.4606
 c1 = 1161000 c2 = 4.4 c3 = 726.94116 c4 = 0.77467 c5 = 0.60142 c6 = 1.7391
 m0 = 724540 m1 = 1.71384
 transition = 1 type = 7  t1 = 4  t2 = 14.89723 
+end
+
+
+cats     EoS = 6 | Ca_1Al_1(Si_1Al_1)O_6  Ca-tschermaks
+Al2O3(1)SiO2(1)CaO(1)
+G0 = -3119890.80 S0 = -10 V0 = -6.3574
+c1 = 1137599 c2 = 4.8061 c3 = 804.36068 c4 = 0.82288 c5 = 0.60142 c6 = 1.77238
+c7 = 11.5263
+m0 = 753374.1 m1 = 1.71384
 end
 
 
@@ -127,7 +132,7 @@ m0 = 1084652.5 m1 = 2.14668
 end
 
 
-andr     EoS = 6 | Ca_3Fe_1Fe_1Si_3O_12   Grossular
+andr     EoS = 6 | Ca_3Fe_1Fe_1Si_3O_12   andradite
 SiO2(3)CaO(3)Fe(2)O(3)
 G0 = -5414950.41 S0 = -20 V0 = -13.199
 c1 = 1535800.4 c2 = 4.78447 c3 = 750.98472 c4 = 1.04336 c5 = 1.42169 c6 = 2.84503
@@ -157,15 +162,6 @@ SiO2(1)CaO(1)
 G0 = -1461201.28 S0 = -5 V0 = -2.745
 c1 = 2360000 c2 = 3.9 c3 = 800.29043 c4 = 1.88997 c5 = 0.89608 c6 = 1.35422
 m0 = 1260000 m1 = 1.6
-end
-
-
-cats     EoS = 6 | Ca_1Al_1(Si_1Al_1)O_6  Lime        
-Al2O3(1)SiO2(1)CaO(1)
-G0 = -3119890.80 S0 = -10 V0 = -6.3574
-c1 = 1137599 c2 = 4.8061 c3 = 804.36068 c4 = 0.82288 c5 = 0.60142 c6 = 1.77238
-c7 = 11.5263
-m0 = 753374.1 m1 = 1.71384
 end
 
 
@@ -477,7 +473,7 @@ m0 = 1176466.2 m1 = 1.69117
 end
 
 
-lppv     EoS = 6 | Fe_1Fe_1O_3            LS          
+lppv     EoS = 6 | Fe_1Fe_1O_3            LS  not used
 Fe(2)O(3)
 G0 = -405645.45 S0 = -5 V0 = -2.62534
 c1 = 1765000 c2 = 4 c3 = 713.13099 c4 = 1.64029 c5 = 1.76443 c6 = 3.79074
@@ -486,10 +482,20 @@ transition = 1 type = 7  t1 = 10  t2 = 20.66026
 end
 
 
-mag      EoS = 6 | Fe_1Fe_2O_4            Magnetite   G0 = -1016009.99
+mag      EoS = 6 | Fe_1Fe_2O_4            Magnetite  for Wus, stixrudes bogus mt
 Fe(3)O(4)
 G0 = -1015909.99 S0 = -7 V0 = -4.4528
 c1 = 1838766.4 c2 = 5.22819 c3 = 529.46966 c4 = 1.35821 c5 = 0.41872 c6 = 1.12258
+m0 = 603000 m1 = 0.04657
+transition = 1 type = 9  t1 = 845.5 t2 = 43.1758
+end
+
+
+smag     EoS = 6 | Fe_1Fe_2O_4            Magnetite   G0 = -1016009.99 inverse!
+Fe(3)O(4)
+G0 = -1015909.99 S0 = -7 V0 = -4.4528
+c1 = 1838766.4 c2 = 5.22819 c3 = 529.46966 c4 = 1.35821 c5 = 0.41872 c6 = 1.12258
+c7 = 11.5263
 m0 = 603000 m1 = 0.04657
 transition = 1 type = 9  t1 = 845.5 t2 = 43.1758
 end
@@ -658,15 +664,6 @@ G0 = -858043.33 S0 = -3 V0 = -2.242105
 c1 = 614259.6 c2 = 19.78014 c3 = 883.46813 c4 = -.03957 c5 = 1 c6 = 2.40464
 m0 = 448577.5 m1 = -0.04277
 transition = 1 type = 7  t1 = 847  t2 = 5.76 t3 = 0.1359
-end
-
-
-smag     EoS = 6 | Fe_1Fe_1Fe_1O_4        Magnetite   
-Fe(3)O(4)
-G0 = -1016009.99 S0 = -7 V0 = -4.4528
-c1 = 1838766.4 c2 = 5.22819 c3 = 529.46966 c4 = 1.35821 c5 = 0.41872 c6 = 1.12258
-m0 = 603000 m1 = 0.04657
-transition = 1 type = 9  t1 = 845.5 t2 = 43.1758
 end
 
 

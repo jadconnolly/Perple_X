@@ -174,7 +174,7 @@ c                                 interactively entered conditions
                      cycle
                   end if 
 
-                  if (v(1).eq.0d0) exit 
+                  if (v(2).lt.0) exit 
 
                   if (ifct.gt.0) then
 
@@ -258,7 +258,7 @@ c                                 create a new data base entry
      *          ' again later?')
 1070  format ('Calculate a different equilibrium (y/n)?')
 1090  format ('Modify or output thermodynamic parameters (y/n)? ')
-1100  format ('Enter P(bars) and T(K) [zeroes to quit]:')
+1100  format ('Enter P(bars) and T(K) [T < 0 to quit]:')
 1110  format ('Enter X(CO2/O) in fluid phase:')
 1120  format (/,'The table has been written.',/)
 1130  format (/,'Have a nice day ',a,'!',/)

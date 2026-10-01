@@ -277,12 +277,12 @@ c                                 minimum group size (cells) to warrant a label
 
       character text*(lchar)
 
-      logical bad, readyn
+      logical readyn
 
       integer m, k, i, hfill, maxvar, j, 
      *        ipoly, idr(k5), iop5, iop6, jop0, minvar, id, 
-     *        iop7, imatch, iend, ivar, kpoint, jj, ii, ntot,
-     *        iax(l7,2), nax(2), ibeg, jbeg, jend, kk, ictr, grp, in,
+     *        iop7, imatch, iend, ivar, jj, ii, ntot,
+     *        ictr, grp, in,
      *        ix, iy, iix, jix, jcoor, isol, ngrp, l, dii, djj
 
       double precision rline, x, y, x1, y1, x2, y2, x10,
@@ -292,7 +292,7 @@ c                                 minimum group size (cells) to warrant a label
 
       integer l7s, l7g
       parameter (l7s=l7*(l7+1)/2, l7g=l7 / 5)
-      integer nass, gixi(8), gixj(8), lex(k3), lblix(k3)
+      integer gixi(8), gixj(8), lex(k3), lblix(k3)
       integer, allocatable :: iassi(:), iassj(:), iassp(:), iasss(:),
      *        iassk(:,:)
 

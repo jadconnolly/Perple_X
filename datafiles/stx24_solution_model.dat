@@ -1,4 +1,4 @@
-719 DO NOT DELETE THIS LINE
+720 DO NOT DELETE THIS LINE
 
 | Solution models consistent with:
 
@@ -71,24 +71,22 @@ begin_model Wus
                                                      _____________
 
                                       1 pe            Mg        Mg
-                            Species:  2 wu            Fe        Fe
-                                      3 wuls          Fe        Fe
-                                      4 mag           VFe       Fe
+                            Species:  2 wu            Feh       Feh
+                                      3 wuls          Fel       Fel
+                                      4 mag           VFe3      Feh
                                       5 anao          Na        Al
 
-                                      this is stoichiometrically inconsistent
-                                      for mag composition but will yield
-                                      S/R = 2 ln 2 for 50/50 wu-mag
+                            JADC, 10/1/2026, 7.2.13:
 
-                            JADC, 9/4/2024.
+                            revised s_conf to distinguish fe3+ (hs), fe2+_ls, fe2+_hs
+                            sucessfully benchmarks against hefesto result.
 
-                            mag/Wuestite and smag/Spinel are degenerate in SLB 24,
-                            to prevent mag/Wuestite from being computed
-                            as the stable phase in close proximity to the
-                            Fe3O4 composition the mag endmember has been
-                            destabilized relative to smag by 100 J/mol. 
+                            JADC, 9/4/2024:
 
-                            JADC, 9/11/24
+                            this is stoichiometrically inconsistent
+                            for mag composition but will yield
+                            S/R = 2 ln 2 for 50/50 wu-mag
+
 
 Wus
 
@@ -120,19 +118,34 @@ end_excess_function
 
 2                                  | 2 site entropy pseudo-model
 
-M1                                 | site name
-4 2 2                              | 4 species on M1, 4 site per formula unit.
+|M1                                | site name
+|5 2 2                             | 5 species on M1, 4 site per formula unit.
+|z(Mg,M1)   = 1 pe
+|z(Feh,M1)  = 1 wu
+|z(Fel,M1)  = 1 wuls
+|z(vFe3,M1) = 1 mag
+|z(Na,M1)   = 1 anao
+|                                   stixrude uses a bogus hack tp eliminate the Fe3-vacancy couple from
+|                                   M1, there's a whole lot of reasons why that is bogus and i'm not going
+|                                   to add solution specific hacks to perplex. given that x_mag is << 1 in 
+|                                   wus, an excellent(!) approximation to the hack is to make M1 a temkin site.
+|                                   JADC, 10/1/2026. 
 
-z(Mg,M1)   = 1 pe
-z(Fe,M1)   = 1 wu + 1 wuls
-z(VFe,M1)  = 1 mag
-z(Na,M1)   = 1 anao
+M1
+4 0 0                              | Temkin M-site
+n(Mg)  = 2 pe
+n(Feh) = 2 wu
+n(Fel) = 2 wuls
+n(na)  = 2 anao
+
 
 M2                                 | site name
-3 2 2                              | 4 species on M1, 4 site per formula unit.
+5 2 2                              | 5 species on M1, 4 site per formula unit.
 
 z(Mg,M2)   = 1 pe
-z(Fe,M2)   = 1 wu + 1 wuls + 1 mag
+z(Feh,M2)  = 1 wu 
+z(Fel,M2)  = 1 wuls
+z(Fem,M2)  = 1 mag
 z(Al,M2)   = 1 anao
 
 [O4]                               | formula suffix, enter "none" for no suffix.
@@ -161,21 +174,10 @@ begin_model Sp
                                       Mutliplicity    1         2
                                                      _____________
 
-                                      1 sp            Mg        Al
-                            Species:  2 hc            Fe        Al
-                                      3 smag          Fe        Fe
-                                      4 picr          Mg        Cr
-
-                            smag is identical to mag used in Wus
-
-                            JADC, 9/4/2024.
-
-                            to prevent mag/Wuestite from being computed
-                            as the stable phase in close proximity to the
-                            Fe3O4 composition the mag endmember has been
-                            destabilized by 100 J/mol. 
-
-                            JADC, 9/11/24
+                                      1 sp            Mg        Al normal
+                            Species:  2 hc            Fe        Al normal
+                                      3 smag          Fe        Fe inverse
+                                      4 picr          Mg        Cr normal
 
 Sp
 
@@ -204,15 +206,17 @@ end_excess_function
 2                                  | 2 site entropy pseudo-model
 
 A                                  | site name
-2 1 1                              | 2 species on A, 1 site per formula unit.
+3 1 1                              | 3 species on A, 1 site per formula unit.
 
 z(Mg,A)   = 1 sp + 1 picr
-z(Fe,A)   = 1 hc + 1 smag
+z(Fe2,A)  = 1 hc 
+z(Fe3,A)  = 1 smag
 
 B                                  | site name
-3 2 2                              | 3 species on B, 4 site per formula unit.
+4 2 2                              | 4 species on B, 2 site per formula unit.
 
-z(Fe,B)   = 1 smag
+z(Fe2,B)  = 1/2 smag
+z(Fe3,B)  = 1/2 smag
 z(Al,B)   = 1 sp + 1 hc
 z(Cr,B)   = 1 picr
 
@@ -265,18 +269,21 @@ end_excess_function
 2                                  | 2 site entropy model
 
 M
-4 1 1                              | 4 species on M site multiplicity = 1
+6 1 1                              | 6 species on M site multiplicity = 1
 z(mg,M)   = 1 mgpv
-z(fe,M)   = 1 fepv + 1 hepv + 1 hlpv + 1 fapv
+z(fe2h,M) = 1 fepv
+z(fe3l,M) = 1 hlpv
+z(fe3h,M) = 1 fapv + 1 hepv
 z(al,M)   = 1 alpv
 z(cr,M)   = 1 crpv
 
 T
-4 1 1                              | 4 species on T site multiplicity = 1.
-z(si,T)  = 1 mgpv + 1 fepv
-z(al,T)  = 1 alpv + 1 fapv
-z(fe,T)  = 1 hepv + 1 hlpv
-z(cr,T ) = 1 crpv
+5 1 1                              | 5 species on T site multiplicity = 1.
+z(si,T)   = 1 mgpv + 1 fepv
+z(al,T)   = 1 alpv + 1 fapv
+z(fe3h,T) = 1 hepv
+z(fe3l,T) = 1 hlpv
+z(cr,T)   = 1 crpv
 
 [O3]                               | formula suffix, enter "none" for no suffix
 
@@ -505,10 +512,11 @@ z(Ca,M1) = 1 di + 1 he + 1 cats
 z(Na,M1) = 1 jd + 1 acm
 
 M2
-3 1 1                              | 3 species, M2 site multiplicity = 1.
-z(Fe,M2) = 1 he + 1 acm
-z(Al,M2) = 1 jd + 1 cats
-z(Mg,M2) = 1 cen + 1 di
+4 1 1                              | 3 species, M2 site multiplicity = 1.
+z(Fe,M2)  = 1 he 
+z(Fe3,M2) =  1 acm
+z(Al,M2)  = 1 jd + 1 cats
+z(Mg,M2)  = 1 cen + 1 di
 
 T
 2 2 2                              | 2 species, T site, multiplicity 2
@@ -562,17 +570,18 @@ end_excess_function
 2                                     2 site entropy model
 
 M
-4 1 1                                  3 species on M site multiplicity = 1.
+5 1 1                                 5 species on M site multiplicity = 1.
 z(Mg,M)  = 1 mgil
-z(Fe,M)  = 1 feil + 1 hem
+z(Fe2,M) = 1 feil 
+z(Fe3,M) = 1 hem
 z(Al,M)  = 1 co
 z(Cr,M)  = 1 esk
 
 T
-4 1 1                                  2 species on T site multiplicity = 1.
+4 1 1                                 4 species on T site multiplicity = 1.
 z(Si,T)  = 1 mgil + 1 feil
 z(Al,T)  = 1 co
-z(Fe,T)  = 1 hem
+z(Fe3,T) = 1 hem
 z(Cr,T)  = 1 esk
 
 [O3]                               | formula suffix, enter "none" for no suffix.
@@ -666,7 +675,7 @@ end_dependent_endmembers
 
 begin_excess_function
 
-W(py gr)       19.08857d3
+W(py gr)       19.08857d3 + 1.03e-1 * Pbar
 W(py mgmj)     23.16432d3
 W(py namj)     23.16432d3
 W(py andr)     53d3
@@ -674,7 +683,7 @@ W(al mgmj)     23.16432d3
 W(al namj)     23.16432d3
 W(al andr)     44d3
 W(al knor)     1d4
-W(gr mgmj)     64.68245d3
+W(gr mgmj)     64.68245d3 + 1.03e-1 * Pbar
 W(gr namj)     64.68245d3
 W(gr knor)    -2d4
 W(mgmj namj)   71.17245d3
@@ -717,11 +726,13 @@ end_of_model
 begin_model Ppv
                                     Post-perovskite solution
 
+                                    the lppv endmember is not used in the HEFESTO implementation
+
                                     JADC, 9/4/2024.
 Ppv
 
 688                                | model type: generic
- 
+
 1                                  | number of polytopes
 1                                  | number of simplices
 5                                  | number of vertices on each simplex
@@ -748,18 +759,19 @@ end_excess_function
 2                                     2 site entropy model
 
 M
-4 1 1                                 3 species on M site multiplicity = 1.
+5 1 1                                 5 species on M site multiplicity = 1.
 z(mg,M)  = 1 mppv
-z(fe,M)  = 1 fppv + 1 hppv
+z(fe,M)  = 1 fppv
+z(fe3,M) = 1 hppv
 z(al,M)  = 1 appv
 z(cr,M)  = 1 cppv
 
 T
 4 1 1                                 4 species on T site multiplicity = 1.
-z(si)  = 1 mppv + 1 fppv
-z(al)  = 1 appv
-z(fe)  = 1 hppv
-z(cr)  = 1 cppv
+z(si,T)  = 1 mppv + 1 fppv
+z(al,T)  = 1 appv
+z(fe,T)  = 1 hppv
+z(cr,T)  = 1 cppv
 
 [O3]                               | formula suffix, enter "none" for no suffix.
 
@@ -793,21 +805,22 @@ end_excess_function
 3                                     number of sites for the entropy model
 
 A
-3 1 1                                 3 species, A site multiplicity = 1.
-z(Fe,A)  = 1 fecf + 1 hmag
+4 1 1                                 3 species, A site multiplicity = 1.
+z(Fe2,A) = 1 fecf
+z(Fe3,A) = 1 hmag
 z(Mg,A)  = 1 mgcf + 1 crcf
 z(Na,A)  = 1 nacf
 
 T1
 3 1 1
-z(Fe,T1)  = 1 hmag
+z(Fe3,T1) = 1 hmag
 z(Al,T1)  = 1 mgcf + 1 fecf + 1 nacf
 z(Cr,T1)  = 1 crcf
 
 T2
 4 1 1
 z(Si,T2)  = 1 nacf
-z(Fe,T2)  = 1 hmag
+z(Fe3,T2) = 1 hmag
 z(Al,T2)  = 1 mgcf + 1 fecf
 z(Cr,T2)  = 1 crcf
 
@@ -821,7 +834,7 @@ alpha(hmag)          1
 alpha(crcf)          1
 end_van_laar_sizes
 
-end_of_model
+end_of_model CF
 
                       --------------------------------------------------------
 begin_model NaAl

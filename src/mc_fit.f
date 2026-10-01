@@ -3290,28 +3290,32 @@ c
         i1=i-1
         i2=i+1
         if(i1.lt.1) go to 540
-        do 530 j=1,i1
-          j1=j+1
-          do 520 k=1,nop
-  520     pstst(k)=(g(i2,k)+g(j1,k))*half
 
-          call functn(pstst,hstst,rvar,bad)
+        do j=1,i1
+ 
+           j1=j+1
 
-        if (bad) then 
-           ifault = 99
-           return
-        end if
+           do k=1,nop
+              pstst(k)=(g(i2,k)+g(j1,k))*half
+           end do
 
-        if (hstst.gt.oktol) then
-           write (*,'(a,1x,g12.6)') 'Abort quad, bad objf: ',h(i)
-           ifault = 2
-           return
-        end if
+           call functn(pstst,hstst,rvar,bad)
 
-          meval = meval+1
-          l=i*(i-1)/2+j
-          bmat(l)=two*(hstst+a0-aval(i)-aval(j))
-  530   continue
+           if (bad) then 
+              ifault = 99
+              return
+           else if (hstst.gt.oktol) then
+              write (*,'(a,1x,g12.6)') 'Abort quad, bad objf: ',h(i)
+              ifault = 2
+              return
+           end if
+
+           meval = meval+1
+           l=i*(i-1)/2+j
+           bmat(l)=two*(hstst+a0-aval(i)-aval(j))
+
+        end do
+
   540 continue
 
       l=0
@@ -3332,18 +3336,28 @@ c     stored in aval.
 c
 c     the matrix q of nelder & mead is calculated and stored in g.
 c
-      do 570 i=1,nop
-  570 pmin(i)=g(1,i)
-      do 580 i=1,nap
+      do i=1,nop
+         pmin(i)=g(1,i)
+      end do
+
+      do i=1,nap
+
         i1=i+1
-        do 580 j=1,nop
-        g(i1,j)=g(i1,j)-g(1,j)
-  580 continue
-      do 590 i=1,nap
-        i1=i+1
-        do 590 j=1,nop
-          g(i,j)=g(i1,j)
-  590 continue
+
+        do j=1,nop
+           g(i1,j)=g(i1,j)-g(1,j)
+         end do
+
+      end do 
+
+      do i=1,nap
+         i1=i+1
+
+         do j=1,nop
+           g(i,j)=g(i1,j)
+         end do
+
+      end do
 c
 c     invert bmat
 c
@@ -3454,22 +3468,31 @@ c                                 keeping the old min, reset xinv
       call trnsxy (p)
 
       do 760 i=1,nop
-        do 730 j=1,nap
+
+         do j=1,nap
           h(j)=zero
-          do 720 k=1,nap
+
+          do k=1,nap
             if(k.gt.j) go to 700
             l=j*(j-1)/2+k
             go to 710
   700       l=k*(k-1)/2+j
   710       h(j)=h(j)+bmat(l)*g(k,i)*half
-  720     continue
-  730   continue
-        do 750 j=i,nop
-          l=j*(j-1)/2+i
-          vc(l)=zero
-          do 740 k=1,nap
-  740     vc(l)=vc(l)+h(k)*g(k,j)
-  750   continue
+          end do
+
+       end do
+
+        do j=i,nop
+
+           l=j*(j-1)/2+i
+           vc(l)=zero
+
+           do k=1,nap
+              vc(l)=vc(l)+h(k)*g(k,j)
+           end do
+
+        end do
+
   760 continue
 c                                 covariance matrix, use fvar is 1/2 the residual variance
 c                                 for wChi (=1), LSQ, and Chi (dubious if this is the right

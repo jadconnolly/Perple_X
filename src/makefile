@@ -96,12 +96,19 @@ clean:
 	test -f /tmp/testclean && sh /tmp/testclean
 
 # Add other dependencies as necessary for further tests
-tests: vertex pssect
+tests: vertex pssect mc_fit
 	$(MAKE) tests-basic
+	$(MAKE) tests-mcfit
 	$(MAKE) tests-harder
 
 tests-basic: vertex pssect
 	@for d in ../tests/basic/* ; do \
+	   echo Test $$d ; \
+	   (cd $$d ; . run) \
+	done
+
+tests-mcfit: mc_fit
+	@for d in ../tests/mcfit/* ; do \
 	   echo Test $$d ; \
 	   (cd $$d ; . run) \
 	done
