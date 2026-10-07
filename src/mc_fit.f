@@ -869,13 +869,13 @@ c                               return if no good result on a pertubed model
 
       if (bstout.eq.3.and.centrl) then
 c                               only writing best model output
-c                               write best model to *.bst and *.bay
+c                               write best model to *.out
          do j = 1, 2
 c KA hack, this isn't doing anything useful
             do ii = 1, mxpt
                call mcsetb (ii)
             end do
-c                                 loop to write to console, *.bst, *.bay, *.out (partial)
+c                                 loop to write to console and *.out
 c                                 write notice and stats to console
             call prtsum (objf,bstlik,ssp,x0inv,
      *                   bstbay,n,ibest,jbest,igood,jcount,
@@ -5235,8 +5235,6 @@ c                                 if here we have a keyword and value
 
          else if (key.eq.'soft_delta') then
 
-            if (val.eq.'F') sftc = .false.
-
             read (strg,*) sftdel
             rnum = .true.
 
@@ -5414,7 +5412,8 @@ c                                 newstt => do perturbation analysis using rando
 
             end if
 
-         else if (key.eq.'max_misfit_value') then
+         else if (key.eq.'max_misfit_value'.or.
+     *            key.eq.'max_OBJF_value') then
 
             read (strg,*) oktol
             rnum = .true.
@@ -5485,7 +5484,8 @@ c           lwcomp = .true.
             if (val.eq.'T') iquad = 1
             oquad = 1
 
-         else if (key.eq.'max_misfit_evaluations') then
+         else if (key.eq.'max_misfit_evaluations'.or.
+     *            key.eq.'max_OBJF_evaluations') then
 
             read (strg,*) kcount
             inum = .true.
