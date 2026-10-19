@@ -211,7 +211,14 @@ c---------------------------------------------------------------------
       if (make(id).ne.0) then
 c                                 the phase is a made phase, compute
 c                                 and sum the component g's.
-         gval = gmake (id)
+         if (qdef(make(id))) then
+            gval = gmake (id)
+         else 
+            gval = 1d8
+         end if 
+
+c        write (*,*) qdef(make(id)),mknam(make(id),mknum(make(id))+1)
+
          goto 999
 
       else if (eos(id).eq.5) then
@@ -2401,7 +2408,7 @@ c----------------------------------------------------------------------
       integer ibeg, ier, iscan, imax, match, idim, jend, i, nblen, j, 
      *        iend
 
-      logical qdef, ok
+      logical qdf, ok
 
       character name*8, eod*3, tname*10
 
@@ -2456,17 +2463,19 @@ c                                check for _q make
          i = nblen(name)
 
          if (name(i-1:i).eq.'_q') then
-            qdef = .true.
+            qdf = .true.
          else
-            qdef = .false.
+            qdf = .false.
          end if
 
          ibeg = imax + 2
 
          call redlpt (nums,ibeg,jend,ier)
          if (ier.ne.0) goto 90
-c                                 7.2.3 shut off _q make for frendly
-         if (qdef.and.iam.ne.5) nums(1) = nums(1) - 1d6
+c                                 7.2.3 undo the _q make increment
+c                                 in the dqf for all programs EXCEPT
+c                                 frendly
+         if (qdf.and.iam.ne.5) nums(1) = nums(1) - 1d6
 
          do i = 1, m3
             dqf(i,idqf) = nums(i)
@@ -6028,7 +6037,8 @@ c                                 Fe-S fluid (Saxena & Eriksson 2015)
 
       else
 
-         write (*,*) 'what the **** am i doing here?'
+         write (*,*) 'what the **** am i doing here in gsol1',
+     *      ' for solution id',ksmod(id),'?'
          call errpau
 
       end if
@@ -7486,13 +7496,24 @@ c                                 dqf parameters
       jdqf(im) = idqf
 
       do i = 1, idqf
-
+c                                 the index in the point array:
+         id = kdsol(indq(i))
 c                                 a dqf to an ordered species
 c                                 or a dependent endmember
-         if (kdsol(indq(i)).lt.0)
-     *                       call error (227,r,indq(i),fname(im))
+         if (id.lt.0) call error (227,r,id,fname(im))
 c                                 shift pointer from y array to p array
          jndq(i,im) = iy2p(indq(i))
+c                                 activate *_q make definitions:
+         j = nblen(names(id))
+c                                 a qmake, activate it:
+         if (j.gt.2.and.names(id)(j-1:j).eq.'_q') then
+            qdef(make(id)) = .true.
+c           write (*,*) names(ipoint-nmak+make(id)), 'turned on'
+c        else if (qdef(make(id))) then
+c           write (*,*) names(ipoint-nmak+make(id)), 'was already on'
+         end if 
+
+c        write (*,*) imak(make(id)), ipoint - nmak + make(id)
 
          do j = 1, m3
             dqfg(j,i,im) = dqf(j,i)
@@ -7857,15 +7878,6 @@ c                                  make a list of the unmatched volatiles
 
          end if
 
-1010  format (/,'**warning ver413** the following fluid species are ',
-     *    'present but not included',/,'in the solution model ',a,':',/)
-1020  format (7(2x,a8))
-1030  format (/,'In general including fluid species that are not ',
-     *       'paired with a solution model',/,'is bad practice. ',
-     *       'Remedies:',//,4x,'1 - exclude the unpaired species.',
-     *       /,4x,'2 - add the unpaired species to the fluid solution',
-     *       ' model.',/)
-
       end if
 c                                 set independent species names and counters for output
 c                                 special cases first:
@@ -7912,6 +7924,16 @@ c                                 p'2c
       call makapc (im)
 c                                 set derivatives for minfrc
       call setder (im,tname)
+
+
+1010  format (/,'**warning ver413** the following fluid species are ',
+     *    'present but not included',/,'in the solution model ',a,':',/)
+1020  format (7(2x,a8))
+1030  format (/,'In general including fluid species that are not ',
+     *       'paired with a solution model',/,'is bad practice. ',
+     *       'Remedies:',//,4x,'1 - exclude the unpaired species.',
+     *       /,4x,'2 - add the unpaired species to the fluid solution',
+     *       ' model.',/)
 
       end
 
@@ -15697,8 +15719,9 @@ c
 
          else
 
-            write (*,*) 'what the **** am i doing here?'
-            stop
+            write (*,*) 'what the **** am i doing here in gsol',
+     *         'for solution id',ksmod(id),'?'
+            call errpau
 
          end if
 
@@ -18828,8 +18851,7 @@ c----------------------------------------------------------------------
 
       double precision twt(k5),tsel(k5),tcox(k5),cst
  
-      integer i, j, k, l, im, ict, ifer,inames, jphct, imak(k16), iox, 
-     *        nblen
+      integer i, j, k, l, im, ict, ifer,inames, jphct, iox, nblen
 
       logical eof, good, first, tpro(k5), nosav
 

@@ -33,13 +33,17 @@ c a version stamp for each executable
 c----------------------------------------------------------------------
       implicit none
 
+      include 'perplex_parameters.h'
+
       integer n
 c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.2.14 Oct 7, 2026.',
+     *     'Perple_X release 7.3.0 Oct 19, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
+
+      kkey = 730
 
       end
 
@@ -52,6 +56,8 @@ c----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
+
+      integer jkey
 
       integer iam
       common/ cst4 /iam
@@ -67,7 +73,8 @@ c----------------------------------------------------------------------
      *         new.eq.'672'.or.new.eq.'673'.or.new.eq.'674'.or.
      *         new.eq.'675'.or.new.eq.'676'.or.new.eq.'678'.or.
      *         new.eq.'679'.or.new.eq.'689'.or.new.eq.'690'.or.
-     *         new.eq.'691'.or.new.eq.'719'.or.new.eq.'720') then 
+     *         new.eq.'691'.or.new.eq.'719'.or.new.eq.'720'.or.
+     *         new.eq.'730') then 
 
          chksol = .true.
 c                                  check data/solution model
@@ -75,11 +82,32 @@ c                                  file compatability 720+
 c                                  if MEEMUM/CONVEX/VERTEX/MC_fit
          if (iam.eq.1.or.iam.eq.2.or.iam.eq.15) then
 
-            if (.not.newdat.and.new.eq.'720') then
+            read (new,'(i3)') jkey
+
+            if (kkey.lt.ikey) then
+c                                   release older than the thermodynamic data file
+               write (*,1010) 'thermodynamic data'
+               call wrnstp
+            end if
+
+            if (kkey.lt.jkey) then
+c                                   release older than the solution model file
+               write (*,1010) 'solution model'
+               call wrnstp
+            end if
+
+            if (jkey.ne.ikey.and.newdat) then
+c                                   if solution model contains versioning info
+c                                   and the solution model and thermodynamic data
+c                                   files have different versioning tags
                write (*,1000) 
                call wrnstp
-            else if (newdat.and.new.ne.'720') then 
-               write (*,1010) 
+
+            end if 
+
+
+            if (.not.newdat) then 
+               write (*,1020) 'solution model'
                call wrnstp
             end if
 
@@ -91,13 +119,15 @@ c                                  if MEEMUM/CONVEX/VERTEX/MC_fit
 
       end if 
 
-1000  format (/,'**warning ver209** you are using a 7.2.0+ solution mo',
-     *       'del file but your thermodynamic',/,'data file has not be',
-     *       'en updated to include version information and may specify'
-     *       ,/,'inconsistent DQF instructions.',/)
-1010  format (/,'**warning ver210** you are using a 7.2.0+ thermodynam',
-     *       'ic data file but your solution',/,'model file is not con',
-     *       'sistent with 7.2.0+ DQF instructions.',/)
+1000  format (/,'**warning ver209** the solution model file and thermo',
+     *       'dynamic data files are',/,'from different major or minor',
+     *       ' versions and may specify inconsistent make definitions.',
+     *       //,'Recommended action: update the older file.',/)
+1010  format (/,'**warning ver210** this release is older than the ',a,
+     *       ' file.',//,'Recommended action: update Perple_X.',/)
+1020  format (/,'**warning ver211** the ',a,' file contains no version',
+     *       ' information.',//,
+     *       'Recommended action: update the ',a,' file.',/)
 
       end 
 
@@ -3898,7 +3928,7 @@ c----------------------------------------------------------------------
 
       integer ibeg, iend, ier, iscan, i, nreact, jopt, nblen
 
-      logical qdef
+      logical qdf
 
       external iscan, nblen
 
@@ -3935,9 +3965,9 @@ c                                 get first name
          call readnm (ibeg,iend,com,ier,tname)
          if (ier.ne.0) goto 90
 c                                 check for _q makes
-         qdef = .false.
+         qdf = .false.
          iend = nblen(tname)
-         if (tname(iend-1:iend).eq.'_q') qdef = .true.
+         if (tname(iend-1:iend).eq.'_q') qdf = .true.
 c                                 find start of data marker '='
          ibeg = iscan (1,com,'=') + 1
 c                                 the rest of the data should
@@ -3980,8 +4010,23 @@ c                                 read the DQF coefficients
          ibeg = 1
          call redlpt (nums,ibeg,iend,ier) 
          if (ier.ne.0) goto 90
-c                                  7.2.3 undo q make for frendly 
-         if (qdef.and.iam.ne.5) nums(1) = nums(1) + 1d6
+
+         if (qdf.and.iam.ne.5) then
+c                                  for all programs other than frendly
+c                                  add a destabilizing increment
+            nums(1) = nums(1) + 1d6
+c                                  7.2.15 create a qdef flag, if the
+c                                  flag is false the make will not be
+c                                  evaluated. reset in gmodel if the 
+c                                  make is to be used
+            qdef(nmak) = .false.
+
+         else
+c                                  all other dqfs are to be evaluated
+c                                  in frendly or not.
+            qdef(nmak) = .true.
+
+         end if
 
          do i = 1, m3 
             mdqf(nmak,i) = nums(i)
@@ -6157,7 +6202,7 @@ c----------------------------------------------------------------------
  
       character tag*4, string*140, key*22, values*80, strg*80
 
-      integer option, i, j, ier, iscan, nblen, ikey
+      integer option, i, j, ier, iscan, nblen
 
       double precision sum, ssum
 
@@ -6206,12 +6251,13 @@ c      if (ier.eq.0) call error (8,r,i,dname)
 c                                 database name or version flag
       call getkey (n2,ier,key,values,strg)
 
-      if (key.eq.'720') then
+      if (key.eq.'720'.or.key.eq.'730') then
          read (key,'(i3)') ikey
          newdat = .true.
          call getkey (n2,ier,key,values,strg)
       else 
          newdat = .false.
+         ikey = 0
       end if
 
       dname = strg
@@ -11650,6 +11696,8 @@ c                                 clean up arrays:
             mknum(ict) = mknum(i)
 
             meos(ict) = meos(i)
+
+            qdef(ict) = qdef(i)
 
             do j = 1, mknum(ict)+1
                mknam(ict,j) = mknam(i,j)

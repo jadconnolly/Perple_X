@@ -1,4 +1,4 @@
-720 DO NOT DELETE THIS LINE
+730 DO NOT DELETE THIS LINE
 
  | comments are indicated by the | character.
  | check for warnings at the end of the header section.
@@ -9,15 +9,15 @@ Stixrude and Lithgow-Bertelloni, JGI, 2024 |<= data base title
 
 |         Notes:
 
-|          1) The Landau 1 bar transition T for Stishovite to, presumably, CaCl2 structure SiO2 is given as -4350 K, in  
+|          1) This file is to be used with the solution models in stx24_solution_model.dat, see the header of that
+|             file for a list of the solution model names.
+
+|          2) The Landau 1 bar transition T for Stishovite to, presumably, CaCl2 structure SiO2 is given as -4350 K, in  
 |             HeFESTO the negative transition T appears to be a flag that prevents evaluation of the transition effect. 
 |             The transition has been commented out here as it, in any case, has negligible energetic consequences.
 
-|          2) HeFESTO has a special routine to evaluate the effect of strain softening in stishovite on its shear
+|          3) HeFESTO has a special routine to evaluate the effect of strain softening in stishovite on its shear
 |             modulus during the transition (at P = ca 55 GPa). This effect is not evaluated in Perple_X.
-
-|          3) This file is to be used with the solution models in stx24_solution_model.dat, see the header of that
-|             file for a list of the solution model names.
 
 |          4) Back calculation of HeFESTO oxygen fugacity output (qout) to 8 Significant figures gives the gas constant
 |             as 8.314472327 J/mol/K this is discrepant with the accepted value of 8.3144126 J/mol/K, as used in
@@ -66,7 +66,7 @@ end_components
 
 end
 
-O2       EoS = 10 | hopo.
+O2       EoS = 10 | hopo, exclude O2 for all calculations other than those as a function of f(O2) or a(O2)
 O(2)
 S0 = 205.3614
 c1 = 48.3 c2 = -.691E-3 c3 = 499200 c5 = -420.7  

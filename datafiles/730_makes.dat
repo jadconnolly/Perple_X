@@ -1,0 +1,367 @@
+
+begin_makes
+                                 | the make definitions segment of the thermodynamic
+                                 | data file is preceded by the "begin_makes" keyword,
+                                 | and terminated by the "end_makes" keyword. Within
+                                 | this segment comments must be preceded by a "|"
+                                 | character.
+
+                                 | the make definitions define new thermodynamic entities
+                                 | (e.g., fO2 buffers, endmembers etc) as a linear combination of
+                                 | the "real" entities in the thermodynamic file. the definition
+                                 | includes a "DQF" correction that is used to increment the
+                                 | G of the linearly combined G's as a function of pressure and
+                                 | temperature, i.e., the total G computed for a made entity is
+                                 | the G of the right-hand-side of the make reaction + Gdqf.
+
+                                 | the format assumes data on two lines of less than 240 characters,
+                                 | the format for the first line of a make definition is
+
+                                 | name = num_1 * name_1 + num_2 * name_2 + num_int * name_int
+
+                                 | where i num_j is a number or fraction (i.e., two numbers separated
+                                 | by a '/') and name_j are the names of the j existing entities.
+
+                                 | the format of the second line is
+
+                                 | [tag1] [=] dnum_1 [+] [dnum_2] [*] [tag2] [+] [dnum_3] [*] [tag3]
+
+                                 | where the text in [] is optional with the exception that if only
+                                 | dnum_2 or d_num3 is provided than the corresponding tag must also
+                                 | be provided and the tag must begin with 'p', 'P', 't', or 'T', to
+                                 | indicate whether the coeffiecient gives a pressure or temperature
+                                 | dependence. Unspecified coefficients are set to zero.
+
+                                 | the dqf correction to the entity 'name' is then
+                                 | Gdqf(J/mol) = dnum_1 + T[K]*dnum_2 + P[bar]*dnum_3
+
+                                 | made entities are excluded from calculations in vertex if they
+                                 | are included in the excluded phase list in the computational option
+                                 | file (e.g., "in"); however, real entities to the right of the equals
+                                 | sign in a make definition are not effected by the excluded phase list.
+                                 | for example, if qL (liquid silica) is excluded, the make definition
+                                 | q8L = 4 qL
+                                 | will function, but qL will not be considered as a possible phase.
+
+                                 |--------------------------------------------------------
+                                 | O2 buffer equations, these definitions create an entity
+                                 | with the O2 composition and O2 chemical potential of the
+                                 | assemblage on the RHS of the make.
+
+                                 | mthm O2 buffer
+|mthm = 6 hem - 4 mt
+|  DQF(J/mol) = 0
+                                 | qfm O2 buffer
+|qfm = 2 mt + 3 q  -3 fa
+|  DQF(J/mol) = 0
+                                 | EMOG O2 buffer
+|emog = -1 fo - 2 gph + 1 mag + 1/2 en
+|  DQF(J/mol) = 0
+                                 | ffm O2 buffer
+|ffm = -6 fa + 3 fs + 2 mt
+|  DQF(J/mol) = 0 |0
+                                 | iron fa fs O2 buffer
+|fff = 2 fa - 2 iron - 1 fs
+|  DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | SiO2 buffer equations, these definitions create an entity
+                                 | with the SiO2 composition and SiO2 chemical potential of the
+                                 | assemblage on the RHS of the make.
+
+                                 |ky + co silica buffer
+|kyco = 1 ky - 1 cor
+|  DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | CO2 buffer equations, these definitions create an entity
+                                 | with the CO2 composition and CO2 chemical potential of the
+                                 | assemblage on the RHS of the make.
+
+                                 |sphene + cc + ru + q CO2 buffer
+|tcrq = 1 cc + 1 ru + 1 q - 1 sph
+|  DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | Generic HP liquid endmembers. Because these occur in
+                                 | many melt models no DQF is specified here and the "true"
+                                 | DQF must be added in the solution model. JADC 2/2026
+siL_q = 8/5 silL
+       DQF(J/mol) = 0
+foL_q = 2 foL
+       DQF(J/mol) = 0
+faL_q = 2 faL
+       DQF(J/mol) = 0
+fo1L_q = 1 foL
+       DQF(J/mol) = 0
+fa1L_q = 1 faL
+       DQF(J/mol) = 0
+qL_q  = 4 qL
+       DQF(J/mol) = 0
+q2L_q = 2 qL
+       DQF(J/mol) = 0
+q3L_q = 3 qL
+       DQF(J/mol) = 0
+wiL_q = 2 wiL
+       DQF(J/mol) = 0
+hmL_q = 1/2 hemL
+       DQF(J/mol) = 0
+kjL_q = 1 kspL - 1 qL
+       DQF(J/mol) = 0
+jdL_q = 1 abL - 1 qL
+       DQF(J/mol) = 0
+ekL_q = 1/2 eskL
+       DQF(J/mol) = 0
+tiL_q = 1 ruL
+       DQF(J/mol) = 0
+neL_q = 1 abL - 2 qL
+       DQF(J/mol) = 0
+diL_q  = 1 diL
+       DQF(J/mol) = 0
+woL_q  = 1 woL
+       DQF(J/mol) = 0
+silL_q  = 1 silL
+       DQF(J/mol) = 0
+wL_q    = 1 h2oL
+       DQF(J/mol) = 0
+ctL_q = 1 anL - 1 qL
+       DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for Opx:
+odi_q   = 1 di
+           DQF(J/mol) = 0
+ojd_q   = 1 jd
+           DQF(J/mol) = 0
+obuf_q  = 1 mgts + 1/2 per + 1/2 ru - 1/2 cor
+           DQF(J/mol) = 0
+macm_q  = 1 mgts + 1 acm - 1 jd  | mess in HP models
+           DQF(J/mol) = 0
+cren_q  = 1 mgts + 1 kos - 1 jd
+           DQF(J/mol) = 0
+cren1_q = 1 en + 1 cats + 1 kos - 1 jd - 1 di
+           DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for Opx:
+                                 | ferric Opx(HP)
+ots_q  = 1 mgts - 1/2 cor + 1/2 hem
+           DQF(J/mol) = 0
+                                 | ferric Opx(W)
+ots1_q    = 1 mgts + 1/2  andr  - 1/2 gr
+           DQF(J/mol) = 0
+                                 | ferric Opx(JH)
+oen_q   = 1 mgts + 1 acm - 1 jd
+           DQF(J/mol) = 0
+                                 | Mn Opx(W)
+mnpx_q = 2 pxmn
+           DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for Cpx:
+cen_q   = 1 en
+           DQF(J/mol) = 0
+cfs_q   = 1 fs
+           DQF(J/mol) = 0
+cess_q  = 1 cats + 1 acm - 1 jd
+           DQF(J/mol) = 0
+crdi_q  = 1 cats + 1 kos - 1 jd
+           DQF(J/mol) = 0
+mcbuf_q = 1 cats + 1/2 per + 1/2 ru -1/2 cor
+           DQF(J/mol) = 0
+kjd_q   = 1 jd + 1 san - 1 abh
+           DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for hydoxylated ultramafic minerals
+atgts_q = 4 clin + 9/17 atg - 24/17 br
+    DQF(J/mol) = 0
+
+fatg_q  = 1 atg - 16 ta + 16 fta
+    DQF(J/mol) = 0
+
+atgAl_q = 1 atg - 17 ta + 17 tats
+     DQF(J/mol) = 0
+
+f3atg_q = 1 atg - 17 ta + 17 tats - 8.5 gr + 8.5 andr
+     DQF(J/mol) = 0
+
+flz_q = 1 liz - 1 ta + 1 fta
+     DQF(J/mol) = 0
+
+lzts_q = 1 liz - 1 ta + 1 tats
+     DQF(J/mol) = 0
+
+f3lz_q = 1 liz - 1 ta + 1 tats - 0.5 gr + 0.5 andr
+     DQF(J/mol) = 0
+
+fbr_q   = 1 br - 1/3 ta + 1/3 fta
+    DQF(J/mol) = 0
+
+fchum_q = 1 chum - 3 ta + 3 fta
+    DQF(J/mol) = 0
+
+fphA_q  = 1 phA - 7/3 ta + 7/3 fta
+    DQF(J/mol) = 0
+                                 |-------------------------------
+                                 | generic makes for Ti-F Chum(B) and Chdr(B)
+                                 | of Herviou et al. (2026). JADC, 5/26.
+                                 | The details of the original need to be clarified, it 
+                                 | appears that Herviou et al (2026) used different bases 
+                                 | (chu/chum for Chum(B) and chdrt/chdr/fo for Chdr(B)) 
+                                 | for stoichiometrically related endmembers as in the 
+                                 | definitions below. 
+
+                                 | To clean this up the generic makes should be formulated with 
+                                 | a common basis (chum for Chum(B), chdr for Chdr(B)) and the
+                                 | solution specific makes recalibrated or adjusted to match
+                                 | the Herviou endmembers.  The F-endmebers also should be made
+                                 | from sel - br.
+
+                                 | chu      - is duffy Mg-chum with the hp-chum V(P,T)
+                                 | chum     - is the hp Mg-chum endmember
+                                 | ichu_q   - Fe-chum, made from the chu duffy/chum/herviou endmember
+                                 | tchu_q   - Mg-Ti chum, nominally made from the chum hp endmember
+                                 | tichu_q  - Fe-Ti chum, nominally made from the chum hp endmember
+                                 | fchu_q   - Mg-F chum, not made, requires MgF2 from duffy
+|ichu_q =  1 chu - 1/3 ta + 1/3 fta - 4 fo + 4 fa
+|    DQF(J/mol) = 0
+|tchu_q =  1 chum  + 1/2 ru - 1/2 br
+|   DQF(J/mol) = 0
+|tichu_q = 1 chum  + 1/2 ru - 1/2 br + 4 fa - 4 fo + 1/6 fta - 1/6 ta
+|   DQF(J/mol) = 0
+                                 | chdrt    - is duffy Mg-chdrt with the hp-chdr V(P,T)
+                                 | chdr     - is the hp Mg-chdr endmember
+                                 | ichdr_q  - Fe-chdr, nominally made from the chdrt
+                                 | tchdr_q  - Mg-Ti chdr, made from fo
+                                 | tichu_q  - Fe-Ti chdr, made from fa
+                                 | fchdr_q  - Mg-F chdr, not made, requires MgF2 from duffy
+|ichdr_q  = 1 chdrt + 5/3 fta - 5/3 ta
+|   DQF(J/mol) = 0
+|tchdr_q  = 2 fo + 1/2 br + 1/2 ru
+|   DQF(J/mol) = 0
+|tichdr_q = 2 fa + 1/2 br + 1/2 ru + 1/6 fta - 1/6 ta
+|   DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for clinoamphibole
+ts_q    = 1 ts
+           DQF(J/mol) = 0
+mrb1_q  = 1 gl - 1 gr + 1 andr
+           DQF(J/mol) = 0
+kprg_q  = 1 mu - 1 pa + 1 parg
+           DQF(J/mol) = 0
+tts_q   = -2 dsp + 2 ru + 1 ts
+           DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for orthoamphibole (Diener et al. 2011)
+mrb_q   = 1 gl - 2 jd +2 acm
+    DQF(J/mol) = 0
+mpa_q   = 1 parg - 1 tr +1 anth
+    DQF(J/mol) = 0
+fanth_q = 1 fanth
+    DQF(J/mol) = 0
+gl_q = 1 gl
+    DQF(J/mol) = 0
+ged_q = 1 ged
+    DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for garnet
+kho_q    = 1 py - 1 gr + 1 andr
+    DQF(J/mol) = 0
+
+tig_q     = 1 py + 1/2 per + 1/2 ru - 1/2 cor
+    DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic makes for biotite
+                                 | Ti-biotite, Bi(W)
+tbi_q = 1 phl - 1 br + 1 ru
+       DQF(J/mol) = 0
+                                 | Ferri-biotite, Bi(W)
+fbi_q = 1 east - 1/2 gr + 1/2 andr
+       DQF(J/mol) = 0
+                                 | Fe3+ Biotite, Bio(TCC)
+f3b_q = 1 east - 1/2 cor + 1/2 hem
+       DQF(J/mol) = 0
+                                 | G25 make for Bio(HGP), formerly fbi_q
+fbi1_q  = 1 east + 1 acm - 1 jd
+       DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | Generic makes for Holland et al., 2013; dx.doi.org/10.1093/petrology/egt035
+                                 | mantle transition zone mineralogical model. Waste of space and resources.
+nacfb_q = 1 nacf
+       DQF(J/mol) = 0
+mfpv_q = 1 fpv
+       DQF(J/mol) = 0
+mcpv_q = 1 cpv
+       DQF(J/mol) = 0
+mnpv_q = 1 npv
+       DQF(J/mol) = 0
+cmpv_q = 1 mpv
+       DQF(J/mol) = 0
+cfpv_q = 1 fpv
+       DQF(J/mol) = 0
+capv_q = 1 apv
+       DQF(J/mol) = 0
+cnpv_q = 1 npv
+       DQF(J/mol) = 0
+fcor_q = 1 mcor + 1 fak - 1 mak   | FeSi corundum
+       DQF(J/mol) = 0
+hmgts_q = 1 mgts + 1 hen - 1 en
+       DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic Make definitions for Kelsey & Powell (JMG, 2011) Zr
+                                 | melting relations. JADC, 2/6/12
+zr8L_q = 2 zrc                   | Zr-melt endmember
+       DQF(J/mol) = 0
+zrg_q  = 1 gr + 3 zrc - 6 q      | Zr garnet endmember
+       DQF(J/mol) = 0
+zrru_q = 1 bdy                   | Zr rutile endmember
+       DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic make definitions for White et al. (JMG 32:261-286, 2014) models
+f3cl_q = 1 clin - 1/2 gr + 1/2 andr
+       DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | generic make definitions for White et al. (JMG 32:261-286, 2014) models
+fmu_q = 1 mu + 1/2 andr - 1/2 gr
+       DQF(J/mol) = 0
+ctdo_q = 1 mctd + 1/4 andr - 1/4 gr
+       DQF(J/mol) = 0
+msto_q   = 1 andr  -1 gr  + 1 mst
+       DQF(J/mol) = 0
+mstt_q   = 1 mst - 1 cor   +3/2   ru
+       DQF(J/mol) = 0
+ospr_q = 1/2 andr - 1/2 gr + 1 spr5
+       DQF(J/mol) = 0
+                                 |--------------------------------------------------------
+                                 | Ti phengite endmember for Auzanneau et al. (CMP 159:1-24, 2010) mica model
+                                 | Gdqf corrected from -482876. to -13469.8 J/mol, D. Dolejs, Mar 6, 2010.
+|tip = 1 fcel + 1 geik - 1/2 fs
+|-13469.8  -14.694 .84
+                                 |--------------------------------------------------------
+                                 | ordered carbonate generic makes
+odo_q  = 1/2 mag 1/2 cc
+       DQF = 0
+oank_q = 1/4 sid 1/2 cc 1/4 mag
+       DQF = 0
+                                 |-------------------------------------------------------
+                                 | generic make for unpublished thermocalc scapolite model
+coma_q  = 3 ab + 1 cc
+       DQF = 0
+                                 |-------------------------------------------------------
+                                 | generic make definitions for the Smye et al (JMG, 2011, 28:753-768)
+                                 | models for Mica, Carpholite and Chloritoid, to use these
+                                 | make definitions delete the leading "|" comment characters:
+fmu1_q = 1 mu + 1/2 hem - 1/2 cor
+       DQF = 0
+ocar_q  = 1 fcar + 1/2 hem - 1/2 cor
+       DQF = 0
+mncar_q = 1 mcar + 1 mang - 1 per   | corrected from 1 mcar + 1 mang - 1/2 cor, G Hoschek, 10/24/11.
+       DQF = 0
+                                 |-------------------------------------------------------
+                                 | Special makes for Golubkova et al. data in FOCver.dat and
+                                 | metal_mix.dat
+| fcrm = 1 herc 1 mcrm -1 sp
+|        DQF(J/mol) = 0
+
+FeCA1 = 1 FeA1 1 CA1
+        DQF(J/mol) = 77207 -15.877 0
+FeCA2 = 1 FeA2 3 CA2
+       DQF(J/mol) =  322050 75.667 0
+Cliq = 1 Cliq1 1 Cliq2
+       DQF(J/mol) = 0
+
+end_makes
