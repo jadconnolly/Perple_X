@@ -156,7 +156,7 @@ subdivision_override      default | [off] off, linear, or stretch; overrides sub
 
 timing                    default | [T] T => output CPU time statistics
 Tisza_test                default | [T] T => use Tisza's criterion to identify invalid properties
-T_melt                    default | [873.] melt solution model endmember temperature (K) cut off
+T_melt                    default | [0.] melt solution model endmember temperature (K) cut off
 T_stop                    default | [0.] equilibration temperature (K) cut off
 
 variance                  default | [1 99] exploratory and auto-refine; maximum variance of traced equilibria; only relevant for CONVEX

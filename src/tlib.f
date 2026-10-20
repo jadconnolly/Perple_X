@@ -38,7 +38,7 @@ c----------------------------------------------------------------------
       integer n
 c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.3.0 Oct 19, 2026.',
+     *     'Perple_X release 7.3.0 Oct 20, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -367,8 +367,8 @@ c                                 increase in resolution for composition and mix
       nopt(18) = 1d1
 c                                 increase in resolution for Schreinemakers diagram calculations   
       nopt(19) = 3d0 
-c                                 T_melt cutoff 
-      nopt(20) = 873d0
+c                                 T_melt cutoff
+      nopt(20) = 0d0
 c                                 optimization_precision, absolute
       nopt(21) = 1d-4
 c                                 finite_difference_p threshold for finite difference estimates
@@ -11579,6 +11579,7 @@ c                                 the mnames phases:
          if (eof) exit
 
          do i = 1, inames
+
             if (name.eq.mnames(i)) then
 
                do j = 1, icmpn
@@ -11603,11 +11604,6 @@ c                                 find valid makes:
                if (mnames(k).eq.mknam(i,j).and.(.not.inph(k))) then
 
                   inmk(i) = .false.
-
-c                 if (first) then
-c                    if (iam.ne.3.and.iam.lt.6.or.iam.eq.15)
-c    *                  call warn (51,tot,icmpn,mknam(i,mknum(i)+1))
-c                 end if
 
                   exit
 
@@ -11691,28 +11687,10 @@ c                                 clean up arrays:
 
             ict = ict + 1
 
-            mksat(ict) = mksat(i)
-
-            mknum(ict) = mknum(i)
-
-            meos(ict) = meos(i)
-
-            qdef(ict) = qdef(i)
-
-            do j = 1, mknum(ict)+1
-               mknam(ict,j) = mknam(i,j)
-               mkind(ict,j) = mkind(i,j)
-            end do
-
-            do j = 1, mknum(ict)
-               mkcoef(ict,j) = mkcoef(i,j)
-            end do
-
-            do j = 1, k17
-               mdqf(ict,j) = mdqf(i,j)
-            end do
+            call movmak (i,ict)
 
             do j = 1, icmpn
+
                mcomp(ict,j) = mcomp(i,j)
 c                                get list of used components
                if (mcomp(ict,j).ne.0d0.and.incomp(j).eq.0) incomp(j) = j
@@ -11772,6 +11750,78 @@ c                                write list of valid makes:
 1010  format (/,80('-'),/,'Summary of make-definition entities:',/)
 
       end
+
+      subroutine movmak (iold,inew)
+c----------------------------------------------------------------------
+c movmak moves a make definition from index iold to inew in the 
+c various make definition arrays, called by makecp, smakcp, input9
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer iold, inew, j
+c----------------------------------------------------------------------
+      mksat(inew) = mksat(iold)
+
+      mknum(inew) = mknum(iold)
+
+      meos(inew) = meos(iold)
+
+      qdef(inew) = qdef(iold)
+
+      do j = 1, mknum(inew)+1
+         mknam(inew,j) = mknam(iold,j)
+         mkind(inew,j) = mkind(iold,j)
+      end do
+
+      do j = 1, mknum(inew)
+         mkcoef(inew,j) = mkcoef(iold,j)
+      end do
+
+      do j = 1, k17
+         mdqf(inew,j) = mdqf(iold,j)
+      end do
+
+      end
+
+      subroutine remake
+c----------------------------------------------------------------------
+c remake eliminates unused *_q make definitions after the solution 
+c models have been processed by gmodel in input9
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer iold, inew, i
+c----------------------------------------------------------------------
+c                                 counter of acceptable makes
+      inew = 0
+
+      do i = 1, nmak
+
+         if (qdef(i)) then
+
+            inew = inew + 1
+
+            call movmak (i,inew)
+
+c           write (*,*) qdef(i),mknam(i,mknum(i)+1),' in the list'
+
+         else 
+
+c           write (*,*) qdef(i),mknam(i,mknum(i)+1),' NOT in the list'
+
+         end if
+
+      end do
+c                                 reset ipoint
+      ipoint = ipoint - nmak + inew
+c                                 reset nmak for no particular reason
+      nmak = inew
+
+      end 
 
       subroutine smakcp (inames,mnames)
 c----------------------------------------------------------------------
@@ -11899,12 +11949,11 @@ c                                 non-zero thermodynamic components)
          end if
       end do
 c                                 clean up arrays:
-      ict = 0
-
       do i = 1, icmpn
          incomp(i) = 0
       end do
 
+      ict = 0
 
       do i = 1, nmak
 
@@ -11912,19 +11961,7 @@ c                                 clean up arrays:
 
             ict = ict + 1
 
-            mknum(ict) = mknum(i)
-
-            do j = 1, mknum(ict)+1
-               mknam(ict,j) = mknam(i,j)
-            end do
-
-            do j = 1, mknum(ict)
-               mkcoef(ict,j) = mkcoef(i,j)
-            end do
-
-            do j = 1, k17
-               mdqf(ict,j) = mdqf(i,j)
-            end do
+            call movmak (i, ict)
 
             do j = 1, icmpn
                mcomp(ict,j) = mcomp(i,j)

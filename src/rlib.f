@@ -211,14 +211,7 @@ c---------------------------------------------------------------------
       if (make(id).ne.0) then
 c                                 the phase is a made phase, compute
 c                                 and sum the component g's.
-         if (qdef(make(id))) then
-            gval = gmake (id)
-         else 
-            gval = 1d8
-         end if 
-
-c        write (*,*) qdef(make(id)),mknam(make(id),mknum(make(id))+1)
-
+         gval = gmake (id)
          goto 999
 
       else if (eos(id).eq.5) then
@@ -10032,6 +10025,9 @@ c                  write (*,1100) iphct-ophct, tname
          end if
 c                                 read next solution
       end do
+c                                 clear out unused make definitions,
+c                                 and reset ipoint, iphct
+      call remake
 c                                 make lists of found/not-found solutions
       infnd = 0
       ifnd = 0
