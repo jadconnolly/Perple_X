@@ -228,7 +228,12 @@ c                                 interim storage array
       integer lcoor, lkp
       double precision ycoor
       common/ cxt14 /ycoor(k22),lcoor(k19),lkp(k19)
-
+c                                  jpoint - locates the last compound (make) 
+c                                           to be into optimization arrays
+c                                  ipoint - jpoint + jiinc, the first jiinc
+c                                           entries in cpd arrays are used
+c                                           to store cpds required for constraints.
+c                                           1:ipoint
       integer jpoint, jiinc
       common/ cxt60 /jpoint,jiinc
 c                                 jbulk = icp + isat (i think)

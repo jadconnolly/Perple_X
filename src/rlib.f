@@ -211,7 +211,14 @@ c---------------------------------------------------------------------
       if (make(id).ne.0) then
 c                                 the phase is a made phase, compute
 c                                 and sum the component g's.
-         gval = gmake (id)
+         if (qdef(make(id))) then
+            gval = gmake (id)
+         else 
+            gval = 1d8
+         end if 
+
+c        write (*,*) qdef(make(id)),mknam(make(id),mknum(make(id))+1)
+
          goto 999
 
       else if (eos(id).eq.5) then
@@ -10025,9 +10032,6 @@ c                  write (*,1100) iphct-ophct, tname
          end if
 c                                 read next solution
       end do
-c                                 clear out unused make definitions,
-c                                 and reset ipoint, iphct
-      call remake
 c                                 make lists of found/not-found solutions
       infnd = 0
       ifnd = 0
@@ -19294,19 +19298,17 @@ c                                 data read later):
       do i = 1, nmak
 
          if (mksat(i)) cycle
-c                                 load make data 
+
+         iphct = iphct + 1
+c                                 load make data
+         ctot(iphct) = 0
+
          do j = 1, icmpn
             comp(j) = mcomp(i,j)
+            ctot(iphct) = ctot(iphct) + comp(j)
          end do 
 
          name = mknam(i,mknum(i)+1)
-c                                 redundant check, but makes ctot.
-         call chkphi (3,name,good)
-c                               
-         if (.not.good) call error (57,comp(1),iphct,name)
-
-         iphct = iphct + 1
-         ctot(iphct) = tot
 c                                 set ieos flag to that of the first
 c                                 real entity in the make definition
          ieos = meos(i)

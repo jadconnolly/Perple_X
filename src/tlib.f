@@ -38,7 +38,7 @@ c----------------------------------------------------------------------
       integer n
 c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.3.0 Oct 20, 2026.',
+     *     'Perple_X release 7.3.0 Oct 21, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -11514,12 +11514,11 @@ c      depvar = c0 + var*(c1 + var*(c2 + var*(c3 + var*(c4 + c5*var))))
 
       end
 
-
       subroutine makecp (inames,mnames,first)
 c----------------------------------------------------------------------
-c makecp reads the thermodynamic to compute the composition vector of
-c made phases, called by vertex. programs without composition checking
-c use smakcp.
+c makecp reads the thermodynamic data file to compute the composition 
+c vector of made phases, called by vertex. programs without composition
+c checking use smakcp.
 
 c output to console if first = .true.
 c----------------------------------------------------------------------
@@ -11785,6 +11784,55 @@ c----------------------------------------------------------------------
 
       end
 
+      subroutine movcpd (iold,id)
+c---------------------------------------------------------------------
+c movcpd shifts a a made entity in the compound array from index iold 
+c to index id, used by remake.
+c---------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer iold, id, i
+
+      integer ltyp,lct,lmda,idis
+      common/ cst204 /ltyp(k10),lct(k10),lmda(k10),idis(k10)
+
+      double precision cp
+      common/ cst12 /cp(k5,k10)
+
+      integer ikp
+      common/ cst61 /ikp(k1)
+
+      integer ifp
+      logical fp
+      common/ cxt32 /ifp(k10), fp(h9)
+
+      integer jfct,jmct,jprct,jmuct
+      common/ cst307 /jfct,jmct,jprct,jmuct
+c---------------------------------------------------------------------
+c                                 move name and flags
+      names(id) = names(iold)
+      iemod(id) = iemod(iold)
+      ikp(id)   = ikp(iold)
+      ifp(id)   = ifp(iold)
+      idis(id)  = idis(iold)
+      lmda(id)  = lmda(iold)
+c                                 move stoichiometry of components.
+      do i = 1, icomp
+         cp(i,id) = cp(i,iold)
+      end do
+
+      ctot(id) = ctot(iold)
+c                                 move formula weight
+      fwt(id) = fwt(iold)
+c                                 move mobile components
+      do i = 1, jmct
+         vnumu(i,id) = vnumu(i,iold)
+      end do
+
+      end
+
       subroutine remake
 c----------------------------------------------------------------------
 c remake eliminates unused *_q make definitions after the solution 
@@ -11794,30 +11842,43 @@ c----------------------------------------------------------------------
 
       include 'perplex_parameters.h'
 
-      integer iold, inew, i
+      integer inew, i
+
+      character*8 name
+      common/ csta6 /name
 c----------------------------------------------------------------------
 c                                 counter of acceptable makes
       inew = 0
 
+      ipoint = ipoint - nmak
+
+      jpoint = ipoint
+
       do i = 1, nmak
+c                                 don't touch saturated component makes, 
+c                                 this means *_q makes will persist in
+c                                 the saturated composant lists
+         if (mksat(i)) cycle
 
          if (qdef(i)) then
 
             inew = inew + 1
 
+            ipoint = ipoint + 1
+c                                 reposition the make data
             call movmak (i,inew)
+c                                 reposition the cpd data
+            call movcpd (jpoint + i, ipoint)
 
-c           write (*,*) qdef(i),mknam(i,mknum(i)+1),' in the list'
+            write (*,*) qdef(i),mknam(i,mknum(i)+1),' in the list'
 
          else 
 
-c           write (*,*) qdef(i),mknam(i,mknum(i)+1),' NOT in the list'
+            write (*,*) qdef(i),mknam(i,mknum(i)+1),' NOT in the list'
 
          end if
 
       end do
-c                                 reset ipoint
-      ipoint = ipoint - nmak + inew
 c                                 reset nmak for no particular reason
       nmak = inew
 
