@@ -38,7 +38,7 @@ c----------------------------------------------------------------------
       integer n
 c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.3.0 Oct 21, 2026.',
+     *     'Perple_X release 7.3.1 Oct 21, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'

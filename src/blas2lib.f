@@ -42,7 +42,7 @@ c----------------------------------------------------------------------
 
       logical cset, done, found, halted, rowerr, rset, unitq, vertex
 
-      integer istart, lpprob, ifail, iter, lda, leniw,
+      integer istart, lpprob, ifail, iter, lda, leniw, i,
      *        lenw, n, nclin, istate(n+nclin), iw(leniw),
      *        ianrmj, inform, it, itmax, j, jinf, jmax,
      *        ldh, ldr, litotl, lwtotl, minact, minfxd,
@@ -209,8 +209,10 @@ c                                 the exception is istate on warm.
 
          call scond (nctotl,w(lfeatu),1,feamax,feamin)
 
-         w(lwtinf:lwtinf+nctotl-1) = w(lfeatu:lfeatu+nctotl-1)/feamin
-
+         do i = 1, nctotl
+            w(lwtinf + i - 1) = w(lfeatu + i - 1) / feamin
+         end do
+  
          call cmcrsh (istart,vertex,nclin,nctotl,nactiv,nartif,nfree,n,
      *               lda,istate,iw(lkactv),iw(lkx),bigbnd,tolact,a,ax,
      *               bl,bu,clamda,x,w(lgq),w(lwrk))
