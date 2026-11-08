@@ -1142,3 +1142,99 @@ c
 c
   100 return
       end
+
+      subroutine trnsxy (x)
+c-----------------------------------------------------------------------
+c convert unconstrained nelder-mead x variables to constrained variables
+c in xinv (in cst68).
+
+c x(1:nmi2) - use box transformation to simple bounds
+c x(nmi3:nmi5) - use scale x softmax transformation to simplicial coordinates
+
+c-----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer i
+
+      double precision x(*), w(l12), sum, xmax
+
+      integer ipot,jv,iv
+      common / cst24 /ipot,jv(l2),iv(l2)
+c-----------------------------------------------------------------------
+      do i = 1, nmi2
+
+         if (sftpot.and.i.le.ipot .or. sftc.and.i.ge.nmi1) then
+c                                 sigmoid box transformation
+            xinv(i) = plow(i) + pdelta(i) * 1d0 / (1d0 + dexp(-x(i)))
+         else
+c                                 linear transformation
+            xinv(i) = plow(i) + pdelta(i) * x(i)
+         end if
+
+      end do
+c                                 done if using bulk composition
+      if (mcbulk) return
+c                                 do softmax, for numerical stability subtract
+c                                 the max, and put the x's in w.
+      xmax = x(nmi3)
+
+      do i = nmi3 + 1, nmi4
+         if (x(i).gt.xmax) xmax = x(i)
+      end do
+
+      sum = 0d0
+
+      do i = nmi3, nmi4
+         w(i) = dexp(x(i) - xmax)
+         sum = sum + w(i)
+      end do
+c                                 now make the scale from x(nmi5)
+      xinv(nmi5) = 1d0/(1d0 + dexp(-x(nmi5)))
+c                                 and scale the softmax transform variables
+      do i = nmi3, nmi4
+         xinv(i) = (1d0 - xinv(nmi5)) * w(i)/sum
+      end do
+c                                 test
+      sum = 0d0
+
+      do i = nmi3, nmi5
+         sum = sum + xinv(i)
+      end do
+
+      if (dabs(sum-1d0).gt.1d-8) then 
+         write (*,*) 'uh-oh'
+      end if
+c                                 end trnsxy
+      end
+
+      subroutine stink1 (x,x0,i,ifault)
+c-----------------------------------------------------------------------
+c a hack to adjust the increments for bound variables in minim, unlike 
+c stink, stink1 just sets variables to their limits
+c-----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      double precision x, x0
+
+      integer i, ifault
+c-----------------------------------------------------------------------
+      if ( i.lt.nmi1                  .and. .not. sftpot .or.
+     *     i.ge.nmi1 .and. i.le.nmi2  .and. .not. sftc   .or.
+     *     i.gt.nmi2 .and. i.le.nmi5  .and. .not. sftmax) then
+ 
+         if (x.gt.1d0.and.x0.lt.1d0) then 
+            x = 1d0
+         else if (x.lt.0d0.and.x0.gt.0d0) then
+            x = 0d0
+         else if ( (x.lt.0d0.and.x0.lt.0d0).or.
+     *             (x.gt.1d0.and.x0.gt.1d0) ) then
+            ifault = 99
+         end if
+
+      end if
+
+      end
