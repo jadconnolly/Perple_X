@@ -38,7 +38,7 @@ c----------------------------------------------------------------------
       integer n
 c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.3.1 Oct 21, 2026.',
+     *     'Perple_X release 7.3.2 Nov 8, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
@@ -107,7 +107,7 @@ c                                   files have different versioning tags
 
 
             if (.not.newdat) then 
-               write (*,1020) 'solution model'
+               write (*,1020) 'solution model','solution model'
                call wrnstp
             end if
 
@@ -122,12 +122,12 @@ c                                   files have different versioning tags
 1000  format (/,'**warning ver209** the solution model file and thermo',
      *       'dynamic data files are',/,'from different major or minor',
      *       ' versions and may specify inconsistent make definitions.',
-     *       //,'Recommended action: update the older file.',/)
+     *       //,'Recommended action: update the older file.',/,' ')
 1010  format (/,'**warning ver210** this release is older than the ',a,
-     *       ' file.',//,'Recommended action: update Perple_X.',/)
+     *       ' file.',//,'Recommended action: update Perple_X.',/,' ')
 1020  format (/,'**warning ver211** the ',a,' file contains no version',
      *       ' information.',//,
-     *       'Recommended action: update the ',a,' file.',/)
+     *       'Recommended action: update the ',a,' file.',/,' ')
 
       end 
 
@@ -368,7 +368,7 @@ c                                 increase in resolution for composition and mix
 c                                 increase in resolution for Schreinemakers diagram calculations   
       nopt(19) = 3d0 
 c                                 T_melt cutoff
-      nopt(20) = 0d0
+      nopt(20) = 873d0
 c                                 optimization_precision, absolute
       nopt(21) = 1d-4
 c                                 finite_difference_p threshold for finite difference estimates

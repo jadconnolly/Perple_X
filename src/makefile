@@ -87,7 +87,7 @@ FLINK_POST += $(LDFLAGS_RUNTIME_POST)
 MYOBJ = actcor build fluids ctransf frendly meemum convex pstable pspts psvdraw pssect pt2curv vertex werami mc_fit
 all: $(MYOBJ)
 
-LIBRARY = pscom.o pslib.o rlib.o tlib.o flib.o olib.o resub.o minime_blas.o blas2lib.o
+LIBRARY = pscom.o pslib.o rlib.o tlib.o flib.o olib.o resub.o minime_blas.o blas2lib.o mlib.o
 
 LIBRARY_PS = cont_lib.o pscom.o pslib.o flib.o tlib.o
 
@@ -210,6 +210,8 @@ meemum.o: meemum.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c meemum.f
 minime_blas.o: minime_blas.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c minime_blas.f
+mlib.o: mlib.f perplex_parameters.h
+	$(COMP77) $(FFLAGS) -c mlib.f
 olib.o: olib.f perplex_parameters.h
 	$(COMP77) $(FFLAGS) -c olib.f
 pscom.o: pscom.f perplex_parameters.h

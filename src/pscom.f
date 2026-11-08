@@ -64,7 +64,7 @@ c psytic - subroutine to draw y-axis ticks.
 
          dy2 = dy / 2d0
 
-         do while (abs(yc-ymax) .gt. dy2)
+         do while (yc .lt. ymax)
 
             call psrlin (dxt,dyt,1d0,width)
             if (ltern .and. yc.gt.ymin) then
@@ -72,7 +72,7 @@ c psytic - subroutine to draw y-axis ticks.
                call psrlin (dxc,dyc,1d0,width)
             endif
             yc = yc + dy2
-            if (abs(yc-ymax) .lt. dy2) exit
+            if (yc .gt. ymax) exit
             x = x0
             y = yc
             if (ltern) then
@@ -269,6 +269,8 @@ c------------------------------------------------------------------
 
 c psxtic - subroutine to draw x-axis ticks.
 
+c n.b. - dx *can* be negative when called by psgrd1
+
       if (ltern) then
          x = x0
          y = y0
@@ -326,14 +328,14 @@ c psxtic - subroutine to draw x-axis ticks.
          dx2 = dx / 2d0
          dth = abs(dx2/2)
 
-         do while (abs(xc-xmax) .gt. dth)
+         do while (abs(xc-xmax) .gt. abs(dx2))
             call psrlin (dxt, dyt, 1d0, width)
             if (ltern .and. xc.gt.xmin .and. xc.lt.xmax) then
                call psmove (x,y)
                call psrlin (dxc, dyt, 1d0, width)
             endif
+            if (abs(xc-xmax).lt.abs(dx2)) exit
             xc = xc + dx2
-            if (abs(xc-xmax).lt.dth) exit
             x = xc
             y = y0
             if (ltern) call trneq (x,y)
@@ -350,7 +352,7 @@ c psxtic - subroutine to draw x-axis ticks.
             call psmove (x,y)
          end do 
 
-         if (abs(x0-xmin).gt.dth) then
+         if (abs(x0-xmin).gt.abs(dx2)) then
             x = x0-dx2
             y = y0
             xc = x0-dx2
@@ -649,7 +651,7 @@ c psxlbl - subroutine to put on x-axis labels.
  
       end
 c----------------------------------------------------------------------
-      subroutine psylab (y0, dy, tmin, ltern)
+      subroutine psylab (y0, dy, tmin, uname, ltern)
  
 c psylab - subroutine to put on y-axis labels, using text
 c          justification primitives.
@@ -658,11 +660,13 @@ c          justification primitives.
 
       include 'perplex_parameters.h'
 
-      double precision y0,dy,tmin,x,y,xdc,yc,xg,yg,adj(2)
+      double precision y0,dy,tmin,x,y,xdc,yc,xg,yg,adj(2),u0,um,ud
+
+      character uname*(*)
 
       integer i,iy1
  
-      character*12 numbs(40)
+      character numbs(40)*12, unm*6
  
       integer ic(40)
 
@@ -677,7 +681,18 @@ c     xdc = 1.17d0 * dcx * nscale
       xdc = 0.80d0 * dcx * nscale 
       tmin = 1d30
  
-      call psnum (y0,ymax,dy,ic,iy1,numbs)
+      if ((uname(1:1).eq.'T' .and. tunit.ne.'K') .or.
+     *    (uname(1:1).eq.'P' .and. punit.ne.'bar')) then
+         u0 = y0
+         um = ymax
+         ud = dy
+         call uproc (u0, uname, unm)
+         call uproc (um, uname, unm)
+         if (uname(1:1).ne.'T') call uproc (ud, uname, unm)
+         call psnum (u0,um,ud,ic,iy1,numbs)
+      else
+         call psnum (y0,ymax,dy,ic,iy1,numbs)
+      end if
  
       yc = y0
  
@@ -704,7 +719,7 @@ c     xdc = 1.17d0 * dcx * nscale
  
       end
 c----------------------------------------------------------------------
-      subroutine psxlab (x0, dx, ltern)
+      subroutine psxlab (x0, dx, uname, ltern)
  
 c psxlab - subroutine to put on x-axis labels, using text justification
 c          primitives
@@ -716,9 +731,11 @@ c          primitives
       integer ic(40),i,ix1
 
       double precision x0, dx, x, xdc, y, t, xc, ylv, xl, yl, xr, yr,
-     *   adj(2)
+     *   adj(2), u0, um, ud
+
+      character uname*(*)
  
-      character*12 numbs(40)
+      character numbs(40)*12, unm*6
 
       logical ltern
 
@@ -731,12 +748,23 @@ c          primitives
  
       xdc = dcx*nscale/1.75d0
  
-      call psnum (x0,xmax,dx,ic,ix1,numbs)
+      if ((uname(1:1).eq.'T' .and. tunit.ne.'K') .or.
+     *    (uname(1:1).eq.'P' .and. punit.ne.'bar')) then
+         u0 = x0
+         um = xmax
+         ud = dx
+         call uproc (u0, uname, unm)
+         call uproc (um, uname, unm)
+         if (uname(1:1).ne.'T') call uproc (ud, uname, unm)
+         call psnum (u0,um,ud,ic,ix1,numbs)
+      else
+         call psnum (x0,xmax,dx,ic,ix1,numbs)
+      end if
  
       xc = x0
       do i = 1, ix1
 
-         if (xc.ne.xmin) then
+         if (xc.ne.xmin .or. dx.lt.0d0) then
             t = xc - dfloat(ic(i)) * xdc
             y = ylv
             if (ltern) call trneq (t,y)
@@ -824,7 +852,7 @@ c psaxes - subroutine to output (sloppy) axes.
 
       integer jop0, i, nchar, ic(2), nblen
 
-      character record*64, nums(2)*12
+      character record*64, nums(2)*12, unm*6
 
       logical readyn
 
@@ -853,6 +881,34 @@ c----------------------------------------------------------------------
       y0 = ymin
       dx = xlen / 5d0
       dy = ylen / 5d0
+
+      if (vnm(1)(1:1).eq.'T' .and. tunit.ne.'K') then
+         vlo = xmin
+         vhi = xmax
+         call uproc (vlo, vnm(1), unm)
+         call uproc (vhi, vnm(1), unm)
+         i = 10**int(log10(xmax-xmin))
+         vlo = dble(i)*((int(vlo) + i/2) / i)
+         tmin = 0d0
+         call uproc (tmin, 'T', unm)
+         x0 = vlo + abs(tmin)
+         if (x0 + 5d0*dx .gt. xmax)
+     *      dx = (dble(i)*int(int(vhi) / i) - vlo) / 5d0
+      end if
+
+      if (vnm(2)(1:1).eq.'T' .and. tunit.ne.'K') then
+         vlo = ymin
+         vhi = ymax
+         call uproc (vlo, vnm(2), unm)
+         call uproc (vhi, vnm(2), unm)
+         i = 10**int(log10(ymax-ymin))
+         vlo = dble(i)*((int(vlo) + i/2) / i)
+         tmin = 0d0
+         call uproc (tmin, 'T', unm)
+         y0 = vlo + abs(tmin)
+         if (y0 + 5d0*dy .gt. ymax)
+     *      dy = (dble(i)*int(int(vhi) / i) - vlo) / 5d0
+      end if
 
       xtic  = xlen/45d0/xfac
       xtic1 = xtic*.67d0
@@ -888,10 +944,10 @@ c                                       draw top horizontal axis
       call pssctr (ifont,nscale,nscale,0d0)
 c                                       numeric axis labels:
 c     call psylbl (y0, dy, tmin, .false.)
-      call psylab (y0, dy, tmin, .false.)
+      call psylab (y0, dy, tmin, vnm(2), .false.)
  
 c     call psxlbl (x0, dx, .false.)
-      call psxlab (x0, dx, .false.)
+      call psxlab (x0, dx, vnm(1), .false.)
 c                                     x-axis name
       call pssctr (ifont,nscale,nscale,0d0)  
 
@@ -900,10 +956,11 @@ c     y = ymin - 4d0*dcy*nscale
 
 c     call pstext (x,y,vnm(1),0)
 
+      call uproc(x, vnm(1), unm)
       x = xmin + 0.5d0 * xlen
       y = ymin - 4d0*dcy*nscale
 
-      call psatxt (x,y,vnm(1),0,1d0,0d0,'C',adjtop)
+      call psatxt (x,y,unm,0,1d0,0d0,'C',adjtop)
 c                                       y-axis name
 c     call pssctr (ifont,nscale,nscale,90d0)
 
@@ -912,10 +969,11 @@ c     y = ymin + 0.5d0 * ylen - 2.5d0*dcy*nscale
  
 c     call pstext (x,y,vnm(2),0)
 
+      call uproc(x, vnm(2), unm)
       x = tmin - 2.33d0*dcx*nscale
       y = ymin + 0.5d0 * ylen
  
-      call psatxt (x,y,vnm(2),0,1d0,90d0,'C',adjbot)
+      call psatxt (x,y,unm,0,1d0,90d0,'C',adjbot)
 c                                       sectioning constraints
       if (jvar.gt.2) then
 
@@ -928,18 +986,22 @@ c                                       modfied GH, 12/23/21
 
                vlo = fpoly(vmin(iind)) 
                vhi = fpoly(vmax(iind)) 
+               call uproc(vlo, vnm(iind), unm)
+               call uproc(vhi, vnm(iind), unm)
 
                call psnum (vlo,vhi,vhi-vlo,ic,nchar,nums)
 
                write (record,'(a)') 
-     *               vnm(i)(1:nblen(vnm(i)))//
+     *               unm(1:nblen(unm))//
      *               ' = f('//vname(iind)(1:1)//') = '//
      *               nums(1)(1:nblen(nums(1)))//'-'//
      *               nums(2)(1:nblen(nums(2)))
 
             else
 
-               write (record,1000) vnm(i),vmn(i)
+               vlo = vmn(i)
+               call uproc(vlo, vnm(i), unm)
+               write (record,1000) unm,vlo
 
             end if
 
@@ -957,6 +1019,42 @@ c                                       modfied GH, 12/23/21
      *          ' current values are:',2(1x,g9.3),')',/, 
      *          'Enter the new values:')
 
+      end
+c----------------------------------------------------------------------
+      subroutine uproc (unit, name, unm)
+      implicit none
+      include 'perplex_parameters.h'
+
+      double precision unit
+      character name*(*), unm*(*)
+      logical tmsg,pmsg
+      data tmsg /.true./, pmsg /.true./
+
+      unm = name
+      if (name(1:1).eq.'T' .and. tunit.ne.'K') then
+         if (tunit.eq.'C') then
+            unm(3:3) = 'C'
+            unit = unit - 273.15d0
+         else if (tmsg) then
+            write(*,*) '***Bad T_unit (',tunit,'), using K'
+            tmsg = .false.
+         end if
+      end if
+      if (name(1:1).eq.'P' .and. punit.ne.'bar') then
+         if (punit.eq.'GPa') then
+            unm(3:5) = 'GPa'
+            unit = unit / 1d4
+         else if (punit.eq.'MPa') then
+            unm(3:5) = 'MPa'
+            unit = unit / 1d1
+         else if (punit.eq.'kb') then
+            unm(3:) = 'kb)'
+            unit = unit / 1d3
+         else if (pmsg) then
+            write(*,*) '***Bad P_unit (',punit,'), using bar'
+            pmsg = .false.
+         end if
+      end if
       end
 c----------------------------------------------------------------------
       subroutine psaxet (jop0, typ, vcon)
@@ -1653,6 +1751,9 @@ c                                 p contour interval
       pcont = 1000d0
 c                                 solution compositions for liq/sol diagrams
       scomp = .true.
+c                                 t and p default units for plot label
+      tunit = 'K'
+      punit = 'bar'
 c                                 -------------------------------------
 c                                 look for file
       opname = 'perplex_plot_option.dat'
@@ -1765,6 +1866,12 @@ c                                 pressure contour interval
          else if (key.eq.'solution_compositions') then
 c                                 plot solid solution compositions on liq/sol diagrams
             read (strg,*) scomp
+         else if (key.eq.'T_unit' .or. key.eq.'t_unit') then
+c                                 temperature unit
+            tunit = strg
+         else if (key.eq.'P_unit' .or. key.eq.'p_unit') then
+c                                 pressure unit
+            punit = strg
          else if (key.ne.'|') then 
 
             write (*,1110) key
@@ -1782,8 +1889,9 @@ c                                 --------------------------------------
 c                                 output 
       write (*,1000) 
 
-      write (*,1010) nscale, bbox, tcont, pcont, zcont, fill, label, 
-     *               plopt(3),
+      write (*,1010) nscale, bbox,
+     *               tcont, pcont, zcont, tunit, punit,
+     *               fill, label, plopt(3),
      *               rlabel, ascale, font, lgrid, half, width, dsx, 
      *               dsy, dtx, dty, drot, xfac, spline, tenth, 
      *               cscale, plopt(4)
@@ -1802,6 +1910,8 @@ c                                 -------------------------------------
      *        4x,'contour_t_interval     ',f7.2,4x,'>0 [50.0]',/,
      *        4x,'contour_p_interval     ',f7.2,4x,'>0 [1000.0]',/,
      *        4x,'contour_z_interval     ',f7.2,4x,'>0 [1.0]',/,
+     *        4x,'t_unit                 ',a1,10x,'[K] C',/,
+     *        4x,'p_unit                 ',a3, 7x,'[bar] GPa MPa kb',/,
      *        4x,'field_fill             ',l1,10x,'[T] F',/,
      *        4x,'field_label            ',l1,10x,'[T] F',/,
      *        4x,'numeric_field_label    ',l1,10x,'[F] T, if T ',

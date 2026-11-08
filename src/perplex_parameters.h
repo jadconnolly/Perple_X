@@ -472,9 +472,11 @@ c                                 plot program internal options
       integer ifont, bbox
       double precision xfac, cscale, nscale, ascale, rlabel, width, 
      *                 tcont, pcont,zcont
+      character tunit*1, punit*3
       common/ ops /xfac,cscale,nscale,ascale,rlabel,width,tcont,pcont,
      *             zcont,bbox(4),
-     *             ifont,spline,half,tenth,lgrid,fill,label,scomp
+     *             ifont,spline,half,tenth,lgrid,fill,label,scomp,
+     *             tunit,punit
 c                                 solptr(i) points to the position of 
 c                                 solution model i in the input list
       integer solptr
@@ -606,7 +608,7 @@ c                                 MC_fit common block:
      *        mcids, msloc, msolct, nparm, nunc, mcpct, mcpid, mctrm,
      *        mcj, mccoef, mccoid, lsqchi, blkptr, bstout, uncomp,
      *        skp, jkdiag, lsqchm, mpert, mresid, nmi1, nmi2, nmi3,
-     *        nmi4, nmi5, jfit, likfit, bayfit, meas, cmeas
+     *        nmi4, nmi5, jfit, likfit, bayfit, meas, cmeas, mcspid
 
       character xptnam*18, objnam
 
@@ -634,7 +636,7 @@ c                                 integer
      *               mccoef(k5,m1), mcj(k5,m1), mccoid(k5,m1,m3), cxpt,
      *               blkptr(l11), bstout, uncomp(k5), jkdiag(l12),
      *               nmi1, nmi2, nmi3, nmi4, nmi5, jfit, likfit, 
-     *               bayfit,meas,cmeas(k5),
+     *               bayfit,meas,cmeas(k5),mcspid(k5),
 c                                 logical
      *               mcpert, oprt, mcflag(h9), random(3), grh, invxpt,
      *               fprint, grdsch, seed, mcgrid, grhobj, bayes,
@@ -646,7 +648,7 @@ c                                 logical
      *               rcobj,
 c                                 character
      *               xptnam(l11), objnam(3)
-c                                 the untrasnformed nelder-mead variables
+c                                 the untransformed nelder-mead variables
 c                                 go in their own common so that the block
 c                                 can be used in minim. note this requires
 c                                 the dimension (l2+k5) to be hardwired in minim

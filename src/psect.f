@@ -2278,13 +2278,13 @@ c psax1d - subroutine to output (sloppy) 1d axes.
 
       include 'perplex_parameters.h'
 
-      double precision x0,dx,ytic,ytic1,ytic2,y,x
+      double precision x0,dx,ytic,ytic1,ytic2,y,x,vlo,vhi
 
       integer jop0,i,j
 
       logical readyn
 
-      character record*40
+      character record*40, unm*6
 
       external readyn
 
@@ -2313,6 +2313,26 @@ c----------------------------------------------------------------------
       ytic1 = ytic*.67d0
       ytic2 = ytic1*.67d0 
 
+      if (vnm(1)(1:1).eq.'T' .and. tunit.ne.'K') then
+         vlo = xmin
+         vhi = xmax
+         call uproc (vlo, vnm(1), unm)
+         call uproc (vhi, vnm(1), unm)
+         i = 10**int(log10(abs(xmax-xmin)))
+         vlo = dble(i)*((int(vlo) + i/2) / i)
+         x = 0d0
+         call uproc (x, 'T', record)
+         x0 = vlo + abs(x)
+         if ((dx.gt.0d0 .and. x0 + 5d0*dx .gt. xmax) .or.
+     *       (dx.lt.0d0 .and. x0 + 5d0*dx .lt. xmax)) then
+            vhi = dble(i)*nint((vlo+5d0*dx + i/2) / i)
+            dx = (dble(i)*int(int(vhi) / i)
+     *         -  dble(i)*int(int(vlo) / i)) / 5d0
+         end if
+      else
+         unm = vnm(1)
+      end if
+
       if (jop0.eq.1) then
 
          write (*,1010)
@@ -2329,14 +2349,14 @@ c                                 draw bottom horizontal axis
  
       call pssctr (ifont, nscale, nscale, 0d0)
 c                                  numeric axis labels:
-      call psxlbl (x0, dx, .false.)
+      call psxlab (x0, dx, vnm(1), .false.)
 c                                  x-axis name
       call pssctr (ifont, nscale, nscale, 0d0)
 
       x = xmin + 0.5d0 * xlen - 2d0*dcx*nscale
       y = ymin - 6d0*dcy*nscale
 
-      call pstext (x,y,vnm(1),0)
+      call pstext (x,y,unm,0)
 c                                  sectioning constraints
       if (jvar.gt.1) then
  
@@ -2346,7 +2366,9 @@ c                                  sectioning constraints
          call pssctr (ifont,nscale,nscale,0d0)
          y = ymax + 15d0*dcy*nscale
          do i = 2, j 
-            write (record,1000) vnm(i),vmin(jv(i))
+            vlo = vmin(jv(i))
+            call uproc(vlo, vnm(i), unm)
+            write (record,1000) unm,vlo
             call deblnk (record)
             call pstext (xmin,y,record,0)
             y = y - 3d0*dcy*nscale
