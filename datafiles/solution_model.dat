@@ -1,4 +1,4 @@
-720 DO NOT DELETE THIS LINE
+730 DO NOT DELETE THIS LINE
 
                             ---------------------------------------------------------------------------
                              FOR MODEL DEFINITIONS AND REFERENCES READ THE MODEL COMMENTARY OR REFER TO
@@ -539,15 +539,12 @@ begin_model
                       memory and time required for calculations, but may also causes a significant
                       deterioration in phase diagram quality.
                       ---------------------------------------------------------
-                      NOTE: to use this the following endmembers must be specified with make
-                      definitions in the thermodynamic data file
+                      NOTE: to use this the following generic make definitions must be
+                      specified in the thermodynamic data file
 
-                         mrbG  = 1 gl - 1 gr + 1 andr
-                            DQF = 0
-                         kprg  = 1 mu - 1 pa + 1 parg
-                            DQF = -7060 + 20 * T_K
-                         tts   = -2 dsp + 2 ru + 1 ts
-                            DQF =   95000
+                         mrb1_q  = 1 gl - 1 gr + 1 andr
+                         kprg_q  = 1 mu - 1 pa + 1 parg
+                         tts_q   = -2 dsp + 2 ru + 1 ts
 
                       to avoid cluttering thermodynamic data files with the new plague of TC
                       DQF "corrections", the following simple DQF's are specified in the
@@ -575,10 +572,10 @@ begin_model
 
                               Ts            V     Mg     Al     Ca     SiAl    OH
                               Parg          Na    Mg    MgAl    Ca     SiAl    OH
-                              Kprg          K     Mg    MgAl    Ca     SiAl    OH
-                              Tts           V     Mg     Ti     Ca     SiAl    O
+                              kprg_q        K     Mg    MgAl    Ca     SiAl    OH
+                              tts_q         V     Mg     Ti     Ca     SiAl    O
                               Gl            V     Mg     Al     Na      Si     OH
-                              mrbG          V     Mg     Fe3    Na      Si     OH
+                              mrb1_q        V     Mg     Fe3    Na      Si     OH
                               Tr            V     Mg     Mg     Ca      Si     OH
                               Cumm          V     Mg     Mg     Mg      Si     OH
                               Grun          V     Fe     Fe     Fe      Si     OH
@@ -588,7 +585,7 @@ begin_model
 
                       cross-site exchanges
                              2 NaCa-1(M4) + 2 SiAl-1(T1)  = (gl-ts)
-                             2 TiAl-1(M2) + 2 H-1(OH)     = (Tts-Ts)
+                             2 TiAl-1(M2) + 2 H-1(OH)     = (tts_q-Ts)
                                NaV-1(A)   + 1 AlMg-1(M2)  = (parg-ts) = (parg-tr)
                                AlMg-1(M2) + 1 NaCa-1(M4)  = (gl-cumm)/2
 
@@ -624,14 +621,14 @@ Trem-Amph  by difference           | X([ ][M][M][MC])
 
                                    | minor (0.09 bl478):
 vmtn_d     vftn_d                  | [ ][M][Ti][N]      Ti-glaucophane *
-mrbG       frb_d                   | [ ][M][Fe][N]      Fe3-glaucophane, aka riebeckite
+mrb1_q     frb_d                   | [ ][M][Fe][N]      Fe3-glaucophane, aka riebeckite
 gl         fgl_d                   | [ ][M][Al][N]      Al-glaucophane
 
 mtts_d     ftts_d                  | [ ][M][Ti][M]      Ti-Ts
 mgrk_d     fgrk_d                  | [ ][M][Fe][M]      Fe3-Ts
 mts_d      fts_d                   | [ ][M][Al][M]      Al-Ts
 
-tts        fctts_d                 | [ ][M][Ti][C]      M-Ca-Ti_tschermaks
+tts_q      fctts_d                 | [ ][M][Ti][C]      M-Ca-Ti_tschermaks
 mcgrk_d    fcgrk_d                 | [ ][M][Fe][C]      M-Ca-Fe3+_tschermaks (Na-free riebeckite)
 ts_q       fcts_d                  | [ ][M][Al][C]      Al-cTs
 
@@ -668,7 +665,7 @@ mparg_d    fparg_d                 | [N][M][MAl][M]     Na-Al-M parg
                                    | minor (0.06 bl478):
 tcmkpg_d   tcfkpg_d                | [K][M][MTi][C]     K-Ti-Ca parg
 ocmkpg_d   ocfkpg_d                | [K][M][MFe][C]     K-Fe3-Ca parg
-kprg       kfcprg_d                | [K][M][MAl][C]     K-Al-Ca parg
+kprg_q     kfcprg_d                | [K][M][MAl][C]     K-Al-Ca parg
 
 tcmpg_d    tcfpg_d                 | [N][M][MTi][C]     N-Ti-Ca parg
 ocmpg_d    ocfpg_d                 | [N][M][MFe][C]     Na-Fe3-Ca parg
@@ -757,90 +754,90 @@ fts_d  = 1 ts_q - 1 tr + 1 b
 mts_d  = 1 ts_q - 1 tr + 1 cumm
 fgl_d    = 1 gl    + 1 grun   - 1 a
                                    | T = Ti
-vmtn_d   = 1 gl     + 1 tts - 1 ts_q
-vftn_d   = 1 gl    + 1 grun   - 1 a + 1 tts - 1 ts_q
-fctts_d  = 1 tts   + 1 grun   - 1 a
-ftts_d   = 1 tts   - 1 tr     + 1 b
-mtts_d   = 1 tts   - 1 tr     + 1 cumm
+vmtn_d   = 1 gl     + 1 tts_q - 1 ts_q
+vftn_d   = 1 gl    + 1 grun   - 1 a + 1 tts_q - 1 ts_q
+fctts_d  = 1 tts_q   + 1 grun   - 1 a
+ftts_d   = 1 tts_q   - 1 tr     + 1 b
+mtts_d   = 1 tts_q   - 1 tr     + 1 cumm
                                    | T = Fe3
-frb_d    = 1 mrbG  + 1 grun   - 1 a
-mcgrk_d  = 1 mrbG  + 1 ts_q    - 1 gl
-mgrk_d   = 1 mrbG  + 1 ts_q    - 1 gl     - 1 tr   + 1 cumm
-fgrk_d   = 1 mrbG  + 1 ts_q    - 1 gl     - 1 tr   + 1 b
-fcgrk_d  = 1 mrbG  + 1 ts_q    - 1 gl     - 1 a  + 1 grun
+frb_d    = 1 mrb1_q  + 1 grun   - 1 a
+mcgrk_d  = 1 mrb1_q  + 1 ts_q    - 1 gl
+mgrk_d   = 1 mrb1_q  + 1 ts_q    - 1 gl     - 1 tr   + 1 cumm
+fgrk_d   = 1 mrb1_q  + 1 ts_q    - 1 gl     - 1 tr   + 1 b
+fcgrk_d  = 1 mrb1_q  + 1 ts_q    - 1 gl     - 1 a  + 1 grun
                                    |==================================================
                                    | dependent endmembers for Pargasitic subcomposition
                                    | M or Ca on M4, Al on M2
 fcparg_d  = 1 parg  + 3/2 grun - 1 a - 1/2 b
 fparg_d   = 1 parg  + 1/2 grun + 1/2 b - 1 tr
 mparg_d   = 1 parg  - 1 tr     + 1 cumm
-kfcprg_d  = 1 kprg  + 3/2 grun - 1 a - 1/2 b
-kfparg_d  = 1 kprg  + 1/2 grun + 1/2 b - 1 tr
-kmparg_d  = 1 kprg  - 1 tr + 1 cumm
+kfcprg_d  = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b
+kfparg_d  = 1 kprg_q  + 1/2 grun + 1/2 b - 1 tr
+kmparg_d  = 1 kprg_q  - 1 tr + 1 cumm
                                    | M or Ca on M4, Ti on M2
-tcmpg_d   = 1 parg  + 1/2 tts - 1/2 ts_q
-tcfpg_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b + 1/2 tts - 1/2 ts_q
-tmpg_d    = 1 parg  - 1 tr     + 1 cumm + 1/2 tts - 1/2 ts_q
-tfpg_d    = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts - 1/2 ts_q
-tcmkpg_d  = 1 kprg  + 1/2 tts - 1/2 ts_q
-tcfkpg_d  = 1 kprg  + 3/2 grun - 1 a - 1/2 b + 1/2 tts - 1/2 ts_q
-tmkpg_d   = 1 kprg  - 1 tr     + 1 cumm + 1/2 tts - 1/2 ts_q
-tfkpg_d   = 1 kprg  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts - 1/2 ts_q
+tcmpg_d   = 1 parg  + 1/2 tts_q - 1/2 ts_q
+tcfpg_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b + 1/2 tts_q - 1/2 ts_q
+tmpg_d    = 1 parg  - 1 tr     + 1 cumm + 1/2 tts_q - 1/2 ts_q
+tfpg_d    = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts_q - 1/2 ts_q
+tcmkpg_d  = 1 kprg_q  + 1/2 tts_q - 1/2 ts_q
+tcfkpg_d  = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b + 1/2 tts_q - 1/2 ts_q
+tmkpg_d   = 1 kprg_q  - 1 tr     + 1 cumm + 1/2 tts_q - 1/2 ts_q
+tfkpg_d   = 1 kprg_q  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts_q - 1/2 ts_q
                                    | M or Ca on M4, Fe3 on M2
-ocmpg_d   = 1 parg  + 1/2 mrbG  - 1/2 gl
-ocfpg_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrbG  - 1/2 gl
-ompg_d    = 1 parg  - 1 tr     + 1 cumm + 1/2 mrbG  - 1/2 gl
-ofpg_d    = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrbG  - 1/2 gl
-ocmkpg_d  = 1 kprg  + 1/2 mrbG  - 1/2 gl
-ocfkpg_d  = 1 kprg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrbG  - 1/2 gl
-omkpg_d   = 1 kprg  - 1 tr     + 1 cumm + 1/2 mrbG  - 1/2 gl
-ofkpg_d   = 1 kprg  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrbG  - 1/2 gl
+ocmpg_d   = 1 parg  + 1/2 mrb1_q  - 1/2 gl
+ocfpg_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrb1_q  - 1/2 gl
+ompg_d    = 1 parg  - 1 tr     + 1 cumm + 1/2 mrb1_q  - 1/2 gl
+ofpg_d    = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrb1_q  - 1/2 gl
+ocmkpg_d  = 1 kprg_q  + 1/2 mrb1_q  - 1/2 gl
+ocfkpg_d  = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrb1_q  - 1/2 gl
+omkpg_d   = 1 kprg_q  - 1 tr     + 1 cumm + 1/2 mrb1_q  - 1/2 gl
+ofkpg_d   = 1 kprg_q  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrb1_q  - 1/2 gl
 
                                    |==================================================
                                    | dependent endmembers for Piglitic subcomposition
                                    | Na on M4
-|kmtn_d    = 1 kprg  + 1/2 tts - 3/2 ts_q + 1 gl
-|kftn_d    = 1 kprg  + 3/2 grun - 1 a - 1/2 b + 1/2 tts - 3/2 ts_q + 1 gl
-|kmfn_d    = 1 kprg  + 1/2 mrbG  + 1/2 gl - 1 ts_q
-|kffn_d    = 1 kprg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrbG  + 1/2 gl - 1 ts_q
-|kman_d    = 1 kprg  + 1 gl - 1 ts_q
-|kfan_d    = 1 kprg  + 3/2 grun - 1 a - 1/2 b + 1 gl - 1 ts_q
+|kmtn_d    = 1 kprg_q  + 1/2 tts_q - 3/2 ts_q + 1 gl
+|kftn_d    = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b + 1/2 tts_q - 3/2 ts_q + 1 gl
+|kmfn_d    = 1 kprg_q  + 1/2 mrb1_q  + 1/2 gl - 1 ts_q
+|kffn_d    = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrb1_q  + 1/2 gl - 1 ts_q
+|kman_d    = 1 kprg_q  + 1 gl - 1 ts_q
+|kfan_d    = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b + 1 gl - 1 ts_q
 
-|nmtn_d    = 1 parg  + 1/2 tts - 3/2 ts_q + 1 gl
-|nftn_d    = 1 parg  + 3/2 grun - 1 a - 1/2 b + 1/2 tts - 3/2 ts_q + 1 gl
-|nmfn_d    = 1 parg  + 1/2 mrbG  + 1/2 gl - 1 ts_q
-|nffn_d    = 1 parg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrbG  + 1/2 gl - 1 ts_q
+|nmtn_d    = 1 parg  + 1/2 tts_q - 3/2 ts_q + 1 gl
+|nftn_d    = 1 parg  + 3/2 grun - 1 a - 1/2 b + 1/2 tts_q - 3/2 ts_q + 1 gl
+|nmfn_d    = 1 parg  + 1/2 mrb1_q  + 1/2 gl - 1 ts_q
+|nffn_d    = 1 parg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrb1_q  + 1/2 gl - 1 ts_q
 |nman_d    = 1 parg  + 1 gl - 1 ts_q
 |nfan_d    = 1 parg  + 3/2 grun - 1 a - 1/2 b + 1 gl - 1 ts_q
                                    | MgNa on M4
 |nmamn_d   = 1 parg  - 1 tr     + 1/2 cumm + 1/2 gl
-|nmfmn_d   = 1 parg  - 1 tr     + 1/2 cumm + 1/2 mrbG
-|nmtmn_d   = 1 parg  - 1 tr     + 1/2 cumm + 1/2 tts - 1/2 ts_q + 1/2 gl
-|kmamn_d   = 1 kprg  - 1 tr     + 1/2 cumm + 1/2 gl
-|kmfmn_d   = 1 kprg  - 1 tr     + 1/2 cumm + 1/2 mrbG
-|kmtmn_d   = 1 kprg  - 1 tr     + 1/2 cumm + 1/2 tts - 1/2 ts_q + 1/2 gl
+|nmfmn_d   = 1 parg  - 1 tr     + 1/2 cumm + 1/2 mrb1_q
+|nmtmn_d   = 1 parg  - 1 tr     + 1/2 cumm + 1/2 tts_q - 1/2 ts_q + 1/2 gl
+|kmamn_d   = 1 kprg_q  - 1 tr     + 1/2 cumm + 1/2 gl
+|kmfmn_d   = 1 kprg_q  - 1 tr     + 1/2 cumm + 1/2 mrb1_q
+|kmtmn_d   = 1 kprg_q  - 1 tr     + 1/2 cumm + 1/2 tts_q - 1/2 ts_q + 1/2 gl
                                    | Mg-MgCa on M4
 |nmacn_d   = 1 parg + 1/2 gl - 1/2 ts_q
-|nmfcn_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrbG  - 1/2 ts_q
-|nmtcn_d   = 1 parg  + 1/2 tts - 1 ts_q + 1/2 gl
-|kmacn_d   = 1 kprg + 1/2 gl - 1/2 ts_q
-|kmfcn_d   = 1 kprg  + 1/2 mrbG  - 1/2 ts_q
-|kmtcn_d   = 1 kprg  + 1/2 tts - 1 ts_q + 1/2 gl
+|nmfcn_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrb1_q  - 1/2 ts_q
+|nmtcn_d   = 1 parg  + 1/2 tts_q - 1 ts_q + 1/2 gl
+|kmacn_d   = 1 kprg_q + 1/2 gl - 1/2 ts_q
+|kmfcn_d   = 1 kprg_q  + 1/2 mrb1_q  - 1/2 ts_q
+|kmtcn_d   = 1 kprg_q  + 1/2 tts_q - 1 ts_q + 1/2 gl
                                    | FeNa on M4
 |nfafn_d   = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 gl    - 1/2 a
-|nfffn_d   = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrbG  - 1/2 a
-|nftfn_d   = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts   - 1/2 ts_q + 1/2 gl - 1/2 a
-|kfafn_d   = 1 kprg  + 1/2 grun + 1/2 b - 1 tr + 1/2 gl    - 1/2 a
-|kfffn_d   = 1 kprg  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrbG  - 1/2 a
-|kftfn_d   = 1 kprg  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts   - 1/2 ts_q + 1/2 gl - 1/2 a
+|nfffn_d   = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrb1_q  - 1/2 a
+|nftfn_d   = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts_q   - 1/2 ts_q + 1/2 gl - 1/2 a
+|kfafn_d   = 1 kprg_q  + 1/2 grun + 1/2 b - 1 tr + 1/2 gl    - 1/2 a
+|kfffn_d   = 1 kprg_q  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrb1_q  - 1/2 a
+|kftfn_d   = 1 kprg_q  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts_q   - 1/2 ts_q + 1/2 gl - 1/2 a
                                    | Fe-FeCa on M4
 
 |nfacn_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b + 1/2 gl - 1/2 ts_q
-|nffcn_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrbG  - 1/2 ts_q
-|nftcn_d   = 1 parg  + 1/2 grun + 1/2 b - 1 tr  + 1/2 tts - 1/2 ts_q + 1/2 gl - 1/2 a
-|kfacn_d   = 1 kprg  + 3/2 grun - 1 a - 1/2 b + 1/2 gl - 1/2 ts_q
-|kffcn_d   = 1 kprg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrbG  - 1/2 ts_q
-|kftcn_d   = 1 kprg  + 1/2 grun + 1/2 b - 1 tr  + 1/2 tts - 1/2 ts_q + 1/2 gl - 1/2 a
+|nffcn_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrb1_q  - 1/2 ts_q
+|nftcn_d   = 1 parg  + 1/2 grun + 1/2 b - 1 tr  + 1/2 tts_q - 1/2 ts_q + 1/2 gl - 1/2 a
+|kfacn_d   = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b + 1/2 gl - 1/2 ts_q
+|kffcn_d   = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrb1_q  - 1/2 ts_q
+|kftcn_d   = 1 kprg_q  + 1/2 grun + 1/2 b - 1 tr  + 1/2 tts_q - 1/2 ts_q + 1/2 gl - 1/2 a
                                    |==================================================
                                    | dependent endmembers for Tremolitic subcomposition
 ftr_d    = 1 tr    + 2 grun   - 1 a - 1 b
@@ -855,53 +852,53 @@ W(tr cumm)                45d3
 W(tr grun)                75d3
 W(tr a)                   57d3
 W(tr b)                   63d3
-W(tr mrbG)                52d3
-W(tr kprg)                30d3
-W(tr tts)                 85d3
+W(tr mrb1_q)                52d3
+W(tr kprg_q)                30d3
+W(tr tts_q)                 85d3
 W(ts_q parg)               -40d3
 W(ts_q gl)                  25d3
 W(ts_q cumm)                70d3
 W(ts_q grun)                80d3
 W(ts_q a)                   70d3
 W(ts_q b)                 72.5d3
-W(ts_q mrbG)                20d3
-W(ts_q kprg)               -40d3
-W(ts_q tts)                 35d3
+W(ts_q mrb1_q)                20d3
+W(ts_q kprg_q)               -40d3
+W(ts_q tts_q)                 35d3
 W(parg gl)                50d3
 W(parg cumm)              90d3
 W(parg grun)           106.7d3
 W(parg a)               94.8d3
 W(parg b)               94.8d3
-W(parg mrbG)              40d3
-W(parg kprg)               8d3
-W(parg tts)               15d3
+W(parg mrb1_q)              40d3
+W(parg kprg_q)               8d3
+W(parg tts_q)               15d3
 W(gl cumm)               100d3
 W(gl grun)             113.5d3
 W(gl a)                  100d3
 W(gl b)                111.2d3
-W(gl kprg)                54d3
-W(gl tts)                 75d3
+W(gl kprg_q)                54d3
+W(gl tts_q)                 75d3
 W(cumm grun)              33d3
 W(cumm a)                 18d3
 W(cumm b)                 23d3
-W(cumm mrbG)              80d3
-W(cumm kprg)              87d3
-W(cumm tts)              100d3
+W(cumm mrb1_q)              80d3
+W(cumm kprg_q)              87d3
+W(cumm tts_q)              100d3
 W(grun a)                 12d3
 W(grun b)                  8d3
-W(grun mrbG)              91d3
-W(grun kprg)              96d3
-W(grun tts)               65d3
+W(grun mrb1_q)              91d3
+W(grun kprg_q)              96d3
+W(grun tts_q)               65d3
 W(a b)                    20d3
-W(a mrbG)                 80d3
-W(a kprg)                 94d3
-W(a tts)                  95d3
-W(b mrbG)                 90d3
-W(b kprg)                 94d3
-W(b tts)                  95d3
-W(mrbG kprg)              50d3
-W(mrbG tts)               50d3
-W(kprg tts)               35d3
+W(a mrb1_q)                 80d3
+W(a kprg_q)                 94d3
+W(a tts_q)                  95d3
+W(b mrb1_q)                 90d3
+W(b kprg_q)                 94d3
+W(b tts_q)                  95d3
+W(mrb1_q kprg_q)              50d3
+W(mrb1_q tts_q)               50d3
+W(kprg_q tts_q)               35d3
 end_excess_function
 
 6                                   | number of sites in configurational entropy model (A, M1, M2, M4, T1, OH)
@@ -909,38 +906,38 @@ end_excess_function
 A                                   | site name
 3 1 1                               | number of species, effective multiplicity, true multiplicity
 z(Na,A)    = 1 parg
-z(K,A)     = 1 kprg
-z(Vac,A)   = 1 cumm + 1 grun + 1 tr + 1 ts_q + 1 gl + 1 a + 1 b + 1 tts + 1 mrbG
+z(K,A)     = 1 kprg_q
+z(Vac,A)   = 1 cumm + 1 grun + 1 tr + 1 ts_q + 1 gl + 1 a + 1 b + 1 tts_q + 1 mrb1_q
 
 M1                                  | site name
 2 3 3                               | number of species, effective multiplicity, true multiplicity
 z(Fe,M1)   = 1 grun + 1 b
-z(Mg,M1)   = 1 cumm + 1 tr + 1 ts_q + 1 parg + 1 kprg + 1 mrbG + 1 gl + 1 tts + 1 a
+z(Mg,M1)   = 1 cumm + 1 tr + 1 ts_q + 1 parg + 1 kprg_q + 1 mrb1_q + 1 gl + 1 tts_q + 1 a
 
 M2                                  | site name
 5 2 2                               | number of species, effective multiplicity, true multiplicity
 z(Fe,M2)   = 1 grun + 1 a
-z(Fe3,M2)  = 1 mrbG
-z(Al,M2)   = 1 ts_q + 1 gl + 1/2 kprg + 1/2 parg
-z(Ti,M2)   = 1 tts
-z(Mg,M2)   = 1/2 kprg + 1/2 parg + 1 tr + 1 cumm + 1 b
+z(Fe3,M2)  = 1 mrb1_q
+z(Al,M2)   = 1 ts_q + 1 gl + 1/2 kprg_q + 1/2 parg
+z(Ti,M2)   = 1 tts_q
+z(Mg,M2)   = 1/2 kprg_q + 1/2 parg + 1 tr + 1 cumm + 1 b
 
 M4                                  | site name
 4 2 2                               | number of species, effective multiplicity, true multiplicity
 z(Mg,M4)   = 1 cumm
-z(Na,M4)   = 1 gl + 1 mrbG
+z(Na,M4)   = 1 gl + 1 mrb1_q
 z(Fe,M4)   = 1 grun + 1 a + 1 b
-z(Ca,M4)   = 1 ts_q + 1 parg + 1 kprg + 1 tts + 1 tr
+z(Ca,M4)   = 1 ts_q + 1 parg + 1 kprg_q + 1 tts_q + 1 tr
 
 T1                                  | site name
 2 1 4                               | number of species, effective multiplicity, true multiplicity
-z(Al,T1)   = 1/2 ts_q + 1/2 parg + 1/2 kprg + 1/2 tts
-z(Si,T1)   = 1/2 ts_q + 1/2 parg + 1/2 kprg + 1/2 tts + 1 gl + 1 mrbG + 1 tr + 1 grun + 1 a + 1 b + 1 cumm
+z(Al,T1)   = 1/2 ts_q + 1/2 parg + 1/2 kprg_q + 1/2 tts_q
+z(Si,T1)   = 1/2 ts_q + 1/2 parg + 1/2 kprg_q + 1/2 tts_q + 1 gl + 1 mrb1_q + 1 tr + 1 grun + 1 a + 1 b + 1 cumm
 
 OH                                  | site name
 2 2 2                               | number of species, effective multiplicity, true multiplicity
-z(O,OH)    = 1 tts
-z(OH,OH)   = 1 cumm + 1 grun + 1 ts_q + 1 tr + 1 parg + 1 kprg + 1 mrbG + 1 gl + 1 b + 1 a
+z(O,OH)    = 1 tts_q
+z(OH,OH)   = 1 cumm + 1 grun + 1 ts_q + 1 tr + 1 parg + 1 kprg_q + 1 mrb1_q + 1 gl + 1 b + 1 a
 
 [Si4O22]                            | formula suffix, enter "none" for no suffix.
 
@@ -953,16 +950,19 @@ alpha(cumm)        1
 alpha(grun)        1
 alpha(a)           1
 alpha(b)           1
-alpha(mrbG)        0.8
-alpha(kprg)        1.7
-alpha(tts)         1.5
+alpha(mrb1_q)        0.8
+alpha(kprg_q)        1.7
+alpha(tts_q)         1.5
 end_van_laar_sizes
 
 begin_dqf_corrections
-DQF(gl)   = -3000
-DQF(parg) = -10000
-DQF(ts_q) =  10000
-DQF(grun) = -3000
+DQF(gl)     = -3000
+DQF(parg)   = -10000
+DQF(ts_q)   =  10000
+DQF(grun)   = -3000
+DQF(mrb1_q) = 0
+DQF(tts_q)  =   95000
+DQF(kprg_q) = -7060 + 20 * T_K
 end_dqf_corrections
                                     | solution model specific computational options:
 begin_flagged_endmembers
@@ -1032,15 +1032,13 @@ begin_model
                       N   is generalized glaucophane     [M][T][N]
                       M   on M2 is generalized amphibole [M][M][M,C]
                       ---------------------------------------------------------
-                      NOTE: to use this the following endmembers must be specified with make
-                      definitions in the thermodynamic data file
+                      NOTE: to use this the following generic make definitions must be
+                      specified in the thermodynamic data file
 
-                         mrbG  = 1 gl - 1 gr + 1 andr
-                            DQF = 0
-                         kprg  = 1 mu - 1 pa + 1 parg
-                            DQF = -7060 + 20 * T_K
-                         tts   = -2 dsp + 2 ru + 1 ts
-                            DQF =   95000
+                         mrb1_q  = 1 gl - 1 gr + 1 andr
+                         kprg_q  = 1 mu - 1 pa + 1 parg
+                         tts_q   = -2 dsp + 2 ru + 1 ts
+
 
                       to avoid cluttering thermodynamic data files with the new plague of TC
                       DQF "corrections", the following simple DQF's are specified in the
@@ -1068,10 +1066,10 @@ begin_model
 
                               Ts            V     Mg     Al     Ca     SiAl    OH
                               Parg          Na    Mg    MgAl    Ca     SiAl    OH
-                              Kprg          K     Mg    MgAl    Ca     SiAl    OH
+                              kprg_q          K     Mg    MgAl    Ca     SiAl    OH
                               Gl            V     Mg     Al     Na      Si     OH
-                              mrbG          V     Mg     Fe3    Na      Si     OH
-                              Tts           V     Mg     Ti     Ca      Si      O
+                              mrb1_q          V     Mg     Fe3    Na      Si     OH
+                              tts_q           V     Mg     Ti     Ca      Si      O
                               Tr            V     Mg     Mg     Ca      Si     OH
                               Cumm          V     Mg     Mg     Mg      Si     OH
                               Grun          V     Fe     Fe     Fe      Si     OH
@@ -1089,7 +1087,7 @@ begin_model
                              2 CaMg-1(M4) = (Tr-Cumm)
 
                              2 Fe3Al-1(M2) = (Rb-Gl)
-                             2 TiAl-1(M2)  = (Tts-Ts) => coupled to T1 and OH.
+                             2 TiAl-1(M2)  = (tts_q-Ts) => coupled to T1 and OH.
 
                              3 FeMg-1(M1) = (grun - a)
                              2 FeMg-1(M2) = (grun - b)
@@ -1122,7 +1120,7 @@ ACMT-Amph  by difference           | X([A][M][M,T,MT][M,C]), K-Na-Mg-Fe-Al-Ti-Fe
                                    | => endmember 12 is [ ][Mg][Al ][Na]
                                    | => endmember 22 is [ ][Fe][Al ][Na]
 
-mrbG       frb_d                   | Fe3-glaucophane, aka riebeckite
+mrb1_q       frb_d                   | Fe3-glaucophane, aka riebeckite
 gl         fgl_d                   | Al-glaucophane
 
                                    | First (1d) simplex
@@ -1156,7 +1154,7 @@ parg       fcparg_d
                                    | tcmpg_d    tcfpg_d
 
 kmparg_d   kfparg_d                | M-Ca-K-Al_parg
-kprg       kfcprg_d
+kprg_q       kfcprg_d
 
                                    | omkpg_d    ofkpg_d                 | M-Ca-K-Fe3+ parg
                                    | ocmkpg_d   ocfkpg_d
@@ -1165,7 +1163,7 @@ kprg       kfcprg_d
                                    | tcmkpg_d   tcfkpg_d
 
 mtts_d     ftts_d                  | M-Ca-Ti_tschermaks
-tts        fctts_d
+tts_q        fctts_d
 
 mgrk_d     fgrk_d                  | M-Ca-Fe3+_tschermaks (Na-free riebeckite)
 mcgrk_d    fcgrk_d
@@ -1211,41 +1209,41 @@ fcparg_d  = 1 parg  + 3/2 grun - 1 a - 1/2 b
 fparg_d   = 1 parg  + 1/2 grun + 1/2 b - 1 tr
 mparg_d   = 1 parg  - 1 tr     + 1 cumm
 
-                                   |tcmpg_d   = 1 parg  + 1/2 tts - 1/2 ts_q
-                                   |tcfpg_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b + 1/2 tts - 1/2 ts_q
-                                   |tmpg_d    = 1 parg  - 1 tr     + 1 cumm + 1/2 tts - 1/2 ts_q
-                                   |tfpg_d    = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts - 1/2 ts_q
+                                   |tcmpg_d   = 1 parg  + 1/2 tts_q - 1/2 ts_q
+                                   |tcfpg_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b + 1/2 tts_q - 1/2 ts_q
+                                   |tmpg_d    = 1 parg  - 1 tr     + 1 cumm + 1/2 tts_q - 1/2 ts_q
+                                   |tfpg_d    = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts_q - 1/2 ts_q
 
-                                   |ocmpg_d   = 1 parg  + 1/2 mrbG  - 1/2 gl
-                                   |ocfpg_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrbG  - 1/2 gl
-                                   |ompg_d    = 1 parg  - 1 tr     + 1 cumm + 1/2 mrbG  - 1/2 gl
-                                   |ofpg_d    = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrbG  - 1/2 gl
+                                   |ocmpg_d   = 1 parg  + 1/2 mrb1_q  - 1/2 gl
+                                   |ocfpg_d   = 1 parg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrb1_q  - 1/2 gl
+                                   |ompg_d    = 1 parg  - 1 tr     + 1 cumm + 1/2 mrb1_q  - 1/2 gl
+                                   |ofpg_d    = 1 parg  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrb1_q  - 1/2 gl
 
-kfcprg_d  = 1 kprg  + 3/2 grun - 1 a - 1/2 b
-kfparg_d  = 1 kprg  + 1/2 grun + 1/2 b - 1 tr
-kmparg_d  = 1 kprg  - 1 tr + 1 cumm
+kfcprg_d  = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b
+kfparg_d  = 1 kprg_q  + 1/2 grun + 1/2 b - 1 tr
+kmparg_d  = 1 kprg_q  - 1 tr + 1 cumm
 
-                                   |tcmkpg_d  = 1 kprg  + 1/2 tts - 1/2 ts_q
-                                   |tcfkpg_d  = 1 kprg  + 3/2 grun - 1 a - 1/2 b + 1/2 tts - 1/2 ts_q
-                                   |tmkpg_d   = 1 kprg  - 1 tr     + 1 cumm + 1/2 tts - 1/2 ts_q
-                                   |tfkpg_d   = 1 kprg  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts - 1/2 ts_q
+                                   |tcmkpg_d  = 1 kprg_q  + 1/2 tts_q - 1/2 ts_q
+                                   |tcfkpg_d  = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b + 1/2 tts_q - 1/2 ts_q
+                                   |tmkpg_d   = 1 kprg_q  - 1 tr     + 1 cumm + 1/2 tts_q - 1/2 ts_q
+                                   |tfkpg_d   = 1 kprg_q  + 1/2 grun + 1/2 b - 1 tr + 1/2 tts_q - 1/2 ts_q
 
-                                   |ocmkpg_d  = 1 kprg  + 1/2 mrbG  - 1/2 gl
-                                   |ocfkpg_d  = 1 kprg  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrbG  - 1/2 gl
-                                   |omkpg_d   = 1 kprg  - 1 tr     + 1 cumm + 1/2 mrbG  - 1/2 gl
-                                   |ofkpg_d   = 1 kprg  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrbG  - 1/2 gl
+                                   |ocmkpg_d  = 1 kprg_q  + 1/2 mrb1_q  - 1/2 gl
+                                   |ocfkpg_d  = 1 kprg_q  + 3/2 grun - 1 a - 1/2 b  + 1/2 mrb1_q  - 1/2 gl
+                                   |omkpg_d   = 1 kprg_q  - 1 tr     + 1 cumm + 1/2 mrb1_q  - 1/2 gl
+                                   |ofkpg_d   = 1 kprg_q  + 1/2 grun + 1/2 b - 1 tr + 1/2 mrb1_q  - 1/2 gl
 
 fgl_d    = 1 gl    + 1 grun   - 1 a
-frb_d    = 1 mrbG  + 1 grun   - 1 a
+frb_d    = 1 mrb1_q  + 1 grun   - 1 a
 
-fctts_d  = 1 tts   + 1 grun   - 1 a
-ftts_d   = 1 tts   - 1 tr     + 1 b
-mtts_d   = 1 tts   - 1 tr     + 1 cumm
+fctts_d  = 1 tts_q   + 1 grun   - 1 a
+ftts_d   = 1 tts_q   - 1 tr     + 1 b
+mtts_d   = 1 tts_q   - 1 tr     + 1 cumm
 
-mcgrk_d  = 1 mrbG  + 1 ts_q    - 1 gl
-mgrk_d   = 1 mrbG  + 1 ts_q    - 1 gl     - 1 tr   + 1 cumm
-fgrk_d   = 1 mrbG  + 1 ts_q    - 1 gl     - 1 tr   + 1 b
-fcgrk_d  = 1 mrbG  + 1 ts_q    - 1 gl     - 1 a  + 1 grun
+mcgrk_d  = 1 mrb1_q  + 1 ts_q    - 1 gl
+mgrk_d   = 1 mrb1_q  + 1 ts_q    - 1 gl     - 1 tr   + 1 cumm
+fgrk_d   = 1 mrb1_q  + 1 ts_q    - 1 gl     - 1 tr   + 1 b
+fcgrk_d  = 1 mrb1_q  + 1 ts_q    - 1 gl     - 1 a  + 1 grun
 
 ftr_d    = 1 tr    + 2 grun   - 1 a - 1 b
 end_dependent_endmembers
@@ -1258,53 +1256,53 @@ W(tr cumm)                45d3
 W(tr grun)                75d3
 W(tr a)                   57d3
 W(tr b)                   63d3
-W(tr mrbG)                52d3
-W(tr kprg)                30d3
-W(tr tts)                 85d3
+W(tr mrb1_q)                52d3
+W(tr kprg_q)                30d3
+W(tr tts_q)                 85d3
 W(ts_q parg)               -40d3
 W(ts_q gl)                  25d3
 W(ts_q cumm)                70d3
 W(ts_q grun)                80d3
 W(ts_q a)                   70d3
 W(ts_q b)                 72.5d3
-W(ts_q mrbG)                20d3
-W(ts_q kprg)               -40d3
-W(ts_q tts)                 35d3
+W(ts_q mrb1_q)                20d3
+W(ts_q kprg_q)               -40d3
+W(ts_q tts_q)                 35d3
 W(parg gl)                50d3
 W(parg cumm)              90d3
 W(parg grun)           106.7d3
 W(parg a)               94.8d3
 W(parg b)               94.8d3
-W(parg mrbG)              40d3
-W(parg kprg)               8d3
-W(parg tts)               15d3
+W(parg mrb1_q)              40d3
+W(parg kprg_q)               8d3
+W(parg tts_q)               15d3
 W(gl cumm)               100d3
 W(gl grun)             113.5d3
 W(gl a)                  100d3
 W(gl b)                111.2d3
-W(gl kprg)                54d3
-W(gl tts)                 75d3
+W(gl kprg_q)                54d3
+W(gl tts_q)                 75d3
 W(cumm grun)              33d3
 W(cumm a)                 18d3
 W(cumm b)                 23d3
-W(cumm mrbG)              80d3
-W(cumm kprg)              87d3
-W(cumm tts)              100d3
+W(cumm mrb1_q)              80d3
+W(cumm kprg_q)              87d3
+W(cumm tts_q)              100d3
 W(grun a)                 12d3
 W(grun b)                  8d3
-W(grun mrbG)              91d3
-W(grun kprg)              96d3
-W(grun tts)               65d3
+W(grun mrb1_q)              91d3
+W(grun kprg_q)              96d3
+W(grun tts_q)               65d3
 W(a b)                    20d3
-W(a mrbG)                 80d3
-W(a kprg)                 94d3
-W(a tts)                  95d3
-W(b mrbG)                 90d3
-W(b kprg)                 94d3
-W(b tts)                  95d3
-W(mrbG kprg)              50d3
-W(mrbG tts)               50d3
-W(kprg tts)               35d3
+W(a mrb1_q)                 80d3
+W(a kprg_q)                 94d3
+W(a tts_q)                  95d3
+W(b mrb1_q)                 90d3
+W(b kprg_q)                 94d3
+W(b tts_q)                  95d3
+W(mrb1_q kprg_q)              50d3
+W(mrb1_q tts_q)               50d3
+W(kprg_q tts_q)               35d3
 end_excess_function
 
 6                                   | number of sites in configurational entropy model (A, M1, M2, M4, T1, OH)
@@ -1312,63 +1310,66 @@ end_excess_function
 A                                   | site name
 3 1 1                               | number of species, effective multiplicity, true multiplicity
 z(Na,A)    = 1 parg
-z(K,A)     = 1 kprg
-z(Vac,A)   = 1 cumm + 1 grun + 1 tr + 1 ts_q + 1 gl + 1 a + 1 b + 1 tts + 1 mrbG
+z(K,A)     = 1 kprg_q
+z(Vac,A)   = 1 cumm + 1 grun + 1 tr + 1 ts_q + 1 gl + 1 a + 1 b + 1 tts_q + 1 mrb1_q
 
 M1                                  | site name
 2 3 3                               | number of species, effective multiplicity, true multiplicity
 z(Fe,M1)   = 1 grun + 1 b
-z(Mg,M1)   = 1 cumm + 1 tr + 1 ts_q + 1 parg + 1 kprg + 1 mrbG + 1 gl + 1 tts + 1 a
+z(Mg,M1)   = 1 cumm + 1 tr + 1 ts_q + 1 parg + 1 kprg_q + 1 mrb1_q + 1 gl + 1 tts_q + 1 a
 
 M2                                  | site name
 5 2 2                               | number of species, effective multiplicity, true multiplicity
 z(Fe,M2)   = 1 grun + 1 a
-z(Fe3,M2)  = 1 mrbG
-z(Al,M2)   = 1 ts_q + 1 gl + 1/2 kprg + 1/2 parg
-z(Ti,M2)   = 1 tts
-z(Mg,M2)   = 1/2 kprg + 1/2 parg + 1 tr + 1 cumm + 1 b
+z(Fe3,M2)  = 1 mrb1_q
+z(Al,M2)   = 1 ts_q + 1 gl + 1/2 kprg_q + 1/2 parg
+z(Ti,M2)   = 1 tts_q
+z(Mg,M2)   = 1/2 kprg_q + 1/2 parg + 1 tr + 1 cumm + 1 b
 
 M4                                  | site name
 4 2 2                               | number of species, effective multiplicity, true multiplicity
 z(Mg,M4)   = 1 cumm
-z(Na,M4)   = 1 gl + 1 mrbG
+z(Na,M4)   = 1 gl + 1 mrb1_q
 z(Fe,M4)   = 1 grun + 1 a + 1 b
-z(Ca,M4)   = 1 ts_q + 1 parg + 1 kprg + 1 tts + 1 tr
+z(Ca,M4)   = 1 ts_q + 1 parg + 1 kprg_q + 1 tts_q + 1 tr
 
 T1                                  | site name
 2 1 4                               | number of species, effective multiplicity, true multiplicity
-                                    | for some reason tts was "Al-free" here, but not in cAmph(G)_I
+                                    | for some reason tts_q was "Al-free" here, but not in cAmph(G)_I
                                     | corrected, DEK 22/9/21
-z(Al,T1)   = 1/2 ts_q + 1/2 parg + 1/2 kprg + 1/2 tts
-z(Si,T1)   = 1/2 ts_q + 1/2 parg + 1/2 kprg + 1/2 tts + 1 gl + 1 mrbG + 1 tr + 1 grun + 1 a + 1 b + 1 cumm
+z(Al,T1)   = 1/2 ts_q + 1/2 parg + 1/2 kprg_q + 1/2 tts_q
+z(Si,T1)   = 1/2 ts_q + 1/2 parg + 1/2 kprg_q + 1/2 tts_q + 1 gl + 1 mrb1_q + 1 tr + 1 grun + 1 a + 1 b + 1 cumm
 
 OH                                  | site name
 2 2 2                               | number of species, effective multiplicity, true multiplicity
-z(O,OH)    = 1 tts
-z(OH,OH)   = 1 cumm + 1 grun + 1 ts_q + 1 tr + 1 parg + 1 kprg + 1 mrbG + 1 gl + 1 b + 1 a
+z(O,OH)    = 1 tts_q
+z(OH,OH)   = 1 cumm + 1 grun + 1 ts_q + 1 tr + 1 parg + 1 kprg_q + 1 mrb1_q + 1 gl + 1 b + 1 a
 
 
 [Si4O22]                            | formula suffix, enter "none" for no suffix.
 
 begin_van_laar_sizes
 alpha(tr)          1
-alpha(ts_q)          1.5
+alpha(ts_q)        1.5
 alpha(parg)        1.7
 alpha(gl)          0.8
 alpha(cumm)        1
 alpha(grun)        1
 alpha(a)           1
 alpha(b)           1
-alpha(mrbG)        0.8
-alpha(kprg)        1.7
-alpha(tts)         1.5
+alpha(mrb1_q)      0.8
+alpha(kprg_q)        1.7
+alpha(tts_q)         1.5
 end_van_laar_sizes
 
 begin_dqf_corrections
-DQF(gl)   = -3000
-DQF(parg) = -10000
-DQF(ts_q) =  10000
-DQF(grun) = -3000
+DQF(gl)    = -3000
+DQF(parg)  = -10000
+DQF(ts_q)  =  10000
+DQF(grun)  = -3000
+DQF(mrb1_q) = 0
+DQF(kprg_q) = -7060 + 20 * T_K
+DQF(tts_q)  = 95000
 end_dqf_corrections
                                     | solution model specific computational options:
 begin_flagged_endmembers
@@ -3476,7 +3477,7 @@ begin_model
 
                                         en            Mg      Mg     SiSi
                                         mgts          Al      Mg     SiAl
-                                        oen           Fe3+    Mg     SiAl
+                                        oen_q           Fe3+    Mg     SiAl
                                         cren_q         Cr      Mg     SiAl
 
                             Species:    fs            Fe      Fe     SiSi
@@ -3502,7 +3503,7 @@ full_name    orthopyroxene
 3 4                        | 3 vertices on first space, 4 on second
 
                            | endmembers:
-odif    oen     ofs
+odif    oen_q     ofs
 odicr   cren_q  crfs
 tsdi    mgts    tsfs
 odi_q   en      fs
@@ -3516,8 +3517,8 @@ opx = 1/2 en + 1/2  fs  Delta(enthalpy) = -6d3
 tsfs  = 1 mgts   + 1 opx - 1 en
 tsdi  = 1 odi_q   + 1 mgts - 1 en
 
-ofs   = 1 oen    + 1 opx - 1 en
-odif  = 1 odi_q   + 1 oen - 1 en
+ofs   = 1 oen_q    + 1 opx - 1 en
+odif  = 1 odi_q   + 1 oen_q - 1 en
 
 crfs  = 1 cren_q  + 1 opx - 1 en
 odicr = 1 odi_q   + 1 cren_q - 1 en
@@ -3538,22 +3539,22 @@ W(en opx)         4d3
 W(en odi_q )      32.2d3    0.12 * P_bar
 W(en mgts)       13d3   -0.15 * P_bar
 W(en cren_q)        8d3
-W(en oen)         8d3
+W(en oen_q)         8d3
 W(fs opx)         4d3
 W(fs odi_q )        24d3
 W(fs mgts)        7d3   -0.15 * P_bar
 W(fs cren_q)       10d3
-W(fs oen)        10d3
+W(fs oen_q)        10d3
 W(opx odi_q )       18d3
 W(opx mgts)       2d3   -0.15 * P_bar
 W(opx cren_q)      12d3
-W(opx oen)       12d3
+W(opx oen_q)       12d3
 W(odi_q mgts)    75.4d3   -0.94 * P_bar
 W(odi_q cren_q)      30d3
-W(odi_q oen)       30d3
+W(odi_q oen_q)       30d3
 W(mgts cren_q)      2d3
-W(mgts oen)       2d3
-W(cren_q oen)       2d3
+W(mgts oen_q)       2d3
+W(cren_q oen_q)       2d3
 end_excess_function
 
 3                          | 2 site (M1, M2, T1) configurational entropy model
@@ -3561,7 +3562,7 @@ end_excess_function
 5 1                        | 5 species on M1, 1 site per formula unit.
 z(m1,fe)   = 1 fs
 z(m1,cr)   = 1 cren_q
-z(m1,fe3+) = 1 oen
+z(m1,fe3+) = 1 oen_q
 z(m1,al)   = 1 mgts
 
 3 1                        | 3 species on M2, 1 site per formula unit. OS_EDIT-3/16 changed comment [2 species...]
@@ -3569,7 +3570,7 @@ z(m2,ca) = 1 odi_q
 z(m2,fe) = 1 fs + 1 opx
 
 2  .5                      | 2 species on "1/2" T sites with true site fraction.
-z(t,al) = 1/2 mgts + 1/2 cren_q + 1/2 oen
+z(t,al) = 1/2 mgts + 1/2 cren_q + 1/2 oen_q
 
 
 begin_van_laar_sizes
@@ -3579,10 +3580,11 @@ alpha(opx)    1
 alpha(odi_q )    1.2
 alpha(mgts)   1
 alpha(cren_q)   1
-alpha(oen)    1
+alpha(oen_q)    1
 end_van_laar_sizes
 
 begin_dqf_corrections
+DQF(oen_q)  = -15d3 + 0.15 * p_bar
 dqf(cren_q) =  3000                          | crenJH
 dqf(odi_q)  =  2800 + 0.005 * P              | = odi, it's unclear why this model is retroactively modified.
 end_dqf_corrections
@@ -3904,10 +3906,9 @@ end_of_model
 begin_model
                              Mica(W), White et al., JMG 32:261-286, 2014.
 
-                             This model requires the make definitions:
+                             This model requires the generic definitions:
 
-                                fmu = 1 mu + 1/2 andr - 1/2 gr
-                                25d3 0 0
+                                fmu_q = 1 mu + 1/2 andr - 1/2 gr
 
                                 ma1_dqf: replaced, see Jan 31, 2026 note below.
 
@@ -3937,10 +3938,10 @@ begin_model
 
                                       1 mu            K       Al      Al    AlSi    _
                                       2 pa            Na      Al      Al    AlSi    _
-                                      3 ma                Ca      Al      Al    AlAl    _
+                                      3 ma            Ca      Al      Al    AlAl    _
                                       4 cel           K       Mg      Al    SiSi    _
                                       5 fcel          K       Fe      Al    SiSi    _
-                                      6 fmu           K       Al      Fe3+  AlSi    _
+                                      6 fmu_q         K       Al      Fe3+  AlSi    _
 
 Mica(W)
 abbreviation Mica
@@ -3950,7 +3951,7 @@ full_name    white-mica
 
 6                            | 6 endmembers
 
-mu pa ma cel fmu fcel
+mu pa ma cel fmu_q fcel
 
 0 0 0 0 0 0 0 0              | endmember flags
 
@@ -3959,7 +3960,7 @@ mu pa ma cel fmu fcel
 0  1     .1 0                | range and resolution of X(pa),      imod = 0 -> cartesian subdivision
 0  1     .1 1                | range and resolution of X(ma), imod = 0 -> cartesian subdivision
 0  1     .1 0                | range and resolution of X(cel),     imod = 0 -> cartesian subdivision
-0  .3    .1 0                | range and resolution of X(fmu),
+0  .3    .1 0                | range and resolution of X(fmu_q),
 begin_excess_function
 
 W(mu cel)        0                   + .2   * P_bar
@@ -3971,8 +3972,8 @@ W(cel ma)        50d3
 W(fcel pa)       45d3                + .25  * P_bar
 W(fcel ma)       50d3
 W(pa ma)         15d3                                      | changed from 18d3, 5/1/19.
-W(pa fmu)        30d3
-W(ma fmu)        35d3
+W(pa fmu_q)        30d3
+W(ma fmu_q)        35d3
 
 end_excess function
 
@@ -3980,31 +3981,32 @@ end_excess function
 
 3 1                         | 3 species on A, 1 site per formula unit.
 
-z(a,k) = 1 mu  + 1 cel + 1 fcel + 1 fmu
+z(a,k) = 1 mu  + 1 cel + 1 fcel + 1 fmu_q
 z(a,na) = 1 pa
 
 3 1                         | 3 species on M2a, 1 site per formula unit.
 
-z(m2a,al) = 1 mu + 1 pa + 1 ma + 1 fmu
+z(m2a,al) = 1 mu + 1 pa + 1 ma + 1 fmu_q
 z(m2a,mg) = 1 cel
 
 2 1                         | 2 species on M2b, 1 site per formula unit.
-z(m2b,fe) = 1 fmu
+z(m2b,fe) = 1 fmu_q
 
 2 2.                        | 2 species on T1, 2 sites per formula unit.
-z(t,al) = 1/2 mu + 1/2 pa + 1/2 fmu + 1 ma
+z(t,al) = 1/2 mu + 1/2 pa + 1/2 fmu_q + 1 ma
 
 begin_van_laar_sizes
 alpha(mu)       .63
 alpha(pa)       .37
 alpha(ma)       .63
 alpha(cel)      .63
-alpha(fmu)      .63
+alpha(fmu_q)      .63
 alpha(fcel)     .63
 end_van_laar_sizes
 
 begin_dqf_corrections
 dqf(ma)         5000     | published as 6500 kj/mol
+dqf(fmu_q)     25000
 end_dqf_corrections
 
 end_of_model
@@ -4012,12 +4014,11 @@ end_of_model
 begin_model
                              Fe3-Fe-Mg Ctd, White et al., JMG 32:261-286, 2014.
 
-                             This model requires the make definitions:
+                             This model requires the generic make definition:
 
-                                ctdo = 1 mct + 1/4 andr - 1/4 gr
-                                25d3 0 0
+                                ctdo_q = 1 mct + 1/4 andr - 1/4 gr
 
-                             JADC, 4/14
+                             JADC, 10/26
 
                              Mn added DEK June 2021.
 
@@ -4027,7 +4028,7 @@ full_name    chloritoid
 
 2                          | model type: simplicial composition space
 4                          | 4 endmembers
-ctdo    fctd     mctd   mnctd
+ctdo_q    fctd     mctd   mnctd
 0  0  0  0                 | endmember flags
 
                            | Note restricted range on X(Mn)
@@ -4039,23 +4040,24 @@ ctdo    fctd     mctd   mnctd
 begin_excess_function
 W(mctd fctd)               4d3
 W(mctd mnctd)              3d3
-W(mctd ctdo)               1d3
+W(mctd ctdo_q)               1d3
 W(fctd mnctd)              3d3
-W(fctd ctdo)               5d3
-W(mnctd ctdo)              4d3
+W(fctd ctdo_q)               5d3
+W(mnctd ctdo_q)              4d3
 end_excess_function
 
 2                                     1 site entropy model
 
 3 1                                   2 species on M1b, site multiplicity = 1.
 z(Fe) = 1 fctd
-z(Mg) = 1 mctd + 1 ctdo    | added by DEK 02-Jun-2021 (put all Mg-bearing EMs here)
+z(Mg) = 1 mctd + 1 ctdo_q    | added by DEK 02-Jun-2021 (put all Mg-bearing EMs here)
 
 2  .5                                2 species on M1a, site multiplicity = 0.5
-z(Fe3) = 1 ctdo
+z(Fe3) = 1 ctdo_q
 
 begin_dqf_corrections
-dqf(mnctd)  660            | added by DEK 02-JUN-2021
+dqf(mnctd)     660            | added by DEK 02-JUN-2021
+dqf(ctdo_q)  25000
 end_dqf_corrections
 
 end_of_model
@@ -4065,18 +4067,11 @@ begin_model
 
                              688-type Ti-Fe-Fe3-Mg-Mn Staurolite, White et al., JMG 32:261-286, 2014.
 
-                             This model requires the make definitions:
+                             This model requires the generic make definitions:
 
-                             mnst = 1 mnst                           | added DEK 2nd June 2021
-                             -0.19d3
-
-                             msto   = 1 andr  -1 gr  + 1 mst
-                             9d3
-
-                             mstt   = 1 mst - 1 cor   +3/2   ru
-                             13d3
-
-                             JADC, 4/14
+                             msto_q   = 1 andr  -1 gr  + 1 mst
+                             mstt_q   = 1 mst - 1 cor   +3/2   ru
+                             JADC, 10/26
 
                              Missing DQF for mst added by Mark Caddick.
                              JADC, 1/26/2014
@@ -4098,9 +4093,10 @@ full_name    staurolite
 1                                     | number of simplices
 5                                     | 5 independent end-members (or number of vertices on each simplex)
 
-mstt   msto    mst    mnst   fst      | end-member names
+mstt_q   msto_q    mst    mnst   fst
 
-| NAME, XMIN, XMAX, XINC, IMOD (IMOD = 0 is cartesian scheme; IMOD = 1 is non-linear scheme, See https://www.perplex.ethz.ch/perplex/datafiles/solution_model.dat)
+| NAME, XMIN, XMAX, XINC, IMOD (IMOD = 0 is cartesian scheme; 
+| IMOD = 1 is non-linear scheme, See https://www.perplex.ethz.ch/perplex/datafiles/solution_model.dat)
 | If only one simplex no need to put NAME out front.
 
 0. .3  .1   1                | first simplex: range and resolution for X(Ti),  imod = 1 -> asymmetric transform subdivision
@@ -4112,36 +4108,38 @@ mstt   msto    mst    mnst   fst      | end-member names
 begin_excess_function
 W(mst fst)                16d3
 W(mst mnst)               12d3
-W(mst msto)                2d3
-W(mst mstt)               20d3
-W(fst msto)               18d3
+W(mst msto_q)              2d3
+W(mst mstt_q)             20d3
+W(fst msto_q)             18d3
 W(fst mnst)                8d3
-W(fst mstt)               36d3
-W(mnst msto)              14d3
-W(mnst mstt)              32d3
-W(msto mstt)              30d3
+W(fst mstt_q)             36d3
+W(mnst msto_q)            14d3
+W(mnst mstt_q)            32d3
+W(msto_q mstt_q)          30d3
 end_excess_function
 
 2                                     2 site entropy model
 
 X
 3 4 4                                 3 species, effective site multiplicity of 4, true multiplicity
-z(Mg,X) = 1 mst + 1 mstt + 1 msto     | corrected from just 1 mst by Felix Gervais, 4/9/2015. JADC
+z(Mg,X) = 1 mst + 1 mstt_q + 1 msto_q     | corrected from just 1 mst by Felix Gervais, 4/9/2015. JADC
 x(Mn,X) = 1 mnst
 z(Fe,X) = 1 fst
 
 Y
 4 2 2                                 4 species, effective site multiplicity of 2, true multiplicity (not clear if the vacancy is associated with Ti)
-z(Ti,Y)  = 3/4 mstt
-z(Fe3,Y) =   1 msto
-z(v,Y)  = 1/4 mstt
+z(Ti,Y)  = 3/4 mstt_q
+z(Fe3,Y) =   1 msto_q
+z(v,Y)  = 1/4 mstt_q
 z(Al,Y) = 1 mst + 1 fst + 1 mnst
 
 [Al16Si7.5O44(OH)4]                   | formula suffix, enter "none" for no suffix
 
 begin_dqf_corrections
-dqf(mst)  -8000
-dqf(mnst) -190                        | corrected from 0.19 by Felix Gervais, 4/9/2015. JADC
+dqf(mst)     = -8000
+dqf(mstt_q)  = 13000
+dqf(mnst)    =  -190                        | corrected from 0.19 by Felix Gervais, 4/9/2015. JADC
+dqf(msto_q)  =  9000
 end_dqf_corrections
 
 end_of_model
@@ -4150,17 +4148,14 @@ begin_model
 
                              Opx(W) - Fe2+-Fe3+-Mg-Al-Ca Orthopyroxene, White et al., JMG 32:261-286, 2014.
 
-                             This model requires the make definitions:
+                             This model requires the generic make definitions:
 
-                             mots1    = 1 mgts + 1/2  andr  - 1/2   gr
-                             2d3 0 0
+                             ots1_q    = 1 mgts + 1/2  andr  - 1/2   gr
+                             mnpx_q = 2 pxmn
 
-                             mnopx = 2 pxmn
-                             6.68d3 0 0
+                             JADC, 10/2026
 
-                             JADC, 4/14
-
-                             Al site fraction of T "corrected" to (mots1 + mgts)/8 by Mark Caddick.
+                             Al site fraction of T "corrected" to (ots1_q + mgts)/8 by Mark Caddick.
 
                              JADC, 1/26/2015
 
@@ -4175,7 +4170,7 @@ begin_model
 
                              The correction on 1/26/15 was NOT what is done in thermocalc,
                              apparently the correct form is to compute the true disordered
-                             tetrahedral site fraction  (mots1 + mgts)/2, but apply a fake
+                             tetrahedral site fraction  (ots1_q + mgts)/2, but apply a fake
                              multiplicity of 1/4.
 
                              JADC, 6/10/2016
@@ -4196,12 +4191,12 @@ begin_model
 
                                       1 en            Mg      Mg      Si
                             Species:  2 fs            Fe2+    Fe2+    Si
-                                      3 mnopx         Mn      Mn      Si    independent orphan
+                                      3 mnpx_q         Mn      Mn      Si    independent orphan
 
                                       4 mgts          Al      Mg      AlSi
                                       5 fets          Al      Fe2+    AlSi  dependent
 
-                                      7 mots1         Fe3+    Mg      AlSi
+                                      7 ots1_q         Fe3+    Mg      AlSi
                                       8 feots         Fe3+    Fe2+    AlSi  dependent
 
                                      10 odi_q            Mg      Ca      Si
@@ -4212,7 +4207,7 @@ begin_model
 
 
                            Dependent: fets  = mgts  + opx - en
-                                      feots = mots1 + opx - en
+                                      feots = ots1_q + opx - en
                                       fdi   = odi_q   + opx - en
 
            T  = Al, Fe3; M1
@@ -4240,14 +4235,14 @@ full_name    orthopyroxene
                                    | Polytope 1
 1                                  | number of simplices, [Mn][Mn]
 1                                  | number of vertices on each simplex
-mnopx                              | endmembers on the vertices
+mnpx_q                              | endmembers on the vertices
 
                                    | ----------------------------
                                    | Polytope 2
 2                                  | number of simplices
 2  4                               | number of vertices on each simplex
                                    | endmembers on the vertices
-mots1    feots_d
+ots1_q    feots_d
 odi_q       fdi_d
 mgts     fets_d
 en       fs
@@ -4266,7 +4261,7 @@ end_ordered_endmembers
 
 begin_dependent_endmembers
 fets_d   = 1 mgts  + 1 opx - 1 en
-feots_d  = 1 mots1 + 1 opx - 1 en
+feots_d  = 1 ots1_q + 1 opx - 1 en
 fdi_d    = 1 odi_q    + 1 fs  - 1 opx
 end_dependent_endmembers
 
@@ -4274,24 +4269,24 @@ begin_excess_function
 W(en fs)                   7d3
 W(en opx)                  4d3
 W(en mgts)                13d3          -0.15 * P_bar
-W(en mots1)               11d3          -0.15 * P_bar
-W(en mnopx)                5d3
+W(en ots1_q)               11d3          -0.15 * P_bar
+W(en mnpx_q)                5d3
 W(en odi_q)                32.2d3           0.12 * P_bar
 W(fs opx)                  4d3
 W(fs mgts)                13d3          -0.15 * P_bar
-W(fs mots1)             11.6d3          -0.15 * P_bar
-W(fs mnopx)              4.2d3
+W(fs ots1_q)             11.6d3          -0.15 * P_bar
+W(fs mnpx_q)              4.2d3
 W(fs odi_q)               25.54d3          0.084 * P_bar
 W(opx mgts)               17d3          -0.15 * P_bar
-W(opx mots1)              15d3          -0.15 * P_bar
-W(opx mnopx)             5.1d3
+W(opx ots1_q)              15d3          -0.15 * P_bar
+W(opx mnpx_q)             5.1d3
 W(opx odi_q)              22.54d3          0.084 * P_bar
-W(mgts mots1)              1d3
-W(mgts mnopx)             12d3          -0.15 * P_bar
+W(mgts ots1_q)              1d3
+W(mgts mnpx_q)             12d3          -0.15 * P_bar
 W(mgts odi_q)              75.4d3          -0.94 * P_bar
-W(mots1 mnopx)          10.6d3          -0.15 * P_bar
-W(mots1 odi_q)             73.4d3          -0.94 * P_bar
-W(odi_q mnopx)             24.54d3         0.084 * P_bar
+W(ots1_q mnpx_q)          10.6d3          -0.15 * P_bar
+W(ots1_q odi_q)             73.4d3          -0.94 * P_bar
+W(odi_q mnpx_q)             24.54d3         0.084 * P_bar
 end_excess_function
 
 3                                   | 3 site (M1, M2, T) configurational entropy model
@@ -4300,23 +4295,23 @@ M1                                  | site name
 5 1 1                               | number of species, effective multiplicity, true multiplicity
 z(Fe)   = 1 fs
 z(Al)   = 1 mgts
-z(Fe3+) = 1 mots1
-z(Mn)   = 1 mnopx
+z(Fe3+) = 1 ots1_q
+z(Mn)   = 1 mnpx_q
 z(Mg)   = 1 en + 1 opx + 1 odi_q
 
 M2                                  | site name
 4 1 1                               | number of species, effective multiplicity, true multiplicity
 z(Fe)   = 1 fs + 1 opx
 z(Ca)   = 1 odi_q
-z(Mn)   = 1 mnopx
-z(Mg)   = 1 en + 1 mgts + 1 mots1
+z(Mn)   = 1 mnpx_q
+z(Mg)   = 1 en + 1 mgts + 1 ots1_q
 
 T                                   | site name
                                     | effective site multiplicity increased from .25 to .5, DEK 22/9/2021
                                     | the ".25" value is apparently a typo in the TC commentary.
 2 .5 2                              | number of species, effective multiplicity, true multiplicity
-z(Al,T)    = 1/2 mgts + 1/2 mots1
-z(Si,T)    = 1/2 mgts + 1/2 mots1 + 1 en + 1 fs + 1 opx + 1 odi_q + 1 mnopx
+z(Al,T)    = 1/2 mgts + 1/2 ots1_q
+z(Si,T)    = 1/2 mgts + 1/2 ots1_q + 1 en + 1 fs + 1 opx + 1 odi_q + 1 mnpx_q
 
 [O6]                                | formula suffix, enter "none" for no suffix.
 
@@ -4326,13 +4321,15 @@ alpha(en)       1
 alpha(fs)       1
 alpha(opx)      1
 alpha(mgts)     1
-alpha(mots1)    1
-alpha(odi_q)       1.2
-alpha(mnopx)    1
+alpha(ots1_q)   1
+alpha(odi_q)    1.2
+alpha(mnpx_q)   1
 end_van_laar_sizes
 
 begin_dqf_corrections
 dqf(odi_q)  = -100    +   0.211 *T      0.005 *P
+DQF(ots1_q) = 2d3
+DQF(mnpx_q) = 6680
 end_dqf_corrections
 
 end_of_model
@@ -4951,7 +4948,7 @@ begin_model
                             Species:  2 fspr          Fe     Fe    Si
                                       3 spr5          Al     Mg    Al
                                       4 fsp5_d        Al     Fe    Al        dependent
-                                      5 ospr          Fe3+   Mg    Al
+                                      5 ospr_q        Fe3+   Mg    Al
                                       6 fospr_d       Fe3+   Fe    Al        dependent
 
                                       7 spro          Fe     Mg    Si        ordered
@@ -4961,7 +4958,7 @@ begin_model
                                       FeMg-1_M456 = (fspr-spro)/3
 
                                       fsp5_d = spr5 +  fspr - spro
-                                      fospro_d = ospr +  fspr - spro
+                                      fospro_d = ospr_q +  fspr - spro
 
 Sa(WP)
 abbreviation Sap
@@ -4974,7 +4971,7 @@ full_name    sapphirine
                              | endmember names
 spr4     fspr
 spr5     fsp5_d
-ospr     fospr_d
+ospr_q     fospr_d
 
 1                            | 1 ordered species:
 
@@ -4998,13 +4995,13 @@ begin_excess_function
 W(spr4 spr5)              10d3         -0.02 * P_bar
 W(spr4 fspr)              16d3
 W(spr4 spro)              12d3
-W(spr4 ospr)               8d3         -0.02 * P_bar
+W(spr4 ospr_q)               8d3         -0.02 * P_bar
 W(spr5 fspr)              19d3         -0.02 * P_bar
 W(spr5 spro)              22d3         -0.02 * P_bar
-W(spr5 ospr)               1d3
+W(spr5 ospr_q)               1d3
 W(fspr spro)               4d3
-W(fspr ospr)             17600         -0.02 * P_bar
-W(spro ospr)              20d3         -0.02 * P_bar
+W(fspr ospr_q)             17600         -0.02 * P_bar
+W(spro ospr_q)              20d3         -0.02 * P_bar
 end_excess_function
 
 3                          | 3 site (M3, M456, T) configurational entropy model
@@ -5014,14 +5011,15 @@ z(m456,fe) = 1 fspr
 
 4 1                        | 4 species on M3, 1 sites per formula unit.
 z(m3,Al)  = 1 spr5
-z(m3,Fe3) = 1 ospr
+z(m3,Fe3) = 1 ospr_q
 z(m3,mg)  = 1 spr4
 
 2 1                        | 2 species on T, 1 sites per formula unit.
 z(T,si) = 1 spr4 + 1 fspr + 1 spro
 
 begin_dqf_corrections
-dqf(fspr)   -2d3
+dqf(fspr)   =  -2d3
+dqf(ospr_q) = -16d3
 end_dqf_corrections
 
 end_of_model
@@ -5050,7 +5048,7 @@ begin_model
                             Species:  2 fs            Fe2+    Fe2+
                                       3 mgts          Al      Mg
                                       4 fets          Al      Fe2+  dependent
-                                      5 mots          Fe3+    Mg
+                                      5 ots_q          Fe3+    Mg
                                       6 feots         Fe3+    Fe2+  dependent
                                                       _____________
 
@@ -5058,7 +5056,7 @@ begin_model
 
 
                            Dependent: fets  = mgts + opx - en
-                                      feots = mots + opx - en
+                                      feots = ots_q + opx - en
 
 
 Opx(HP)                    | solution name.
@@ -5071,7 +5069,7 @@ full_name    orthopyroxene
                            | endmembers:
 mgts     fets_d
 en       fs
-mots     feots
+ots_q    feots
 
 1                          | ordered species definition
 
@@ -5080,7 +5078,7 @@ opx = 1/2 en + 1/2  fs  Delta(enthalpy) = -6.95d3
 2                          | 2 dependent endmembers
 
 fets_d = 1 mgts + 1 opx - 1 en
-feots  = 1 mots + 1 opx - 1 en
+feots  = 1 ots_q + 1 opx - 1 en
 
 0 0 0 0 0 0                | endmember flags, indicate if endmember is part of the solution (i.e. iend = 0).
 
@@ -5098,9 +5096,9 @@ w(fs mgts)   -1d3
 w(en opx)    45d2
 w(fs opx)    45d2
 w(mgts opx)  12d2
-w(en mots)  -14d3
-w(fs mots)    6d3
-w(opx mots)   6d3
+w(en ots_q)  -14d3
+w(fs ots_q)    6d3
+w(opx ots_q)   6d3
 end_excess_function
 
 2                          | 2 site (M1, M2) configurational entropy model
@@ -5109,10 +5107,14 @@ end_excess_function
 
 z(m1,fe)   = 1 fs
 z(m1,al)   = 1 mgts
-z(m1,fe3+) = 1 mots
+z(m1,fe3+) = 1 ots_q
 
 2 1                        | 2 species on M2, 1 site per formula unit.
-z(m2,mg) = 1 en + 1 mgts + 1 mots
+z(m2,mg) = 1 en + 1 mgts + 1 ots_q
+
+begin_dqf_corrections
+DQF(ots_q) = 22d3
+end_dqf_corrections
 
 end_of_model
                       --------------------------------------------------------
@@ -5542,14 +5544,14 @@ begin_model
                                       1 en            Mg      Mg
                             Species:  2 fs            Fe2+    Fe2+
                                       3 mgts          Al      Mg
-                                      5 mots          Fe3+    Mg
+                                      5 ots_q         Fe3+    Mg
                                       7 crts          Cr      Mg
                                                       _____________
 
                            Internal:  9 opx           Mg      Fe2+
 
                            Dependent: fets  = mgts + opx - en
-                                      feots = mots + opx - en
+                                      feots = ots_q + opx - en
                                       fcrts = crts + opx - en
 
 CrOpx(HP)                  | solution name.
@@ -5564,7 +5566,7 @@ full_name    orthopyroxene
 crts     fcrts_d
 mgts     fets_d
 en       fs
-mots     feots
+ots_q     feots
 
 1                          | ordered species definition
 
@@ -5573,7 +5575,7 @@ opx = 1/2 en + 1/2  fs  Delta(enthalpy) = -6.95d3
 3                          | 3 dependent endmembers
 
 fets_d  = 1 mgts + 1 opx - 1 en
-feots   = 1 mots + 1 opx - 1 en
+feots   = 1 ots_q + 1 opx - 1 en
 fcrts_d = 1 crts - 1/2 en + 1/2 fs
 
 0 0 0 0 0 0 0 0            | endmember flags, indicate if endmember is part of the solution (i.e. iend = 0).
@@ -5592,9 +5594,9 @@ w(fs mgts)   -1d3 -14. 0
 w(en opx)    45d2
 w(fs opx)    45d2
 w(mgts opx)  12d2 -14. 0
-w(en mots)  -14d3
-w(fs mots)    6d3
-w(opx mots)   6d3
+w(en ots_q)  -14d3
+w(fs ots_q)    6d3
+w(opx ots_q)   6d3
 end_excess_function
 
 2                          | 2 site (M1, M2) configurational entropy model
@@ -5603,11 +5605,16 @@ end_excess_function
 
 z(m1,fe)   = 1 fs
 z(m1,al)   = 1 mgts
-z(m1,fe3+) = 1 mots
+z(m1,fe3+) = 1 ots_q
 z(m1,cr)   = 1 crts
 
 2 1                        | 2 species on M2, 1 site per formula unit.
-z(m2,mg) = 1 en + 1 mgts + 1 mots + 1 crts
+z(m2,mg) = 1 en + 1 mgts + 1 ots_q + 1 crts
+
+begin_dqf_corrections
+DQF(ots_q) = 22d3
+end_dqf_corrections
+
 
 site_check_override
 
@@ -6525,7 +6532,7 @@ begin_model
                                                      ______________________
 
                                       1 me            Ca      Al       Al     independent
-                            Species:  2 coma          Na3Ca   Si       Si     independent
+                            Species:  2 coma_q        Na3Ca   Si       Si     independent
                                       3 koma          K3Ca    Si       Si
                                       _____________________________________
 
@@ -6535,6 +6542,10 @@ begin_model
                             rather than the incorrect enthalpy that follows
                             from table 6.4. JADC, Dec 30, 2013.
 
+                            koma is an ad hoc addition, JADC 2/25 (check how the qdf 
+                            propagates, probably it does not, which means the DG of 
+                            ordering must be adjusted). JADC 10/26
+
 Scap(RP)                       | solution name
 abbreviation Scp
 full_name    scapolite
@@ -6543,21 +6554,21 @@ full_name    scapolite
 
 3                          | 2 endmembers
 me
-coma
+coma_q
 koma
 
 1                          | ordered species definition
 
-mizz = 2/3 me + 1/3 coma   delta_g_of_ordering  = -29000
+mizz = 2/3 me + 1/3 coma_q   delta_g_of_ordering  = -29000
 
 0 0 0| endmember flags
 0   1   .1  0
 0   1   .1  0
 
 begin_excess_function
-w(me coma)   20000.
+w(me coma_q)   20000.
 w(me mizz)   20000.
-w(coma mizz) 30000.
+w(coma_q mizz) 30000.
 w(me koma)   20000.
 w(koma mizz) 30000.
 end_excess_function
@@ -6565,7 +6576,7 @@ end_excess_function
 
 3 4.                       | 2 species on M, 4 sites per formula unit.
 
-z(m,na) = 1/4 mizz  +  3/4 coma
+z(m,na) = 1/4 mizz  +  3/4 coma_q
 z(m,k) =  3/4 koma
 
 2 1                        | 2 species on T2a, 1 site per formula unit.
@@ -6574,7 +6585,11 @@ z(t2a,al) = 1 me
 
 2 2.                       | 2 species on T2b, 1 site per formula unit.
 
-z(t1a,si) = 1 coma + 1 koma
+z(t1a,si) = 1 coma_q + 1 koma
+
+begin_dqf_corrections
+DQF(coma_q) = 25000
+end_dqf_corrections
 
 end_of_model
                       --------------------------------------------------------
@@ -10770,10 +10785,9 @@ begin_model
 
                                 Smye et al (JMG, 2011, 28:753-768)
 
-                             This model requires the make definition:
+                             This model requires the generic make definition:
 
-                                fmu = 1 mu + 1/2 hem - 1/2 cor
-                                  -30d3
+                                fmu1_q = 1 mu + 1/2 hem - 1/2 cor
 
                              made internal Jan 31, 2026
 
@@ -10802,7 +10816,7 @@ begin_model
                                       3 ma            Ca      Al      Al    AlAl    _
                                       4 cel           K       Mg      Al    SiSi    _
                                       5 fcel          K       Fe      Al    SiSi    _
-                                      6 fmu           K       Al      Fe3+  AlSi    _
+                                      6 fmu1_q        K       Al      Fe3+  AlSi    _
 Mica(SGH)
 abbreviation Mica
 full_name    white-mica
@@ -10811,7 +10825,7 @@ full_name    white-mica
 
 6                            | 6 endmembers
 
-mu pa ma     cel fmu fcel
+mu pa ma     cel fmu1_q fcel
 
 0 0 0 0 0 0 0 0              | endmember flags
 
@@ -10820,7 +10834,7 @@ mu pa ma     cel fmu fcel
 0    1  .1 0                 | range and resolution of X(pa),      imod = 0 -> cartesian subdivision
 0    1  .1 0                 | range and resolution of X(ma    ),  imod = 0 -> cartesian subdivision
 0    1  .1 0                 | range and resolution of X(cel),     imod = 0 -> cartesian subdivision
-0  0.3  .1 0                 | range and resolution of X(fmu)
+0  0.3  .1 0                 | range and resolution of X(fmu1_q)
 
 begin_excess_function
 
@@ -10836,9 +10850,9 @@ W(pa fcel)       45000  0.25*P
 W(ma     fcel)   40000
 
 W(pa ma    )     15000
-W(pa fmu)        30000
+W(pa fmu1_q)        30000
 
-W(ma     fmu)    35000
+W(ma     fmu1_q)    35000
 
 end_excess function
 
@@ -10846,32 +10860,33 @@ end_excess function
 
 3 1                         | 3 species on A, 1 site per formula unit.
 
-z(a,k) = 1 mu  + 1 cel + 1 fcel + 1 fmu
+z(a,k) = 1 mu  + 1 cel + 1 fcel + 1 fmu1_q
 z(a,na) = 1 pa
 
 3 1                         | 3 species on M2a, 1 site per formula unit.
 
-z(m2a,al) = 1 mu + 1 pa + 1 ma     + 1 fmu
+z(m2a,al) = 1 mu + 1 pa + 1 ma     + 1 fmu1_q
 z(m2a,mg) = 1 cel
 
 2 1                         | 2 species on M2b, 1 site per formula unit.
-z(m2b,fe) = 1 fmu
+z(m2b,fe) = 1 fmu1_q
 
 2 2.                        | 2 species on T1, 2 sites per formula unit.
-z(t,al) = 1/2 mu + 1/2 pa + 1/2 fmu + 1 ma
+z(t,al) = 1/2 mu + 1/2 pa + 1/2 fmu1_q + 1 ma
 
 begin_van_laar_sizes
 alpha(mu)     0.63
 alpha(pa)     0.37
 alpha(ma    ) 0.63
 alpha(cel)    0.63
-alpha(fmu)    0.63
+alpha(fmu1_q) 0.63
 alpha(fcel)   0.63
 
 end_van_laar_sizes
 
 begin_dqf_corrections
-dqf(ma)         3000
+dqf(ma)          3000
+dqf(fmu1_q)    -30000
 end_dqf_corrections
 
 end_of_model
@@ -10945,16 +10960,14 @@ begin_model
 
                                        Smye et al (JMG, 2011, 28:753-768)
 
-                                    This model requires the make definitions:
+                                    This model requires the generic make definitions:
 
-                                       ocar  = 1 fcar + 1/2 hem - 1/2 cor
-                                         45d3 0 0
-                                       mncar = 1 mcar + 1 mang - 1/2 cor
-                                         30d3 0 0
+                                       ocar_q  = 1 fcar + 1/2 hem - 1/2 cor
+                                       mncar_q = 1 mcar + 1 mang - 1/2 cor
 
                                     in the thermodynamic data file (e.g., hp02ver.dat).
 
-                                    JADC, 19/09/11
+                                    JADC, 10/26
 
                                                       M2      M1
                                                      _______________
@@ -10964,8 +10977,8 @@ begin_model
 
                                           mcar         Al     Mg
                                           fcar         Al     Fe
-                                          mncar        Al     Mn
-                                          ocar         Fe3+   Fe
+                                          mncar_q        Al     Mn
+                                          ocar_q         Fe3+   Fe
 Carp(SGH)
 abbreviation Crp
 full_name    carpholite
@@ -10974,8 +10987,8 @@ full_name    carpholite
 
 4                          | endmembers
 
-mncar
-ocar
+mncar_q
+ocar_q
 fcar
 mcar
 
@@ -10987,18 +11000,23 @@ mcar
 
 begin_excess_function
 w(mcar fcar )  1d3
-w(mcar mncar)  1d3
-w(fcar mncar)  1d3
+w(mcar mncar_q)  1d3
+w(fcar mncar_q)  1d3
 end_excess_function
 
 2                                     2 site entropy model
 
 2 .5                                  2 species on M2, site multiplicity = 1
-z(Fe) = 1 ocar
+z(Fe) = 1 ocar_q
 
 3 1                                   3 species on M1, site multiplicity = 1
-z(Mn) = 1 mncar
+z(Mn) = 1 mncar_q
 z(Mg) = 1 mcar
+
+begin_dqf_corrections
+dqf(ocar_q)   = 45d3
+dqf(mncar_q)  = 30d3
+end_dqf_corrections
 
 end_of_model
                                   --------------------------------------------------------
@@ -12325,19 +12343,23 @@ full_name    ilmenite
 
 2                           | model type 2
 2                           | number of endmembers
-zrru  ru
+zrru_q  ru
 
 0 0                         | endmember flags
 
-1e-5 1e-2  .1 1             | non-linear resolution of zrru
+1e-5 1e-2  .1 1             | non-linear resolution of zrru_q
 
 begin_excess_function
-w(ru zrru)   10000
+w(ru zrru_q)   10000
 end_excess_function
 
 1                            | 1 site configurational entropy model
 2 1                          | 2 species, site multiplicity = 1.
 z(Ti) = 1 ru
+
+begin_dqf_corrections
+DQF(zrru_q)  52.84e3 -0.01829e3 -0.074
+end_dqf_corrections
 
 end_of_model
                       --------------------------------------------------------
@@ -12797,7 +12819,7 @@ begin_model
                             Species:  2 fspr          Fe     Fe    Si
                                       3 spr5          Al     Mg    Al
                                       4 fsp5_d        Al     Fe    Al        dependent
-                                      5 ospr          Fe3+   Mg    Al
+                                      5 ospr_q        Fe3+   Mg    Al
                                       6 fospr_d       Fe3+   Fe    Al        dependent
 
                                       7 spro          Fe     Mg    Si        ordered
@@ -12820,7 +12842,7 @@ full_name    sapphirine
                              | endmember names
 spr4     fspr
 spr5     fsp5_d
-ospr     fospr_d
+ospr_q   fospr_d
 
 1                            | 1 ordered species:
 
@@ -12845,12 +12867,12 @@ begin_excess_function
 W(spr4 spr5)              10d3
 W(spr4 fspr)              16d3
 W(spr4 spro)               4d3
-W(spr4 ospr)              10d3
+W(spr4 ospr_q)              10d3
 W(spr5 fspr)              22d3
 W(spr5 spro)              10d3
 W(fspr spro)              12d3
-W(fspr ospr)              22d3
-W(spro ospr)              10d3
+W(fspr ospr_q)              22d3
+W(spro ospr_q)              10d3
 end_excess_function
 
 3                          | 3 site (M3, M456, T) configurational entropy model
@@ -12860,14 +12882,15 @@ z(m456,fe) = 1 fspr
 
 4 1                        | 4 species on M3, 1 sites per formula unit.
 z(m3,Al)  = 1 spr5
-z(m3,Fe3) = 1 ospr
+z(m3,Fe3) = 1 ospr_q
 z(m3,mg)  = 1 spr4
 
 2 1                        | 2 species on T, 1 sites per formula unit.
 z(T,si) = 1 spr4 + 1 fspr + 1 spro
 
 begin_dqf_corrections
-dqf(fspr)   -3d3
+dqf(fspr)    -3d3
+dqf(ospr_q) -16d3
 end_dqf_corrections
 
 end_of_model
@@ -14299,7 +14322,7 @@ begin_model
 
                                         hen           Mg      Mg     SiSi      independent
                             Species:    di            Mg      Ca     SiSi      independent
-                                        hmgts         Al      Mg     SiAl      independent
+                                        hmgts_q         Al      Mg     SiAl      independent
 
                             Species:    hfs           Fe      Fe     SiSi      independent
                                         tsfs_d        Al      Fe     SiAl      dependent
@@ -14585,7 +14608,9 @@ begin_model
                              In essence the f3cl_q "modification" is bullpucky,
                              it simply eliminates ferric iron from Chl and has
                              no experimental basis. Admittedly the White version
-                             is excessively stable.
+                             of f3cl_q excessively stable. A simpler and more honest 
+                             solution to the f3cl_q problem is to simply exclude 
+                             f3cl_q when using Liz(LE) or Atg(LE).
                       --------------------------------------------------------
 
 Atg(LE)                            | solution name
@@ -14655,16 +14680,16 @@ begin_model
                                                      _____________________
 
                                       1 liz           Mg      Mg      Si
-                            Species:  2 fliz          Fe      Fe      Si
-                                      3 lizts         Al      Mg      Al
-                                      4 f3liz         Fe3+    Mg      Al
+                            Species:  2 flz_q         Fe      Fe      Si
+                                      3 lzts_q        Al      Mg      Al
+                                      4 f3lz_q        Fe3+    Mg      Al
                                                       ____________________
 
-                             This model requires the following make definition in the thermodynamic data:
+                             This model requires the following *_q make definition in the thermodynamic data:
 
-                             fliz = 1 liz - 1 ta + 1 fta, DQF(J/mol) = -21e3
-                             lizts = 1 liz - 1 ta + 1 tats, DQF = -37e3 +0.1 * P_bar
-                             f3liz = 1 liz - 1 ta + 1 tats - 0.5 gr + 0.5 andr, DQF = -18e3 -0.1 * P_bar
+                             flz_q  = 1 liz - 1 ta + 1 fta
+                             lzts_q = 1 liz - 1 ta + 1 tats
+                             f3lz_q = 1 liz - 1 ta + 1 tats - 0.5 gr + 0.5 andr
 
                              NB! to use Chl(W) with Atg(LE) and Liz(LE) models require that the
                              internal dqf of ferri-clinchlore be modified from its original
@@ -14688,12 +14713,12 @@ full_name    serpentine
 
 2                             | model type: simplicial composition space
 4                             | number of endmembers
-liz  fliz  lizts  f3liz       | endmember names, this order implies:
+liz  flz_q  lzts_q  f3lz_q       | endmember names, this order implies:
 0 0 0 0 0                     | endmember flags, indicate if the endmember is part of the solution.
 
 0  1  .1  0                   | range and resolution for liz, imod = 0 -> cartesian subdivision
-0  1  .1  0                   | range and resolution for fliz, imod = 0 -> cartesian subdivision
-0  1  .1  0                   | range and resolution for lizts, imod = 0 -> cartesian subdivision
+0  1  .1  0                   | range and resolution for flz_q, imod = 0 -> cartesian subdivision
+0  1  .1  0                   | range and resolution for lzts_q, imod = 0 -> cartesian subdivision
 
 ideal
 
@@ -14702,16 +14727,23 @@ ideal
 4 1.                       | 4 species on M1, 1 sites per formula unit.
 
 z(m1,mg) = 1 liz
-z(m1,fe) = 1 fliz
-z(m1,al) = 1 lizts
+z(m1,fe) = 1 flz_q
+z(m1,al) = 1 lzts_q
 
 2 1.                       | 2 species on T1, 1 sites per formula unit.
 
-z(t1,al) = 1 lizts + 1 f3liz
+z(t1,al) = 1 lzts_q + 1 f3lz_q
 
 2 2.                       | 2 species on M0, 1 site per formula unit.
 
-z(m2,mg) = 1 liz + 1 lizts + 1 f3liz
+z(m2,mg) = 1 liz + 1 lzts_q + 1 f3lz_q
+
+
+begin_dqf_corrections
+dqf(flz_q)    = -21e3
+dqf(lzts_q)   = -37e3 + 0.1 * P_bar
+dqf(f3lz_q)   = -18e3 -0.1 * P_bar
+end_dqf_corrections
 
 end_of_model
                       --------------------------------------------------------
@@ -16327,7 +16359,7 @@ begin_model
                                       * Changed DQF terms to account for modifications of faL and foL
                                         (White et al 2007). Mark Caddick, Nov, 07.
 
-                                      * Zr8L added after Kelsey & Powell (2010). Jeff Marsh, Jan 10, 2012.
+                                      * zr8L_q added after Kelsey & Powell (2010). Jeff Marsh, Jan 10, 2012.
 
                                       * reformulated as ordinary configurational entropy model. JADC 12/18.
 
@@ -16363,9 +16395,9 @@ full_name    liquid
 
 10                                    number of endmembers
 
-foL_q     faL_q     zr8L
+foL_q    faL_q    zr8L_q
 abL      siL_q    anL
-kspL     wiL_q     qL_q
+kspL     wiL_q    qL_q
 wL_q
 
 0 0 0 0 0 0 0 0 0 0                 | endmember flags.
@@ -16430,12 +16462,12 @@ w(wiL_q  foL_q) 18d3
 w(wiL_q  faL_q) 18d3
 w(wiL_q  wL_q) 11d3   -0.5 * P_bar
 
-w(qL_q   zr8L) 14d3
-w(abL   zr8L) 12d3
-w(kspL  zr8L) 12d3
-w(zr8L  foL_q) 12d3
-w(zr8L  faL_q) 12d3
-w(zr8L  wL_q) 25d3
+w(qL_q   zr8L_q) 14d3
+w(abL   zr8L_q) 12d3
+w(kspL  zr8L_q) 12d3
+w(zr8L_q  foL_q) 12d3
+w(zr8L_q  faL_q) 12d3
+w(zr8L_q  wL_q) 25d3
 
 end_excess_function
 
@@ -16460,7 +16492,7 @@ z(ksp)   = 1 kspL
 z(ab)    = 1 abL
 z(sil)   = 1 siL_q
 z(an)    = 1 anL
-z(zr)    = 1 zr8L
+z(zr)    = 1 zr8L_q
 z(ol)    = 1 foL_q + 1 faL_q + 1 wiL_q
 
 begin_dqf_corrections
@@ -16470,6 +16502,7 @@ dqf(qL_q)   = 0
 dqf(foL_q)  = -15d3
 dqf(faL_q)  = -15d3
 dqf(siL_q)  = -10d3
+dqf(zr8L_q) =  69d3
 end_dqf_corrections
 
 end_of_model
@@ -16478,7 +16511,7 @@ end_of_model
 begin_model
                                       HP '98 quaternary garnet model
 
-                                      Zr-endmember (zrg, Ca3Al2[Si2Zr]O12) after Kelsey & Powell '10
+                                      Zr-endmember (zrg_q, Ca3Al2[Si2Zr]O12) after Kelsey & Powell '10
                                       - Jeff Marsh, Jan 10, 2012.
 
                                       Zn-endmember (zngt,Zn3Al3Si3O12) estimated by octahedral
@@ -16492,7 +16525,7 @@ full_name    garnet
 
 2                                     model type: simplicial composition space
 6                                     number of endmembers
-zrg    zngt   spss
+zrg_q    zngt   spss
 py     gr     alm                     endmember names
 
 1  1  1  0  0  0                        | endmember flags
@@ -16519,13 +16552,17 @@ end_excess_function
 z(Fe) = 1 alm
 z(Mg) = 1 py
 z(Zn) = 1 zngt
-z(Zr) = 1 zrg
+z(Zr) = 1 zrg_q
 
 2 3                                 | 2 species, site multiplicity 3
-                                    | was 2 2, zr = 1 zrg, Zr goes on the
+                                    | was 2 2, zr = 1 zrg_q, Zr goes on the
                                     | the Si site as Si2Zr
                                     | corrected(?) May 5, 2019, JADC.
-z(Zr) = 1/3 zrg
+z(Zr) = 1/3 zrg_q
+
+begin_dqf_corrections
+DQF(zrg_q) = 96e3 0.165e3 2.7
+end_dqf_corrections
 
 end_of_model
                       --------------------------------------------------------
@@ -17841,7 +17878,7 @@ full_name    liquid
 
 13                                    number of endmembers
 
-foL_q     faL_q     zr8L
+foL_q     faL_q     zr8L_q
 abL      siL_q    anL
 kspL     wiL_q     qL_q
 alp8L     cep8L
@@ -17949,7 +17986,7 @@ z(ksp)   = 1 kspL
 z(ab)    = 1 abL
 z(sil)   = 1 siL_q
 z(an)    = 1 anL
-z(zr)    = 1 zr8L
+z(zr)    = 1 zr8L_q
 z(ol)    = 1 foL_q + 1 faL_q + 1 wiL_q
 z(phos) = 1 alp8L + 1 cep8L + 1 yp8L
 
@@ -17964,6 +18001,7 @@ dqf(qL_q)   = 0
 dqf(foL_q)  = -10d3
 dqf(faL_q)  = -9d3 0 -1.3
 dqf(siL_q)  = -10d3
+DQF(zr8L_q) = 69e3
                                      | pre-white et al '07 value: dqf(foL_q)  -15d3 0 0
                                      | pre-white et al '07 value: dqf(faL_q)  -15d3 0 0
                                      | pre-white et al '07 value: dqf(siL_q) -10d3 0 0

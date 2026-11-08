@@ -228,7 +228,12 @@ c                                 interim storage array
       integer lcoor, lkp
       double precision ycoor
       common/ cxt14 /ycoor(k22),lcoor(k19),lkp(k19)
-
+c                                  jpoint - locates the last compound (make) 
+c                                           to be into optimization arrays
+c                                  ipoint - jpoint + jiinc, the first jiinc
+c                                           entries in cpd arrays are used
+c                                           to store cpds required for constraints.
+c                                           1:ipoint
       integer jpoint, jiinc
       common/ cxt60 /jpoint,jiinc
 c                                 jbulk = icp + isat (i think)
@@ -658,13 +663,14 @@ c                                 make definitions
       double precision mcomp
       character mknam*8
       integer nmak
-      logical mksat
-      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17)
+      logical mksat, qdef
+      common / cst333 /mcomp(k16,k0),nmak,mksat(k16),mknam(k16,k17), 
+     *                 qdef(k16)
 c                                 make definitions
-      integer mknum, mkind, meos
+      integer mknum, mkind, meos, imak
       double precision mkcoef, mdqf
       common / cst334 /mkcoef(k16,k17),mdqf(k16,k17),mkind(k16,k17),
-     *                 mknum(k16),meos(k16)
+     *                 mknum(k16),meos(k16),imak(k16)
 c                                 make definitions
       integer make
       common / cst335 /make(k10)
@@ -823,5 +829,6 @@ c                                 CONVEX junk:
       common/ cst35 /irv(k2)
 
       logical newdat
+      integer ikey, kkey
       character commnt*400
-      common/ cst99 /commnt, newdat
+      common/ cst99 /commnt, ikey, kkey, newdat

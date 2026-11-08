@@ -33,13 +33,17 @@ c a version stamp for each executable
 c----------------------------------------------------------------------
       implicit none
 
+      include 'perplex_parameters.h'
+
       integer n
 c----------------------------------------------------------------------
       write (n,'(/,a,//,a)') 
-     *     'Perple_X release 7.2.14 Oct 7, 2026.',
+     *     'Perple_X release 7.3.1 Oct 21, 2026.',
 
      *     'Copyright (C) 1986-2026 James A D Connolly '//
      *     '<www.perplex.ethz.ch/copyright.html>.'
+
+      kkey = 730
 
       end
 
@@ -52,6 +56,8 @@ c----------------------------------------------------------------------
       implicit none
 
       include 'perplex_parameters.h'
+
+      integer jkey
 
       integer iam
       common/ cst4 /iam
@@ -67,7 +73,8 @@ c----------------------------------------------------------------------
      *         new.eq.'672'.or.new.eq.'673'.or.new.eq.'674'.or.
      *         new.eq.'675'.or.new.eq.'676'.or.new.eq.'678'.or.
      *         new.eq.'679'.or.new.eq.'689'.or.new.eq.'690'.or.
-     *         new.eq.'691'.or.new.eq.'719'.or.new.eq.'720') then 
+     *         new.eq.'691'.or.new.eq.'719'.or.new.eq.'720'.or.
+     *         new.eq.'730') then 
 
          chksol = .true.
 c                                  check data/solution model
@@ -75,11 +82,32 @@ c                                  file compatability 720+
 c                                  if MEEMUM/CONVEX/VERTEX/MC_fit
          if (iam.eq.1.or.iam.eq.2.or.iam.eq.15) then
 
-            if (.not.newdat.and.new.eq.'720') then
+            read (new,'(i3)') jkey
+
+            if (kkey.lt.ikey) then
+c                                   release older than the thermodynamic data file
+               write (*,1010) 'thermodynamic data'
+               call wrnstp
+            end if
+
+            if (kkey.lt.jkey) then
+c                                   release older than the solution model file
+               write (*,1010) 'solution model'
+               call wrnstp
+            end if
+
+            if (jkey.ne.ikey.and.newdat) then
+c                                   if solution model contains versioning info
+c                                   and the solution model and thermodynamic data
+c                                   files have different versioning tags
                write (*,1000) 
                call wrnstp
-            else if (newdat.and.new.ne.'720') then 
-               write (*,1010) 
+
+            end if 
+
+
+            if (.not.newdat) then 
+               write (*,1020) 'solution model'
                call wrnstp
             end if
 
@@ -91,13 +119,15 @@ c                                  if MEEMUM/CONVEX/VERTEX/MC_fit
 
       end if 
 
-1000  format (/,'**warning ver209** you are using a 7.2.0+ solution mo',
-     *       'del file but your thermodynamic',/,'data file has not be',
-     *       'en updated to include version information and may specify'
-     *       ,/,'inconsistent DQF instructions.',/)
-1010  format (/,'**warning ver210** you are using a 7.2.0+ thermodynam',
-     *       'ic data file but your solution',/,'model file is not con',
-     *       'sistent with 7.2.0+ DQF instructions.',/)
+1000  format (/,'**warning ver209** the solution model file and thermo',
+     *       'dynamic data files are',/,'from different major or minor',
+     *       ' versions and may specify inconsistent make definitions.',
+     *       //,'Recommended action: update the older file.',/)
+1010  format (/,'**warning ver210** this release is older than the ',a,
+     *       ' file.',//,'Recommended action: update Perple_X.',/)
+1020  format (/,'**warning ver211** the ',a,' file contains no version',
+     *       ' information.',//,
+     *       'Recommended action: update the ',a,' file.',/)
 
       end 
 
@@ -337,8 +367,8 @@ c                                 increase in resolution for composition and mix
       nopt(18) = 1d1
 c                                 increase in resolution for Schreinemakers diagram calculations   
       nopt(19) = 3d0 
-c                                 T_melt cutoff 
-      nopt(20) = 873d0
+c                                 T_melt cutoff
+      nopt(20) = 0d0
 c                                 optimization_precision, absolute
       nopt(21) = 1d-4
 c                                 finite_difference_p threshold for finite difference estimates
@@ -3898,7 +3928,7 @@ c----------------------------------------------------------------------
 
       integer ibeg, iend, ier, iscan, i, nreact, jopt, nblen
 
-      logical qdef
+      logical qdf
 
       external iscan, nblen
 
@@ -3935,9 +3965,9 @@ c                                 get first name
          call readnm (ibeg,iend,com,ier,tname)
          if (ier.ne.0) goto 90
 c                                 check for _q makes
-         qdef = .false.
+         qdf = .false.
          iend = nblen(tname)
-         if (tname(iend-1:iend).eq.'_q') qdef = .true.
+         if (tname(iend-1:iend).eq.'_q') qdf = .true.
 c                                 find start of data marker '='
          ibeg = iscan (1,com,'=') + 1
 c                                 the rest of the data should
@@ -3980,8 +4010,23 @@ c                                 read the DQF coefficients
          ibeg = 1
          call redlpt (nums,ibeg,iend,ier) 
          if (ier.ne.0) goto 90
-c                                  7.2.3 undo q make for frendly 
-         if (qdef.and.iam.ne.5) nums(1) = nums(1) + 1d6
+
+         if (qdf.and.iam.ne.5) then
+c                                  for all programs other than frendly
+c                                  add a destabilizing increment
+            nums(1) = nums(1) + 1d6
+c                                  7.2.15 create a qdef flag, if the
+c                                  flag is false the make will not be
+c                                  evaluated. reset in gmodel if the 
+c                                  make is to be used
+            qdef(nmak) = .false.
+
+         else
+c                                  all other dqfs are to be evaluated
+c                                  in frendly or not.
+            qdef(nmak) = .true.
+
+         end if
 
          do i = 1, m3 
             mdqf(nmak,i) = nums(i)
@@ -6157,7 +6202,7 @@ c----------------------------------------------------------------------
  
       character tag*4, string*140, key*22, values*80, strg*80
 
-      integer option, i, j, ier, iscan, nblen, ikey
+      integer option, i, j, ier, iscan, nblen
 
       double precision sum, ssum
 
@@ -6206,12 +6251,13 @@ c      if (ier.eq.0) call error (8,r,i,dname)
 c                                 database name or version flag
       call getkey (n2,ier,key,values,strg)
 
-      if (key.eq.'720') then
+      if (key.eq.'720'.or.key.eq.'730') then
          read (key,'(i3)') ikey
          newdat = .true.
          call getkey (n2,ier,key,values,strg)
       else 
          newdat = .false.
+         ikey = 0
       end if
 
       dname = strg
@@ -11468,12 +11514,11 @@ c      depvar = c0 + var*(c1 + var*(c2 + var*(c3 + var*(c4 + c5*var))))
 
       end
 
-
       subroutine makecp (inames,mnames,first)
 c----------------------------------------------------------------------
-c makecp reads the thermodynamic to compute the composition vector of
-c made phases, called by vertex. programs without composition checking
-c use smakcp.
+c makecp reads the thermodynamic data file to compute the composition 
+c vector of made phases, called by vertex. programs without composition
+c checking use smakcp.
 
 c output to console if first = .true.
 c----------------------------------------------------------------------
@@ -11533,6 +11578,7 @@ c                                 the mnames phases:
          if (eof) exit
 
          do i = 1, inames
+
             if (name.eq.mnames(i)) then
 
                do j = 1, icmpn
@@ -11557,11 +11603,6 @@ c                                 find valid makes:
                if (mnames(k).eq.mknam(i,j).and.(.not.inph(k))) then
 
                   inmk(i) = .false.
-
-c                 if (first) then
-c                    if (iam.ne.3.and.iam.lt.6.or.iam.eq.15)
-c    *                  call warn (51,tot,icmpn,mknam(i,mknum(i)+1))
-c                 end if
 
                   exit
 
@@ -11645,26 +11686,10 @@ c                                 clean up arrays:
 
             ict = ict + 1
 
-            mksat(ict) = mksat(i)
-
-            mknum(ict) = mknum(i)
-
-            meos(ict) = meos(i)
-
-            do j = 1, mknum(ict)+1
-               mknam(ict,j) = mknam(i,j)
-               mkind(ict,j) = mkind(i,j)
-            end do
-
-            do j = 1, mknum(ict)
-               mkcoef(ict,j) = mkcoef(i,j)
-            end do
-
-            do j = 1, k17
-               mdqf(ict,j) = mdqf(i,j)
-            end do
+            call movmak (i,ict)
 
             do j = 1, icmpn
+
                mcomp(ict,j) = mcomp(i,j)
 c                                get list of used components
                if (mcomp(ict,j).ne.0d0.and.incomp(j).eq.0) incomp(j) = j
@@ -11724,6 +11749,140 @@ c                                write list of valid makes:
 1010  format (/,80('-'),/,'Summary of make-definition entities:',/)
 
       end
+
+      subroutine movmak (iold,inew)
+c----------------------------------------------------------------------
+c movmak moves a make definition from index iold to inew in the 
+c various make definition arrays, called by makecp, smakcp, input9
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer iold, inew, j
+c----------------------------------------------------------------------
+      mksat(inew) = mksat(iold)
+
+      mknum(inew) = mknum(iold)
+
+      meos(inew) = meos(iold)
+
+      qdef(inew) = qdef(iold)
+
+      do j = 1, mknum(inew)+1
+         mknam(inew,j) = mknam(iold,j)
+         mkind(inew,j) = mkind(iold,j)
+      end do
+
+      do j = 1, mknum(inew)
+         mkcoef(inew,j) = mkcoef(iold,j)
+      end do
+
+      do j = 1, k17
+         mdqf(inew,j) = mdqf(iold,j)
+      end do
+
+      end
+
+      subroutine movcpd (iold,id)
+c---------------------------------------------------------------------
+c movcpd shifts a a made entity in the compound array from index iold 
+c to index id, used by remake.
+c---------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer iold, id, i
+
+      integer ltyp,lct,lmda,idis
+      common/ cst204 /ltyp(k10),lct(k10),lmda(k10),idis(k10)
+
+      double precision cp
+      common/ cst12 /cp(k5,k10)
+
+      integer ikp
+      common/ cst61 /ikp(k1)
+
+      integer ifp
+      logical fp
+      common/ cxt32 /ifp(k10), fp(h9)
+
+      integer jfct,jmct,jprct,jmuct
+      common/ cst307 /jfct,jmct,jprct,jmuct
+c---------------------------------------------------------------------
+c                                 move name and flags
+      names(id) = names(iold)
+      iemod(id) = iemod(iold)
+      ikp(id)   = ikp(iold)
+      ifp(id)   = ifp(iold)
+      idis(id)  = idis(iold)
+      lmda(id)  = lmda(iold)
+c                                 move stoichiometry of components.
+      do i = 1, icomp
+         cp(i,id) = cp(i,iold)
+      end do
+
+      ctot(id) = ctot(iold)
+c                                 move formula weight
+      fwt(id) = fwt(iold)
+c                                 move mobile components
+      do i = 1, jmct
+         vnumu(i,id) = vnumu(i,iold)
+      end do
+
+      end
+
+      subroutine remake
+c----------------------------------------------------------------------
+c remake eliminates unused *_q make definitions after the solution 
+c models have been processed by gmodel in input9
+c----------------------------------------------------------------------
+      implicit none
+
+      include 'perplex_parameters.h'
+
+      integer inew, i
+
+      character*8 name
+      common/ csta6 /name
+c----------------------------------------------------------------------
+c                                 counter of acceptable makes
+      inew = 0
+
+      ipoint = ipoint - nmak
+
+      jpoint = ipoint
+
+      do i = 1, nmak
+c                                 don't touch saturated component makes, 
+c                                 this means *_q makes will persist in
+c                                 the saturated composant lists
+         if (mksat(i)) cycle
+
+         if (qdef(i)) then
+
+            inew = inew + 1
+
+            ipoint = ipoint + 1
+c                                 reposition the make data
+            call movmak (i,inew)
+c                                 reposition the cpd data
+            call movcpd (jpoint + i, ipoint)
+
+            write (*,*) qdef(i),mknam(i,mknum(i)+1),' in the list'
+
+         else 
+
+            write (*,*) qdef(i),mknam(i,mknum(i)+1),' NOT in the list'
+
+         end if
+
+      end do
+c                                 reset nmak for no particular reason
+      nmak = inew
+
+      end 
 
       subroutine smakcp (inames,mnames)
 c----------------------------------------------------------------------
@@ -11851,12 +12010,11 @@ c                                 non-zero thermodynamic components)
          end if
       end do
 c                                 clean up arrays:
-      ict = 0
-
       do i = 1, icmpn
          incomp(i) = 0
       end do
 
+      ict = 0
 
       do i = 1, nmak
 
@@ -11864,19 +12022,7 @@ c                                 clean up arrays:
 
             ict = ict + 1
 
-            mknum(ict) = mknum(i)
-
-            do j = 1, mknum(ict)+1
-               mknam(ict,j) = mknam(i,j)
-            end do
-
-            do j = 1, mknum(ict)
-               mkcoef(ict,j) = mkcoef(i,j)
-            end do
-
-            do j = 1, k17
-               mdqf(ict,j) = mdqf(i,j)
-            end do
+            call movmak (i, ict)
 
             do j = 1, icmpn
                mcomp(ict,j) = mcomp(i,j)

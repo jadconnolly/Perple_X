@@ -1,4 +1,4 @@
-720 DO NOT DELETE THIS LINE
+730 DO NOT DELETE THIS LINE
 
  | comments are indicated by the | character.
  | check for warnings at the end of the header section.
@@ -396,19 +396,19 @@ cren_q  = 1 mgts + 1 kos - 1 jd
 cren1_q = 1 en + 1 cats + 1 kos - 1 jd - 1 di
            DQF(J/mol) = 0
                                  |--------------------------------------------------------
-                                 | specific makes for Opx:
+                                 | generic makes for Opx:
                                  | ferric Opx(HP)
-mots  = 1 mgts - 1/2 cor + 1/2 hem
-       22d3
+ots_q  = 1 mgts - 1/2 cor + 1/2 hem
+           DQF(J/mol) = 0
                                  | ferric Opx(W)
-mots1    = 1 mgts + 1/2  andr  - 1/2 gr
-       DQF(J/mol) = 2d3
+ots1_q    = 1 mgts + 1/2  andr  - 1/2 gr
+           DQF(J/mol) = 0
                                  | ferric Opx(JH)
-oen   = 1 mgts + 1 acm - 1 jd
-       DQF(J/mol) = -15d3 + 0.15 * p_bar
+oen_q   = 1 mgts + 1 acm - 1 jd
+           DQF(J/mol) = 0
                                  | Mn Opx(W)
-mnopx = 2 pxmn
-       DQF(J/mol) = 6680
+mnpx_q = 2 pxmn
+           DQF(J/mol) = 0
                                  |--------------------------------------------------------
                                  | generic makes for Cpx:
 cen_q   = 1 en
@@ -437,6 +437,15 @@ atgAl_q = 1 atg - 17 ta + 17 tats
 f3atg_q = 1 atg - 17 ta + 17 tats - 8.5 gr + 8.5 andr
      DQF(J/mol) = 0
 
+flz_q = 1 liz - 1 ta + 1 fta
+     DQF(J/mol) = 0
+
+lzts_q = 1 liz - 1 ta + 1 tats
+     DQF(J/mol) = 0
+
+f3lz_q = 1 liz - 1 ta + 1 tats - 0.5 gr + 0.5 andr
+     DQF(J/mol) = 0
+
 fbr_q   = 1 br - 1/3 ta + 1/3 fta
     DQF(J/mol) = 0
 
@@ -445,19 +454,55 @@ fchum_q = 1 chum - 3 ta + 3 fta
 
 fphA_q  = 1 phA - 7/3 ta + 7/3 fta
     DQF(J/mol) = 0
+                                 |-------------------------------
+                                 | generic makes for Ti-F Chum(B) and Chdr(B)
+                                 | of Herviou et al. (2026). JADC, 5/26.
+                                 | The details of the original need to be clarified, it 
+                                 | appears that Herviou et al (2026) used different bases 
+                                 | (chu/chum for Chum(B) and chdrt/chdr/fo for Chdr(B)) 
+                                 | for stoichiometrically related endmembers as in the 
+                                 | definitions below. 
+
+                                 | To clean this up the generic makes should be formulated with 
+                                 | a common basis (chum for Chum(B), chdr for Chdr(B)) and the
+                                 | solution specific makes recalibrated or adjusted to match
+                                 | the Herviou endmembers.  The F-endmebers also should be made
+                                 | from sel - br.
+
+                                 | chu      - is duffy Mg-chum with the hp-chum V(P,T)
+                                 | chum     - is the hp Mg-chum endmember
+                                 | ichu_q   - Fe-chum, made from the chu duffy/chum/herviou endmember
+                                 | tchu_q   - Mg-Ti chum, nominally made from the chum hp endmember
+                                 | tichu_q  - Fe-Ti chum, nominally made from the chum hp endmember
+                                 | fchu_q   - Mg-F chum, not made, requires MgF2 from duffy
+|ichu_q =  1 chu - 1/3 ta + 1/3 fta - 4 fo + 4 fa
+|    DQF(J/mol) = 0
+|tchu_q =  1 chum  + 1/2 ru - 1/2 br
+|   DQF(J/mol) = 0
+|tichu_q = 1 chum  + 1/2 ru - 1/2 br + 4 fa - 4 fo + 1/6 fta - 1/6 ta
+|   DQF(J/mol) = 0
+                                 | chdrt    - is duffy Mg-chdrt with the hp-chdr V(P,T)
+                                 | chdr     - is the hp Mg-chdr endmember
+                                 | ichdr_q  - Fe-chdr, nominally made from the chdrt
+                                 | tchdr_q  - Mg-Ti chdr, made from fo
+                                 | tichu_q  - Fe-Ti chdr, made from fa
+                                 | fchdr_q  - Mg-F chdr, not made, requires MgF2 from duffy
+|ichdr_q  = 1 chdrt + 5/3 fta - 5/3 ta
+|   DQF(J/mol) = 0
+|tchdr_q  = 2 fo + 1/2 br + 1/2 ru
+|   DQF(J/mol) = 0
+|tichdr_q = 2 fa + 1/2 br + 1/2 ru + 1/6 fta - 1/6 ta
+|   DQF(J/mol) = 0
                                  |--------------------------------------------------------
                                  | generic makes for clinoamphibole
 ts_q    = 1 ts
            DQF(J/mol) = 0
-                                 |--------------------------------------------------------
-                                 | specific makes for clinoamphibole
-                                 | Green et al., JMG, 2016
-mrbG  = 1 gl - 1 gr + 1 andr
-   DQF = 0
-kprg  = 1 mu - 1 pa + 1 parg
-   DQF = -7060 + 20 * T_K
-tts   = -2 dsp + 2 ru + 1 ts
-   DQF =   95000
+mrb1_q  = 1 gl - 1 gr + 1 andr
+           DQF(J/mol) = 0
+kprg_q  = 1 mu - 1 pa + 1 parg
+           DQF(J/mol) = 0
+tts_q   = -2 dsp + 2 ru + 1 ts
+           DQF(J/mol) = 0
                                  |--------------------------------------------------------
                                  | generic makes for orthoamphibole (Diener et al. 2011)
 mrb_q   = 1 gl - 2 jd +2 acm
@@ -465,11 +510,11 @@ mrb_q   = 1 gl - 2 jd +2 acm
 mpa_q   = 1 parg - 1 tr +1 anth
     DQF(J/mol) = 0
 fanth_q = 1 fanth
-    DQF(J/mol) = 0d0
+    DQF(J/mol) = 0
 gl_q = 1 gl
-    DQF(J/mol) = 0d0
+    DQF(J/mol) = 0
 ged_q = 1 ged
-    DQF(J/mol) = 0d0
+    DQF(J/mol) = 0
                                  |--------------------------------------------------------
                                  | generic makes for garnet
 kho_q    = 1 py - 1 gr + 1 andr
@@ -512,33 +557,33 @@ cnpv_q = 1 npv
        DQF(J/mol) = 0
 fcor_q = 1 mcor + 1 fak - 1 mak   | FeSi corundum
        DQF(J/mol) = 0
-hmgts  = 1 mgts + 1 hen - 1 en
+hmgts_q = 1 mgts + 1 hen - 1 en
        DQF(J/mol) = 0
                                  |--------------------------------------------------------
-                                 | specific Make definitions for Kelsey & Powell (JMG, 2011) Zr
+                                 | generic Make definitions for Kelsey & Powell (JMG, 2011) Zr
                                  | melting relations. JADC, 2/6/12
-
-zr8L = 2 zrc                     | Zr-melt endmember
-       DQF(J/mol) = 69e3
-zrg  = 1 gr + 3 zrc - 6 q        | Zr garnet endmember
-       DQF(J/mol) = 96e3 0.165e3 2.7
-zrru = 1 bdy                     | Zr rutile endmember
-       52.84e3 -0.01829e3 -0.074
+zr8L_q = 2 zrc                   | Zr-melt endmember
+       DQF(J/mol) = 0
+zrg_q  = 1 gr + 3 zrc - 6 q      | Zr garnet endmember
+       DQF(J/mol) = 0
+zrru_q = 1 bdy                   | Zr rutile endmember
+       DQF(J/mol) = 0
                                  |--------------------------------------------------------
                                  | generic make definitions for White et al. (JMG 32:261-286, 2014) models
 f3cl_q = 1 clin - 1/2 gr + 1/2 andr
        DQF(J/mol) = 0
-                                 | specific make definitions for White et al. (JMG 32:261-286, 2014) models
-fmu = 1 mu + 1/2 andr - 1/2 gr
-       DQF(J/mol) = 25d3
-ctdo = 1 mctd + 1/4 andr - 1/4 gr
-       DQF(J/mol) = 25d3
-msto   = 1 andr  -1 gr  + 1 mst
-       DQF(J/mol) = 9d3
-mstt   = 1 mst - 1 cor   +3/2   ru
-       DQF(J/mol) = 13d3
-ospr = 1/2 andr - 1/2 gr + 1 spr5
-       DQF(J/mol) = -16d3
+                                 |--------------------------------------------------------
+                                 | generic make definitions for White et al. (JMG 32:261-286, 2014) models
+fmu_q = 1 mu + 1/2 andr - 1/2 gr
+       DQF(J/mol) = 0
+ctdo_q = 1 mctd + 1/4 andr - 1/4 gr
+       DQF(J/mol) = 0
+msto_q   = 1 andr  -1 gr  + 1 mst
+       DQF(J/mol) = 0
+mstt_q   = 1 mst - 1 cor   +3/2   ru
+       DQF(J/mol) = 0
+ospr_q = 1/2 andr - 1/2 gr + 1 spr5
+       DQF(J/mol) = 0
                                  |--------------------------------------------------------
                                  | Ti phengite endmember for Auzanneau et al. (CMP 159:1-24, 2010) mica model
                                  | Gdqf corrected from -482876. to -13469.8 J/mol, D. Dolejs, Mar 6, 2010.
@@ -551,22 +596,25 @@ odo_q  = 1/2 mag 1/2 cc
 oank_q = 1/4 sid 1/2 cc 1/4 mag
        DQF = 0
                                  |-------------------------------------------------------
-                                 | specific make for unpublished thermocalc scapolite model
-coma = 3 ab + 1 cc
-       DQF(J/mol) = 25000.
+                                 | generic make for unpublished thermocalc scapolite model
+coma_q  = 3 ab + 1 cc
+       DQF = 0
                                  |-------------------------------------------------------
-                                 | Make definitions for the Smye et al (JMG, 2011, 28:753-768)
+                                 | generic make definitions for the Smye et al (JMG, 2011, 28:753-768)
                                  | models for Mica, Carpholite and Chloritoid, to use these
                                  | make definitions delete the leading "|" comment characters:
-ocar  = 1 fcar + 1/2 hem - 1/2 cor
-      DQF(J/mol) = 45d3
-mncar = 1 mcar + 1 mang - 1 per   | corrected from 1 mcar + 1 mang - 1/2 cor, G Hoschek, 10/24/11.
-      DQF(J/mol) = 30d3
+fmu1_q = 1 mu + 1/2 hem - 1/2 cor
+       DQF = 0
+ocar_q  = 1 fcar + 1/2 hem - 1/2 cor
+       DQF = 0
+mncar_q = 1 mcar + 1 mang - 1 per   | corrected from 1 mcar + 1 mang - 1/2 cor, G Hoschek, 10/24/11.
+       DQF = 0
                                  |-------------------------------------------------------
                                  | Special makes for Golubkova et al. data in FOCver.dat and
                                  | metal_mix.dat
 | fcrm = 1 herc 1 mcrm -1 sp
 |        DQF(J/mol) = 0
+
 FeCA1 = 1 FeA1 1 CA1
         DQF(J/mol) = 77207 -15.877 0
 FeCA2 = 1 FeA2 3 CA2
@@ -575,6 +623,7 @@ Cliq = 1 Cliq1 1 Cliq2
        DQF(J/mol) = 0
 
 end_makes
+
 
 the following "end" card marks the end of the header section of the data file
 
