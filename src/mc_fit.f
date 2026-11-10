@@ -3157,7 +3157,7 @@ c                                 within p, t uncertainty range
 c                                 normalize misfit to per xpt
       if (.not.grh) obj = obj / float(mxpt)
 
-      write (*,'(a,1pg13.6,1x,i6)') 'obj, optct ',obj,optct
+c     write (*,'(a,1pg13.6,1x,i6)') 'obj, optct ',obj,optct
 
 c                                 convert rss to half the residual variance
       if (lsqchi.eq.3) then 
@@ -3909,8 +3909,6 @@ c    *         'Misfit: ', xptscr, optct
 1220  format (/,'**warning ver504** covariance matrix calculation fai',
      *       'led, increase expansion_criterion',/,'or set print_leve',
      *       'l > 0 for additional diagnostic information')
-
-      pause
 
       end
 
